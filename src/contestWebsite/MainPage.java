@@ -87,6 +87,6 @@ public class MainPage extends HttpServlet
 		sw.close();
 
 		resp.getWriter().print(sw);
-		//TODO: Finish about page and integrate with main
+		//TODO: Finish About page and integrate with main
 	}
 }

@@ -76,7 +76,7 @@ public class Main extends HttpServlet
 
 			getSpreadSheets(params.get("docMiddle")[0], params.get("docHigh")[0]);
 			updateDatabase("middle");
-			//updateDatabase("high");
+			updateDatabase("high");
 
 			tabulateCategoryWinners("middle");
 			tabulateCategoryWinners("high");
@@ -93,7 +93,7 @@ public class Main extends HttpServlet
 	}
 
 	@SuppressWarnings("deprecation")
-	static void storeHTML(String level) throws IOException
+	private static void storeHTML(String level) throws IOException
 	{
 		ArrayList<Student> students;
 		HashMap<String, School> schools;
@@ -204,7 +204,7 @@ public class Main extends HttpServlet
 		catch(Exception e) { e.printStackTrace(); }
 	}
 
-	static void tabulateSweepstakesWinners(String level)
+	private static void tabulateSweepstakesWinners(String level)
 	{
 		HashMap<String, School> schools;
 		ArrayList<School> sweepstakeWinners;
@@ -249,7 +249,7 @@ public class Main extends HttpServlet
 		}
 	}
 
-	static void calculateSchoolScores(String level)
+	private static void calculateSchoolScores(String level)
 	{
 		if(level.equals("middle"))
 			for(School school : middleSchools.values())
@@ -259,7 +259,7 @@ public class Main extends HttpServlet
 				school.calculateScores();
 	}
 
-	static void tabulateCategoryWinners(String level)
+	private static void tabulateCategoryWinners(String level)
 	{
 		for(String test : testsGraded)
 		{
@@ -294,7 +294,7 @@ public class Main extends HttpServlet
 		}
 	}
 
-	static void updateDatabase(String level) throws IOException, ServiceException
+	private static void updateDatabase(String level) throws IOException, ServiceException
 	{
 		try
 		{
@@ -369,7 +369,7 @@ public class Main extends HttpServlet
 		catch(Exception e) { e.printStackTrace(); }
 	}
 
-	static void getSpreadSheets(String docMid, String docHigh) throws AuthenticationException, MalformedURLException, IOException, ServiceException
+	private static void getSpreadSheets(String docMid, String docHigh) throws AuthenticationException, MalformedURLException, IOException, ServiceException
 	{
 		feed = service.getFeed(new URL("https://spreadsheets.google.com/feeds/spreadsheets/private/full"), SpreadsheetFeed.class);
 		List<SpreadsheetEntry> spreadsheets = feed.getEntries();

@@ -6,7 +6,7 @@ public class Score implements Comparable<Score>
 	Score(String score) { this.score = score; }
 	public String getScore() { return score; }
 
-	int getScoreNum()
+	public int getScoreNum()
 	{
 		try { return Integer.parseInt(score); }
 		catch(NumberFormatException e) { return Integer.parseInt(score.substring(0,score.length()-1)); }

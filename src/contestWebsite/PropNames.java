@@ -7,6 +7,7 @@ public class PropNames
 	public HashMap<String, String> propNames = new HashMap<String, String>();
 	public PropNames()
 	{
+		//TODO: Change to ENUM or equivalent
 		propNames.put("schoolName", "School Name");
 		propNames.put("registrationType", "Registration Type");
 		propNames.put("aliases", "School Aliases");

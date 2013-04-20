@@ -11,8 +11,7 @@ public class About extends HttpServlet
 {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
-		resp.setContentType("text/html");
-		resp.getWriter().println("<b>The world is ending, what are you going to do about it?</b>");
-
+		resp.sendRedirect("/");
+		//TODO: Write about page and integrate with MainPage servlet
 	}
 }

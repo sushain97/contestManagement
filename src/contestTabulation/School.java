@@ -22,8 +22,12 @@ public class School
 	public String getName() { return name; }
 	public int getNumStudents() { return students.size(); }
 	public String getLevel() { return level; }
+	
+	public int getScore(char subject) { return scores.get(subject); }
+	public int getScore(String subject) { return scores.get(subject.charAt(0)); }
+	public int getTotalScore() { return totalScore; }
 
-	HashMap<Score,Student> calculateScore(char subject)
+	private HashMap<Score,Student> calculateScore(char subject)
 	{
 		HashMap<Score,Student> top4 = new HashMap<Score,Student>();
 		ArrayList<Score> top4Arr;
@@ -116,7 +120,7 @@ public class School
 		return top4;
 	}
 
-	void calculateScores()
+	public void calculateScores()
 	{
 		calculateScore('N');
 		calculateScore('S');
@@ -125,13 +129,8 @@ public class School
 		if(level.equals("middle"))
 			totalScore = scores.get('N') + scores.get('C') + (int) Math.round((scores.get('M') * 8.0/5.0) +(scores.get('S') * 8.0/5.0));
 		else
-			totalScore = scores.get('N') + (int) Math.round((scores.get('M') * 10.0/9.0) +(scores.get('S') * 10.0/9.0) + (scores.get('C') * 8.0/7.0));
+			totalScore = scores.get('N') + (int) Math.round((scores.get('M') * 10.0/9.0) + (scores.get('S') * 10.0/9.0) + (scores.get('C') * 8.0/7.0));
 	}
-
-	public int getScore(char subject) { return scores.get(subject); }
-	public int getScore(String subject) { return scores.get(subject.charAt(0)); }
-
-	public int getTotalScore() { return totalScore; }
 
 	public int hashCode()
 	{

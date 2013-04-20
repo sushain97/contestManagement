@@ -39,26 +39,25 @@ public class Login extends HttpServlet
 					userCookie = new UserCookie(cookie);
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
 		if(loggedIn && !URLDecoder.decode(userCookie.getValue(), "UTF-8").split("\\$")[0].equals("admin"))
-		{
 			resp.sendRedirect("/signout");
-			return;
+		else
+		{
+			Properties p = new Properties();
+			p.setProperty("file.resource.loader.path", "html");
+			Velocity.init(p);
+			VelocityContext context = new VelocityContext();
+			String user = req.getParameter("user");
+			String error = req.getParameter("error");
+			context.put("year", Calendar.getInstance().get(Calendar.YEAR));
+			context.put("username", user == null ? "" : user);
+			context.put("loggedIn", false);
+			context.put("error", error == null || error.equals("") ? null : "Invalid login");
+			StringWriter sw = new StringWriter();
+			Velocity.mergeTemplate("login.html", context, sw);
+			sw.close();
+
+			resp.getWriter().print(sw);
 		}
-
-		Properties p = new Properties();
-		p.setProperty("file.resource.loader.path", "html");
-		Velocity.init(p);
-		VelocityContext context = new VelocityContext();
-		String user = req.getParameter("user");
-		String error = req.getParameter("error");
-		context.put("year", Calendar.getInstance().get(Calendar.YEAR));
-		context.put("username", user == null ? "" : user);
-		context.put("loggedIn", false);
-		context.put("error", error == null || error.equals("") ? null : "Invalid login");
-		StringWriter sw = new StringWriter();
-		Velocity.mergeTemplate("login.html", context, sw);
-		sw.close();
-
-		resp.getWriter().print(sw);
 	}
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException

@@ -11,7 +11,7 @@ public class Student
 
 	Student(String name, School school, int grade) { this.name = name; this.grade = grade; this.school = school; }
 
-	void setScore(char subject, Score score) { scores.put(subject, score); }
+	public void setScore(char subject, Score score) { scores.put(subject, score); }
 
 	public Score getScore(char subject) { return scores.get(subject); }
 	public Score getScore(String subject) { return scores.get(subject.charAt(0)); }

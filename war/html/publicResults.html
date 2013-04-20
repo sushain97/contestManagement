@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Public Contest Results</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="/css/bootstrap.css" rel="stylesheet">
+<style>
+body {
+	padding-top: 60px;
+	/* 60px to make the container go all the way to the bottom of the topbar */
+}
+</style>
+
+<!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+<link rel="shortcut icon" href="/favicon.ico">
+</head>
+
+<body onLoad="ChangeActive()">
+
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a class="btn btn-navbar" data-toggle="collapse"
+					data-target=".nav-collapse"> <span class="icon-bar"></span> <span
+					class="icon-bar"></span> <span class="icon-bar"></span>
+				</a> <a class="brand" href="/">$year Dulles TMSCA Tournament</a>
+				<div class="nav-collapse">
+					<ul class="nav">
+						#if($loggedIn && $admin)
+						<li class="dropdown"><a href="#" class="dropdown-toggle"
+							data-toggle="dropdown">Public Pages<b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="/about">About</a></li>
+								<li><a href="/contestResults">Contest Results</a></li>
+								<li><a href="/registration">Registration</a></li>
+								<li><a href="/directions">Directions</a></li>
+								<li><a href="/contactUs">Contact Us</a></li>
+							</ul></li>
+						<li><a href="/adminPanel">Control Panel</a></li>
+						<li class="dropdown"><a href="#" class="dropdown-toggle"
+							data-toggle="dropdown">Contest Data<b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="/data?choice=overview">Overview</a></li>
+								<li><a href="/data?choice=registrations">Registrations</a></li>
+								<li><a href="/data?choice=questions">Questions</a></li>
+								<li><a href="/data?choice=scores">Scores</a></li>
+							</ul></li>
+						<li><a href="/signout">Logout</a></li> #else
+						<li><a href="/about">About</a></li>
+						<li><a href="/directions">Directions</a></li>
+						<li><a href="/contestResults">Contest Results</a></li>
+						<li><a href="/contactUs">Contact Us</a></li> #if(!$loggedIn)
+						<li><a href="/registration">Registration</a></li>
+						<li><a href="/login">Login</a></li> #else
+						<li><a href="/viewScores">View Scores</a></li>
+						<li><a href="/signout">Logout</a></li> #end #end
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container-fluid">
+		<noscript>Please enable JavaScript, otherwise numerous
+			areas of this website will be nonfunctional.</noscript>
+		<div class="row-fluid">
+			<div class="span1"></div>
+
+			<div class="span2">
+				<ul class="nav nav-list navbar-inverse">
+					<li id="avail"><a href="/contestResults">Availability</a></li>
+					<li class="nav-header">Middle School</li>
+					<li id="middle_sweep"><a href="/contestResults?type=middle_sweep">Sweepstakes</a></li>
+					<li id="middle_categorySweep"><a href="/contestResults?type=middle_categorySweep">Category
+							Sweekstakes</a></li>
+					<li class="divider"></li>
+
+					<li id="6" class="dropdown"><a href="#" class="dropdown-toggle"
+						data-toggle="dropdown">6th Grade<b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li id="middle_category_6C"><a href="/contestResults?type=middle_category_6C">Calculator</a></li>
+							<li id="middle_category_6N"><a href="/contestResults?type=middle_category_6N">Number
+									Sense</a></li>
+							<li id="middle_category_6M"><a href="/contestResults?type=middle_category_6M">Math</a></li>
+							<li id="middle_category_6S"><a href="/contestResults?type=middle_category_6S">Science</a></li>
+						</ul></li>
+
+					<li id="7" class="dropdown"><a href="#" class="dropdown-toggle"
+						data-toggle="dropdown">7th Grade<b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li id="middle_category_7C"><a href="/contestResults?type=middle_category_7C">Calculator</a></li>
+							<li id="middle_category_7N"><a href="/contestResults?type=middle_category_7N">Number
+									Sense</a></li>
+							<li id="middle_category_7M"><a href="/contestResults?type=middle_category_7M">Math</a></li>
+							<li id="middle_category_7S"><a href="/contestResults?type=middle_category_7S">Science</a></li>
+						</ul></li>
+
+					<li id="8" class="dropdown"><a href="#" class="dropdown-toggle"
+						data-toggle="dropdown">8th Grade<b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li id="middle_category_8C"><a href="/contestResults?type=middle_category_8C">Calculator</a></li>
+							<li id="middle_category_8N"><a href="/contestResults?type=middle_category_8N">Number
+									Sense</a></li>
+							<li id="middle_category_8M"><a href="/contestResults?type=middle_category_8M">Math</a></li>
+							<li id="middle_category_8S"><a href="/contestResults?type=middle_category_8S">Science</a></li>
+						</ul></li>
+
+					<li class="nav-header">High School</li>
+					<li id="high_sweep"><a href="/contestResults?type=high_sweep">Sweepstakes</a></li>
+					<li id="high_categorySweep"><a href="/contestResults?type=high_categorySweep">Category
+							Sweekstakes</a></li>
+					<li class="divider"></li>
+
+					<li id="9" class="dropdown"><a href="#" class="dropdown-toggle"
+						data-toggle="dropdown">9th Grade<b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li id="high_category_9C"><a href="/contestResults?type=high_category_9C">Calculator</a></li>
+							<li id="high_category_9N"><a href="/contestResults?type=high_category_9N">Number
+									Sense</a></li>
+							<li id="high_category_9M"><a href="/contestResults?type=high_category_9M">Math</a></li>
+							<li id="high_category_9S"><a href="/contestResults?type=high_category_9S">Science</a></li>
+						</ul></li>
+
+					<li id="10" class="dropdown"><a href="#" class="dropdown-toggle"
+						data-toggle="dropdown">10th Grade<b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li id="high_category_10C"><a href="/contestResults?type=high_category_10C">Calculator</a></li>
+							<li id="high_category_10N"><a href="/contestResults?type=high_category_10N">Number
+									Sense</a></li>
+							<li id="high_category_10M"><a href="/contestResults?type=high_category_10M">Math</a></li>
+							<li id="high_category_10S"><a href="/contestResults?type=high_category_10S">Science</a></li>
+						</ul></li>
+
+					<li id="11" class="dropdown"><a href="#" class="dropdown-toggle"
+						data-toggle="dropdown">11th Grade<b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li id="high_category_11C"><a href="/contestResults?type=high_category_11C">Calculator</a></li>
+							<li id="high_category_11N"><a href="/contestResults?type=high_category_11N">Number
+									Sense</a></li>
+							<li id="high_category_11M"><a href="/contestResults?type=high_category_11M">Math</a></li>
+							<li id="high_category_11S"><a href="/contestResults?type=high_category_11S">Science</a></li>
+						</ul></li>
+
+					<li id="12" class="dropdown"><a href="#" class="dropdown-toggle"
+						data-toggle="dropdown">12th Grade<b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li id="high_category_12C"><a href="/contestResults?type=high_category_12C">Calculator</a></li>
+							<li id="high_category_12N"><a href="/contestResults?type=high_category_12N">Number
+									Sense</a></li>
+							<li id="high_category_12M"><a href="/contestResults?type=high_category_12M">Math</a></li>
+							<li id="high_category_12S"><a href="/contestResults?type=high_category_12S">Science</a></li>
+						</ul></li>
+				</ul>
+			</div>
+
+			<div class="span8">
+				<h1>Contest Results</h1>
+				#if( !$complete ) Results are not yet public, please return later.
+				#elseif( $overview ) Choose an option at the left to view specific
+				results. #elseif($complete && !$html) Results for this competition
+				are not yet available #else $html #end
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		function ChangeActive() {
+			var type = getParameterByName('type');
+			if(type == "")
+				document.getElementById("avail").className += 'active';
+			document.getElementById(getParameterByName('type')).className += 'active';
+		}
+		function getParameterByName(name) {
+			name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+			var regexS = "[\\?&]" + name + "=([^&#]*)";
+			var regex = new RegExp(regexS);
+			var results = regex.exec(window.location.search);
+			if (results == null)
+				return "";
+			else
+				return decodeURIComponent(results[1].replace(/\+/g, " "));
+		}
+	</script>
+	<script
+		src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script src="/js/bootstrap-dropdown.js"></script>
+	<script src="/js/bootstrap-tab.js"></script>
+	<script src="/js/jquery.min.js"></script>
+	<script src="/js/jquery.js"></script>
+</body>
+</html>

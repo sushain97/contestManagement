@@ -1,0 +1,57 @@
+application: sushain97
+version: 9
+runtime: java
+
+handlers:
+- url: /admin/*
+  login: admin
+
+- url: /
+  servlet: contestWebsite.MainPage
+  
+- url: /about
+  servlet: contestWebsite.About
+  
+- url: /registration
+  servlet: contestWebsite.Registration
+ 
+- url: /login
+  servlet: contestWebsite.Login
+ 
+- url: /directions
+  servlet: contestWebsite.Directions
+  
+- url: /signout
+  servlet: contestWebsite.Logout
+
+- url: /testing
+  servlet: contestWebsite.Testing
+
+- url: /adminPanel
+  servlet: contestWebsite.AdminPanel
+  
+- url: /data
+  servlet: contestWebsite.Data
+  
+- url: /contactUs
+  servlet: contestWebsite.ContactUs
+  
+- url: /viewScores
+  servlet: contestWebsite.ViewScores
+
+- url: /contestResults
+  servlet: contestWebsite.PublicResults
+
+- url: /editRegistration
+  servlet: contestWebsite.EditRegistration
+
+- url: /forgotPass
+  servlet: contestWebsite.ForgotPassword
+
+- url: /tabulate
+  servlet: contestTabulation.Main
+  
+static_files:
+  - include: /favicon.ico
+  - include: /css/**.css
+  - include: /js/**.js

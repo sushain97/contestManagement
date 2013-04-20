@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Directions to Dulles</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="/css/bootstrap.css" rel="stylesheet">
+<style>
+body {
+	padding-top: 60px;
+	/* 60px to make the container go all the way to the bottom of the topbar */
+}
+</style>
+
+<!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+<link rel="shortcut icon" href="/favicon.ico">
+</head>
+
+<body>
+
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a class="btn btn-navbar" data-toggle="collapse"
+					data-target=".nav-collapse"> <span class="icon-bar"></span> <span
+					class="icon-bar"></span> <span class="icon-bar"></span>
+				</a> <a class="brand" href="/">$year Dulles TMSCA Tournament</a>
+				<div class="nav-collapse">
+					<ul class="nav">
+						#if($loggedIn && $admin)
+						<li class="dropdown"><a href="#" class="dropdown-toggle"
+							data-toggle="dropdown">Public Pages<b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="/about">About</a></li>
+								<li><a href="/contestResults">Contest Results</a></li>
+								<li><a href="/registration">Registration</a></li>
+								<li><a href="/directions">Directions</a></li>
+								<li><a href="/contactUs">Contact Us</a></li>
+							</ul></li>
+						<li><a href="/adminPanel">Control Panel</a></li>
+						<li class="dropdown"><a href="#" class="dropdown-toggle"
+							data-toggle="dropdown">Contest Data<b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="/data?choice=overview">Overview</a></li>
+								<li><a href="/data?choice=registrations">Registrations</a></li>
+								<li><a href="/data?choice=questions">Questions</a></li>
+								<li><a href="/data?choice=scores">Scores</a></li>
+							</ul></li>
+						<li><a href="/signout">Logout</a></li> #else
+						<li><a href="/about">About</a></li>
+						<li><a href="/directions">Directions</a></li>
+						<li><a href="/contestResults">Contest Results</a></li>
+						<li><a href="/contactUs">Contact Us</a></li> #if(!$loggedIn)
+						<li><a href="/registration">Registration</a></li>
+						<li><a href="/login">Login</a></li> #else
+						<li><a href="/viewScores">View Scores</a></li>
+						<li><a href="/signout">Logout</a></li> #end #end
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container">
+		
+		<h1>Directions to Dulles High School</h1>
+		<b>North</b>: From US 59 North, exit onto US Alt. 90, turn left onto 90 East and take the first exit to Dulles Ave. Turn right on Dulles Ave. to arrive in front parking lot. 
+		<br/><b>South</b>: From US 59 South, exit onto US Alt. 90, turn right onto 90 East and take the first exit to Dulles Ave. Turn right on Dulles Ave. to arrive in front parking lot.
+		<br/><b>West</b>: From US Alt. 90 West, continue east and take the exit to Dulles Ave. and Kirkwood Rd. Turn right on Dulles Ave. to arrive in front parking lot.
+		<br/><b>East</b>: From US Alt. 90 East, continue west and take the exit to Dulles Ave. and Kirkwood Rd. Turn left on Dulles Ave. to arrive in front parking lot.
+		<br/><br/>
+		<iframe width="640" height="480" frameborder="0" scrolling="no"
+			marginheight="0" marginwidth="0"
+			src="https://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;q=John+Foster+Dulles+High+School,+550+Dulles+Ave,+Sugar+Land,+Fort+Bend,+Texas+77478-3746&amp;aq=&amp;sll=31.168934,-100.076842&amp;sspn=13.309797,23.269043&amp;t=m&amp;ie=UTF8&amp;geocode=FWT4wwEd4IVN-g&amp;split=0&amp;hq=&amp;hnear=John+Foster+Dulles+High+School,+550+Dulles+Ave,+Sugar+Land,+Texas+77478-3746&amp;ll=29.622415,-95.583501&amp;spn=0.017907,0.027466&amp;z=15&amp;iwloc=A&amp;output=embed"></iframe>
+		<br />
+		<small><a
+			href="https://maps.google.com/maps?f=q&amp;source=embed&amp;hl=en&amp;q=John+Foster+Dulles+High+School,+550+Dulles+Ave,+Sugar+Land,+Fort+Bend,+Texas+77478-3746&amp;aq=&amp;sll=31.168934,-100.076842&amp;sspn=13.309797,23.269043&amp;t=m&amp;ie=UTF8&amp;geocode=FWT4wwEd4IVN-g&amp;split=0&amp;hq=&amp;hnear=John+Foster+Dulles+High+School,+550+Dulles+Ave,+Sugar+Land,+Texas+77478-3746&amp;ll=29.622415,-95.583501&amp;spn=0.017907,0.027466&amp;z=15&amp;iwloc=A"
+			style="color: #0000FF; text-align: left">View Larger Map</a></small>
+	</div>
+	
+	<script
+		src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script src="/js/bootstrap-dropdown.js"></script>
+</body>
+</html>

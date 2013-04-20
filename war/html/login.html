@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="/css/bootstrap.css" rel="stylesheet">
+<style>
+body {
+	padding-top: 60px;
+	/* 60px to make the container go all the way to the bottom of the topbar */
+}
+</style>
+
+<!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+<link rel="shortcut icon" href="/favicon.ico">
+</head>
+
+<body>
+
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a class="btn btn-navbar" data-toggle="collapse"
+					data-target=".nav-collapse"> <span class="icon-bar"></span> <span
+					class="icon-bar"></span> <span class="icon-bar"></span>
+				</a> <a class="brand" href="/">$year Dulles TMSCA Tournament</a>
+				<div class="nav-collapse">
+					<ul class="nav">
+						#if($loggedIn && $admin)
+						<li class="dropdown"><a href="#" class="dropdown-toggle"
+							data-toggle="dropdown">Public Pages<b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="/about">About</a></li>
+								<li><a href="/contestResults">Contest Results</a></li>
+								<li><a href="/registration">Registration</a></li>
+								<li><a href="/directions">Directions</a></li>
+								<li><a href="/contactUs">Contact Us</a></li>
+							</ul></li>
+						<li><a href="/adminPanel">Control Panel</a></li>
+						<li class="dropdown"><a href="#" class="dropdown-toggle"
+							data-toggle="dropdown">Contest Data<b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="/data?choice=overview">Overview</a></li>
+								<li><a href="/data?choice=registrations">Registrations</a></li>
+								<li><a href="/data?choice=questions">Questions</a></li>
+								<li><a href="/data?choice=scores">Scores</a></li>
+							</ul></li>
+						<li><a href="/signout">Logout</a></li> #else
+						<li><a href="/about">About</a></li>
+						<li><a href="/directions">Directions</a></li>
+						<li><a href="/contestResults">Contest Results</a></li>
+						<li><a href="/contactUs">Contact Us</a></li> #if(!$loggedIn)
+						<li><a href="/registration">Registration</a></li>
+						<li><a href="/login">Login</a></li> #else
+						<li><a href="/viewScores">View Scores</a></li>
+						<li><a href="/signout">Logout</a></li> #end #end
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container">
+		<h1>Login</h1>
+		<form method="post" class="form-horizontal">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label" for="username">E-Mail Address</label>
+					<div class="controls">
+						<input type="text" class="input-large" id="username"
+							name="username" value="$username">
+					</div>
+				</div>
+				<div class= #if($error) "control-group error" #else "control-group" #end>
+					<label class="control-label" for="password">Password</label>
+					<div class="controls">
+						<input type="password" id="password" name="password" value="">
+						<span class="help-inline"><a href="/forgotPass">Forgot
+								your Password?</a></span> #if($error) <span class="help-block">$error</span> #end
+					</div>
+				</div>
+				
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary">Login</button>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+
+	<script
+		src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script src="/js/bootstrap-dropdown.js"></script>
+</body>
+</html>

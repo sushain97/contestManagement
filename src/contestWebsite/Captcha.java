@@ -29,7 +29,7 @@ public class Captcha
 	{
 		rand = new Random();
 		ArrayList<String> args = new ArrayList<String>();
-		int captcha = rand.nextInt(3);
+		int captcha = rand.nextInt(captchas.length);
 		MessageFormat form = new MessageFormat(captchas[captcha]);
 		NameGenerator gen = new NameGenerator("names");
 		int answer = 0;

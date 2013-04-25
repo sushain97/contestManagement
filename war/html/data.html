@@ -40,48 +40,7 @@ body {
 				});
 	</script>
 
-	<div class="navbar navbar-fixed-top">
-		<div class="navbar-inner">
-			<div class="container">
-				<a class="btn btn-navbar" data-toggle="collapse"
-					data-target=".nav-collapse"> <span class="icon-bar"></span> <span
-					class="icon-bar"></span> <span class="icon-bar"></span>
-				</a> <a class="brand" href="/">$year Dulles TMSCA Tournament</a>
-				<div class="nav-collapse">
-					<ul class="nav">
-						#if($loggedIn && $admin)
-						<li class="dropdown"><a href="#" class="dropdown-toggle"
-							data-toggle="dropdown">Public Pages<b class="caret"></b></a>
-							<ul class="dropdown-menu">
-								<li><a href="/about">About</a></li>
-								<li><a href="/contestResults">Contest Results</a></li>
-								<li><a href="/registration">Registration</a></li>
-								<li><a href="/directions">Directions</a></li>
-								<li><a href="/contactUs">Contact Us</a></li>
-							</ul></li>
-						<li><a href="/adminPanel">Control Panel</a></li>
-						<li class="dropdown"><a href="#" class="dropdown-toggle"
-							data-toggle="dropdown">Contest Data<b class="caret"></b></a>
-							<ul class="dropdown-menu">
-								<li><a href="/data?choice=overview">Overview</a></li>
-								<li><a href="/data?choice=registrations">Registrations</a></li>
-								<li><a href="/data?choice=questions">Questions</a></li>
-								<li><a href="/data?choice=scores">Scores</a></li>
-							</ul></li>
-						<li><a href="/signout">Logout</a></li> #else
-						<li><a href="/about">About</a></li>
-						<li><a href="/directions">Directions</a></li>
-						<li><a href="/contestResults">Contest Results</a></li>
-						<li><a href="/contactUs">Contact Us</a></li> #if(!$loggedIn)
-						<li><a href="/registration">Registration</a></li>
-						<li><a href="/login">Login</a></li> #else
-						<li><a href="/viewScores">View Scores</a></li>
-						<li><a href="/signout">Logout</a></li> #end #end
-					</ul>
-				</div>
-			</div>
-		</div>
-	</div>
+	#parse("navbar.html")
 
 	#if($scores)
 	<div class="container-fluid">
@@ -473,7 +432,6 @@ body {
 	
 	<script src="/js/jquery.min.js"></script>
 	<script src="/js/bootstrap-dropdown.js"></script>
-
 	<script src="/js/bootstrap-alert.js"></script>
 </body>
 </html>

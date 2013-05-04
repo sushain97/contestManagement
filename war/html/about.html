@@ -20,27 +20,11 @@
 
 <body>
 	#parse("navbar.html")
-
+	
 	<div class="container">
 		<noscript>Please enable JavaScript, otherwise numerous areas of this website will be
 			nonfunctional.</noscript>
-		#if($loggedIn)
-		<h1>Welcome, $name.</h1>
-
-		#if($admin) To manage the competition and the admin account go to the <a href="/adminPanel">Admin
-			Control Panel</a>. <br /> To view registrations, current scores and clarifications requested by coaches go to
-		the <a href="/data?choice=overview">Data Viewer</a>. 
-		
-		#else To view the scores of your students, go to the <a
-			href="/viewScores">Score Viewer</a>.
-		<h3>Your Registration Information</h3>
-		To make any changes to the following information, go to the <a href="/contactUs">Contact Us</a> page. <br />
-		#foreach($str in $regData) $str <br /> #end
-
-		#end
-		#else
 		#include("aboutText.html")
-		#end
 	</div>
 	
 	<script type="text/javascript" src="/js/jquery.min.js"></script>

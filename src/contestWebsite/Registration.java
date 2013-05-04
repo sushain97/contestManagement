@@ -197,27 +197,28 @@ public class Registration extends HttpServlet
 		
 		try
 		{
-			if(req.getParameter("nocaptcha").equals("false"))
+			String plaintext = params.get("salt")[0] + params.get("captcha")[0];
+			MessageDigest m = MessageDigest.getInstance("MD5");
+			m.reset();
+			m.update(plaintext.getBytes());
+			byte[] digest = m.digest();
+			BigInteger bigInt = new BigInteger(1,digest);
+			String answer = bigInt.toString(16);
+			while(answer.length() < 32 ){
+			  answer = "0" + answer;
+			}
+			
+			if(!answer.equals(params.get("hash")[0]))
 			{
-				String plaintext = params.get("salt")[0] + params.get("captcha")[0];
-				MessageDigest m = MessageDigest.getInstance("MD5");
-				m.reset();
-				m.update(plaintext.getBytes());
-				byte[] digest = m.digest();
-				BigInteger bigInt = new BigInteger(1,digest);
-				String answer = bigInt.toString(16);
-				while(answer.length() < 32 ){
-				  answer = "0" + answer;
-				}
-				
-				if(!answer.equals(params.get("hash")[0]))
-				{
-					resp.sendRedirect("/");
-					return;
-				}
+				resp.sendRedirect("/");
+				return;
 			}
 		}
-		catch(Exception e) { e.printStackTrace(); }
+		catch(Exception e)
+		{
+			resp.sendRedirect("/");
+			return;
+		}
 
 		if(account.equals("yes"))
 		{

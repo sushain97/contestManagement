@@ -19,23 +19,6 @@
 </head>
 
 <body #if($scores) onLoad="ChangeActive()" #end>
-		
-	<script>
-		$(document).ready(
-				function() {
-					$("input:radio:checked").data("chk", true);
-					$("input:radio").click(
-							function() {
-								$(
-										"input[name='" + $(this).attr("name")
-												+ "']:radio").not(this)
-										.removeData("chk");
-								$(this).data("chk", !$(this).data("chk"));
-								$(this).prop("checked", $(this).data("chk"));
-							});
-				});
-	</script>
-
 	#parse("navbar.html") 
 	
 	#if($scores)
@@ -352,8 +335,24 @@
 				return decodeURIComponent(results[1].replace(/\+/g, " "));
 		}
 	</script>
-
+	
 	<script type="text/javascript" src="/js/jquery.min.js"></script>
+	<script>
+		$(document).ready(
+				function() {
+					$("input:radio:checked").data("chk", true);
+					$("input:radio").click(
+							function() {
+								$(
+										"input[name='" + $(this).attr("name")
+												+ "']:radio").not(this)
+										.removeData("chk");
+								$(this).data("chk", !$(this).data("chk"));
+								$(this).prop("checked", $(this).data("chk"));
+							});
+				});
+	</script>
+	
 	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
 	<script type="text/javascript" src="/js/bootstrap-alert.js"></script>
 </body>

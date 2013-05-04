@@ -45,12 +45,7 @@ public class AdminPanel extends HttpServlet
 		VelocityContext context = new VelocityContext();
 		context.put("year", Calendar.getInstance().get(Calendar.YEAR));
 
-		Cookie[] cookies = req.getCookies();
-		UserCookie userCookie = null;
-		if(cookies != null)
-			for(Cookie cookie : cookies)
-				if(cookie.getName().equals("user-id"))
-					userCookie = new UserCookie(cookie);
+		UserCookie userCookie = UserCookie.getCookie(req);
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
 
 		String updated = req.getParameter("updated");

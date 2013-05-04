@@ -4,6 +4,7 @@ import java.net.URLDecoder;
 import java.util.List;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -30,6 +31,16 @@ public class UserCookie extends Cookie
 		setMaxAge(cookie.getMaxAge());
 		setSecure(cookie.getSecure());
 		setVersion(cookie.getVersion());
+	}
+	
+	public static UserCookie getCookie(HttpServletRequest req)
+	{
+		Cookie[] cookies = req.getCookies();
+		if(cookies != null)
+			for(Cookie cookie : cookies)
+				if(cookie.getName().equals("user-id"))
+					return new UserCookie(cookie);
+		return null;
 	}
 
 	public boolean authenticate()

@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,12 +30,7 @@ public class MainPage extends HttpServlet
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
 		resp.setContentType("text/html");
-		Cookie[] cookies = req.getCookies();
-		UserCookie userCookie = null;
-		if(cookies != null)
-			for(Cookie cookie : cookies)
-				if(cookie.getName().equals("user-id"))
-					userCookie = new UserCookie(cookie);
+		UserCookie userCookie = UserCookie.getCookie(req);
 		Entity user = null;
 		if(userCookie != null)
 			user = userCookie.authenticateUser();

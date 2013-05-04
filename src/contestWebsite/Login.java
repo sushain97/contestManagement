@@ -30,13 +30,7 @@ public class Login extends HttpServlet
 	@SuppressWarnings("deprecation")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
-		resp.setContentType("text/html");
-		Cookie[] cookies = req.getCookies();
-		UserCookie userCookie = null;
-		if(cookies != null)
-			for(Cookie cookie : cookies)
-				if(cookie.getName().equals("user-id"))
-					userCookie = new UserCookie(cookie);
+		UserCookie userCookie = UserCookie.getCookie(req);
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
 		if(loggedIn && !URLDecoder.decode(userCookie.getValue(), "UTF-8").split("\\$")[0].equals("admin"))
 			resp.sendRedirect("/signout");

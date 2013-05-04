@@ -19,7 +19,6 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,12 +48,7 @@ public class Registration extends HttpServlet
 		VelocityContext context = new VelocityContext();
 		context.put("year", Calendar.getInstance().get(Calendar.YEAR));
 
-		Cookie[] cookies = req.getCookies();
-		UserCookie userCookie = null;
-		if(cookies != null)
-			for(Cookie cookie : cookies)
-				if(cookie.getName().equals("user-id"))
-					userCookie = new UserCookie(cookie);
+		UserCookie userCookie = UserCookie.getCookie(req);
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
 
 		context.put("loggedIn", loggedIn);

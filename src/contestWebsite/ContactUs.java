@@ -137,7 +137,11 @@ public class ContactUs extends HttpServlet
 				}
 			}
 		}
-		catch(Exception e) { e.printStackTrace(); }
+		catch(Exception e)
+		{
+			resp.sendRedirect("/");
+			return;
+		}
 
 		String name = req.getParameter("name");
 		String school = req.getParameter("school");

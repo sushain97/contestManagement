@@ -16,22 +16,22 @@ only scores that fall in the top 20 are displayed below
 	<tr>
 		<td>$student.getName()</td>
 		<td>$student.getGrade()</td>
-		<td>$student.getSchool().getName()</td> #set($mScore = false)
-		#set($cScore = false) #set($nScore = false) #set($sScore = false)
+		<td>$student.getSchool().getName()</td> 
+		
+		#set($mScore = false)
+		#set($cScore = false)
+		#set($nScore = false)
+		#set($sScore = false)
 
-		#set($mScore = $student.getScore("M").getScore()) #set($cScore =
-		$student.getScore("C").getScore()) #set($nScore =
-		$student.getScore("N").getScore()) #set($sScore =
-		$student.getScore("S").getScore())
+		#set($mScore = $student.getScore("M").getScore())
+		#set($cScore = $student.getScore("C").getScore()) 
+		#set($nScore = $student.getScore("N").getScore()) 
+		#set($sScore = $student.getScore("S").getScore())
 
-		<td>#if( $mScore ) $mScore #else - #end</td>
-
-		<td>#if( $cScore ) $cScore #else - #end</td>
-
-		<td>#if( $nScore ) $nScore #else - #end</td>
-
-		<td>#if( $sScore ) $sScore #else - #end</td>
-
+		<td>#if($mScore) $mScore #else - #end</td>
+		<td>#if($cScore) $cScore #else - #end</td>
+		<td>#if($nScore) $nScore #else - #end</td>
+		<td>#if($sScore) $sScore #else - #end</td>
 	</tr>
 	#end
 </table>

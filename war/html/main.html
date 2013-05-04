@@ -1,55 +1,45 @@
 <!DOCTYPE html>
+
 <html lang="en-US">
 <head>
-
 <title>Dulles TMSCA Tournament</title>
-<meta name="description" content="Learn about the Dulles High School TMSCA Tournament">
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="index, follow">
-<link rel="shortcut icon" href="/favicon.ico">
-
-<link href="/css/bootstrap.css" rel="stylesheet">
-<style>
-body {
-	padding-top: 60px;
-	/* 60px to make the container go all the way to the bottom of the topbar */
-}
-</style>
-
-<!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-
+    <meta name="description" content="Learn about the Dulles High School TMSCA Tournament">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Sushain Cherivirala">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link type="text/css" href="/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+    body {
+    	padding-top: 60px;
+    	/* 60px to make the container go all the way to the bottom of the topbar */
+    }
+    </style>
 </head>
 
 <body>
-
 	#parse("navbar.html")
-	
+
 	<div class="container">
-		<noscript>Please enable JavaScript, otherwise numerous
-			areas of this website will be nonfunctional.</noscript>
+		<noscript>Please enable JavaScript, otherwise numerous areas of this website will be
+			nonfunctional.</noscript>
 		#if( $loggedIn )
 		<h1>Welcome, $name.</h1>
 
-		#if( $admin ) To manage the competition and the admin account go to
-		the <a href="/adminPanel">Admin Control Panel</a>. <br /> To view
-		registrations, current scores and clarifications requested by coaches
-		go to the <a href="/data?choice=overview">Data Viewer</a>. #else To
-		view the scores of your students, go to the <a href="/viewScores">Score
-			Viewer</a>.
+		#if( $admin ) To manage the competition and the admin account go to the <a href="/adminPanel">Admin
+			Control Panel</a>. <br /> To view registrations, current scores and clarifications requested by coaches go to
+		the <a href="/data?choice=overview">Data Viewer</a>. #else To view the scores of your students, go to the <a
+			href="/viewScores">Score Viewer</a>.
 		<h3>Your Registration Information</h3>
-		To make any changes to the following information, go to the <a href="/contactUs">Contact
-			Us</a> page. <br /> #foreach($str in $regData) $str <br /> #end #end #else
+		To make any changes to the following information, go to the <a href="/contactUs">Contact Us</a> page. <br />
+		#foreach($str in $regData) $str <br /> #end #end #else
 
 		<h1>About our Tournament</h1>
 		Same content as about page. #end
-
 	</div>
 
-	<script src="/js/jquery.min.js"></script>
-	<script src="/js/bootstrap-dropdown.js"></script>
-	
+	<script type="text/javascript" src="/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
 </body>
 </html>

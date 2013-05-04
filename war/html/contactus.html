@@ -1,53 +1,45 @@
 <!DOCTYPE html>
+
 <html lang="en-US">
 <head>
-
-<title>Contact Us | Dulles TMSCA Tournament</title>
-<meta name="description" content="Contact us for clarifications and registration changes regarding the Dulles High School TMSCA Tournament">
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="index, follow">
-<link rel="shortcut icon" href="/favicon.ico">
-
-<link href="/css/bootstrap.css" rel="stylesheet">
-<style type="text/css">
-body {
-	padding-top: 60px;
-	/* 60px to make the container go all the way to the bottom of the topbar */
-}
-
-span.tab {
-	padding: 0 30px;
-}
-
-span.tab2 {
-	padding: 0 20px;
-}
-'
-</style>
-
-<!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-
+	<title>Contact Us | Dulles TMSCA Tournament</title>
+	<meta name="description"
+		content="Contact us for clarifications and registration changes regarding the Dulles High School TMSCA Tournament">
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="robots" content="index, follow">
+	<meta name="author" content="Sushain Cherivirala">
+	<link rel="shortcut icon" href="/favicon.ico">
+	<link type="text/css" href="/css/bootstrap.css" rel="stylesheet">
+	<style type="text/css">
+	body {
+		padding-top: 60px;
+		/* 60px to make the container go all the way to the bottom of the topbar */
+	}
+	
+	span.tab {
+		padding: 0 30px;
+	}
+	
+	span.tab2 {
+		padding: 0 20px;
+	}
+	'
+	</style>
 </head>
 
 <body onload="EnableSubmit()">
-
 	#parse("navbar.html")
-
 	<div class="container">
-		<noscript>Please enable JavaScript, otherwise numerous
-			areas of this website will be nonfunctional.</noscript>
+		<noscript>Please enable JavaScript, otherwise numerous areas of this website will be
+			nonfunctional.</noscript>
 		<h1>Contact Us</h1>
-		Please contact us for any <em>clarifications</em> or <em>registration
-			changes</em>. #if(!$loggedIn && !$admin) Please <a href="/login">login</a> before submitting
-		questions if you have an account. Thank you! <br /> <br /> #end #if(
-		$updated )
+		Please contact us for any <em>clarifications</em> or <em>registration changes</em>. #if(!$loggedIn
+		&& !$admin) Please <a href="/login">login</a> before submitting questions if you have an account.
+		Thank you! <br /> <br /> #end #if( $updated )
 		<div class="alert alert-success">
-			<a class="close" data-dismiss="alert">&times;</a> <strong>Success!
-			</strong>Your feedback has been recorded, we will look into it as soon as
-			possible.
+			<a class="close" data-dismiss="alert">&times;</a> <strong>Success! </strong>Your feedback has
+			been recorded, we will look into it as soon as possible.
 		</div>
 		#end
 
@@ -56,26 +48,24 @@ span.tab2 {
 				<div class="control-group">
 					<label class="control-label" for="schoolName">Your Name</label>
 					<div class="controls">
-						<input type="text" name="name" class="input-xlarge" id="name"
-							#if($name) value="$name" readonly #else required #end>
+						<input type="text" name="name" class="input-xlarge" id="name" #if($name) value="$name"
+							readonly #else required #end>
 					</div>
 				</div>
 
 				<div class="control-group">
-					<label class="control-label" for="email">Your E-Mail
-						Address</label>
+					<label class="control-label" for="email">Your E-Mail Address</label>
 					<div class="controls">
-						<input type="email" name="email" class="input-xlarge" id="email"
-							#if($email) value="$email" readonly #else required #end>
+						<input type="email" name="email" class="input-xlarge" id="email" #if($email) value="$email"
+							readonly #else required #end>
 					</div>
 				</div>
 
 				<div class="control-group">
-					<label class="control-label" for="email">Official School
-						Name</label>
+					<label class="control-label" for="email">Official School Name</label>
 					<div class="controls">
-						<input type="text" name="school" class="input-xlarge" id="school"
-							#if($school) value="$school" readonly #else required #end>
+						<input type="text" name="school" class="input-xlarge" id="school" #if($school) value="$school"
+							readonly #else required #end>
 						<p class="help-block">The school with which you are affiliated</p>
 					</div>
 				</div>
@@ -83,8 +73,7 @@ span.tab2 {
 				<div class="control-group">
 					<label class="control-label" for="textarea">Your Message</label>
 					<div class="controls">
-						<textarea class="input-xlarge" id="textarea" rows="5" name="text"
-							required></textarea>
+						<textarea class="input-xlarge" id="textarea" rows="5" name="text" required></textarea>
 					</div>
 				</div>
 
@@ -92,20 +81,19 @@ span.tab2 {
 				<div class="control-group">
 					<label class="control-label" for="captcha">CAPTCHA</label>
 					<div class="controls">
-						<input type="text" name="captcha" class="input-small" id="captcha"
-							onkeyup="AuthCaptcha()" onblur="ResetSubmit()" required>
+						<input type="text" name="captcha" class="input-small" id="captcha" onkeyup="AuthCaptcha()"
+							onblur="ResetSubmit()" required>
 						<p class="help-block">$captcha</p>
 					</div>
 				</div>
-				#end <input type="hidden" name="hash" id="hash" value="$hash" /> <input
-					type="hidden" name="nocaptcha" id="nocaptcha" value="$nocaptcha" />
-				<input type="hidden" name="salt" id="salt" value="$salt" />
+				#end <input type="hidden" name="hash" id="hash" value="$hash" /> <input type="hidden"
+					name="nocaptcha" id="nocaptcha" value="$nocaptcha" /> <input type="hidden" name="salt"
+					id="salt" value="$salt" />
 
 				<div class="form-actions">
-					<button type="submit" id="submit" onclick="AuthCaptcha()"
-						class="btn btn-primary">Submit Feedback</button>
-					<p class="help-inline" id="answerCaptcha">Please enable
-						JavaScript to continue.</p>
+					<button type="submit" id="submit" onclick="AuthCaptcha()" class="btn btn-primary">Submit
+						Feedback</button>
+					<p class="help-inline" id="answerCaptcha">Please enable JavaScript to continue.</p>
 				</div>
 			</fieldset>
 		</form>
@@ -142,11 +130,8 @@ span.tab2 {
 		}
 	</script>
 
-	<script src="/js/jquery.min.js"></script>
-	<script src="/js/bootstrap-dropdown.js"></script>
-	<script src="/js/bootstrap-alert.js"></script>
+	<script type="text/javascript" src="/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-alert.js"></script>
 </body>
 </html>
-
-
-

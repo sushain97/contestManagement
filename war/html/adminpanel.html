@@ -1,218 +1,188 @@
 <!DOCTYPE html>
+
 <html lang="en-US">
 <head>
-
-<title>Administration Panel | Dulles TMSCA Tournament</title>
-<meta name="description" content="Dulles High School TMSCA Tournament Administration Panel">
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex, nofollow">
-<link rel="shortcut icon" href="/favicon.ico">
-
-<link href="/css/bootstrap.css" rel="stylesheet">
-<style>
-body {
-	padding-top: 60px;
-	/* 60px to make the container go all the way to the bottom of the topbar */
-}
-</style>
-
-<!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-
-
+    <title>Administration Panel | Dulles TMSCA Tournament</title>
+    <meta name="description" content="Dulles High School TMSCA Tournament Administration Panel">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="author" content="Sushain Cherivirala">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link type="text/css" href="/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+    body {
+    	padding-top: 60px;
+    	/* 60px to make the container go all the way to the bottom of the topbar */
+    }
+    </style>
 </head>
 
 <body onload="ChangeForm()">
-
 	#parse("navbar.html")
 
 	<div class="container">
-		<noscript>Please enable JavaScript, otherwise numerous
-			areas of this website will be nonfunctional.</noscript>
+		<noscript>Please enable JavaScript, otherwise numerous areas of this website will be
+			nonfunctional.</noscript>
+
 		<h1>Admin Control Panel</h1>
 		#if($updated)
 		<div class="alert alert-success">
-			<a class="close" data-dismiss="alert">&times;</a> <strong>Success!
-			</strong>Changes have been committed to the database and are reflected
-			below/across the website.
+			<a class="close" data-dismiss="alert">&times;</a> <strong>Success!</strong> Changes have been
+			committed to the database and are reflected below/across the website.
 		</div>
 		#end
 
 		<form method="post" class="form-horizontal">
 			<fieldset>
-
 				<p class="help-block">When is contest registration open?</p>
-				<div class="input">
-					<div class="control-group">
-						<label class="control-label" for="datepicker">Registration
-							Dates</label>
-						<div class="controls">
-							<input data-datepicker="datepicker" class="small" type="text"
-								value="$startDate" name="startDate" /> to <input
-								data-datepicker="datepicker" class="small" type="text"
-								value="$endDate" name="endDate" />
-						</div>
+
+				<div class="input control-group">
+					<label class="control-label" for="datepicker">Registration Dates</label>
+
+					<div class="controls">
+						<input data-datepicker="datepicker" class="small" type="text" value="$startDate"
+							name="startDate"> to <input data-datepicker="datepicker" class="small" type="text"
+							value="$endDate" name="endDate">
 					</div>
 				</div>
 
 				<p class="help-block">
-					Where should questions submitted through the <a href="\contactUs">contact
-						us</a> page be sent?
+					Where should questions submitted through the <a href="\contactUs">contact us</a> page be sent?
 				</p>
+
 				<div class="control-group">
 					<label class="control-label" for="email">E-Mail Address</label>
+
 					<div class="controls">
-						<input type="email" value="$email" name="email"
-							class="input-xlarge" id="email" required>
+						<input type="email" value="$email" name="email" class="input-xlarge" id="email" required>
 					</div>
 				</div>
 
-				<p class="help-block">Whose Google App Engine Account is this
-					website currently deployed on?</p>
+				<p class="help-block">Whose Google App Engine Account is this website currently deployed on?</p>
+
 				<div class="control-group">
 					<label class="control-label" for="email">Google E-Mail</label>
+
 					<div class="controls">
-						<input type="email" value="$account" name="account"
-							class="input-xlarge" id="account" required>
+						<input type="email" value="$account" name="account" class="input-xlarge" id="account" required>
 					</div>
 				</div>
-				
+
 				<p class="help-block">How much should each test registration cost in dollars?</p>
+
 				<div class="control-group">
 					<label class="control-label" for="price">Test Charges</label>
+
 					<div class="controls">
-						<input type="number" value="$price" name="price"
-							class="input-small" id="price" required>
+						<input type="number" value="$price" name="price" class="input-small" id="price" required>
 					</div>
 				</div>
 
 				<div class="control-group">
 					<p class="help-block">Would you like to update online scores?</p>
 					<label class="control-label" for="level">Update Scores?</label>
+
 					<div class="controls">
-						<label class="radio"> <input type="radio"
-							name="updateScores" id="update1" onclick="ChangeForm()"
-							value="yes"> Yes
-						</label> <label class="radio"> <input type="radio"
-							name="updateScores" id="update2" onclick="ChangeForm()"
-							value="no" checked> No
-						</label>
+						<label class="radio"><input type="radio" name="updateScores" id="update1"
+							onclick="ChangeForm()" value="yes"> Yes</label> <label class="radio"><input
+							type="radio" name="updateScores" id="update2" onclick="ChangeForm()" value="no" checked>
+							No</label>
 					</div>
 				</div>
 
 				<div id="updateScores">
 					<div class="control-group">
 						<label class="control-label" for="email">Google E-Mail</label>
+
 						<div class="controls">
-							<input type="email" value="$docAccount" name="docAccount"
-								class="input-xlarge" id="docAccount"> <span
-								class="help-inline">Google Docs Account containing Score
-								Spreadsheets in required format</span>
+							<input type="email" value="$docAccount" name="docAccount" class="input-xlarge"
+								id="docAccount"> <span class="help-inline">Google Docs Account containing
+								Score Spreadsheets in required format</span>
 						</div>
 					</div>
 
 					<div class="control-group">
-						<label class="control-label" for="password">Account
-							Password</label>
+						<label class="control-label" for="password">Account Password</label>
+
 						<div class="controls">
-							<input type="password" id="docPassword" name="docPassword"
-								value="" class="input-xlarge"> <span class="help-inline">Password
-								will NOT be stored</span>
+							<input type="password" id="docPassword" name="docPassword" value="" class="input-xlarge">
+							<span class="help-inline">Password will NOT be stored</span>
 						</div>
 					</div>
 
 					<div class="control-group">
-						<label class="control-label" for="schoolName">Middle
-							School Doc</label>
+						<label class="control-label" for="schoolName">Middle School Doc</label>
+
 						<div class="controls">
-							<input type="text" name="docMiddle" class="input-xlarge"
-								id="docMiddle" value="$docMiddle"> <span
-								class="help-inline">Name of Google Spreadsheet with
-								Middle School Scores</span>
+							<input type="text" name="docMiddle" class="input-xlarge" id="docMiddle" value="$docMiddle">
+							<span class="help-inline">Name of Google Spreadsheet with Middle School Scores</span>
 						</div>
 					</div>
 
 					<div class="control-group">
-						<label class="control-label" for="schoolName">High School
-							Doc</label>
+						<label class="control-label" for="schoolName">High School Doc</label>
+
 						<div class="controls">
-							<input type="text" name="docHigh" class="input-xlarge"
-								id="docHigh" value="$docHigh"> <span class="help-inline">Name
-								of Google Spreadsheet with High School Scores</span>
+							<input type="text" name="docHigh" class="input-xlarge" id="docHigh" value="$docHigh">
+							<span class="help-inline">Name of Google Spreadsheet with High School Scores</span>
 						</div>
 					</div>
 				</div>
 
 				<p class="help-block">Is the contest complete?</p>
+
 				<div class="control-group">
-					<label class="control-label" for="email">Make results
-						public</label>
+					<label class="control-label" for="email">Make results public</label>
+
 					<div class="controls">
-						<input type="checkbox" name="complete" value="yes" id="checked"
-							#if($complete) checked #else #end>
+						<input type="checkbox" name="complete" value="yes" id="checked" checked>
 					</div>
 				</div>
 
-
 				<div class="control-group">
-					<p class="help-block">Would you like to change the admin
-						password?</p>
+					<p class="help-block">Would you like to change the admin password?</p>
 					<label class="control-label" for="level">Change Password?</label>
+
 					<div class="controls">
-						<label class="radio"> <input type="radio"
-							name="changePass" id="change1" onclick="ChangeForm()" value="yes"
-							#if($passError || $confPassError) checked #end> Yes
-						</label> <label class="radio"> <input type="radio"
-							name="changePass" id="change2" onclick="ChangeForm()" value="no"
-							#if(!($passError || $confPassError)) checked #end> No
-						</label>
+						<label class="radio"><input type="radio" name="changePass" id="change1"
+							onclick="ChangeForm()" value="yes" checked> Yes</label> <label class="radio"><input
+							type="radio" name="changePass" id="change2" onclick="ChangeForm()" value="no" checked>
+							No</label>
 					</div>
 				</div>
 
 				<div id="changePass">
-					<div class=#if($passError) "control-group
-						error" #else "control-group" #end>
-						<label class="control-label" for="password">Current
-							Password</label>
+					<div class=#if($passError) "control-group error" #else "control-group" #end>
+						<label class="control-label" for="password">Current Password</label>
 						<div class="controls">
-							<input type="password" id="curPassword" name="curPassword"
-								value="" maxlength="32"> #if($passError) <span
-								class="help-inline">$passError</span> #end
+							<input type="password" id="curPassword" name="curPassword" value="" maxlength="32">
+							#if($passError) <span class="help-inline">$passError</span> #end
 						</div>
 					</div>
 
 					<div class="control-group">
 						<label class="control-label" for="password">New Password</label>
 						<div class="controls">
-							<input type="password" id="newPassword" name="newPassword"
-								value="" maxlength="32">
+							<input type="password" id="newPassword" name="newPassword" value="" maxlength="32">
 						</div>
 					</div>
 
-					<div class=#if($confPassError) "control-group
-						error" #else "control-group" #end>
-						<label class="control-label" for="password">Confirm New
-							Password</label>
+					<div class=#if($confPassError) "control-group error" #else "control-group" #end>
+						<label class="control-label" for="password">Confirm New Password</label>
 						<div class="controls">
-							<input type="password" id="confPassword" name="confPassword"
-								value="" maxlength="32">#if($confPassError) <span
-								class="help-inline">$confPassError</span> #end
+							<input type="password" id="confPassword" name="confPassword" value="" maxlength="32">
+							#if($confPassError)	<span class="help-inline">$confPassError</span> #end
 						</div>
 					</div>
 				</div>
 
 				<div class="form-actions">
-					<button type="submit" class="btn btn-primary">Apply
-						Changes</button>
-					<button type="reset" class="btn btn-danger">Reset to Last
-						Settings</button>
+					<button type="submit" class="btn btn-primary">Apply Changes</button>
+					<button type="reset" class="btn btn-danger">Reset to Last Settings</button>
 				</div>
 			</fieldset>
-
 		</form>
-
 	</div>
 
 	<script type="text/javascript">
@@ -245,12 +215,8 @@ body {
 		}
 	</script>
 
-	<script src="/js/jquery.min.js"></script>
-	<script src="/js/bootstrap-dropdown.js"></script>
-	<script src="/js/bootstrap-alert.js"></script>
-
+	<script type="text/javascript" src="/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-alert.js"></script>
 </body>
 </html>
-
-
-

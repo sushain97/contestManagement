@@ -1,31 +1,25 @@
 <!DOCTYPE html>
+
 <html lang="en-US">
 <head>
-
-<title>Data Viewer | Dulles TMSCA Tournament</title>
-<meta name="description" content="View the Dulles High School TMSCA Tournament Data including registrations, users, requested clarifications, and scores">
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex, nofollow">
-<link rel="shortcut icon" href="/favicon.ico">
-
-<link href=#if($registration)
-	"/css/bootstrap2.css" #else "/css/bootstrap.css" #end rel="stylesheet">
-<style>
-body {
-	padding-top: 60px;
-	/* 60px to make the container go all the way to the bottom of the topbar */
-}
-</style>
-
-<!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-
+	<title>Data Viewer | Dulles TMSCA Tournament</title>
+	<meta name="description" content="View the Dulles High School TMSCA Tournament Data including registrations, users, requested clarifications, and scores">
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="robots" content="noindex, nofollow">
+	<meta name="author" content="Sushain Cherivirala">
+	<link rel="shortcut icon" href="/favicon.ico">
+	<link type="text/css" href=#if($registration) "/css/bootstrap2.css" #else "/css/bootstrap.css" #end	rel="stylesheet">
+	<style type="text/css">
+	body {
+		padding-top: 60px;
+		/* 60px to make the container go all the way to the bottom of the topbar */
+	}
+	</style>
 </head>
 
 <body #if($scores) onLoad="ChangeActive()" #end>
-
+		
 	<script>
 		$(document).ready(
 				function() {
@@ -42,29 +36,25 @@ body {
 				});
 	</script>
 
-	#parse("navbar.html")
-
+	#parse("navbar.html") 
+	
 	#if($scores)
 	<div class="container-fluid">
-		<noscript>Please enable JavaScript, otherwise numerous
-			areas of this website will be nonfunctional.</noscript>
+		<noscript>Please enable JavaScript, otherwise numerous areas of this website will be
+			nonfunctional.</noscript>
 
 		<div class="row-fluid">
 			<div class="span1"></div>
-
 			<div class="span2">
 				<ul class="nav nav-list navbar-inverse">
 					<li id="avail"><a href="/data?choice=scores">Overview</a></li>
 					<li class="nav-header">Middle School</li>
-					<li id="middle_students"><a
-						href="/data?choice=scores&type=middle_students">All Students</a></li>
-					<li id="middle_sweep"><a
-						href="/data?choice=scores&type=middle_sweep">Sweepstakes</a></li>
-					<li id="middle_categorySweep"><a
-						href="/data?choice=scores&type=middle_categorySweep">Category
+					<li id="middle_students"><a href="/data?choice=scores&type=middle_students">All Students</a></li>
+					<li id="middle_sweep"><a href="/data?choice=scores&type=middle_sweep">Sweepstakes</a></li>
+					<li id="middle_categorySweep"><a href="/data?choice=scores&type=middle_categorySweep">Category
 							Sweekstakes</a></li>
-					<li class="dropdown"><a href="#" class="dropdown-toggle"
-						data-toggle="dropdown">Schools<b class="caret"></b></a>
+					<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Schools<b
+							class="caret"></b></a>
 						<ul class="dropdown-menu">
 							#foreach($school in $middleSchools)
 
@@ -74,61 +64,40 @@ body {
 						</ul></li>
 					<li class="divider"></li>
 
-					<li id="6" class="dropdown"><a href="#"
-						class="dropdown-toggle" data-toggle="dropdown">6th Grade<b
-							class="caret"></b></a>
+					<li id="6" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">6th Grade<b class="caret"></b>
+					</a>
 						<ul class="dropdown-menu">
-							<li id="middle_category_6C"><a
-								href="/data?choice=scores&type=middle_category_6C">Calculator</a></li>
-							<li id="middle_category_6N"><a
-								href="/data?choice=scores&type=middle_category_6N">Number
-									Sense</a></li>
-							<li id="middle_category_6M"><a
-								href="/data?choice=scores&type=middle_category_6M">Math</a></li>
-							<li id="middle_category_6S"><a
-								href="/data?choice=scores&type=middle_category_6S">Science</a></li>
+							<li id="middle_category_6C"><a href="/data?choice=scores&type=middle_category_6C">Calculator</a></li>
+							<li id="middle_category_6N"><a href="/data?choice=scores&type=middle_category_6N">Number Sense</a></li>
+							<li id="middle_category_6M"><a href="/data?choice=scores&type=middle_category_6M">Math</a></li>
+							<li id="middle_category_6S"><a href="/data?choice=scores&type=middle_category_6S">Science</a></li>
 						</ul></li>
 
-					<li id="7" class="dropdown"><a href="#"
-						class="dropdown-toggle" data-toggle="dropdown">7th Grade<b
-							class="caret"></b></a>
+					<li id="7" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">7th Grade<b class="caret"></b>
+					</a>
 						<ul class="dropdown-menu">
-							<li id="middle_category_7C"><a
-								href="/data?choice=scores&type=middle_category_7C">Calculator</a></li>
-							<li id="middle_category_7N"><a
-								href="/data?choice=scores&type=middle_category_7N">Number
-									Sense</a></li>
-							<li id="middle_category_7M"><a
-								href="/data?choice=scores&type=middle_category_7M">Math</a></li>
-							<li id="middle_category_7S"><a
-								href="/data?choice=scores&type=middle_category_7S">Science</a></li>
+							<li id="middle_category_7C"><a href="/data?choice=scores&type=middle_category_7C">Calculator</a></li>
+							<li id="middle_category_7N"><a href="/data?choice=scores&type=middle_category_7N">Number Sense</a></li>
+							<li id="middle_category_7M"><a href="/data?choice=scores&type=middle_category_7M">Math</a></li>
+							<li id="middle_category_7S"><a href="/data?choice=scores&type=middle_category_7S">Science</a></li>
 						</ul></li>
 
-					<li id="8" class="dropdown"><a href="#"
-						class="dropdown-toggle" data-toggle="dropdown">8th Grade<b
-							class="caret"></b></a>
+					<li id="8" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">8th Grade<b class="caret"></b>
+					</a>
 						<ul class="dropdown-menu">
-							<li id="middle_category_8C"><a
-								href="/data?choice=scores&type=middle_category_8C">Calculator</a></li>
-							<li id="middle_category_8N"><a
-								href="/data?choice=scores&type=middle_category_8N">Number
-									Sense</a></li>
-							<li id="middle_category_8M"><a
-								href="/data?choice=scores&type=middle_category_8M">Math</a></li>
-							<li id="middle_category_8S"><a
-								href="/data?choice=scores&type=middle_category_8S">Science</a></li>
+							<li id="middle_category_8C"><a href="/data?choice=scores&type=middle_category_8C">Calculator</a></li>
+							<li id="middle_category_8N"><a href="/data?choice=scores&type=middle_category_8N">Number Sense</a></li>
+							<li id="middle_category_8M"><a href="/data?choice=scores&type=middle_category_8M">Math</a></li>
+							<li id="middle_category_8S"><a href="/data?choice=scores&type=middle_category_8S">Science</a></li>
 						</ul></li>
 
 					<li class="nav-header">High School</li>
-					<li id="high_students"><a
-						href="/data?choice=scores&type=high_students">All Students</a></li>
-					<li id="high_sweep"><a
-						href="/data?choice=scores&type=high_sweep">Sweepstakes</a></li>
-					<li id="high_categorySweep"><a
-						href="/data?choice=scores&type=high_categorySweep">Category
+					<li id="high_students"><a href="/data?choice=scores&type=high_students">All Students</a></li>
+					<li id="high_sweep"><a href="/data?choice=scores&type=high_sweep">Sweepstakes</a></li>
+					<li id="high_categorySweep"><a href="/data?choice=scores&type=high_categorySweep">Category
 							Sweekstakes</a></li>
-					<li class="dropdown"><a href="#" class="dropdown-toggle"
-						data-toggle="dropdown">Schools<b class="caret"></b></a>
+					<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Schools<b
+							class="caret"></b></a>
 						<ul class="dropdown-menu">
 							#foreach($school in $highSchools)
 							<li id="high_school_$school.getProperty("school")"><a
@@ -137,95 +106,68 @@ body {
 						</ul></li>
 					<li class="divider"></li>
 
-					<li id="9" class="dropdown"><a href="#"
-						class="dropdown-toggle" data-toggle="dropdown">9th Grade<b
-							class="caret"></b></a>
+					<li id="9" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">9th Grade<b class="caret"></b>
+					</a>
 						<ul class="dropdown-menu">
-							<li id="high_category_9C"><a
-								href="/data?choice=scores&type=high_category_9C">Calculator</a></li>
-							<li id="high_category_9N"><a
-								href="/data?choice=scores&type=high_category_9N">Number
-									Sense</a></li>
-							<li id="high_category_9M"><a
-								href="/data?choice=scores&type=high_category_9M">Math</a></li>
-							<li id="high_category_9S"><a
-								href="/data?choice=scores&type=high_category_9S">Science</a></li>
+							<li id="high_category_9C"><a href="/data?choice=scores&type=high_category_9C">Calculator</a></li>
+							<li id="high_category_9N"><a href="/data?choice=scores&type=high_category_9N">Number Sense</a></li>
+							<li id="high_category_9M"><a href="/data?choice=scores&type=high_category_9M">Math</a></li>
+							<li id="high_category_9S"><a href="/data?choice=scores&type=high_category_9S">Science</a></li>
 						</ul></li>
 
-					<li id="10" class="dropdown"><a href="#"
-						class="dropdown-toggle" data-toggle="dropdown">10th Grade<b
-							class="caret"></b></a>
+					<li id="10" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">10th Grade<b class="caret"></b>
+					</a>
 						<ul class="dropdown-menu">
-							<li id="high_category_10C"><a
-								href="/data?choice=scores&type=high_category_10C">Calculator</a></li>
-							<li id="high_category_10N"><a
-								href="/data?choice=scores&type=high_category_10N">Number
-									Sense</a></li>
-							<li id="high_category_10M"><a
-								href="/data?choice=scores&type=high_category_10M">Math</a></li>
-							<li id="high_category_10S"><a
-								href="/data?choice=scores&type=high_category_10S">Science</a></li>
+							<li id="high_category_10C"><a href="/data?choice=scores&type=high_category_10C">Calculator</a></li>
+							<li id="high_category_10N"><a href="/data?choice=scores&type=high_category_10N">Number Sense</a></li>
+							<li id="high_category_10M"><a href="/data?choice=scores&type=high_category_10M">Math</a></li>
+							<li id="high_category_10S"><a href="/data?choice=scores&type=high_category_10S">Science</a></li>
 						</ul></li>
 
-					<li id="11" class="dropdown"><a href="#"
-						class="dropdown-toggle" data-toggle="dropdown">11th Grade<b
-							class="caret"></b></a>
+					<li id="11" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">11th Grade<b class="caret"></b>
+					</a>
 						<ul class="dropdown-menu">
-							<li id="high_category_11C"><a
-								href="/data?choice=scores&type=high_category_11C">Calculator</a></li>
-							<li id="high_category_11N"><a
-								href="/data?choice=scores&type=high_category_11N">Number
-									Sense</a></li>
-							<li id="high_category_11M"><a
-								href="/data?choice=scores&type=high_category_11M">Math</a></li>
-							<li id="high_category_11S"><a
-								href="/data?choice=scores&type=high_category_11S">Science</a></li>
-						</ul></li>
+							<li id="high_category_11C"><a href="/data?choice=scores&type=high_category_11C">Calculator</a></li>
+							<li id="high_category_11N"><a href="/data?choice=scores&type=high_category_11N">Number Sense</a></li>
+							<li id="high_category_11M"><a href="/data?choice=scores&type=high_category_11M">Math</a></li>
+							<li id="high_category_11S"><a href="/data?choice=scores&type=high_category_11S">Science</a></li>
+						</ul>
+					</li>
 
-					<li id="12" class="dropdown"><a href="#"
-						class="dropdown-toggle" data-toggle="dropdown">12th Grade<b
-							class="caret"></b></a>
+					<li id="12" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">12th Grade<b class="caret"></b>
+					</a>
 						<ul class="dropdown-menu">
-							<li id="high_category_12C"><a
-								href="/data?choice=scores&type=high_category_12C">Calculator</a></li>
-							<li id="high_category_12N"><a
-								href="/data?choice=scores&type=high_category_12N">Number
-									Sense</a></li>
-							<li id="high_category_12M"><a
-								href="/data?choice=scores&type=high_category_12M">Math</a></li>
-							<li id="high_category_12S"><a
-								href="/data?choice=scores&type=high_category_12S">Science</a></li>
-						</ul></li>
+							<li id="high_category_12C"><a href="/data?choice=scores&type=high_category_12C">Calculator</a></li>
+							<li id="high_category_12N"><a href="/data?choice=scores&type=high_category_12N">Number Sense</a></li>
+							<li id="high_category_12M"><a href="/data?choice=scores&type=high_category_12M">Math</a></li>
+							<li id="high_category_12S"><a href="/data?choice=scores&type=high_category_12S">Science</a></li>
+						</ul>
+					</li>
 				</ul>
 			</div>
 
 			<div class="span8">
 				<h1>Contest Results</h1>
-				#if( $overview ) Choose an option at the left to view specific
-				results. #elseif(!$html) Results for this competition are not yet
-				available #else $html #end
+				#if( $overview ) Choose an option at the left to view specific results. #elseif(!$html) Results for this
+				competition are not yet available #else $html #end
 			</div>
 		</div>
 	</div>
 	#else
 	<div class="container">
-		<noscript>Please enable JavaScript, otherwise numerous
-			areas of this website will be nonfunctional.</noscript>
+		<noscript>Please enable JavaScript, otherwise numerous areas of this website will be
+			nonfunctional.</noscript>
 		<h1>Contest Data Viewer &amp; Editor</h1>
 		#if($overview)
 		<h2>Overview</h2>
-		To view, edit, add, and modify registrations, go to the <a
-			href="/data?choice=registrations">Registration Data Viewer &amp;
-			Editor</a>. <br /> To view, delete, and respond to clarifications and
-		questions sent through the <a href="/contactUs">Contact Us</a> page,
-		go to the <a href="/data?choice=questions">Question Viewer</a>. <br />
-		To view, edit, add, and modify student scores, go to the <a
-			href="/data?choice=scores">Score Viewer &amp; Editor</a>. <br />
-		#elseif($registration) #if($updated)
+		To view, edit, add, and modify registrations, go to the <a href="/data?choice=registrations">Registration
+			Data Viewer &amp; Editor</a>. <br /> To view, delete, and respond to clarifications and questions sent through
+		the <a href="/contactUs">Contact Us</a> page, go to the <a href="/data?choice=questions">Question Viewer</a>.
+		<br /> To view, edit, add, and modify student scores, go to the <a href="/data?choice=scores">Score
+			Viewer &amp; Editor</a>. <br /> #elseif($registration) #if($updated)
 		<div class="alert alert-success">
-			<a class="close" data-dismiss="alert">&times;</a> <strong>Success!
-			</strong>The changes have been committed to the database and are reflected
-			below.
+			<a class="close" data-dismiss="alert">&times;</a> <strong>Success! </strong>The changes have been committed
+			to the database and are reflected below.
 		</div>
 		#end
 		<h2>Recorded Registrations</h2>
@@ -240,33 +182,27 @@ body {
 						<th>Reg. Type</th>
 						<th>School</th>
 						<th>Aliases</th>
-						<th>Account</th> #set($tests =
-						["6n","6c","6m","6s","7n","7c","7m","7s","8n","8c","8m","8s"])
+						<th>Account</th> #set($tests = ["6n","6c","6m","6s","7n","7c","7m","7s","8n","8c","8m","8s"])
 						#foreach($test in $tests)
 						<th>$test</th> #end
 						<th>Cost</th>
 					</tr>
 				</thead>
 				<tbody>
-					#set($nums = [0,0,0,0,0,0,0,0,0,0,0,0,0]) #foreach($reg in
-					$middleRegs)
+					#set($nums = [0,0,0,0,0,0,0,0,0,0,0,0,0]) #foreach($reg in $middleRegs)
 					<tr>
-						<td style="text-align: center"><input type="radio"
-							name="edit" value="$reg.getKey().getId()"></td>
+						<td style="text-align: center"><input type="radio" name="edit" value="$reg.getKey().getId()"></td>
 						<td>$reg.getProperty("name")</td>
 						<td><a href="mailto:$reg.getProperty("email")">$reg.getProperty("email")</a></td>
 						<td>$reg.getProperty("registrationType")</td>
-						<td>$reg.getProperty("schoolName")</td>
-						#if($reg.getProperty("aliases"))
+						<td>$reg.getProperty("schoolName")</td> #if($reg.getProperty("aliases"))
 						<td>$reg.getProperty("aliases")</td> #else
 						<td></td> #end
 						<td>$reg.getProperty("account")</td> #set($tests =
-						["6n","6c","6m","6s","7n","7c","7m","7s","8n","8c","8m","8s"])
-						#set($i = 0) #foreach($test in $tests)
-						<td>$reg.getProperty($test)</td> #set($nums[$i] = $nums[$i] +
-						$reg.getProperty($test)) #set($i = $i + 1) #end
-						<td>&#36;$reg.getProperty("cost")</td> #set($nums[12] = $nums[12]
-						+ $reg.getProperty("cost"))
+						["6n","6c","6m","6s","7n","7c","7m","7s","8n","8c","8m","8s"]) #set($i = 0) #foreach($test in $tests)
+						<td>$reg.getProperty($test)</td> #set($nums[$i] = $nums[$i] + $reg.getProperty($test)) #set($i = $i + 1)
+						#end
+						<td>&#36;$reg.getProperty("cost")</td> #set($nums[12] = $nums[12] + $reg.getProperty("cost"))
 					</tr>
 					#end #set($nums[12] = "&#36;$nums[12]")
 					<tr>
@@ -300,25 +236,21 @@ body {
 					</tr>
 				</thead>
 				<tbody>
-					#set($nums = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]) #foreach($reg in
-					$highRegs)
+					#set($nums = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]) #foreach($reg in $highRegs)
 					<tr>
-						<td style="text-align: center"><input type="radio"
-							name="edit" value="$reg.getKey().getId()"></td>
+						<td style="text-align: center"><input type="radio" name="edit" value="$reg.getKey().getId()"></td>
 						<td>$reg.getProperty("name")</td>
 						<td><a href="mailto:$reg.getProperty("email")">$reg.getProperty("email")</a></td>
 						<td>$reg.getProperty("registrationType")</td>
-						<td>$reg.getProperty("schoolName")</td>
-						#if($reg.getProperty("aliases"))
+						<td>$reg.getProperty("schoolName")</td> #if($reg.getProperty("aliases"))
 						<td>$reg.getProperty("aliases")</td> #else
 						<td></td> #end
 						<td>$reg.getProperty("account")</td> #set($tests =
-						["9n","9c","9m","9s","10n","10c","10m","10s","11n","11c","11m","11s","12n","12c","12m","12s"])
-						#set($i = 0) #foreach($test in $tests)
-						<td>$reg.getProperty($test)</td> #set($nums[$i] = $nums[$i] +
-						$reg.getProperty($test)) #set($i = $i + 1) #end
-						<td>&#36;$reg.getProperty("cost")</td> #set($nums[16] = $nums[16]
-						+ $reg.getProperty("cost"))
+						["9n","9c","9m","9s","10n","10c","10m","10s","11n","11c","11m","11s","12n","12c","12m","12s"]) #set($i =
+						0) #foreach($test in $tests)
+						<td>$reg.getProperty($test)</td> #set($nums[$i] = $nums[$i] + $reg.getProperty($test)) #set($i = $i + 1)
+						#end
+						<td>&#36;$reg.getProperty("cost")</td> #set($nums[16] = $nums[16] + $reg.getProperty("cost"))
 					</tr>
 					#end #set($nums[16] = "&#36;$nums[16]")
 					<tr>
@@ -334,16 +266,14 @@ body {
 				</tbody>
 			</table>
 			<div class="form-actions">
-				<button type="submit" id="submit" class="btn btn-primary">Edit
-					Selected</button>
+				<button type="submit" id="submit" class="btn btn-primary">Edit Selected</button>
 			</div>
 		</form>
 
 		#elseif($questions) #if($updated)
 		<div class="alert alert-success">
-			<a class="close" data-dismiss="alert">&times;</a> <strong>Success!
-			</strong>The changes have been committed to the database and are reflected
-			below.
+			<a class="close" data-dismiss="alert">&times;</a> <strong>Success! </strong>The changes have been committed
+			to the database and are reflected below.
 		</div>
 		#end
 
@@ -363,12 +293,10 @@ body {
 				<tbody>
 					#foreach($q in $unresolvedQs)
 					<tr>
-						<td style="text-align: center"><input type="checkbox"
-							name="$q.getKey().getId()" value="r"></td>
+						<td style="text-align: center"><input type="checkbox" name="$q.getKey().getId()" value="r"></td>
 						<td>$q.getProperty("name")</td>
 						<td><a href="mailto:$q.getProperty("email")">$q.getProperty("email")</a></td>
-						<td>$q.getProperty("school")</td> #if($q.getProperty("user-id"))
-						#else
+						<td>$q.getProperty("school")</td> #if($q.getProperty("user-id")) #else
 						<td></td>#end
 						<td>$q.getProperty("comment")</td>
 					</tr>
@@ -389,12 +317,10 @@ body {
 				<tbody>
 					#foreach($q in $resolvedQs)
 					<tr>
-						<td style="text-align: center"><input type="checkbox"
-							name="$q.getKey().getId()" value="d"></td>
+						<td style="text-align: center"><input type="checkbox" name="$q.getKey().getId()" value="d"></td>
 						<td>$q.getProperty("name")</td>
 						<td><a href="mailto:$q.getProperty("email")">$q.getProperty("email")</a></td>
-						<td>$q.getProperty("school")</td> #if($q.getProperty("user-id"))
-						#else
+						<td>$q.getProperty("school")</td> #if($q.getProperty("user-id")) #else
 						<td></td>#end
 						<td>$q.getProperty("comment")</td>
 					</tr>
@@ -402,17 +328,12 @@ body {
 				</tbody>
 			</table>
 			<div class="form-actions">
-				<button type="submit" id="submit" class="btn btn-primary">Apply
-					Changes</button>
+				<button type="submit" id="submit" class="btn btn-primary">Apply Changes</button>
 			</div>
 		</form>
-		#elseif($overview)
-		hi
-		#else
-		#end
-		#end
+		#elseif($overview) hi #else #end #end
 	</div>
-	
+
 	<script type="text/javascript">
 		function ChangeActive() {
 			var type = getParameterByName('type');
@@ -431,9 +352,9 @@ body {
 				return decodeURIComponent(results[1].replace(/\+/g, " "));
 		}
 	</script>
-	
-	<script src="/js/jquery.min.js"></script>
-	<script src="/js/bootstrap-dropdown.js"></script>
-	<script src="/js/bootstrap-alert.js"></script>
+
+	<script type="text/javascript" src="/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-alert.js"></script>
 </body>
 </html>

@@ -1,67 +1,58 @@
 <!DOCTYPE html>
+
 <html lang="en-US">
 <head>
-
-<title>Register for the Tournament</title>
-<meta name="description" content="Register for the Dulles High School TMSCA Tournament">
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="index, follow">
-<link rel="shortcut icon" href="/favicon.ico">
-
-<link href="/css/bootstrap.css" rel="stylesheet">
-<style type="text/css">
-body {
-	padding-top: 60px;
-	/* 60px to make the container go all the way to the bottom of the topbar */
-}
-
-span.tab {
-	padding: 0 30px;
-}
-
-span.tab2 {
-	padding: 0 20px;
-}
-'
-</style>
-
-<!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-
+    <title>Register for the Tournament</title>
+    <meta name="description" content="Register for the Dulles High School TMSCA Tournament">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Sushain Cherivirala">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link type="text/css" href="/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+    body {
+    	padding-top: 60px;
+    	/* 60px to make the container go all the way to the bottom of the topbar */
+    }
+    
+    span.tab {
+    	padding: 0 30px;
+    }
+    
+    span.tab2 {
+    	padding: 0 20px;
+    }
+    '
+    </style>
 </head>
 
 <body onload="ChangeForm();EnableSubmit();CalcCost();">
-	
 	#parse("navbar.html")
 
 	<div class="container">
-		<noscript>Please enable JavaScript, otherwise numerous
-			areas of this website will be nonfunctional.</noscript>
+		<noscript>Please enable JavaScript, otherwise numerous areas of this website will be
+			nonfunctional.</noscript>
 		<h1>Contest Registration</h1>
 
 		#if( $updated )
 		<div class="alert alert-success">
-			<a class="close" data-dismiss="alert">&times;</a> <strong>Success!
-			</strong>Your registration has been recorded. You will receive a confirmation
-			e-mail soon.
+			<a class="close" data-dismiss="alert">&times;</a> <strong>Success! </strong>Your registration has been
+			recorded. You will receive a confirmation e-mail soon.
 		</div>
 		#elseif( !$registrationError.equals("") )
 		<div class="alert alert-error">
-			<a class="close" data-dismiss="alert">&times;</a> <strong>Oh
-				no!</strong> $registrationError
+			<a class="close" data-dismiss="alert">&times;</a> <strong>Oh no!</strong> $registrationError
 		</div>
 		#elseif( $error )
 		<div class="alert alert-error">
-			<a class="close" data-dismiss="alert">&times;</a> <strong>Oh
-				no!</strong> There has been a problem with your registration, look below.
+			<a class="close" data-dismiss="alert">&times;</a> <strong>Oh no!</strong> There has been a problem with
+			your registration, look below.
 		</div>
 		#else
 		<div class="alert alert-info">
-			<a class="close" data-dismiss="alert">&times;</a> <strong>Remember!
-			</strong>Do not register multiple times, <a href="\contactUs">contact us</a>
-			to make changes to your registration.
+			<a class="close" data-dismiss="alert">&times;</a> <strong>Remember! </strong>Do not register multiple
+			times, <a href="\contactUs">contact us</a> to make changes to your registration.
 		</div>
 		#end
 		<form method="post" class="form-horizontal">
@@ -69,16 +60,12 @@ span.tab2 {
 
 
 				<div class="control-group">
-					<label class="control-label" for="registration">Registration
-						Type</label>
+					<label class="control-label" for="registration">Registration Type</label>
 					<div class="controls">
-						<label class="radio"> <input type="radio"
-							name="registrationType" id="regType1" value="coach"
+						<label class="radio"> <input type="radio" name="registrationType" id="regType1" value="coach"
 							onclick="ChangeForm()" #if($coach) checked #end> Coach
-						</label> <label class="radio"> <input type="radio"
-							name="registrationType" id="regType2" value="student"
-							onclick="ChangeForm()" #if($student) checked #end>
-							Student
+						</label> <label class="radio"> <input type="radio" name="registrationType" id="regType2" value="student"
+							onclick="ChangeForm()" #if($student) checked #end> Student
 						</label>
 					</div>
 				</div>
@@ -86,26 +73,19 @@ span.tab2 {
 				<div class="control-group">
 					<label class="control-label" for="level">School Level</label>
 					<div class="controls">
-						<label class="radio"> <input type="radio"
-							name="schoolLevel" id="schoolType1"
-							onclick="CalcCost();ChangeForm();" value="middle"
-							#if($middle) checked #end> Middle
-						</label> <label class="radio"> <input type="radio"
-							name="schoolLevel" id="schoolType2"
-							onclick="CalcCost();ChangeForm();" value="high"
-							#if($high) checked #end> High
+						<label class="radio"> <input type="radio" name="schoolLevel" id="schoolType1"
+							onclick="CalcCost();ChangeForm();" value="middle" #if($middle) checked #end> Middle
+						</label> <label class="radio"> <input type="radio" name="schoolLevel" id="schoolType2"
+							onclick="CalcCost();ChangeForm();" value="high" #if($high) checked #end> High
 						</label>
 					</div>
 				</div>
 
 				<div class="control-group">
-					<label class="control-label" for="schoolName">Official
-						School Name</label>
+					<label class="control-label" for="schoolName">Official School Name</label>
 					<div class="controls">
-						<input type="text" name="schoolName" class="input-xlarge"
-							id="schoolName" value="$schoolName" required> <span
-							class="help-inline">Omit "Middle School", "High School",
-							"Junior High School", etc.</span>
+						<input type="text" name="schoolName" class="input-xlarge" id="schoolName" value="$schoolName" required>
+						<span class="help-inline">Omit "Middle School", "High School", "Junior High School", etc.</span>
 					</div>
 
 				</div>
@@ -113,176 +93,130 @@ span.tab2 {
 				<div class="control-group">
 					<label class="control-label" for="name">Your Name</label>
 					<div class="controls">
-						<input type="text" name="name" value="$name" class="input-xlarge"
-							id="name" required>
+						<input type="text" name="name" value="$name" class="input-xlarge" id="name" required>
 					</div>
 				</div>
 
-				<div class=#if($userError) "control-group
-					error" #else "control-group" #end>
-					<label class="control-label" for="email">Your E-Mail
-						Address</label>
+				<div class=#if($userError) "control-group error" #else "control-group" #end>
+					<label class="control-label" for="email">Your E-Mail Address</label>
 					<div class="controls">
-						<input type="email" name="email" value="$email"
-							class="input-xlarge" id="email" required>
-							#if($userError) <span class="help-inline">A registration
-						already exists for that E-Mail Address.</span> #end
+						<input type="email" name="email" value="$email" class="input-xlarge" id="email" required>
+						#if($userError) <span class="help-inline">A registration already exists for that E-Mail Address.</span>
+						#end
 					</div>
-					
+
 				</div>
 
 
 				<div class="control-group" id="aliases">
-					<label class="control-label" for="schoolAliases"> School
-						Aliases</label>
+					<label class="control-label" for="schoolAliases"> School Aliases</label>
 					<div class="controls">
-						<input type="text" name="aliases" value="$aliases"
-							class="input-xlarge" id="schoolAliases">
-						<p class="help-block">Please list any other names your school
-							is commonly called (separated by commas).</p>
+						<input type="text" name="aliases" value="$aliases" class="input-xlarge" id="schoolAliases">
+						<p class="help-block">Please list any other names your school is commonly called (separated by
+							commas).</p>
 					</div>
 				</div>
 
 				<p class="help-block">
-					<b> <span class="tab"></span><span class="tab"></span><span
-						class="tab"></span>Number Sense<span class="tab"></span>&nbsp;Calculator
-						<span class="tab2"></span>&nbsp;&nbsp;<span class="tab2"></span>Math<span
+					<b> <span class="tab"></span><span class="tab"></span><span class="tab"></span>Number Sense<span
+						class="tab"></span>&nbsp;Calculator <span class="tab2"></span>&nbsp;&nbsp;<span class="tab2"></span>Math<span
 						class="tab2"></span>&nbsp;<span class="tab"></span>Science
 					</b>
 				</p>
 
 				<div id="mid">
 					<div class="control-group">
-						<label class="control-label" for="level">6th Grade
-							Registration</label>
+						<label class="control-label" for="level">6th Grade Registration</label>
 						<div class="controls controls-row">
-							<input class="span2" type="number" value="$sixN" name="6n"
-								id="6n" onchange="CalcCost()" required> <input
-								class="span2" type="number" value="$sixC" name="6c" id="6c"
-								onchange="CalcCost()" required> <input class="span2"
-								type="number" value="$sixM" name="6m" id="6m"
-								onchange="CalcCost()" required> <input class="span2"
-								type="number" value="$sixS" name="6s" id="6s"
-								onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$sixN" name="6n" id="6n" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$sixC" name="6c" id="6c" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$sixM" name="6m" id="6m" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$sixS" name="6s" id="6s" onchange="CalcCost()" required>
 						</div>
 					</div>
 
 					<div class="control-group">
-						<label class="control-label" for="level">7th Grade
-							Registration</label>
+						<label class="control-label" for="level">7th Grade Registration</label>
 						<div class="controls controls-row">
-							<input class="span2" type="number" value="$sevenN" name="7n"
-								id="7n" onchange="CalcCost()" required> <input
-								class="span2" type="number" value="$sevenC" name="7c" id="7c"
-								onchange="CalcCost()" required> <input class="span2"
-								type="number" value="$sevenM" name="7m" id="7m"
-								onchange="CalcCost()" required> <input class="span2"
-								type="number" value="$sevenS" name="7s" id="7s"
-								onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$sevenN" name="7n" id="7n" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$sevenC" name="7c" id="7c" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$sevenM" name="7m" id="7m" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$sevenS" name="7s" id="7s" onchange="CalcCost()" required>
 						</div>
 					</div>
 
 					<div class="control-group">
-						<label class="control-label" for="level">8th Grade
-							Registration</label>
+						<label class="control-label" for="level">8th Grade Registration</label>
 						<div class="controls controls-row">
-							<input class="span2" type="number" value="$eightN" name="8n"
-								id="8n" onchange="CalcCost()" required> <input
-								class="span2" type="number" value="$eightC" name="8c" id="8c"
-								onchange="CalcCost()" required> <input class="span2"
-								type="number" value="$eightM" name="8m" id="8m"
-								onchange="CalcCost()" required> <input class="span2"
-								type="number" value="$eightS" name="8s" id="8s"
-								onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$eightN" name="8n" id="8n" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$eightC" name="8c" id="8c" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$eightM" name="8m" id="8m" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$eightS" name="8s" id="8s" onchange="CalcCost()" required>
 						</div>
 					</div>
 				</div>
 
 				<div id="hi">
 					<div class="control-group">
-						<label class="control-label" for="level">9th Grade
-							Registration</label>
+						<label class="control-label" for="level">9th Grade Registration</label>
 						<div class="controls controls-row">
-							<input class="span2" type="number" value="$nineN" name="9n"
-								id="9n" onchange="CalcCost()" required> <input
-								class="span2" type="number" value="$nineC" name="9c" id="9c"
-								onchange="CalcCost()" required> <input class="span2"
-								type="number" value="$nineM" name="9m" id="9m"
-								onchange="CalcCost()" required> <input class="span2"
-								type="number" value="$nineS" name="9s" id="9s"
-								onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$nineN" name="9n" id="9n" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$nineC" name="9c" id="9c" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$nineM" name="9m" id="9m" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$nineS" name="9s" id="9s" onchange="CalcCost()" required>
 						</div>
 					</div>
 
 					<div class="control-group">
-						<label class="control-label" for="level">10th Grade
-							Registration</label>
+						<label class="control-label" for="level">10th Grade Registration</label>
 						<div class="controls controls-row">
-							<input class="span2" type="number" value="$tenN" name="10n"
-								id="10n" onchange="CalcCost()" required> <input
-								class="span2" type="number" value="$tenC" name="10c" id="10c"
-								onchange="CalcCost()" required> <input class="span2"
-								type="number" value="$tenM" name="10m" id="10m"
-								onchange="CalcCost()" required> <input class="span2"
-								type="number" value="$tenS" name="10s" id="10s"
-								onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$tenN" name="10n" id="10n" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$tenC" name="10c" id="10c" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$tenM" name="10m" id="10m" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$tenS" name="10s" id="10s" onchange="CalcCost()" required>
 						</div>
 					</div>
 
 					<div class="control-group">
-						<label class="control-label" for="level">11th Grade
-							Registration</label>
+						<label class="control-label" for="level">11th Grade Registration</label>
 						<div class="controls controls-row">
-							<input class="span2" type="number" value="$elevenN" name="11n"
-								id="11n" onchange="CalcCost()" required> <input
-								class="span2" type="number" value="$elevenC" name="11c" id="11c"
-								onchange="CalcCost()" required> <input class="span2"
-								type="number" value="$elevenM" name="11m" id="11m"
-								onchange="CalcCost()" required> <input class="span2"
-								type="number" value="$elevenS" name="11s" id="11s"
-								onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$elevenN" name="11n" id="11n" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$elevenC" name="11c" id="11c" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$elevenM" name="11m" id="11m" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$elevenS" name="11s" id="11s" onchange="CalcCost()" required>
 						</div>
 					</div>
 
 					<div class="control-group">
-						<label class="control-label" for="level">12th Grade
-							Registration</label>
+						<label class="control-label" for="level">12th Grade Registration</label>
 						<div class="controls controls-row">
-							<input class="span2" type="number" value="$twelveN" name="12n"
-								id="12n" onchange="CalcCost()" required> <input
-								class="span2" type="number" value="$twelveC" name="12c" id="12c"
-								onchange="CalcCost()" required> <input class="span2"
-								type="number" value="$twelveM" name="12m" id="12m"
-								onchange="CalcCost()" required> <input class="span2"
-								type="number" value="$twelveS" name="12s" id="12s"
-								onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$twelveN" name="12n" id="12n" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$twelveC" name="12c" id="12c" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$twelveM" name="12m" id="12m" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$twelveS" name="12s" id="12s" onchange="CalcCost()" required>
 						</div>
 					</div>
 				</div>
 
 				<div class="control-group">
-					<label class="control-label" for="schoolName">Registration
-						Charges ($)</label>
+					<label class="control-label" for="schoolName">Registration Charges ($)</label>
 					<div class="controls">
-						<input type="text" class="input-small" name="cost" id="cost"
-							value="0" readonly>
+						<input type="text" class="input-small" name="cost" id="cost" value="0" readonly>
 					</div>
 				</div>
 
 				<div class="control-group">
 					<p class="help-block">
-						An account allows you to check your scores <em>online</em> during
-						and after the competition and review your registration.
+						An account allows you to check your scores <em>online</em> during and after the competition and review
+						your registration.
 					</p>
 					<label class="control-label" for="level">Create an Account?</label>
 
 					<div class="controls">
-						<label class="radio"> <input type="radio" name="account"
-							id="account1" name="account" onclick="ChangeForm()" value="yes"
-							#if($account) checked #end> Yes
-						</label> <label class="radio"> <input type="radio" name="account"
-							id="account2" name="account" onclick="ChangeForm()" value="no"
-							#if(!$account) checked #end> No
+						<label class="radio"> <input type="radio" name="account" id="account1" name="account"
+							onclick="ChangeForm()" value="yes" #if($account) checked #end> Yes
+						</label> <label class="radio"> <input type="radio" name="account" id="account2" name="account"
+							onclick="ChangeForm()" value="no" #if(!$account) checked #end> No
 						</label>
 					</div>
 				</div>
@@ -292,20 +226,15 @@ span.tab2 {
 					<div class="control-group">
 						<label class="control-label" for="password">Password</label>
 						<div class="controls">
-							<input type="password" id="password" name="password" value=""
-								maxlength="32" required>
+							<input type="password" id="password" name="password" value="" maxlength="32" required>
 						</div>
 					</div>
 
-					<div class=#if($passwordError) "control-group
-						error" #else "control-group" #end>
-						<label class="control-label" for="password">Confirm
-							Password</label>
+					<div class=#if($passwordError) "control-group error" #else "control-group" #end>
+						<label class="control-label" for="password">Confirm Password</label>
 						<div class="controls">
-							<input type="password" id="confPassword" name="confPassword"
-								value="" maxlength="32" required> #if($passwordError) <span
-								class="help-inline">Those passwords didn't match, try
-								again.</span> #end
+							<input type="password" id="confPassword" name="confPassword" value="" maxlength="32" required>
+							#if($passwordError) <span class="help-inline">Those passwords didn't match, try again.</span> #end
 						</div>
 					</div>
 				</div>
@@ -313,23 +242,20 @@ span.tab2 {
 				<div class="control-group">
 					<label class="control-label" for="captcha">CAPTCHA</label>
 					<div class="controls">
-						<input type="text" name="captcha" class="input-small" id="captcha"
-							onkeyup="AuthCaptcha()" onblur="ResetSubmit()" required>
+						<input type="text" name="captcha" class="input-small" id="captcha" onkeyup="AuthCaptcha()"
+							onblur="ResetSubmit()" required>
 						<p class="help-block">$captcha</p>
 					</div>
 				</div>
 
-				<input type="hidden" name="hash" id="hash" value="$hash" /> <input
-					type="hidden" name="salt" id="salt" value="$salt" /> <input
-					type="hidden" name="regError" id="regError"
-					value="$registrationError" />
+				<input type="hidden" name="hash" id="hash" value="$hash" /> <input type="hidden" name="salt" id="salt"
+					value="$salt" /> <input type="hidden" name="regError" id="regError" value="$registrationError" />
 
 				<div class="form-actions">
-					<button type="submit" id="submit" onclick="AuthCaptcha()"
-						class="btn btn-primary" disabled>Submit Registration</button>
+					<button type="submit" id="submit" onclick="AuthCaptcha()" class="btn btn-primary" disabled>Submit
+						Registration</button>
 					<button type="reset" id="reset" class="btn btn-danger" disabled>Reset</button>
-					<p class="help-inline" id="answerCaptcha">Please enable
-						JavaScript to continue.</p>
+					<p class="help-inline" id="answerCaptcha">Please enable JavaScript to continue.</p>
 				</div>
 			</fieldset>
 		</form>
@@ -456,9 +382,9 @@ span.tab2 {
 		}
 	</script>
 
-	<script src="/js/jquery.min.js"></script>
-	<script src="/js/bootstrap-dropdown.js"></script>
-	<script src="/js/bootstrap-alert.js"></script>
+	<script type="text/javascript" src="/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-alert.js"></script>
 
 </body>
 </html>

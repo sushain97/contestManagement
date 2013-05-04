@@ -1,30 +1,22 @@
 <!DOCTYPE html>
+
 <html lang="en-US">
 <head>
-
-<title>Login | Dulles TMSCA Tournament</title>
-<meta name="description" content="Login to the Dulles High School TMSCA Tournament website to view school specific scores and request clarifications">
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="index, follow">
-<link rel="shortcut icon" href="/favicon.ico">
-
-<link href="/css/bootstrap.css" rel="stylesheet">
-<style>
-body {
-	padding-top: 60px;
-	/* 60px to make the container go all the way to the bottom of the topbar */
-}
-</style>
-
-<!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-
+    <title>Login | Dulles TMSCA Tournament</title>
+    <meta name="description" content="Login to the Dulles High School TMSCA Tournament website to view school specific scores and request clarifications">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link type="text/css" href="/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+    body {
+    	padding-top: 60px;
+    	/* 60px to make the container go all the way to the bottom of the topbar */
+    }
+    </style>
 </head>
-
 <body>
-
 	#parse("navbar.html")
 
 	<div class="container">
@@ -34,19 +26,17 @@ body {
 				<div class="control-group">
 					<label class="control-label" for="username">E-Mail Address</label>
 					<div class="controls">
-						<input type="text" class="input-large" id="username"
-							name="username" value="$username">
+						<input type="text" class="input-large" id="username" name="username" value="$username">
 					</div>
 				</div>
-				<div class= #if($error) "control-group error" #else "control-group" #end>
+				<div class=#if($error) "control-group error" #else "control-group" #end>
 					<label class="control-label" for="password">Password</label>
 					<div class="controls">
-						<input type="password" id="password" name="password" value="">
-						<span class="help-inline"><a href="/forgotPass">Forgot
-								your Password?</a></span> #if($error) <span class="help-block">$error</span> #end
+						<input type="password" id="password" name="password" value=""> <span class="help-inline"><a
+							href="/forgotPass">Forgot your Password?</a></span> #if($error) <span class="help-block">$error</span> #end
 					</div>
 				</div>
-				
+
 				<div class="form-actions">
 					<button type="submit" class="btn btn-primary">Login</button>
 				</div>
@@ -54,7 +44,7 @@ body {
 		</form>
 	</div>
 
-	<script src="/js/jquery.min.js"></script>
-	<script src="/js/bootstrap-dropdown.js"></script>
+	<script type="text/javascript" src="/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
 </body>
 </html>

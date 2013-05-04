@@ -1,36 +1,34 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Password Reset</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link href="/css/bootstrap.css" rel="stylesheet">
-<style type="text/css">
-body {
-	padding-top: 60px;
-	/* 60px to make the container go all the way to the bottom of the topbar */
-}
-
-span.tab {
-	padding: 0 30px;
-}
-
-span.tab2 {
-	padding: 0 20px;
-}
-'
-</style>
-
-<!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-
-<link rel="shortcut icon" href="/favicon.ico">
+    <title>Password Reset | Dulles TMSCA Tournament</title>
+    <meta name="description" content="Reset your password Dulles High School TMSCA Tournament account password">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="author" content="Sushain Cherivirala">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link type="text/css" href="/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+    body {
+    	padding-top: 60px;
+    	/* 60px to make the container go all the way to the bottom of the topbar */
+    }
+    
+    span.tab {
+    	padding: 0 30px;
+    }
+    
+    span.tab2 {
+    	padding: 0 20px;
+    }
+    '
+    </style>
 </head>
 
 <body>
-	
+
 	#parse("navbar.html")
 
 	<div class="container">
@@ -38,49 +36,39 @@ span.tab2 {
 
 		#if( $updated )
 		<div class="alert alert-success">
-			<a class="close" data-dismiss="alert">&times;</a> <strong>Success!
-			</strong>Your password has been reset.
+			<a class="close" data-dismiss="alert">&times;</a> <strong>Success! </strong>Your password has been reset.
 		</div>
 		#else
 		<form method="post" class="form-horizontal">
 			<fieldset>
 				<div class="control-group">
-					<label class="control-label" for="schoolName">Your New
-						Password</label>
+					<label class="control-label" for="schoolName">Your New Password</label>
 					<div class="controls">
-						<input type="password" name="password"
-							id="password" value="" maxlength="32" required>
+						<input type="password" name="password" id="password" value="" maxlength="32" required>
 					</div>
 				</div>
 
-				<div class=#if($error) "control-group
-					error" #else "control-group" #end>
-					<label class="control-label" for="password">Confirm
-						Password</label>
+				<div class=#if($error) "control-group error" #else "control-group" #end>
+					<label class="control-label" for="password">Confirm Password</label>
 					<div class="controls">
-						<input type="password" id="confPassword" name="confPassword"
-							value="" maxlength="32" required> #if($error) <span
-							class="help-inline">Those passwords didn't match, try
-							again.</span> #end
+						<input type="password" id="confPassword" name="confPassword" value="" maxlength="32" required>
+						#if($error) <span class="help-inline">Those passwords didn't match, try again.</span> #end
 					</div>
 				</div>
 
 				<input type="hidden" name="noise" id="noise" value="$noise" />
 
 				<div class="form-actions">
-					<button type="submit" id="submit" class="btn btn-primary">Reset
-						Password</button>
+					<button type="submit" id="submit" class="btn btn-primary">Reset Password</button>
 				</div>
 			</fieldset>
 		</form>
 		#end
 	</div>
 
-	<script src="/js/jquery.min.js"></script>
-	<script src="/js/bootstrap-dropdown.js"></script>
-	<script src="/js/bootstrap-alert.js"></script>
-
-
+	<script type="text/javascript" src="/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-alert.js"></script>
 </body>
 </html>
 

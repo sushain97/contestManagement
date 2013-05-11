@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
+import org.apache.velocity.tools.generic.EscapeTool;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -156,7 +157,8 @@ public class Data extends HttpServlet
 			List<Entity> highSchools = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
 			if(!highSchools.isEmpty())
 				context.put("highSchools", highSchools);
-
+			
+			context.put("esc", new EscapeTool());
 			context.put("scores", true);
 		}
 		else
@@ -186,62 +188,64 @@ public class Data extends HttpServlet
 		if(!loggedIn || !URLDecoder.decode(userCookie.getValue(), "UTF-8").split("\\$")[0].equals("admin"))
 		{
 			resp.sendRedirect("/");
-			return;
-		}
-
-		String choice = req.getParameter("choice");
-		if(choice == null)
-			resp.sendRedirect("/data?choice=overview");
-		else if(choice.equals("overview"))
-		{
-			resp.sendRedirect("/data?choice=overview");
-		}
-		else if(choice.equals("registrations"))
-		{
-			String edit = req.getParameter("edit");
-			if(edit != null)
-				resp.sendRedirect("/editRegistration?key=" + req.getParameter("edit"));
-			else
-				resp.sendRedirect("/data?choice=registrations");
-		}
-		else if(choice.equals("questions"))
-		{
-			Map<String, String[]> params = req.getParameterMap();
-			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-			Transaction txn = datastore.beginTransaction();
-			try
-			{
-				for(String paramName : params.keySet())
-					if(!paramName.equals("choice") && !paramName.equals("updated"))
-					{
-						Key key = KeyFactory.createKey("feedback", Integer.parseInt(paramName));
-						String option = params.get(paramName)[0];
-						if(option.equals("r"))
-						{
-							Entity q = datastore.get(key);
-							q.setProperty("resolved", true);
-							datastore.put(q);
-						}
-						else if(option.equals("d"))
-							datastore.delete(key);
-						else
-							throw new IllegalArgumentException();
-					}
-				txn.commit();
-			}
-			catch (Exception e) { e.printStackTrace(); }
-			finally
-			{
-				if(txn.isActive())
-					txn.rollback();
-			}
-
-			resp.sendRedirect("/data?choice=questions&updated=1");
-		}
-		else if(choice.equals("scores"))
-		{
 		}
 		else
-			resp.sendRedirect("/data?choice=overview");
+		{
+			String choice = req.getParameter("choice");
+			if(choice == null)
+				resp.sendRedirect("/data?choice=overview");
+			else if(choice.equals("overview"))
+			{
+				resp.sendRedirect("/data?choice=overview");
+			}
+			else if(choice.equals("registrations"))
+			{
+				String edit = req.getParameter("edit");
+				if(edit != null)
+					resp.sendRedirect("/editRegistration?key=" + req.getParameter("edit"));
+				else
+					resp.sendRedirect("/data?choice=registrations");
+			}
+			else if(choice.equals("questions"))
+			{
+				Map<String, String[]> params = req.getParameterMap();
+				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+				Transaction txn = datastore.beginTransaction();
+				try
+				{
+					for(String paramName : params.keySet())
+						if(!paramName.equals("choice") && !paramName.equals("updated"))
+						{
+							Key key = KeyFactory.createKey("feedback", Integer.parseInt(paramName));
+							String option = params.get(paramName)[0];
+							if(option.equals("r"))
+							{
+								Entity q = datastore.get(key);
+								q.setProperty("resolved", true);
+								datastore.put(q);
+							}
+							else if(option.equals("d"))
+								datastore.delete(key);
+							else
+								throw new IllegalArgumentException();
+						}
+					txn.commit();
+				}
+				catch (Exception e) { e.printStackTrace(); }
+				finally
+				{
+					if(txn.isActive())
+						txn.rollback();
+				}
+
+				resp.sendRedirect("/data?choice=questions&updated=1");
+			}
+			else if(choice.equals("scores"))
+			{
+				resp.sendRedirect("/data?choice=overview");
+			}
+			else
+				resp.sendRedirect("/data?choice=overview");
+		}
 	}
 }

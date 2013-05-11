@@ -42,7 +42,7 @@
 							#foreach($school in $middleSchools)
 
 							<li id="middle_school_$school.getProperty("school")"><a
-								href="/data?choice=scores&type=middle_school_$school.getProperty("school")">$school.getProperty("school")</a></li>
+								href="/data?choice=scores&type=middle_school_$esc.url($school.getProperty("school"))">$school.getProperty("school")</a></li>
 							#end
 						</ul></li>
 					<li class="divider"></li>
@@ -84,7 +84,7 @@
 						<ul class="dropdown-menu">
 							#foreach($school in $highSchools)
 							<li id="high_school_$school.getProperty("school")"><a
-								href="/data?choice=scores&type=high_school_$school.getProperty("school")">$school.getProperty("school")</a></li>
+								href="/data?choice=scores&type=high_school_$esc.url($school.getProperty("school"))">$school.getProperty("school")</a></li>
 							#end
 						</ul></li>
 					<li class="divider"></li>

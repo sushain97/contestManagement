@@ -2,7 +2,6 @@ package contestTabulation;
 
 public enum Test
 {
-	//TODO: Integrate with rest of code
 	N6(6, "N"), C6(6, "C"), M6(6, "M"), S6(6, "S"),
 	N7(7, "N"), C7(7, "C"), M7(7, "M"), S7(7, "S"),
 	N8(8, "N"), C8(8, "C"), M8(8, "M"), S8(8, "S"),
@@ -22,12 +21,5 @@ public enum Test
 	
 	public int grade() { return grade; }
 	public String test() { return test; }
-	public String toString() { return test + "" + grade; }
-	public Test get(String s)
-	{
-		for(Test test : Test.values())
-			if(test.toString().equals(s))
-				return test;
-		return null;
-	}
+	public String toString() { return grade + "" + test; }
 }

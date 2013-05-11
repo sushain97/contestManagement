@@ -47,20 +47,20 @@ public class Main extends HttpServlet
 	static DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	static Scanner input = new Scanner(new InputStreamReader(System.in));
 
-	static ArrayList<String> testsGraded = new ArrayList<String>(); //Grade,Subject
+	static ArrayList<Test> testsGraded = new ArrayList<Test>();
 
 	static SpreadsheetEntry middle;
 	static ArrayList<Student> middleStudents = new ArrayList<Student>();
 	static HashMap<String, School> middleSchools = new HashMap<String, School>(); //School Name, School
-	static HashMap<String, ArrayList<Student>> middleCategoryWinners = new HashMap<String, ArrayList<Student>>(); //Grade+Subject, Student array
-	static HashMap<Character, ArrayList<School>> middleCategorySweepstakesWinners = new HashMap<Character, ArrayList<School>>(); //Category {N, M, S, C}, School array
+	static HashMap<Test, ArrayList<Student>> middleCategoryWinners = new HashMap<Test, ArrayList<Student>>();
+	static HashMap<Character, ArrayList<School>> middleCategorySweepstakesWinners = new HashMap<Character, ArrayList<School>>(); //Test topic {N, M, S, C}, School array
 	static ArrayList<School> middleSweepstakesWinners = new ArrayList<School>();
 
 	static SpreadsheetEntry high;
 	static ArrayList<Student> highStudents = new ArrayList<Student>();
 	static HashMap<String, School> highSchools = new HashMap<String, School>(); //School Name, School
-	static HashMap<String, ArrayList<Student>> highCategoryWinners = new HashMap<String, ArrayList<Student>>(); //Grade+Subject, Student array
-	static HashMap<Character, ArrayList<School>> highCategorySweepstakesWinners = new HashMap<Character, ArrayList<School>>(); //Category {N, M, S, C}, School array
+	static HashMap<Test, ArrayList<Student>> highCategoryWinners = new HashMap<Test, ArrayList<Student>>();
+	static HashMap<Character, ArrayList<School>> highCategorySweepstakesWinners = new HashMap<Character, ArrayList<School>>(); //Test topic {N, M, S, C}, School array
 	static ArrayList<School> highSweepstakesWinners = new ArrayList<School>();
 
 	@SuppressWarnings("unchecked")
@@ -143,7 +143,7 @@ public class Main extends HttpServlet
 				URL listFeedUrl = worksheet.getListFeedUrl();
 				ListFeed listFeed = service.getFeed(listFeedUrl, ListFeed.class);
 				if(listFeed.getEntries().size() > 0)
-					testsGraded.add(Integer.toString(grade) + Character.toString(subject));
+					testsGraded.add(Test.valueOf(Character.toString(subject) + grade));
 				for (ListEntry row : listFeed.getEntries())
 				{
 					String name = row.getCustomElements().getValue("nameofstudent");
@@ -189,14 +189,14 @@ public class Main extends HttpServlet
 	
 	private static void tabulateCategoryWinners(String level)
 	{
-		for(String test : testsGraded)
+		for(Test test : testsGraded)
 		{
 			ArrayList<Student> winners = new ArrayList<Student>();
-			int grade = Integer.parseInt(Character.toString(test.charAt(0)));
-			final char subject = test.charAt(1);
+			int grade = test.grade();
+			final String subject = test.test();
 
 			ArrayList<Student> students;
-			HashMap<String, ArrayList<Student>> categoryWinners;
+			HashMap<Test, ArrayList<Student>> categoryWinners;
 			if(level.equals("middle"))
 			{
 				students = middleStudents;
@@ -272,7 +272,7 @@ public class Main extends HttpServlet
 	{
 		ArrayList<Student> students;
 		HashMap<String, School> schools;
-		HashMap<String, ArrayList<Student>> categoryWinners;
+		HashMap<Test, ArrayList<Student>> categoryWinners;
 		HashMap<Character, ArrayList<School>> categorySweepstakesWinners;
 		ArrayList<School> sweepstakesWinners;
 		if(level.equals("middle"))
@@ -324,7 +324,7 @@ public class Main extends HttpServlet
 				}
 			}
 
-			for(String test : categoryWinners.keySet())
+			for(Test test : categoryWinners.keySet())
 			{
 				context = new VelocityContext();
 				context.put("winners", categoryWinners.get(test));
@@ -334,7 +334,7 @@ public class Main extends HttpServlet
 				html = new Entity("html", "category_" + level + "_" + test);
 				html.setProperty("type", "category");
 				html.setProperty("level", level);
-				html.setProperty("test", test);
+				html.setProperty("test", test.toString());
 				html.setProperty("html", new Text(sw.toString()));
 				htmlEntries.add(html);
 				sw.close();

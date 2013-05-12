@@ -85,8 +85,8 @@ public class Data extends HttpServlet
 			List<Entity> middleRegs = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
 			query = new Query("registration").addFilter("schoolLevel", FilterOperator.EQUAL, "high");
 			List<Entity> highRegs = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-			context.put("middleRegs" , middleRegs);
-			context.put("highRegs" , highRegs);
+			context.put("middleRegs", middleRegs);
+			context.put("highRegs", highRegs);
 		}
 		else if(choice.equals("questions"))
 		{

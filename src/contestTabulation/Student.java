@@ -15,6 +15,7 @@ public class Student
 
 	public Score getScore(char subject) { return scores.get(subject); }
 	public Score getScore(String subject) { return scores.get(subject.charAt(0)); }
+	public HashMap<Character,Score> getScores() { return scores; }
 
 	public String getName() { return name; }
 	public School getSchool() { return school; }

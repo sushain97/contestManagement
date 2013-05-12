@@ -154,6 +154,7 @@
 		</div>
 		#end
 		<h2>Recorded Registrations</h2>
+		<em>Note:</em> x/y indicates a registration for x tests and y tests actually taken
 		<form method="post">
 			<h3>Middle School</h3>
 			<table class="table table-striped table-condensed table-hover">
@@ -183,7 +184,8 @@
 						<td></td> #end
 						<td>$reg.getProperty("account")</td> #set($tests =
 						["6n","6c","6m","6s","7n","7c","7m","7s","8n","8c","8m","8s"]) #set($i = 0) #foreach($test in $tests)
-						<td>$reg.getProperty($test)</td> #set($nums[$i] = $nums[$i] + $reg.getProperty($test)) #set($i = $i + 1)
+						<td>$reg.getProperty($test)#if($reg.getProperty($test.toUpperCase()))/$reg.getProperty($test.toUpperCase())#else/0 #end</td> 
+						#set($nums[$i] = $nums[$i] + $reg.getProperty($test)) #set($i = $i + 1)
 						#end
 						<td>&#36;$reg.getProperty("cost")</td> #set($nums[12] = $nums[12] + $reg.getProperty("cost"))
 					</tr>
@@ -231,7 +233,8 @@
 						<td>$reg.getProperty("account")</td> #set($tests =
 						["9n","9c","9m","9s","10n","10c","10m","10s","11n","11c","11m","11s","12n","12c","12m","12s"]) #set($i =
 						0) #foreach($test in $tests)
-						<td>$reg.getProperty($test)</td> #set($nums[$i] = $nums[$i] + $reg.getProperty($test)) #set($i = $i + 1)
+						<td>$reg.getProperty($test)#if($reg.getProperty($test.toUpperCase()))/$reg.getProperty($test.toUpperCase())#else/0 #end</td>
+						#set($nums[$i] = $nums[$i] + $reg.getProperty($test)) #set($i = $i + 1)
 						#end
 						<td>&#36;$reg.getProperty("cost")</td> #set($nums[16] = $nums[16] + $reg.getProperty("cost"))
 					</tr>

@@ -36,16 +36,12 @@ only scores that fall in the top 20 are displayed below
 <em>Note: </em>
 all scores that did not fall in the top 20 are displayed below
 <br />
-#if($school.getLevel().equals("middle")) #set($tests =
-["6M","6C","6N","6S","7M","7C","7N","7S","8M","8C","8N","8S"]) #else
-#set($tests =
-["9M","9C","9N","9S","10M","10C","10N","10S","11M","11C","11N","11S","12M","12C","12N","12S"])
-#end #foreach($test in $tests) #if($school.getAnonScores($test))
+#foreach($test in $tests) #if($school.getAnonScores($test))
 
-<b>$test.substring(0,1)th Grade</b>
-<b> #if($test.substring(1,2).equals("M")) Math:
-	#elseif($test.substring(1,2).equals("C")) Calculator:
-	#elseif($test.substring(1,2).equals("N")) Number Sense: #else Science:
+<b>$test.grade()th Grade</b>
+<b> #if($test.test().equals("M")) Math:
+	#elseif($test.test().equals("C")) Calculator:
+	#elseif($test.test().equals("N")) Number Sense: #else Science:
 	#end </b>
 #foreach($score in $school.getAnonScores($test)) $score.getScore() #end
 <br />

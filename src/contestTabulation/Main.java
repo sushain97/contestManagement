@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -26,6 +27,9 @@ import org.apache.velocity.app.Velocity;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Text;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.CellEntry;
@@ -97,6 +101,10 @@ public class Main extends HttpServlet
 			//Generate and store HTML in Datastore
 			storeHTML("middle");
 			storeHTML("high");
+			
+			//Update Datastore by modifying registrations to include actual number of tests taken
+			updateRegistrations("middle");
+			updateRegistrations("high");
 		}
 		catch(Exception e) { e.printStackTrace(); }
 	}
@@ -180,7 +188,7 @@ public class Main extends HttpServlet
 					for(String score : scores)
 						if(score.length() != 0)
 							scoresArr.add(new Score(score));
-					school.addAnonScores(Integer.toString(grade) + Character.toString(subject), scoresArr);
+					school.addAnonScores(Test.valueOf(Character.toString(subject) + grade), scoresArr);
 				}
 			}
 		}
@@ -312,6 +320,7 @@ public class Main extends HttpServlet
 					ArrayList<Student> schoolStudents = school.getStudents();
 					Collections.sort(schoolStudents, new Comparator<Student>() { public int compare(Student s1,Student s2) { return s1.getName().compareTo(s2.getName()); }});
 					context.put("school", school);
+					context.put("tests", Test.values());
 					sw = new StringWriter();
 					Velocity.mergeTemplate("schoolOverview.html", context, sw);
 					html = new Entity("html", "school_" + level + "_" + school.getName());
@@ -377,5 +386,32 @@ public class Main extends HttpServlet
 			datastore.put(htmlEntries);
 		}
 		catch(Exception e) { e.printStackTrace(); }
+	}
+	
+	@SuppressWarnings("deprecation")
+	private static void updateRegistrations(String level)
+	{
+		HashMap<String, School> schools;
+		if(level.equals("middle"))
+			schools = middleSchools;
+		else
+			schools = highSchools;
+		
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		
+		for(School school : schools.values())
+		{
+			Query query = new Query("registration").addFilter("schoolName", FilterOperator.EQUAL, school.getName());
+			List<Entity> registrations = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
+			
+			if(registrations.size() > 0)
+			{
+				school.calculateTestNums();
+				Entity registration = registrations.get(0);
+				for(Entry<Test, Integer> numTest : school.getNumTests().entrySet())
+					registration.setProperty(numTest.getKey().toString(), numTest.getValue());
+				datastore.put(registration);
+			}
+		}
 	}
 }

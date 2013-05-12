@@ -9,23 +9,51 @@ public class School
 	private String name;
 	private String level;
 	private ArrayList<Student> students = new ArrayList<Student>();
+	
+	private HashMap<Test,Integer> numTests = new HashMap<Test,Integer>();
 
 	private HashMap<Character,Integer> scores = new HashMap<Character,Integer>();
-	private HashMap<String,ArrayList<Score>> anonScores = new HashMap<String,ArrayList<Score>>();
+	private HashMap<Test,ArrayList<Score>> anonScores = new HashMap<Test,ArrayList<Score>>();
 	private int totalScore;
 
 	School(String name, String level) { this.name = name; this.level = level; }
-	void addStudent(Student student) { students.add(student); }
-	void addAnonScores(String test, ArrayList<Score> scores) { anonScores.put(test, scores); }
 	public ArrayList<Student> getStudents() { return students; }
-	public ArrayList<Score> getAnonScores(String test) { return anonScores.get(test); }
+	public ArrayList<Score> getAnonScores(Test test) { return anonScores.get(test); }
 	public String getName() { return name; }
 	public int getNumStudents() { return students.size(); }
+	public HashMap<Test,Integer> getNumTests() { return numTests; }
 	public String getLevel() { return level; }
 	
 	public int getScore(char subject) { return scores.get(subject); }
 	public int getScore(String subject) { return scores.get(subject.charAt(0)); }
 	public int getTotalScore() { return totalScore; }
+	
+	protected void addStudent(Student student) { students.add(student);	}
+	protected void addAnonScores(Test test, ArrayList<Score> scores) 
+	{
+		anonScores.put(test, scores);
+		if(!numTests.containsKey(test))
+			numTests.put(test, scores.size());
+		else
+			numTests.put(test, numTests.get(test) + scores.size());
+	}
+	
+	public void calculateTestNums()
+	{
+		for(Student student : students)
+		{
+			String grade = Integer.toString(student.getGrade());
+			for(Character t : student.getScores().keySet())
+			{
+				Test test = Test.valueOf(Character.toUpperCase(t) + grade);
+				if(!numTests.containsKey(test))
+					numTests.put(test, 1);
+				else
+					numTests.put(test, numTests.get(test) + 1);
+			}
+			
+		}
+	}
 
 	private HashMap<Score,Student> calculateScore(char subject)
 	{

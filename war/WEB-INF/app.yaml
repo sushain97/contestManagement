@@ -1,5 +1,5 @@
 application: sushain97
-version: 9
+version: 25
 runtime: java
 
 handlers:
@@ -55,3 +55,4 @@ static_files:
   - include: /favicon.ico
   - include: /css/**.css
   - include: /js/**.js
+  - include: /static/*

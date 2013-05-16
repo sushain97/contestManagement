@@ -1,18 +1,19 @@
 <!-- Generated from app.yaml. Do not edit. -->
 <appengine-web-app xmlns='http://appengine.google.com/ns/1.0'>
   <application>sushain97</application>
-  <version>24</version>
+  <version>25</version>
   <static-files>
     <include path='/favicon.ico'/>
     <include path='/css/**.css'/>
     <include path='/js/**.js'/>
+    <include path='/static/*'/>
   </static-files>
   <resource-files>
   </resource-files>
   <ssl-enabled>true</ssl-enabled>
   <precompilation-enabled>true</precompilation-enabled>
-  <threadsafe>false</threadsafe>
   <code-lock>false</code-lock>
   <sessions-enabled>false</sessions-enabled>
+  <threadsafe>false</threadsafe>
   <warmup-requests-enabled>false</warmup-requests-enabled>
 </appengine-web-app>

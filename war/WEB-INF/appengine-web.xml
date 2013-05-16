@@ -1,7 +1,7 @@
 <!-- Generated from app.yaml. Do not edit. -->
 <appengine-web-app xmlns='http://appengine.google.com/ns/1.0'>
   <application>sushain97</application>
-  <version>25</version>
+  <version>26</version>
   <static-files>
     <include path='/favicon.ico'/>
     <include path='/css/**.css'/>

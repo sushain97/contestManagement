@@ -11,7 +11,7 @@ only scores that fall in the top 20 are displayed below
 		<th>Number Sense Score</th>
 		<th>Science Score</th>
 	</tr>
-	#foreach( $student in $school.getStudents() )
+	#foreach($student in $school.getStudents())
 	<tr>
 		<td>$student.getName()</td>
 		<td>$student.getGrade()</td> #set($mScore = false) #set($cScore =

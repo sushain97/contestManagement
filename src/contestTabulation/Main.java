@@ -34,6 +34,7 @@ import com.google.appengine.api.datastore.Text;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.CellEntry;
 import com.google.gdata.data.spreadsheet.CellFeed;
+import com.google.gdata.data.spreadsheet.CustomElementCollection;
 import com.google.gdata.data.spreadsheet.ListEntry;
 import com.google.gdata.data.spreadsheet.ListFeed;
 import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
@@ -81,34 +82,34 @@ public class Main extends HttpServlet
 
 			//Populate base data structures by traversing Google Documents Spreadsheets
 			getSpreadSheets(params.get("docMiddle")[0], params.get("docHigh")[0]);
-			updateDatabase("middle");
-			updateDatabase("high");
+			updateDatabase(middle, middleStudents, middleSchools);
+			updateDatabase(high, highStudents, highSchools);
 
 			//Populate categoryWinners maps with top 20 scorers 
-			tabulateCategoryWinners("middle");
-			tabulateCategoryWinners("high");
-			
+			tabulateCategoryWinners("middle", middleStudents, middleCategoryWinners);
+			tabulateCategoryWinners("high", highStudents, highCategoryWinners);
+
 			//Calculate school fields with sweepstakes scores and populate sorted sweekstakes maps & arrays with all schools
 			for(School school : middleSchools.values())
 				school.calculateScores();
 			for(School school : highSchools.values())
 				school.calculateScores();
-			tabulateCategorySweepstakesWinners("middle");
-			tabulateCategorySweepstakesWinners("high");
-			tabulateSweepstakesWinners("middle");
-			tabulateSweepstakesWinners("high");
-			
+			tabulateCategorySweepstakesWinners(middleSchools, middleCategorySweepstakesWinners);
+			tabulateCategorySweepstakesWinners(highSchools, highCategorySweepstakesWinners);
+			tabulateSweepstakesWinners(middleSchools, middleSweepstakesWinners);
+			tabulateSweepstakesWinners(highSchools, highSweepstakesWinners);
+
 			//Generate and store HTML in Datastore
-			storeHTML("middle");
-			storeHTML("high");
-			
+			storeHTML("middle", middleStudents, middleSchools, middleCategoryWinners, middleCategorySweepstakesWinners, middleSweepstakesWinners);
+			storeHTML("high", highStudents, highSchools, highCategoryWinners, highCategorySweepstakesWinners, highSweepstakesWinners);
+
 			//Update Datastore by modifying registrations to include actual number of tests taken
-			updateRegistrations("middle");
-			updateRegistrations("high");
+			updateRegistrations(middleSchools);
+			updateRegistrations(highSchools);
 		}
 		catch(Exception e) { e.printStackTrace(); }
 	}
-	
+
 	private static void getSpreadSheets(String docMid, String docHigh) throws AuthenticationException, MalformedURLException, IOException, ServiceException
 	{
 		feed = service.getFeed(new URL("https://spreadsheets.google.com/feeds/spreadsheets/private/full"), SpreadsheetFeed.class);
@@ -120,62 +121,51 @@ public class Main extends HttpServlet
 			else if(spreadsheet.getTitle().getPlainText().equals(docHigh))
 				high = spreadsheet;
 	}
-	
-	private static void updateDatabase(String level) throws IOException, ServiceException
+
+	private static void updateDatabase(SpreadsheetEntry spreadsheet, ArrayList<Student> students, HashMap<String, School> schools) throws IOException, ServiceException
 	{
-		try
+		WorksheetFeed worksheetFeed = service.getFeed(spreadsheet.getWorksheetFeedUrl(), WorksheetFeed.class);
+		List<WorksheetEntry> worksheets = worksheetFeed.getEntries();
+
+		for(WorksheetEntry worksheet : worksheets)
 		{
-			SpreadsheetEntry spreadsheet;
-			ArrayList<Student> students;
-			HashMap<String, School> schools;
-			if(level.equals("middle"))
-			{
-				spreadsheet = middle;
-				students = middleStudents;
-				schools = middleSchools;
-			}
-			else
-			{
-				spreadsheet = high;
-				students = highStudents;
-				schools = highSchools;
-			}
-			WorksheetFeed worksheetFeed = service.getFeed(spreadsheet.getWorksheetFeedUrl(), WorksheetFeed.class);
-			List<WorksheetEntry> worksheets = worksheetFeed.getEntries();
+			int grade = Integer.parseInt(worksheet.getTitle().getPlainText().split(" ")[0]);
+			char subject = worksheet.getTitle().getPlainText().split(" ")[1].charAt(0);
 
-			for(WorksheetEntry worksheet : worksheets)
-			{
-				int grade = Integer.parseInt(worksheet.getTitle().getPlainText().split(" ")[0]);
-				char subject = worksheet.getTitle().getPlainText().split(" ")[1].charAt(0);
+			URL listFeedUrl = worksheet.getListFeedUrl();
+			ListFeed listFeed = service.getFeed(listFeedUrl, ListFeed.class);
+			if(listFeed.getEntries().size() > 0)
+				testsGraded.add(Test.valueOf(Character.toString(subject) + grade));
 
-				URL listFeedUrl = worksheet.getListFeedUrl();
-				ListFeed listFeed = service.getFeed(listFeedUrl, ListFeed.class);
-				if(listFeed.getEntries().size() > 0)
-					testsGraded.add(Test.valueOf(Character.toString(subject) + grade));
-				for (ListEntry row : listFeed.getEntries())
+			for (ListEntry r : listFeed.getEntries())
+			{
+				CustomElementCollection row = r.getCustomElements();
+				String name = row.getValue("nameofstudent");
+				if(name == null)
+					break;
+				else
+					name = name.trim();
+				String schoolName = row.getValue("school").trim();
+				String score = row.getValue("score").trim();
+
+				if(!schools.containsKey(schoolName))
+					schools.put(schoolName, new School(schoolName, (grade > 8 ? "high" : "middle")));
+				School school = schools.get(schoolName);
+
+				Student temp = new Student(name, school, grade);
+				if(!students.contains(temp))
 				{
-					String name = row.getCustomElements().getValue("nameofstudent");
-					if(name == null)
-						break;
-					else
-						name = name.trim();
-					String schoolName = row.getCustomElements().getValue("school").trim();
-					String score = row.getCustomElements().getValue("score").trim();
-					if(!schools.containsKey(schoolName))
-						schools.put(schoolName, new School(schoolName, (grade > 8 ? "high" : "middle")));
-					School school = schools.get(schoolName);
-					Student temp = new Student(name, school, grade);
-					if(!students.contains(temp))
-					{
-						school.addStudent(temp);
-						students.add(temp);
-					}
-					else
-						temp = students.get(students.indexOf(temp));
-
-					temp.setScore(subject, new Score(score));
+					school.addStudent(temp);
+					students.add(temp);
 				}
+				else
+					temp = students.get(students.indexOf(temp));
 
+				temp.setScore(subject, new Score(score));
+			}
+
+			try
+			{
 				URL cellFeedUrl = new URI(worksheet.getCellFeedUrl().toString() + "?min-row=23&min-col=2&max-col=3").toURL();
 				CellFeed cellFeed = service.getFeed(cellFeedUrl, CellFeed.class);
 
@@ -191,31 +181,19 @@ public class Main extends HttpServlet
 					school.addAnonScores(Test.valueOf(Character.toString(subject) + grade), scoresArr);
 				}
 			}
+			catch(Exception e) { e.printStackTrace(); }
 		}
-		catch(Exception e) { e.printStackTrace(); }
+
 	}
-	
-	private static void tabulateCategoryWinners(String level)
+
+	private static void tabulateCategoryWinners(String level, ArrayList<Student> students, HashMap<Test, ArrayList<Student>> categoryWinners)
 	{
 		for(Test test : testsGraded)
 		{
 			ArrayList<Student> winners = new ArrayList<Student>();
 			int grade = test.grade();
 			final String subject = test.test();
-
-			ArrayList<Student> students;
-			HashMap<Test, ArrayList<Student>> categoryWinners;
-			if(level.equals("middle"))
-			{
-				students = middleStudents;
-				categoryWinners = middleCategoryWinners;
-			}
-			else
-			{
-				students = highStudents;
-				categoryWinners = highCategoryWinners;
-			}
-
+			
 			for(Student student : students)
 				if(student.getGrade() == grade && student.getScore(subject) != null)
 					winners.add(student);
@@ -223,52 +201,26 @@ public class Main extends HttpServlet
 			Collections.sort(winners, new Comparator<Student>() { public int compare(Student s1, Student s2) { return s1.getScore(subject).compareTo(s2.getScore(subject)); }});
 			Collections.reverse(winners);
 			winners = new ArrayList<Student>(winners.subList(0, (winners.size() >= 20 ? 20 : winners.size())));
-			if(level.equals("middle") && grade <= 8)
-				categoryWinners.put(test, winners);
-			else if(level.equals("high") && grade >= 9)
+			if((level.equals("middle") && grade <= 8) || (level.equals("high") && grade >= 9))
 				categoryWinners.put(test, winners);
 		}
 	}
-	
-	static void tabulateCategorySweepstakesWinners(String level)
+
+	static void tabulateCategorySweepstakesWinners(HashMap<String, School> schools, HashMap<Character, ArrayList<School>> sweepstakeCategoryWinners)
 	{
-		HashMap<String, School> schools;
-		HashMap<Character, ArrayList<School>> sweepstakeCategoryWinners;
-		if(level.equals("middle"))
-		{
-			schools = middleSchools;
-			sweepstakeCategoryWinners = middleCategorySweepstakesWinners;
-		}
-		else
-		{
-			schools = highSchools;
-			sweepstakeCategoryWinners = highCategorySweepstakesWinners;
-		}
 		char[] topics = {'S', 'C', 'N', 'M'};
 		for(final char topic : topics)
 		{
-			List<School> schoolList = new ArrayList<School>(schools.values());
+			ArrayList<School> schoolList = new ArrayList<School>(schools.values());
 			Collections.sort(schoolList, new Comparator<School>() { public int compare(School s1, School s2) { return s1.getScore(topic) - s2.getScore(topic); }});
 			Collections.reverse(schoolList);
-			sweepstakeCategoryWinners.put(topic, (ArrayList<School>) schoolList);
+			sweepstakeCategoryWinners.put(topic, schoolList);
 		}
 	}
-	
-	private static void tabulateSweepstakesWinners(String level)
+
+	private static void tabulateSweepstakesWinners(HashMap<String, School> schools, ArrayList<School> sweepstakeWinners)
 	{
-		HashMap<String, School> schools;
-		ArrayList<School> sweepstakeWinners;
-		if(level.equals("middle"))
-		{
-			schools = middleSchools;
-			sweepstakeWinners = middleSweepstakesWinners;
-		}
-		else
-		{
-			schools = highSchools;
-			sweepstakeWinners = highSweepstakesWinners;
-		}
-		List<School> schoolList = new ArrayList<School>(schools.values());
+		ArrayList<School> schoolList = new ArrayList<School>(schools.values());
 		Collections.sort(schoolList, new Comparator<School>() { public int compare(School s1, School s2) { return s1.getTotalScore() - s2.getTotalScore(); }});
 		Collections.reverse(schoolList);
 		for(School school : schoolList)
@@ -276,30 +228,8 @@ public class Main extends HttpServlet
 	}
 
 	@SuppressWarnings("deprecation")
-	private static void storeHTML(String level) throws IOException
+	private static void storeHTML(String level, ArrayList<Student> students, HashMap<String, School> schools, HashMap<Test, ArrayList<Student>> categoryWinners, HashMap<Character, ArrayList<School>> categorySweepstakesWinners, ArrayList<School> sweepstakesWinners) throws IOException
 	{
-		ArrayList<Student> students;
-		HashMap<String, School> schools;
-		HashMap<Test, ArrayList<Student>> categoryWinners;
-		HashMap<Character, ArrayList<School>> categorySweepstakesWinners;
-		ArrayList<School> sweepstakesWinners;
-		if(level.equals("middle"))
-		{
-			students = middleStudents;
-			schools = middleSchools;
-			categoryWinners = middleCategoryWinners;
-			categorySweepstakesWinners = middleCategorySweepstakesWinners;
-			sweepstakesWinners = middleSweepstakesWinners;
-		}
-		else
-		{
-			students = highStudents;
-			schools = highSchools;
-			categoryWinners = highCategoryWinners;
-			categorySweepstakesWinners = highCategorySweepstakesWinners;
-			sweepstakesWinners = highSweepstakesWinners;
-		}
-
 		Properties p = new Properties();
 		p.setProperty("file.resource.loader.path", "html");
 		Velocity.init(p);
@@ -387,23 +317,17 @@ public class Main extends HttpServlet
 		}
 		catch(Exception e) { e.printStackTrace(); }
 	}
-	
+
 	@SuppressWarnings("deprecation")
-	private static void updateRegistrations(String level)
+	private static void updateRegistrations(HashMap<String, School> schools)
 	{
-		HashMap<String, School> schools;
-		if(level.equals("middle"))
-			schools = middleSchools;
-		else
-			schools = highSchools;
-		
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		
+
 		for(School school : schools.values())
 		{
 			Query query = new Query("registration").addFilter("schoolName", FilterOperator.EQUAL, school.getName());
 			List<Entity> registrations = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-			
+
 			if(registrations.size() > 0)
 			{
 				school.calculateTestNums();

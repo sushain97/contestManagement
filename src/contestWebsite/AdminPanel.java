@@ -94,10 +94,10 @@ public class AdminPanel extends HttpServlet
 				context.put("confPassError", req.getParameter("confPassError") != null && req.getParameter("confPassError").equals("1") ? "Those passwords didn't match, try again." : null);
 				context.put("passError", req.getParameter("passError") != null && req.getParameter("passError").equals("1") ? "That password is incorrect, try again." : null);
 				context.put("account", account == null ? "" : account);
-				context.put("email", email  == null ? "" : email);
+				context.put("email", email == null ? "" : email);
 				context.put("docAccount", docAccount == null ? "" : docAccount);
-				context.put("docHigh", docHigh  == null ? "" : docHigh);
-				context.put("docMiddle", docMiddle  == null ? "" : docMiddle);
+				context.put("docHigh", docHigh == null ? "" : docHigh);
+				context.put("docMiddle", docMiddle == null ? "" : docMiddle);
 				context.put("complete", complete);
 				context.put("price", price);
 				context.put("startDate", startDate == null ? new SimpleDateFormat("MM/dd/yyyy").format(new Date()) : startDate);
@@ -124,112 +124,111 @@ public class AdminPanel extends HttpServlet
 					userCookie = new UserCookie(cookie);
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
 		if(!loggedIn || !URLDecoder.decode(userCookie.getValue(), "UTF-8").split("\\$")[0].equals("admin"))
-		{
 			resp.sendRedirect("/");
-			return;
-		}
-
-		Map<String, String[]> params = req.getParameterMap();
-
-		String endDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
-		String startDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
-		String email = "";
-		String account = "";
-		String curPassword = "";
-		String confPassword = "";
-		String newPassword = "";
-		String docHigh = "";
-		String docMiddle = "";
-		String docAccount = "";
-		String docPassword = "";
-		int price = 5;
-		String complete[] = params.get("complete");
-
-		try
+		else
 		{
-			startDate = params.get("startDate")[0];
-			endDate = params.get("endDate")[0];
-			email = params.get("email")[0];
-			account = params.get("account")[0];
-			curPassword = params.get("curPassword")[0];
-			confPassword = params.get("confPassword")[0];
-			newPassword = params.get("newPassword")[0];
-			price = Integer.parseInt(params.get("price")[0]);
-			if(params.get("updateScores")[0].equals("yes"))
+			Map<String, String[]> params = req.getParameterMap();
+
+			String endDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
+			String startDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
+			String email = "";
+			String account = "";
+			String curPassword = "";
+			String confPassword = "";
+			String newPassword = "";
+			String docHigh = "";
+			String docMiddle = "";
+			String docAccount = "";
+			String docPassword = "";
+			int price = 5;
+			String complete[] = params.get("complete");
+
+			try
 			{
-				docHigh = params.get("docHigh")[0];
-				docMiddle = params.get("docMiddle")[0];
-				docAccount = params.get("docAccount")[0];
-				docPassword = params.get("docPassword")[0];
-			}
-		}
-		catch(Exception e) { e.printStackTrace(); }
-
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
-		try
-		{
-			Query query = new Query("contestInfo");
-			List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-			Entity contestInfo;
-			if(info.size() != 0)
-				contestInfo = info.get(0);
-			else
-				contestInfo =  new Entity("contestInfo");
-
-			contestInfo.setProperty("endDate", endDate);
-			contestInfo.setProperty("startDate", startDate);
-			contestInfo.setProperty("email", email);
-			contestInfo.setProperty("account", account);
-			contestInfo.setProperty("price", price);
-			contestInfo.setProperty("complete", complete == null ? false : true);
-
-			if(params.get("updateScores")[0].equals("yes"))
-			{
-				contestInfo.setProperty("docAccount", docAccount);
-				contestInfo.setProperty("docHigh", docHigh);
-				contestInfo.setProperty("docMiddle", docMiddle);
-
-				Queue queue = QueueFactory.getDefaultQueue();
-				queue.add(withUrl("/tabulate").param("docPassword", docPassword).param("docAccount", docAccount).param("docMiddle", docMiddle).param("docHigh", docHigh));
-			}
-
-			datastore.put(contestInfo);
-
-			query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, "admin");
-			Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
-			String hash = (String) user.getProperty("hash");
-			String salt = (String) user.getProperty("salt");
-
-			if(params.get("changePass").equals("yes"))
-			{
-				if(Password.check(curPassword, salt + "$" + hash))
+				startDate = params.get("startDate")[0];
+				endDate = params.get("endDate")[0];
+				email = params.get("email")[0];
+				account = params.get("account")[0];
+				curPassword = params.get("curPassword")[0];
+				confPassword = params.get("confPassword")[0];
+				newPassword = params.get("newPassword")[0];
+				price = Integer.parseInt(params.get("price")[0]);
+				if(params.get("updateScores")[0].equals("yes"))
 				{
-					if(confPassword.equals(newPassword))
-					{
-						String newHash = Password.getSaltedHash(newPassword);
-						resp.addCookie(new Cookie("user-id", URLEncoder.encode("admin" + "$" + newHash.split("\\$")[1], "UTF-8")));
+					docHigh = params.get("docHigh")[0];
+					docMiddle = params.get("docMiddle")[0];
+					docAccount = params.get("docAccount")[0];
+					docPassword = params.get("docPassword")[0];
+				}
+			}
+			catch(Exception e) { e.printStackTrace(); }
 
-						user.setProperty("salt", newHash.split("\\$")[0]);
-						user.setProperty("hash", newHash.split("\\$")[1]);
-						datastore.put(user);
-						resp.sendRedirect("/adminPanel?updated=1");
+			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+			Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
+			try
+			{
+				Query query = new Query("contestInfo");
+				List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+				Entity contestInfo;
+				if(info.size() != 0)
+					contestInfo = info.get(0);
+				else
+					contestInfo =  new Entity("contestInfo");
+
+				contestInfo.setProperty("endDate", endDate);
+				contestInfo.setProperty("startDate", startDate);
+				contestInfo.setProperty("email", email);
+				contestInfo.setProperty("account", account);
+				contestInfo.setProperty("price", price);
+				contestInfo.setProperty("complete", complete == null ? false : true);
+
+				if(params.get("updateScores")[0].equals("yes"))
+				{
+					contestInfo.setProperty("docAccount", docAccount);
+					contestInfo.setProperty("docHigh", docHigh);
+					contestInfo.setProperty("docMiddle", docMiddle);
+
+					Queue queue = QueueFactory.getDefaultQueue();
+					queue.add(withUrl("/tabulate").param("docPassword", docPassword).param("docAccount", docAccount).param("docMiddle", docMiddle).param("docHigh", docHigh));
+				}
+
+				datastore.put(contestInfo);
+
+				query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, "admin");
+				Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+				String hash = (String) user.getProperty("hash");
+				String salt = (String) user.getProperty("salt");
+
+				if(params.get("changePass").equals("yes"))
+				{
+					if(Password.check(curPassword, salt + "$" + hash))
+					{
+						if(confPassword.equals(newPassword))
+						{
+							String newHash = Password.getSaltedHash(newPassword);
+							resp.addCookie(new Cookie("user-id", URLEncoder.encode("admin" + "$" + newHash.split("\\$")[1], "UTF-8")));
+
+							user.setProperty("salt", newHash.split("\\$")[0]);
+							user.setProperty("hash", newHash.split("\\$")[1]);
+							datastore.put(user);
+							resp.sendRedirect("/adminPanel?updated=1");
+						}
+						else
+							resp.sendRedirect("/adminPanel?confPassError=1");
 					}
 					else
-						resp.sendRedirect("/adminPanel?confPassError=1");
+						resp.sendRedirect("/adminPanel?passError=1");
 				}
 				else
-					resp.sendRedirect("/adminPanel?passError=1");
+					resp.sendRedirect("/adminPanel?updated=1");
+				txn.commit();
 			}
-			else
-				resp.sendRedirect("/adminPanel?updated=1");
-			txn.commit();
-		}
-		catch(Exception e) { e.printStackTrace(); }
-		finally
-		{
-			if(txn.isActive())
-				txn.rollback();
+			catch(Exception e) { e.printStackTrace(); }
+			finally
+			{
+				if(txn.isActive())
+					txn.rollback();
+			}
 		}
 	}
 }

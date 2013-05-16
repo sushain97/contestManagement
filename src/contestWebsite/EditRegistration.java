@@ -112,7 +112,6 @@ public class EditRegistration extends HttpServlet
 				sw.close();
 				resp.getWriter().print(sw);
 			}
-
 		}
 		else
 			resp.sendRedirect("/");
@@ -132,7 +131,6 @@ public class EditRegistration extends HttpServlet
 			resp.sendRedirect("/");
 		else
 		{
-
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 			Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
 			Key key = KeyFactory.createKey("registration", Integer.parseInt(req.getParameter("key")));
@@ -152,52 +150,53 @@ public class EditRegistration extends HttpServlet
 					datastore.delete(registration.getKey());
 					resp.sendRedirect("/data?choice=registrations&updated=1");
 					txn.commit();
-					return;
 				}
-
-				String schoolLevel = params.get("schoolLevel")[0];
-				String name = params.get("name")[0];
-				String schoolName = params.get("schoolName")[0];
-				String email = params.get("email")[0];
-
-				String account = params.get("account")[0];
-				if(registration.getProperty("account").equals("yes") && account.equals("no"))
-				{
-					registration.setProperty("account", "no");
-					Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, registration.getProperty("email"));
-					Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
-					datastore.delete(user.getKey());
-				}
-				else if(registration.getProperty("account").equals("yes"))
-				{
-					Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, registration.getProperty("email"));
-					Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
-					user.setProperty("name", name);
-					user.setProperty("school", schoolName);
-					user.setProperty("schoolLevel", schoolLevel);
-					user.setProperty("user-id", email);
-					datastore.put(user);
-				}
-
-				registration.setProperty("registrationType", params.get("registrationType")[0]);
-				registration.setProperty("schoolName", schoolName);
-				registration.setProperty("schoolLevel", schoolLevel);
-				registration.setProperty("name", name);
-				registration.setProperty("email", email);
-				if(!params.get("aliases")[0].equals("$aliases"))
-					registration.setProperty("aliases", params.get("aliases")[0]);
-
-				String[] subjects = {"n", "c", "m", "s"};
-				if(schoolLevel.equals("middle"))
-					for(int i = 6; i <= 8; i++)
-						for(int j = 0; j < 4; j++)
-							registration.setProperty(i + subjects[j], new Integer(Integer.parseInt(params.get(i + subjects[j])[0])));
 				else
-					for(int i = 9; i <= 12; i++)
-						for(int j = 0; j < 4; j++)
-							registration.setProperty(i + subjects[j], new Integer(Integer.parseInt(params.get(i + subjects[j])[0])));
-
-				datastore.put(registration);
+				{
+					String schoolLevel = params.get("schoolLevel")[0];
+					String name = params.get("name")[0];
+					String schoolName = params.get("schoolName")[0];
+					String email = params.get("email")[0];
+	
+					String account = params.get("account")[0];
+					if(registration.getProperty("account").equals("yes") && account.equals("no"))
+					{
+						registration.setProperty("account", "no");
+						Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, registration.getProperty("email"));
+						Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+						datastore.delete(user.getKey());
+					}
+					else if(registration.getProperty("account").equals("yes"))
+					{
+						Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, registration.getProperty("email"));
+						Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+						user.setProperty("name", name);
+						user.setProperty("school", schoolName);
+						user.setProperty("schoolLevel", schoolLevel);
+						user.setProperty("user-id", email);
+						datastore.put(user);
+					}
+	
+					registration.setProperty("registrationType", params.get("registrationType")[0]);
+					registration.setProperty("schoolName", schoolName);
+					registration.setProperty("schoolLevel", schoolLevel);
+					registration.setProperty("name", name);
+					registration.setProperty("email", email);
+					if(!params.get("aliases")[0].equals("$aliases"))
+						registration.setProperty("aliases", params.get("aliases")[0]);
+	
+					String[] subjects = {"n", "c", "m", "s"};
+					if(schoolLevel.equals("middle"))
+						for(int i = 6; i <= 8; i++)
+							for(int j = 0; j < 4; j++)
+								registration.setProperty(i + subjects[j], new Integer(Integer.parseInt(params.get(i + subjects[j])[0])));
+					else
+						for(int i = 9; i <= 12; i++)
+							for(int j = 0; j < 4; j++)
+								registration.setProperty(i + subjects[j], new Integer(Integer.parseInt(params.get(i + subjects[j])[0])));
+	
+					datastore.put(registration);
+				}
 				txn.commit();
 			}
 			catch(Exception e) { e.printStackTrace(); }

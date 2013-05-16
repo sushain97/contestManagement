@@ -1,10 +1,10 @@
 <h2>
-    $subject.substring(0,1)th Grade
-    #if($subject.substring(1,2).equals("M"))
+    $subject.grade()th Grade
+    #if($subject.test().equals("M"))
     	Math 
-    #elseif($subject.substring(1,2).equals("C"))
+    #elseif($subject.test().equals("C"))
     	Calculator 
-    #elseif($subject.substring(1,2).equals("N"))
+    #elseif($subject.test().equals("N"))
     	Number Sense 
     #else
     	Science 
@@ -20,7 +20,7 @@
         <th>Score</th>
     </tr>
     #set($i = 1)
-    #foreach( $student in $winners )
+    #foreach($student in $winners)
     	<tr>
         	<td> $i </td>
         	<td> $student.getName() </td>

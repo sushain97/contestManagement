@@ -198,9 +198,8 @@ public class Registration extends HttpServlet
 			byte[] digest = m.digest();
 			BigInteger bigInt = new BigInteger(1,digest);
 			String answer = bigInt.toString(16);
-			while(answer.length() < 32 ){
-			  answer = "0" + answer;
-			}
+			while(answer.length() < 32)
+				answer = "0" + answer;
 			
 			if(!answer.equals(params.get("hash")[0]))
 			{

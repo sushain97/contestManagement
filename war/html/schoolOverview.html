@@ -41,7 +41,8 @@ all scores that did not fall in the top 20 are displayed below
 <b>$test.grade()th Grade</b>
 <b> #if($test.test().equals("M")) Math:
 	#elseif($test.test().equals("C")) Calculator:
-	#elseif($test.test().equals("N")) Number Sense: #else Science:
+	#elseif($test.test().equals("N")) Number Sense: 
+	#else Science:
 	#end </b>
 #foreach($score in $school.getAnonScores($test)) $score.getScore() #end
 <br />

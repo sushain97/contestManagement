@@ -28,7 +28,7 @@
 	</style>
 </head>
 
-<body onload="EnableSubmit()">
+<body>
 	#parse("navbar.html")
 	<div class="container">
 		<noscript>Please enable JavaScript, otherwise numerous areas of this website will be
@@ -100,38 +100,41 @@
 	</div>
 
 	<script src="/js/md5hash.js" type="text/javascript"></script>
+	<script type="text/javascript" src="/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-alert.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			EnableSubmit();
+		});
+	</script>
+	
 	<script type="text/javascript">
 		function AuthCaptcha() {
 			if ($nocaptcha) {
-				document.getElementById('submit').disabled = false;
-				document.getElementById('answerCaptcha').style.display = "none";
+				$('#submit').prop('disabled', false)
+				$('#answerCaptcha').hide()
 			} else {
-				if (calcMD5(document.getElementById('salt').value
-						+ document.getElementById('captcha').value) === document
-						.getElementById('hash').value) {
-					document.getElementById('submit').disabled = false;
-					document.getElementById('answerCaptcha').style.display = "none";
+				if (calcMD5(document.getElementById('salt').value + document.getElementById('captcha').value) === document.getElementById('hash').value) {
+					$('#submit').prop('disabled', false)
+					$('#answerCaptcha').hide();
 				} else {
-					document.getElementById('submit').disabled = true;
-					document.getElementById('answerCaptcha').style.display = "inline";
-					document.getElementById('answerCaptcha').innerHTML = "Answer the captcha correctly to prove that you are not a robot.";
+					$('#submit').prop('disabled', true)
+					$('#answerCaptcha').show();
+					$('#answerCaptcha').prop('innerHTML', 'Answer the captcha correctly to prove that you are not a robot.');
 				}
 			}
 		}
 
 		function ResetSubmit() {
-			document.getElementById('submit').disabled = false;
-			document.getElementById('answerCaptcha').style.display = "none";
+			$('#submit').prop('disabled', false)
+			$('#answerCaptcha').hide();
 		}
-
+		
 		function EnableSubmit() {
-			document.getElementById('submit').disabled = false;
-			document.getElementById('answerCaptcha').innerHTML = "";
+			$('#submit').prop('disabled', false)
+			$('#answerCaptcha').prop('innerHTML','');
 		}
 	</script>
-
-	<script type="text/javascript" src="/js/jquery.min.js"></script>
-	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
-	<script type="text/javascript" src="/js/bootstrap-alert.js"></script>
 </body>
 </html>

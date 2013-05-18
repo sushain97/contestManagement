@@ -18,7 +18,7 @@
     </style>
 </head>
 
-<body onLoad="ChangeActive()">
+<body>
 	#parse("navbar.html")
 
 	<div class="container-fluid">
@@ -119,6 +119,15 @@
 		</div>
 	</div>
 
+	<script type="text/javascript" src="/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-tab.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			ChangeActive();
+		});
+	</script>
+
 	<script type="text/javascript">
 		function ChangeActive() {
 			var type = getParameterByName('type');
@@ -137,9 +146,5 @@
 				return decodeURIComponent(results[1].replace(/\+/g, " "));
 		}
 	</script>
-
-	<script type="text/javascript" src="/js/jquery.min.js"></script>
-	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
-	<script type="text/javascript" src="/js/bootstrap-tab.js"></script>
 </body>
 </html>

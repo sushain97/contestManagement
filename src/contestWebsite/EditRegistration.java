@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URLDecoder;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -61,7 +62,6 @@ public class EditRegistration extends HttpServlet
 				try
 				{
 					Entity registration = datastore.get(key);
-
 					Map<String, Object> props = registration.getProperties();
 
 					String registrationType = (String) props.get("registrationType");
@@ -106,6 +106,19 @@ public class EditRegistration extends HttpServlet
 				}
 				catch(Exception e) { e.printStackTrace(); }
 
+				Query query = new Query("contestInfo");
+				List<Entity> infos = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+				if(infos.size() != 0)
+				{
+					Entity info = infos.get(0);
+					if(info.getProperty("price") != null)
+						context.put("price", (Long) info.getProperty("price"));
+					else
+						context.put("price", 5);
+				}
+				else
+					context.put("price", 5);
+				
 				context.put("key", key);
 				StringWriter sw = new StringWriter();
 				Velocity.mergeTemplate("editRegistration.html", context, sw);

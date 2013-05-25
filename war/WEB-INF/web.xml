@@ -60,15 +60,6 @@
     <servlet-name>contestTabulation.Main</servlet-name>
     <servlet-class>contestTabulation.Main</servlet-class>
   </servlet>
-  <security-constraint>
-    <web-resource-collection>
-      <web-resource-name>aname</web-resource-name>
-      <url-pattern>/admin/*</url-pattern>
-    </web-resource-collection>
-    <auth-constraint>
-      <role-name>admin</role-name>
-    </auth-constraint>
-  </security-constraint>
   <servlet-mapping>
     <servlet-name>contestWebsite.MainPage</servlet-name>
     <url-pattern>/</url-pattern>

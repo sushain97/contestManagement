@@ -1,11 +1,9 @@
 application: sushain97
-version: 25
+version: 26
 runtime: java
+threadsafe: false
 
 handlers:
-- url: /admin/*
-  login: admin
-
 - url: /
   servlet: contestWebsite.MainPage
   

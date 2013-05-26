@@ -115,7 +115,7 @@
 				$('#submit').prop('disabled', false)
 				$('#answerCaptcha').hide()
 			} else {
-				if (calcMD5(document.getElementById('salt').value + document.getElementById('captcha').value) === document.getElementById('hash').value) {
+				if (calcMD5($('#salt').val() + $('#captcha').val()) === $('#hash').val()) {
 					$('#submit').prop('disabled', false)
 					$('#answerCaptcha').hide();
 				} else {

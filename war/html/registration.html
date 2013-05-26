@@ -2,26 +2,28 @@
 
 <html lang="en-US">
 <head>
-    <title>Register for the Tournament</title>
-    <meta name="description" content="Register for the Dulles High School TMSCA Tournament">
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="index, follow">
-    <meta name="author" content="Sushain Cherivirala">
-    <link rel="shortcut icon" href="/favicon.ico">
-    <link type="text/css" href="/css/bootstrap.css" rel="stylesheet">
-    <style type="text/css">
-    body {
-    	padding-top: 60px;
-    	/* 60px to make the container go all the way to the bottom of the topbar */
-    }
-    span.tab {
-    	padding: 0 30px;
-    }
-    span.tab2 {
-    	padding: 0 20px;
-    }
-    </style>
+	<title>Register for the Tournament</title>
+	<meta name="description" content="Register for the Dulles High School TMSCA Tournament">
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="robots" content="index, follow">
+	<meta name="author" content="Sushain Cherivirala">
+	<link rel="shortcut icon" href="/favicon.ico">
+	<link type="text/css" href="/css/bootstrap.css" rel="stylesheet">
+	<style type="text/css">
+	body {
+		padding-top: 60px;
+		/* 60px to make the container go all the way to the bottom of the topbar */
+	}
+	
+	span.tab {
+		padding: 0 30px;
+	}
+	
+	span.tab2 {
+		padding: 0 20px;
+	}
+	</style>
 </head>
 
 <body>
@@ -52,17 +54,16 @@
 			times, <a href="\contactUs">contact us</a> to make changes to your registration.
 		</div>
 		#end
+
 		<form method="post" class="form-horizontal">
 			<fieldset>
-
-
 				<div class="control-group">
 					<label class="control-label" for="registration">Registration Type</label>
 					<div class="controls">
 						<label class="radio"> <input type="radio" name="registrationType" id="regType1" value="coach"
-							onclick="ChangeForm()" #if($coach) checked #end> Coach
+							#if($coach) checked #end> Coach
 						</label> <label class="radio"> <input type="radio" name="registrationType" id="regType2" value="student"
-							onclick="ChangeForm()" #if($student) checked #end> Student
+							#if($student) checked #end> Student
 						</label>
 					</div>
 				</div>
@@ -70,10 +71,10 @@
 				<div class="control-group">
 					<label class="control-label" for="schoolLevel">School Level</label>
 					<div class="controls">
-						<label class="radio"> <input type="radio" name="schoolLevel" id="schoolType1"
-							onclick="CalcCost();ChangeForm();" value="middle" #if($middle) checked #end> Middle
-						</label> <label class="radio"> <input type="radio" name="schoolLevel" id="schoolType2"
-							onclick="CalcCost();ChangeForm();" value="high" #if($high) checked #end> High
+						<label class="radio"> <input type="radio" name="schoolLevel" id="schoolType1" value="middle"
+							#if($middle) checked #end> Middle
+						</label> <label class="radio"> <input type="radio" name="schoolLevel" id="schoolType2" value="high"
+							#if($high) checked #end> High
 						</label>
 					</div>
 				</div>
@@ -125,30 +126,30 @@
 					<div class="control-group">
 						<label class="control-label" for="level6">6th Grade Registration</label>
 						<div class="controls controls-row">
-							<input class="span2" type="number" value="$sixN" name="6n" id="level6" onchange="CalcCost()" required>
-							<input class="span2" type="number" value="$sixC" name="6c" id="level6" onchange="CalcCost()" required>
-							<input class="span2" type="number" value="$sixM" name="6m" id="level6" onchange="CalcCost()" required>
-							<input class="span2" type="number" value="$sixS" name="6s" id="level6" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$sixN" name="6n" id="level6" required> <input
+								class="span2" type="number" value="$sixC" name="6c" id="level6" required> <input class="span2"
+								type="number" value="$sixM" name="6m" id="level6" required> <input class="span2" type="number"
+								value="$sixS" name="6s" id="level6" required>
 						</div>
 					</div>
 
 					<div class="control-group">
 						<label class="control-label" for="level7">7th Grade Registration</label>
 						<div class="controls controls-row">
-							<input class="span2" type="number" value="$sevenN" name="7n" id="level7" onchange="CalcCost()" required>
-							<input class="span2" type="number" value="$sevenC" name="7c" id="level7" onchange="CalcCost()" required>
-							<input class="span2" type="number" value="$sevenM" name="7m" id="level7" onchange="CalcCost()" required>
-							<input class="span2" type="number" value="$sevenS" name="7s" id="level7" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$sevenN" name="7n" id="level7" required> <input
+								class="span2" type="number" value="$sevenC" name="7c" id="level7" required> <input
+								class="span2" type="number" value="$sevenM" name="7m" id="level7" required> <input
+								class="span2" type="number" value="$sevenS" name="7s" id="level7" required>
 						</div>
 					</div>
 
 					<div class="control-group">
 						<label class="control-label" for="level8">8th Grade Registration</label>
 						<div class="controls controls-row">
-							<input class="span2" type="number" value="$eightN" name="8n" id="level8" onchange="CalcCost()" required>
-							<input class="span2" type="number" value="$eightC" name="8c" id="level8" onchange="CalcCost()" required>
-							<input class="span2" type="number" value="$eightM" name="8m" id="level8" onchange="CalcCost()" required>
-							<input class="span2" type="number" value="$eightS" name="8s" id="level8" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$eightN" name="8n" id="level8" required> <input
+								class="span2" type="number" value="$eightC" name="8c" id="level8" required> <input
+								class="span2" type="number" value="$eightM" name="8m" id="level8" required> <input
+								class="span2" type="number" value="$eightS" name="8s" id="level8" required>
 						</div>
 					</div>
 				</div>
@@ -157,40 +158,40 @@
 					<div class="control-group">
 						<label class="control-label" for="level9">9th Grade Registration</label>
 						<div class="controls controls-row">
-							<input class="span2" type="number" value="$nineN" name="9n" id="level9" onchange="CalcCost()" required>
-							<input class="span2" type="number" value="$nineC" name="9c" id="level9" onchange="CalcCost()" required>
-							<input class="span2" type="number" value="$nineM" name="9m" id="level9" onchange="CalcCost()" required>
-							<input class="span2" type="number" value="$nineS" name="9s" id="level9" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$nineN" name="9n" id="level9" required> <input
+								class="span2" type="number" value="$nineC" name="9c" id="level9" required> <input
+								class="span2" type="number" value="$nineM" name="9m" id="level9" required> <input
+								class="span2" type="number" value="$nineS" name="9s" id="level9" required>
 						</div>
 					</div>
 
 					<div class="control-group">
 						<label class="control-label" for="level10">10th Grade Registration</label>
 						<div class="controls controls-row">
-							<input class="span2" type="number" value="$tenN" name="10n" id="level10" onchange="CalcCost()" required>
-							<input class="span2" type="number" value="$tenC" name="10c" id="level10" onchange="CalcCost()" required>
-							<input class="span2" type="number" value="$tenM" name="10m" id="level10" onchange="CalcCost()" required>
-							<input class="span2" type="number" value="$tenS" name="10s" id="level10" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$tenN" name="10n" id="level10" required> <input
+								class="span2" type="number" value="$tenC" name="10c" id="level10" required> <input
+								class="span2" type="number" value="$tenM" name="10m" id="level10" required> <input
+								class="span2" type="number" value="$tenS" name="10s" id="level10" required>
 						</div>
 					</div>
 
 					<div class="control-group">
 						<label class="control-label" for="level11">11th Grade Registration</label>
 						<div class="controls controls-row">
-							<input class="span2" type="number" value="$elevenN" name="11n" id="level11" onchange="CalcCost()" required>
-							<input class="span2" type="number" value="$elevenC" name="11c" id="level11" onchange="CalcCost()" required>
-							<input class="span2" type="number" value="$elevenM" name="11m" id="level11" onchange="CalcCost()" required>
-							<input class="span2" type="number" value="$elevenS" name="11s" id="level11" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$elevenN" name="11n" id="level11" required> <input
+								class="span2" type="number" value="$elevenC" name="11c" id="level11" required> <input
+								class="span2" type="number" value="$elevenM" name="11m" id="level11" required> <input
+								class="span2" type="number" value="$elevenS" name="11s" id="level11" required>
 						</div>
 					</div>
 
 					<div class="control-group">
 						<label class="control-label" for="level12">12th Grade Registration</label>
 						<div class="controls controls-row">
-							<input class="span2" type="number" value="$twelveN" name="12n" id="level12" onchange="CalcCost()" required>
-							<input class="span2" type="number" value="$twelveC" name="12c" id="level12" onchange="CalcCost()" required>
-							<input class="span2" type="number" value="$twelveM" name="12m" id="level12" onchange="CalcCost()" required>
-							<input class="span2" type="number" value="$twelveS" name="12s" id="level12" onchange="CalcCost()" required>
+							<input class="span2" type="number" value="$twelveN" name="12n" id="level12" required> <input
+								class="span2" type="number" value="$twelveC" name="12c" id="level12" required> <input
+								class="span2" type="number" value="$twelveM" name="12m" id="level12" required> <input
+								class="span2" type="number" value="$twelveS" name="12s" id="level12" required>
 						</div>
 					</div>
 				</div>
@@ -210,10 +211,10 @@
 					<label class="control-label" for="level">Create an Account?</label>
 
 					<div class="controls">
-						<label class="radio"> <input type="radio" name="account" id="account1"
-							onclick="ChangeForm()" value="yes" #if($account) checked #end> Yes
-						</label> <label class="radio"> <input type="radio" name="account" id="account2"
-							onclick="ChangeForm()" value="no" #if(!$account) checked #end> No
+						<label class="radio"> <input type="radio" name="account" id="account1" value="yes"
+							#if($account) checked #end> Yes
+						</label> <label class="radio"> <input type="radio" name="account" id="account2" value="no"
+							#if(!$account) checked #end> No
 						</label>
 					</div>
 				</div>
@@ -263,22 +264,32 @@
 	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
 	<script type="text/javascript" src="/js/bootstrap-alert.js"></script>
 	<script type="text/javascript">
-		$(document).ready(function () {
+		$(document).ready(function() {
 			ChangeForm();
 			EnableSubmit();
 			CalcCost();
+
+			$('.span2').change(function() {
+				CalcCost();
+			});
+			$('.radio').change(function() {
+				ChangeForm();
+				CalcCost();
+			});
 		});
 	</script>
-	
 	<script type="text/javascript">
 		function AuthCaptcha() {
-			if (calcMD5(document.getElementById('salt').value + document.getElementById('captcha').value) === document.getElementById('hash').value) {
+			if (calcMD5($('#salt').val() + $('#captcha').val()) === $('#hash')
+					.val()) {
 				$('#submit').prop('disabled', false)
 				$('#answerCaptcha').hide();
 			} else {
 				$('#submit').prop('disabled', true)
 				$('#answerCaptcha').show();
-				$('#answerCaptcha').prop('innerHTML', 'Answer the captcha correctly to prove that you are not a robot.');
+				$('#answerCaptcha')
+						.prop('innerHTML',
+								'Answer the captcha correctly to prove that you are not a robot.');
 			}
 		}
 
@@ -288,11 +299,11 @@
 		}
 
 		function EnableSubmit() {
-			if (document.getElementById('regError').value === '') {
+			if ($('#regError').val() === '') {
 				$('#submit').prop('disabled', false)
 				$('#reset').prop('disabled', false)
 			}
-			$('#answerCaptcha').prop('innerHTML','');
+			$('#answerCaptcha').prop('innerHTML', '');
 		}
 	</script>
 	<script type="text/javascript">
@@ -300,7 +311,7 @@
 			sum = 0;
 			var i;
 			var end;
-			
+
 			if ($('#schoolType1').is(':checked')) {
 				i = 6;
 				end = 8;
@@ -308,9 +319,8 @@
 				i = 9;
 				end = 12;
 			}
-			
-			for(; i <= end; i++)
-			{
+
+			for (; i <= end; i++) {
 				var start = "[name=" + "'" + i;
 				if (parseInt($(start + "n']").get(0).value) < 0)
 					$(start + "n']").get(0).value = 0;
@@ -345,7 +355,7 @@
 				$('#aliases').show();
 			else
 				$('#aliases').hide();
-			
+
 			var account = $('#account1').is(':checked');
 			if (account)
 				$('#acc').show();

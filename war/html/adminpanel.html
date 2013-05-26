@@ -171,10 +171,7 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			ChangeForm();
-			
-			$('.radio').change(function() {
-				ChangeForm();
-			});
+			$('.radio').change(ChangeForm);
 		});
 	</script>
 	<script type="text/javascript">

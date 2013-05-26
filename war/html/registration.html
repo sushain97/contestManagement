@@ -23,6 +23,10 @@
 	span.tab2 {
 		padding: 0 20px;
 	}
+	
+	#hi {
+		display: none;
+	}
 	</style>
 </head>
 
@@ -240,8 +244,7 @@
 				<div class="control-group">
 					<label class="control-label" for="captcha">CAPTCHA</label>
 					<div class="controls">
-						<input type="text" name="captcha" class="input-small" id="captcha" onkeyup="AuthCaptcha()"
-							onblur="ResetSubmit()" required>
+						<input type="text" name="captcha" class="input-small" id="captcha" required>
 						<p class="help-block">$captcha</p>
 					</div>
 				</div>
@@ -250,8 +253,7 @@
 					value="$salt" /> <input type="hidden" name="regError" id="regError" value="$registrationError" />
 
 				<div class="form-actions">
-					<button type="submit" id="submit" onclick="AuthCaptcha()" class="btn btn-primary" disabled>Submit
-						Registration</button>
+					<button type="submit" id="submit" class="btn btn-primary" disabled>Submit Registration</button>
 					<button type="reset" id="reset" class="btn btn-danger" disabled>Reset</button>
 					<p class="help-inline" id="answerCaptcha">Please enable JavaScript to continue.</p>
 				</div>
@@ -269,13 +271,14 @@
 			EnableSubmit();
 			CalcCost();
 
-			$('.span2').change(function() {
-				CalcCost();
-			});
+			$('.span2').change(CalcCost);
 			$('.radio').change(function() {
 				ChangeForm();
 				CalcCost();
 			});
+			$('#captcha').on('keyup', AuthCaptcha);
+			$('#captcha').on('blur', ResetSubmit);
+			$('#submit').on('click', AuthCaptcha);
 		});
 	</script>
 	<script type="text/javascript">

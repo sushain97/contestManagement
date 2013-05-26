@@ -24,7 +24,6 @@
 	span.tab2 {
 		padding: 0 20px;
 	}
-	'
 	</style>
 </head>
 
@@ -34,12 +33,12 @@
 		<noscript>Please enable JavaScript, otherwise numerous areas of this website will be
 			nonfunctional.</noscript>
 		<h1>Contact Us</h1>
-		Please contact us for any <em>clarifications</em> or <em>registration changes</em>. #if(!$loggedIn
-		&& !$admin) Please <a href="/login">login</a> before submitting questions if you have an account.
-		Thank you! <br /> <br /> #end #if( $updated )
+		Please contact us for any <em>clarifications</em> or <em>registration changes</em>. #if(!$loggedIn &&
+		!$admin) Please <a href="/login">login</a> before submitting questions if you have an account. Thank you! <br />
+		<br /> #end #if( $updated )
 		<div class="alert alert-success">
-			<a class="close" data-dismiss="alert">&times;</a> <strong>Success! </strong>Your feedback has
-			been recorded, we will look into it as soon as possible.
+			<a class="close" data-dismiss="alert">&times;</a> <strong>Success! </strong>Your feedback has been
+			recorded, we will look into it as soon as possible.
 		</div>
 		#end
 
@@ -48,8 +47,8 @@
 				<div class="control-group">
 					<label class="control-label" for="schoolName">Your Name</label>
 					<div class="controls">
-						<input type="text" name="name" class="input-xlarge" id="name" #if($name) value="$name"
-							readonly #else required #end>
+						<input type="text" name="name" class="input-xlarge" id="name" #if($name) value="$name" readonly #else
+							required #end>
 					</div>
 				</div>
 
@@ -81,18 +80,15 @@
 				<div class="control-group">
 					<label class="control-label" for="captcha">CAPTCHA</label>
 					<div class="controls">
-						<input type="text" name="captcha" class="input-small" id="captcha" onkeyup="AuthCaptcha()"
-							onblur="ResetSubmit()" required>
+						<input type="text" name="captcha" class="input-small" id="captcha" required>
 						<p class="help-block">$captcha</p>
 					</div>
 				</div>
-				#end <input type="hidden" name="hash" id="hash" value="$hash" /> <input type="hidden"
-					name="nocaptcha" id="nocaptcha" value="$nocaptcha" /> <input type="hidden" name="salt"
-					id="salt" value="$salt" />
+				#end <input type="hidden" name="hash" id="hash" value="$hash" /> <input type="hidden" name="nocaptcha"
+					id="nocaptcha" value="$nocaptcha" /> <input type="hidden" name="salt" id="salt" value="$salt" />
 
 				<div class="form-actions">
-					<button type="submit" id="submit" onclick="AuthCaptcha()" class="btn btn-primary">Submit
-						Feedback</button>
+					<button type="submit" id="submit" class="btn btn-primary">Submit Feedback</button>
 					<p class="help-inline" id="answerCaptcha">Please enable JavaScript to continue.</p>
 				</div>
 			</fieldset>
@@ -104,24 +100,31 @@
 	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
 	<script type="text/javascript" src="/js/bootstrap-alert.js"></script>
 	<script type="text/javascript">
-		$(document).ready(function () {
+		$(document).ready(function() {
 			EnableSubmit();
+
+			$('#captcha').on('keyup', AuthCaptcha);
+			$('#captcha').on('blur', ResetSubmit);
+			$('#submit').on('click', AuthCaptcha);
 		});
 	</script>
-	
+
 	<script type="text/javascript">
 		function AuthCaptcha() {
 			if ($nocaptcha) {
 				$('#submit').prop('disabled', false)
 				$('#answerCaptcha').hide()
 			} else {
-				if (calcMD5($('#salt').val() + $('#captcha').val()) === $('#hash').val()) {
+				if (calcMD5($('#salt').val() + $('#captcha').val()) === $(
+						'#hash').val()) {
 					$('#submit').prop('disabled', false)
 					$('#answerCaptcha').hide();
 				} else {
 					$('#submit').prop('disabled', true)
 					$('#answerCaptcha').show();
-					$('#answerCaptcha').prop('innerHTML', 'Answer the captcha correctly to prove that you are not a robot.');
+					$('#answerCaptcha')
+							.prop('innerHTML',
+									'Answer the captcha correctly to prove that you are not a robot.');
 				}
 			}
 		}
@@ -130,10 +133,10 @@
 			$('#submit').prop('disabled', false)
 			$('#answerCaptcha').hide();
 		}
-		
+
 		function EnableSubmit() {
 			$('#submit').prop('disabled', false)
-			$('#answerCaptcha').prop('innerHTML','');
+			$('#answerCaptcha').prop('innerHTML', '');
 		}
 	</script>
 </body>

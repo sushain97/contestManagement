@@ -2,20 +2,21 @@
 
 <html lang="en-US">
 <head>
-    <title>Public Contest Results | Dulles TMSCA Tournament</title>
-    <meta name="description" content="View public contest results including sweepstakes and category winners for the Dulles High School TMSCA Tournament">
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="index, follow">
-    <meta name="author" content="Sushain Cherivirala">
-    <link rel="shortcut icon" href="/favicon.ico">
-    <link type="text/css" href="/css/bootstrap.css" rel="stylesheet">
-    <style type="text/css">
-    body {
-    	padding-top: 60px;
-    	/* 60px to make the container go all the way to the bottom of the topbar */
-    }
-    </style>
+	<title>Public Contest Results | Dulles TMSCA Tournament</title>
+	<meta name="description"
+		content="View public contest results including sweepstakes and category winners for the Dulles High School TMSCA Tournament">
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="robots" content="index, follow">
+	<meta name="author" content="Sushain Cherivirala">
+	<link rel="shortcut icon" href="/favicon.ico">
+	<link type="text/css" href="/css/bootstrap.css" rel="stylesheet">
+	<style type="text/css">
+	body {
+		padding-top: 60px;
+		/* 60px to make the container go all the way to the bottom of the topbar */
+	}
+	</style>
 </head>
 
 <body>
@@ -122,28 +123,21 @@
 	<script type="text/javascript" src="/js/jquery.min.js"></script>
 	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
 	<script type="text/javascript" src="/js/bootstrap-tab.js"></script>
+	<script type="text/javascript" src="/js/purl.js"></script>
 	<script type="text/javascript">
-		$(document).ready(function () {
-			ChangeActive();
+		$(document).ready(function() {
+			ChangeActive()
 		});
 	</script>
-
 	<script type="text/javascript">
 		function ChangeActive() {
-			var type = getParameterByName('type');
-			if(type == "")
-				document.getElementById("avail").className += 'active';
-			document.getElementById(getParameterByName('type')).className += 'active';
-		}
-		function getParameterByName(name) {
-			name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-			var regexS = "[\\?&]" + name + "=([^&#]*)";
-			var regex = new RegExp(regexS);
-			var results = regex.exec(window.location.search);
-			if (results == null)
-				return "";
-			else
-				return decodeURIComponent(results[1].replace(/\+/g, " "));
+			var type = $.url().param('type');
+			if (type == undefined)
+				$("#avail").addClass('active');
+			else {
+				$("#" + type).closest('.dropdown').addClass('active');
+				$('#' + type).addClass('active');
+			}
 		}
 	</script>
 </body>

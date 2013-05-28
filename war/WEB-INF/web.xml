@@ -25,8 +25,8 @@
     <servlet-class>contestWebsite.Logout</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>contestWebsite.Testing</servlet-name>
-    <servlet-class>contestWebsite.Testing</servlet-class>
+    <servlet-name>contestWebsite.CreateAdmin</servlet-name>
+    <servlet-class>contestWebsite.CreateAdmin</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>contestWebsite.AdminPanel</servlet-name>
@@ -85,9 +85,18 @@
     <url-pattern>/signout</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>contestWebsite.Testing</servlet-name>
-    <url-pattern>/testing</url-pattern>
+    <servlet-name>contestWebsite.CreateAdmin</servlet-name>
+    <url-pattern>/createAdmin</url-pattern>
   </servlet-mapping>
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>aname</web-resource-name>
+      <url-pattern>/createAdmin</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>admin</role-name>
+    </auth-constraint>
+  </security-constraint>
   <servlet-mapping>
     <servlet-name>contestWebsite.AdminPanel</servlet-name>
     <url-pattern>/adminPanel</url-pattern>

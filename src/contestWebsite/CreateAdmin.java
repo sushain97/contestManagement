@@ -1,4 +1,3 @@
-//TODO: Delete before production
 package contestWebsite;
 
 import java.io.IOException;
@@ -12,7 +11,7 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 
 @SuppressWarnings("serial")
-public class Testing extends HttpServlet
+public class CreateAdmin extends HttpServlet
 {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{

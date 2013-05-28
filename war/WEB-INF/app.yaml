@@ -22,8 +22,9 @@ handlers:
 - url: /signout
   servlet: contestWebsite.Logout
 
-- url: /testing
-  servlet: contestWebsite.Testing
+- url: /createAdmin
+  login: admin
+  servlet: contestWebsite.CreateAdmin
 
 - url: /adminPanel
   servlet: contestWebsite.AdminPanel

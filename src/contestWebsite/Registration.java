@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -297,10 +298,14 @@ public class Registration extends HttpServlet
 
 			
 			int cost = 0;
-			for(String test : nums.keySet())
+			for(Entry<String,Integer> test : nums.entrySet())
 			{
-				registration.setProperty(test, nums.get(test));
-				cost += nums.get(test) * price;
+				int num = test.getValue();
+				if(num > 0)
+				{
+					registration.setProperty(test.getKey(), num);
+					cost += num * price;
+				}
 			}
 			registration.setProperty("cost", cost);
 

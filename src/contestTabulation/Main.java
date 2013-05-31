@@ -52,21 +52,20 @@ public class Main extends HttpServlet
 	static DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	static Scanner input = new Scanner(new InputStreamReader(System.in));
 
-	static ArrayList<Test> testsGraded = new ArrayList<Test>();
+	static List<Test> testsGraded = new ArrayList<Test>();
+	static SpreadsheetEntry middle, high;
+	
+	static List<Student> middleStudents = new ArrayList<Student>();
+	static Map<String, School> middleSchools = new HashMap<String, School>(); //School Name, School
+	static Map<Test, List<Student>> middleCategoryWinners = new HashMap<Test, List<Student>>();
+	static Map<Character, List<School>> middleCategorySweepstakesWinners = new HashMap<Character, List<School>>(); //Test topic {N, M, S, C}, School array
+	static List<School> middleSweepstakesWinners = new ArrayList<School>();
 
-	static SpreadsheetEntry middle;
-	static ArrayList<Student> middleStudents = new ArrayList<Student>();
-	static HashMap<String, School> middleSchools = new HashMap<String, School>(); //School Name, School
-	static HashMap<Test, ArrayList<Student>> middleCategoryWinners = new HashMap<Test, ArrayList<Student>>();
-	static HashMap<Character, ArrayList<School>> middleCategorySweepstakesWinners = new HashMap<Character, ArrayList<School>>(); //Test topic {N, M, S, C}, School array
-	static ArrayList<School> middleSweepstakesWinners = new ArrayList<School>();
-
-	static SpreadsheetEntry high;
-	static ArrayList<Student> highStudents = new ArrayList<Student>();
-	static HashMap<String, School> highSchools = new HashMap<String, School>(); //School Name, School
-	static HashMap<Test, ArrayList<Student>> highCategoryWinners = new HashMap<Test, ArrayList<Student>>();
-	static HashMap<Character, ArrayList<School>> highCategorySweepstakesWinners = new HashMap<Character, ArrayList<School>>(); //Test topic {N, M, S, C}, School array
-	static ArrayList<School> highSweepstakesWinners = new ArrayList<School>();
+	static List<Student> highStudents = new ArrayList<Student>();
+	static Map<String, School> highSchools = new HashMap<String, School>(); //School Name, School
+	static Map<Test, List<Student>> highCategoryWinners = new HashMap<Test, List<Student>>();
+	static Map<Character, List<School>> highCategorySweepstakesWinners = new HashMap<Character, List<School>>(); //Test topic {N, M, S, C}, School array
+	static List<School> highSweepstakesWinners = new ArrayList<School>();
 
 	@SuppressWarnings("unchecked")
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
@@ -122,7 +121,7 @@ public class Main extends HttpServlet
 				high = spreadsheet;
 	}
 
-	private static void updateDatabase(SpreadsheetEntry spreadsheet, ArrayList<Student> students, HashMap<String, School> schools) throws IOException, ServiceException
+	private static void updateDatabase(SpreadsheetEntry spreadsheet, List<Student> students, Map<String, School> schools) throws IOException, ServiceException
 	{
 		WorksheetFeed worksheetFeed = service.getFeed(spreadsheet.getWorksheetFeedUrl(), WorksheetFeed.class);
 		List<WorksheetEntry> worksheets = worksheetFeed.getEntries();
@@ -186,7 +185,7 @@ public class Main extends HttpServlet
 
 	}
 
-	private static void tabulateCategoryWinners(String level, ArrayList<Student> students, HashMap<Test, ArrayList<Student>> categoryWinners)
+	private static void tabulateCategoryWinners(String level, List<Student> students, Map<Test, List<Student>> categoryWinners)
 	{
 		for(Test test : testsGraded)
 		{
@@ -206,7 +205,7 @@ public class Main extends HttpServlet
 		}
 	}
 
-	static void tabulateCategorySweepstakesWinners(HashMap<String, School> schools, HashMap<Character, ArrayList<School>> sweepstakeCategoryWinners)
+	static void tabulateCategorySweepstakesWinners(Map<String, School> schools, Map<Character, List<School>> sweepstakeCategoryWinners)
 	{
 		char[] topics = {'S', 'C', 'N', 'M'};
 		for(final char topic : topics)
@@ -218,7 +217,7 @@ public class Main extends HttpServlet
 		}
 	}
 
-	private static void tabulateSweepstakesWinners(HashMap<String, School> schools, ArrayList<School> sweepstakeWinners)
+	private static void tabulateSweepstakesWinners(Map<String, School> schools, List<School> sweepstakeWinners)
 	{
 		ArrayList<School> schoolList = new ArrayList<School>(schools.values());
 		Collections.sort(schoolList, new Comparator<School>() { public int compare(School s1, School s2) { return s1.getTotalScore() - s2.getTotalScore(); }});
@@ -228,7 +227,7 @@ public class Main extends HttpServlet
 	}
 
 	@SuppressWarnings("deprecation")
-	private static void storeHTML(String level, ArrayList<Student> students, HashMap<String, School> schools, HashMap<Test, ArrayList<Student>> categoryWinners, HashMap<Character, ArrayList<School>> categorySweepstakesWinners, ArrayList<School> sweepstakesWinners) throws IOException
+	private static void storeHTML(String level, List<Student> students, Map<String, School> schools, Map<Test, List<Student>> categoryWinners, Map<Character, List<School>> categorySweepstakesWinners, List<School> sweepstakesWinners) throws IOException
 	{
 		Properties p = new Properties();
 		p.setProperty("file.resource.loader.path", "html");
@@ -238,7 +237,7 @@ public class Main extends HttpServlet
 		//TODO: Convert to Transaction
 		Entity html;
 		LinkedList<Entity> htmlEntries = new LinkedList<Entity>();
-
+		
 		try
 		{
 			for(School school : schools.values())
@@ -319,7 +318,7 @@ public class Main extends HttpServlet
 	}
 
 	@SuppressWarnings("deprecation")
-	private static void updateRegistrations(HashMap<String, School> schools)
+	private static void updateRegistrations(Map<String, School> schools)
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 

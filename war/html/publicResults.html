@@ -37,32 +37,18 @@
 							Sweekstakes</a></li>
 					<li class="divider"></li>
 
-					<li id="6" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">6th Grade<b
+					#set($nums = [6,7,8])
+					#foreach($num in $nums)
+					<li id="$num" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">${num}th Grade<b
 							class="caret"></b></a>
 						<ul class="dropdown-menu">
-							<li id="middle_category_6C"><a href="/contestResults?type=middle_category_6C">Calculator</a></li>
-							<li id="middle_category_6N"><a href="/contestResults?type=middle_category_6N">Number Sense</a></li>
-							<li id="middle_category_6M"><a href="/contestResults?type=middle_category_6M">Math</a></li>
-							<li id="middle_category_6S"><a href="/contestResults?type=middle_category_6S">Science</a></li>
-						</ul></li>
-
-					<li id="7" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">7th Grade<b
-							class="caret"></b></a>
-						<ul class="dropdown-menu">
-							<li id="middle_category_7C"><a href="/contestResults?type=middle_category_7C">Calculator</a></li>
-							<li id="middle_category_7N"><a href="/contestResults?type=middle_category_7N">Number Sense</a></li>
-							<li id="middle_category_7M"><a href="/contestResults?type=middle_category_7M">Math</a></li>
-							<li id="middle_category_7S"><a href="/contestResults?type=middle_category_7S">Science</a></li>
-						</ul></li>
-
-					<li id="8" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">8th Grade<b
-							class="caret"></b></a>
-						<ul class="dropdown-menu">
-							<li id="middle_category_8C"><a href="/contestResults?type=middle_category_8C">Calculator</a></li>
-							<li id="middle_category_8N"><a href="/contestResults?type=middle_category_8N">Number Sense</a></li>
-							<li id="middle_category_8M"><a href="/contestResults?type=middle_category_8M">Math</a></li>
-							<li id="middle_category_8S"><a href="/contestResults?type=middle_category_8S">Science</a></li>
-						</ul></li>
+							<li id="middle_category_${num}C"><a href="/contestResults?type=middle_category_${num}C">Calculator</a></li>
+							<li id="middle_category_${num}N"><a href="/contestResults?type=middle_category_${num}N">Number Sense</a></li>
+							<li id="middle_category_${num}M"><a href="/contestResults?type=middle_category_${num}M">Math</a></li>
+							<li id="middle_category_${num}S"><a href="/contestResults?type=middle_category_${num}S">Science</a></li>
+						</ul>
+					</li>
+					#end
 
 					<li class="nav-header">High School</li>
 					<li id="high_sweep"><a href="/contestResults?type=high_sweep">Sweepstakes</a></li>
@@ -70,44 +56,18 @@
 							Sweekstakes</a></li>
 					<li class="divider"></li>
 
-					<li id="9" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">9th Grade<b
+					#set($nums = [9,10,11,12])
+					#foreach($num in $nums)
+					<li id="$num" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">${num}th Grade<b
 							class="caret"></b></a>
 						<ul class="dropdown-menu">
-							<li id="high_category_9C"><a href="/contestResults?type=high_category_9C">Calculator</a></li>
-							<li id="high_category_9N"><a href="/contestResults?type=high_category_9N">Number Sense</a></li>
-							<li id="high_category_9M"><a href="/contestResults?type=high_category_9M">Math</a></li>
-							<li id="high_category_9S"><a href="/contestResults?type=high_category_9S">Science</a></li>
-						</ul></li>
-
-					<li id="10" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">10th
-							Grade<b class="caret"></b>
-					</a>
-						<ul class="dropdown-menu">
-							<li id="high_category_10C"><a href="/contestResults?type=high_category_10C">Calculator</a></li>
-							<li id="high_category_10N"><a href="/contestResults?type=high_category_10N">Number Sense</a></li>
-							<li id="high_category_10M"><a href="/contestResults?type=high_category_10M">Math</a></li>
-							<li id="high_category_10S"><a href="/contestResults?type=high_category_10S">Science</a></li>
-						</ul></li>
-
-					<li id="11" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">11th
-							Grade<b class="caret"></b>
-					</a>
-						<ul class="dropdown-menu">
-							<li id="high_category_11C"><a href="/contestResults?type=high_category_11C">Calculator</a></li>
-							<li id="high_category_11N"><a href="/contestResults?type=high_category_11N">Number Sense</a></li>
-							<li id="high_category_11M"><a href="/contestResults?type=high_category_11M">Math</a></li>
-							<li id="high_category_11S"><a href="/contestResults?type=high_category_11S">Science</a></li>
-						</ul></li>
-
-					<li id="12" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">12th
-							Grade<b class="caret"></b>
-					</a>
-						<ul class="dropdown-menu">
-							<li id="high_category_12C"><a href="/contestResults?type=high_category_12C">Calculator</a></li>
-							<li id="high_category_12N"><a href="/contestResults?type=high_category_12N">Number Sense</a></li>
-							<li id="high_category_12M"><a href="/contestResults?type=high_category_12M">Math</a></li>
-							<li id="high_category_12S"><a href="/contestResults?type=high_category_12S">Science</a></li>
-						</ul></li>
+							<li id="high_category_${num}C"><a href="/contestResults?type=high_category_${num}C">Calculator</a></li>
+							<li id="high_category_${num}N"><a href="/contestResults?type=high_category_${num}N">Number Sense</a></li>
+							<li id="high_category_${num}M"><a href="/contestResults?type=high_category_${num}M">Math</a></li>
+							<li id="high_category_${num}S"><a href="/contestResults?type=high_category_${num}S">Science</a></li>
+						</ul>
+					</li>
+					#end
 				</ul>
 			</div>
 

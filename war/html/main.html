@@ -3,19 +3,26 @@
 <html lang="en-US">
 <head>
 <title>Dulles TMSCA Tournament</title>
-    <meta name="description" content="Learn about the Dulles High School TMSCA Tournament">
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="index, follow">
-    <meta name="author" content="Sushain Cherivirala">
-    <link rel="shortcut icon" href="/favicon.ico">
-    <link type="text/css" href="/css/bootstrap.css" rel="stylesheet">
-    <style type="text/css">
-    body {
-    	padding-top: 60px;
-    	/* 60px to make the container go all the way to the bottom of the topbar */
-    }
-    </style>
+	<meta name="description" content="Learn about the Dulles High School TMSCA Tournament">
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="robots" content="index, follow">
+	<meta name="author" content="Sushain Cherivirala">
+	<link rel="shortcut icon" href="/favicon.ico">
+	<link type="text/css" href="/css/bootstrap.css" rel="stylesheet">
+	<style type="text/css">
+	body {
+		padding-top: 60px;
+		/* 60px to make the container go all the way to the bottom of the topbar */
+	}
+	.carousel {
+	    width: 720px;
+	    height: 960px;
+	    margin: 0 auto;
+	}
+	.carousel-inner { text-align: center; }
+	.carousel .item > img { display: inline-block; }
+	</style>
 </head>
 
 <body>
@@ -49,29 +56,26 @@
         		<li data-target="#myCarousel" data-slide-to="1"></li>
         		<li data-target="#myCarousel" data-slide-to="2"></li>
         	</ol>-->
-        	
+        
+
+		
         <div class="carousel-inner">
-        	<div class="item active">
-        		<img src="/static/PlaceholderPic0.jpg" alt="">
-        		<div class="carousel-caption">
-        			<h4>Placeholder 0</h4>
-        			<p>Cras justo odio, dapibus ac ultricies vehicula ut id elit.</p>	
-        		</div>
-        	</div>
-            <div class="item">
-        		<img src="/static/PlaceholderPic1.jpg" alt="">
-        		<div class="carousel-caption">
-        			<h4>Placeholder 1</h4>
-        			<p>Cras justo odio, dapibus ac ultricies vehicula ut id elit.</p>	
-        		</div>
-        	</div>
-            <div class="item">
-        		<img src="/static/PlaceholderPic2.jpg" alt="">
-        		<div class="carousel-caption">
-        			<h4>Placeholder 2</h4>
-        			<p>Cras justo odio, dapibus ac ultricies vehicula ut id elit.</p>	
-        		</div>
-        	</div>
+	        <div class="item">
+	    		<img src="/static/img/Pic0.jpg" alt="">
+	    		<div class="carousel-caption">
+	    			<h4>$titles[0]</h4>
+	    			<p>$captions[0]</p>	
+	    		</div>
+	        </div>
+			#foreach($i in [1..$num])
+				<div class="item">
+	        		<img src="/static/img/Pic${i}.jpg" alt="">
+	        		<div class="carousel-caption">
+	        			<h4>$titles[$i]</h4>
+	        			<p>$captions[$i]</p>	
+	        		</div>
+	        	</div>
+			#end
         	<a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
         	<a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
         </div>
@@ -83,7 +87,11 @@
 	<script type="text/javascript" src="/js/bootstrap-carousel.js"></script>
 	<script type="text/javascript" src="/js/bootstrap-transition.js"></script>
 	<script>
-		$('.carousel').carousel();
+	$(document).ready(function() {
+		$('.item').eq(Math.floor((Math.random() * $('.item').length))).addClass("active");
+		$('.carousel').carousel({interval: 3500});
+		
+	});
 	</script>
 </body>
 </html>

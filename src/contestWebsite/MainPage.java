@@ -76,6 +76,50 @@ public class MainPage extends HttpServlet
 				context.put("admin", true);
 			}
 		}
+		
+		String[] titles = { "TMSCA State Awards: 2013",
+							"UIL State Math Individual Awards: 2013",
+							"UIL State Math Team Awards: 2013",
+							"Texas A&M University Math Competition: 2013",
+							"University of Houston Math Competition: 2012",
+							"TMSCA State Math Team Awards: 2012",
+							"TMSCA State Science Team Awards: 2012",
+							"TMSCA State Awards: 2012",
+							"Math & Science Club Banquet: 2013",
+							"Math & Science Club Banquet: 2013",
+							"Math & Science Club Banquet: 2013",
+							"Math & Science Club Banquet: 2013",
+							"Math & Science Club Banquet: 2013",
+							"UIL State Team: 2013",
+							"UIL State Team: 2013",
+							"Math & Science Club Co-Presidents: 2014",
+							"UIL State Team: 2013",
+							"UIL State Science Team: 2013",
+							"Math & Science Club Officers: 2013"
+							};
+		String[] captions = { "",
+							"Bobby S. awarded first place in Math by Larry White",
+							"First place: Bobby S., Daniel F., Rik N., Ms. Sarah Cleveland",
+							"",
+							"",
+							"First place: Bobby S., Daniel F., Rik N., Mr. Feng Li",
+							"First place: Bobby S., Greg C., Daniel F., Kevin L., Dr. Drew Poche",
+							"",
+							"",
+							"",
+							"Graduating Seniors with Ms. Sarah Cleveland",
+							"Graduating Seniors with Dr. Drew Poche",
+							"Graduating Seniors",
+							"Siddarth G., Kevin L., Bobby S., Daniel F., Keerthana K., Rik N., Saiesh K., Sushain C.",
+							"Bobby S., Arjun G., Saiesh K., Sushain C., Daniel F., Mitchell H., Siddarth G., Kevin L., Keerthana K., Rik N.",
+							"Keerthana K., Kevin L.",
+							"Siddarth G., Kevin L., Bobby S.",
+							"Roy H., Emily W., Daniel H., Prashant R., Mitchell H., Kaelan Y., Arjun G., Chung H."
+							};
+		context.put("num", Math.min(titles.length, captions.length)-2);
+		context.put("titles", titles);
+		context.put("captions", captions);
+		
 		StringWriter sw = new StringWriter();
 		Velocity.mergeTemplate("main.html", context, sw);
 		sw.close();

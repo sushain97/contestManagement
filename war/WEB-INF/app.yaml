@@ -1,5 +1,5 @@
 application: sushain97
-version: 26
+version: 28
 runtime: java
 threadsafe: false
 
@@ -55,3 +55,4 @@ static_files:
   - include: /css/**.css
   - include: /js/**.js
   - include: /static/*
+  - include: /static/img/*

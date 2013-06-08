@@ -8,6 +8,7 @@
     <include path='/js/**.js'/>
     <include path='/static/*'/>
     <include path='/static/img/*'/>
+    <include path='/img/*'/>
   </static-files>
   <resource-files>
   </resource-files>

@@ -56,3 +56,4 @@ static_files:
   - include: /js/**.js
   - include: /static/*
   - include: /static/img/*
+  - include: /img/*

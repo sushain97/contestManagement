@@ -27,6 +27,7 @@
 			}
 			@page {	size: potrait; }
 			h1 .btn { display: none; }
+			#footer {visibility: hidden; }
 		}
 		h1 button { float: right; }
 		
@@ -34,97 +35,112 @@
 		@media print { @page { size: landscape; } }
 	#end
 	</style>
+	#if($scores)
+	<link type="text/css" href="/css/footer.css" rel="stylesheet">
+	#end
 </head>
 
 <body>
-	#parse("navbar.html") 
 	#if($scores)
-	<div class="container-fluid">
-		<noscript>Please enable JavaScript, otherwise numerous areas of this website will be
-			nonfunctional.</noscript>
-
-		<div class="row-fluid">
-			<div class="span1"></div>
-			<div class="span2">
-				<ul class="nav nav-list navbar-inverse">
-					<li id="overview"><a href="/data?choice=scores">Overview</a></li>
-					<li class="nav-header">Middle School</li>
-					<li id="middle_students"><a href="/data?choice=scores&type=middle_students">All Students</a></li>
-					<li id="middle_sweep"><a href="/data?choice=scores&type=middle_sweep">Sweepstakes</a></li>
-					<li id="middle_categorySweep"><a href="/data?choice=scores&type=middle_categorySweep">Category
-							Sweekstakes</a></li>
-					<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Schools<b
-							class="caret"></b></a>
-						<ul class="dropdown-menu">
-							#foreach($school in $middleSchools)
-							<li id="$school.getProperty("school").hashCode()"><a
-								href="/data?choice=scores&type=middle_school_$esc.url($school.getProperty("school"))">$school.getProperty("school")</a></li>
-							#end
-						</ul></li>
-					<li class="divider"></li>
-
-					#foreach($num in [6..8])
-					<li id="${num}" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">${num}th Grade<b
-							class="caret"></b>
-					</a>
-						<ul class="dropdown-menu">
-							<li id="middle_category_${num}C"><a href="/data?choice=scores&type=middle_category_${num}C">Calculator</a></li>
-							<li id="middle_category_${num}N"><a href="/data?choice=scores&type=middle_category_${num}N">Number Sense</a></li>
-							<li id="middle_category_${num}M"><a href="/data?choice=scores&type=middle_category_${num}M">Math</a></li>
-							<li id="middle_category_${num}S"><a href="/data?choice=scores&type=middle_category_${num}S">Science</a></li>
-						</ul></li>
-					#end
-
-					<li class="nav-header">High School</li>
-					<li id="high_students"><a href="/data?choice=scores&type=high_students">All Students</a></li>
-					<li id="high_sweep"><a href="/data?choice=scores&type=high_sweep">Sweepstakes</a></li>
-					<li id="high_categorySweep"><a href="/data?choice=scores&type=high_categorySweep">Category
-							Sweekstakes</a></li>
-					<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Schools<b
-							class="caret"></b></a>
-						<ul class="dropdown-menu">
-							#foreach($school in $highSchools)
-							<li id="$school.getProperty("school").hashCode()"><a
-								href="/data?choice=scores&type=high_school_$esc.url($school.getProperty("school"))">$school.getProperty("school")</a></li>
-							#end
-						</ul></li>
-					<li class="divider"></li>
+	<div id="wrap">
+		#parse("navbar.html")
+		<div class="container-fluid">
+			<noscript>Please enable JavaScript, otherwise numerous areas of this website will be
+				nonfunctional.</noscript>
 	
-					#foreach($num in [9..12])
-					<li id="${num}" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">${num}th Grade<b
-							class="caret"></b>
-					</a>
-						<ul class="dropdown-menu">
-							<li id="high_category_${num}C"><a href="/data?choice=scores&type=high_category_${num}C">Calculator</a></li>
-							<li id="high_category_${num}N"><a href="/data?choice=scores&type=high_category_${num}N">Number Sense</a></li>
-							<li id="high_category_${num}M"><a href="/data?choice=scores&type=high_category_${num}M">Math</a></li>
-							<li id="high_category_${num}S"><a href="/data?choice=scores&type=high_category_${num}S">Science</a></li>
-						</ul></li>
-					#end
-				</ul>
-			</div>
-
-			<div class="span8">
-				<h1>Contest Results
-				<button class="btn btn-small">Print<i class="icon-print"></i></button>
-				</h1>
-				#if( $overview ) Choose an option at the left to view specific results. #elseif(!$html) Results for this
-				competition are not yet available #else $html #end
+			<div class="row-fluid">
+				<div class="span1"></div>
+				<div class="span2">
+					<ul class="nav nav-list navbar-inverse">
+						<li id="overview"><a href="/data?choice=scores">Overview</a></li>
+						<li class="nav-header">Middle School</li>
+						<li id="middle_students"><a href="/data?choice=scores&type=middle_students">All Students</a></li>
+						<li id="middle_sweep"><a href="/data?choice=scores&type=middle_sweep">Sweepstakes</a></li>
+						<li id="middle_categorySweep"><a href="/data?choice=scores&type=middle_categorySweep">Category
+								Sweekstakes</a></li>
+						<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Schools<b
+								class="caret"></b></a>
+							<ul class="dropdown-menu">
+								#foreach($school in $middleSchools)
+								<li id="$school.getProperty("school").hashCode()"><a
+									href="/data?choice=scores&type=middle_school_$esc.url($school.getProperty("school"))">$school.getProperty("school")</a></li>
+								#end
+							</ul></li>
+						<li class="divider"></li>
+	
+						#foreach($num in [6..8])
+						<li id="${num}" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">${num}th Grade<b
+								class="caret"></b>
+						</a>
+							<ul class="dropdown-menu">
+								<li id="middle_category_${num}C"><a href="/data?choice=scores&type=middle_category_${num}C">Calculator</a></li>
+								<li id="middle_category_${num}N"><a href="/data?choice=scores&type=middle_category_${num}N">Number Sense</a></li>
+								<li id="middle_category_${num}M"><a href="/data?choice=scores&type=middle_category_${num}M">Math</a></li>
+								<li id="middle_category_${num}S"><a href="/data?choice=scores&type=middle_category_${num}S">Science</a></li>
+							</ul></li>
+						#end
+	
+						<li class="nav-header">High School</li>
+						<li id="high_students"><a href="/data?choice=scores&type=high_students">All Students</a></li>
+						<li id="high_sweep"><a href="/data?choice=scores&type=high_sweep">Sweepstakes</a></li>
+						<li id="high_categorySweep"><a href="/data?choice=scores&type=high_categorySweep">Category
+								Sweekstakes</a></li>
+						<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Schools<b
+								class="caret"></b></a>
+							<ul class="dropdown-menu">
+								#foreach($school in $highSchools)
+								<li id="$school.getProperty("school").hashCode()"><a
+									href="/data?choice=scores&type=high_school_$esc.url($school.getProperty("school"))">$school.getProperty("school")</a></li>
+								#end
+							</ul></li>
+						<li class="divider"></li>
+		
+						#foreach($num in [9..12])
+						<li id="${num}" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">${num}th Grade<b
+								class="caret"></b>
+						</a>
+							<ul class="dropdown-menu">
+								<li id="high_category_${num}C"><a href="/data?choice=scores&type=high_category_${num}C">Calculator</a></li>
+								<li id="high_category_${num}N"><a href="/data?choice=scores&type=high_category_${num}N">Number Sense</a></li>
+								<li id="high_category_${num}M"><a href="/data?choice=scores&type=high_category_${num}M">Math</a></li>
+								<li id="high_category_${num}S"><a href="/data?choice=scores&type=high_category_${num}S">Science</a></li>
+							</ul></li>
+						#end
+					</ul>
+				</div>
+	
+				<div class="span8">
+					<h1>Contest Results
+					<button class="btn btn-small">Print<i class="icon-print"></i></button>
+					</h1>
+					#if($overview) Choose an option at the left to view specific results. #elseif(!$html) Results for this
+					competition are not yet available #else $html #end
+					
+					<div id="push"></div>
+				</div>
 			</div>
 		</div>
 	</div>
+	
+	<div id="footer">
+      <div class="container">
+        <p>Last auto-generated <b>$date</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
+      </div>
+    </div>
 	#else
+	#parse("navbar.html")
 	<div class="container">
 		<noscript>Please enable JavaScript, otherwise numerous areas of this website will be
 			nonfunctional.</noscript>
 		<h1>Contest Data Viewer &amp; Editor</h1>
+		
 		#if($overview)
 		<h2>Overview</h2>
 		To view, edit, add, and modify registrations, go to the <a href="/data?choice=registrations">Registration
 			Data Viewer &amp; Editor</a>. <br /> To view, delete, and respond to clarifications and questions sent through
 		the <a href="/contactUs">Contact Us</a> page, go to the <a href="/data?choice=questions">Question Viewer</a>.
-		<br /> To view, edit, add, and modify student scores, go to the <a href="/data?choice=scores">Score
-			Viewer &amp; Editor</a>. <br /> #elseif($registration) #if($updated)
+		<br /> To view student scores, go to the <a href="/data?choice=scores">Score Viewer</a>. <br /> 
+		#elseif($registration) #if($updated)
 		<div class="alert alert-success">
 			<a class="close" data-dismiss="alert">&times;</a> <strong>Success! </strong>The changes have been committed
 			to the database and are reflected below.
@@ -231,7 +247,8 @@
 			</div>
 		</form>
 
-		#elseif($questions) #if($updated)
+		#elseif($questions) 
+		#if($updated)
 		<div class="alert alert-success">
 			<a class="close" data-dismiss="alert">&times;</a> <strong>Success! </strong>The changes have been committed
 			to the database and are reflected below.
@@ -326,12 +343,12 @@
 			}
 		}
 		
-		hashCode = function(s){
+		hashCode = function(s) {
 		    var hash = 0, i, char;
 		    if (s.length == 0) return hash;
 		    for (i = 0; i < s.length; i++) {
 		        char = s.charCodeAt(i);
-		        hash = ((hash<<5)-hash)+char;
+		        hash = ((hash << 5) - hash) + char;
 		        hash = hash & hash; // Convert to 32bit integer
 		    }
 		    return hash;

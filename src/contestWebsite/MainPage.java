@@ -62,7 +62,7 @@ public class MainPage extends HttpServlet
 
 				PropNames propNames = new PropNames();
 				for(String key : props.keySet())
-					if(!key.equals("account"))
+					if(!key.equals("account") && propNames.propNames.get(key) != null)
 						regData.add("<b>" + propNames.propNames.get(key) + "</b>: " + props.get(key));
 				Collections.sort(regData);
 				context.put("regData" , regData);

@@ -108,13 +108,15 @@ public class PublicResults extends HttpServlet
 				}
 				else
 					context.put("overview", true);
+				
+				context.put("date", info.get(0).getProperty("updated"));
 			}
 			else
 				context.put("complete", false);
 		}
 		else
 			context.put("complete", false);
-
+		
 		StringWriter sw = new StringWriter();
 		Velocity.mergeTemplate("publicResults.html", context, sw);
 		sw.close();

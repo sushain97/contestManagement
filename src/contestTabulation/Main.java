@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -313,6 +314,11 @@ public class Main extends HttpServlet
 			sw.close();
 
 			datastore.put(htmlEntries);
+			
+			Query query = new Query("contestInfo");
+			Entity info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+			info.setProperty("updated", new Date().toString());
+			datastore.put(info);
 		}
 		catch(Exception e) { e.printStackTrace(); }
 	}

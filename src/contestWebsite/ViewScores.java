@@ -64,6 +64,10 @@ public class ViewScores extends HttpServlet
 				if(html.size() != 0)
 					context.put("html", ((com.google.appengine.api.datastore.Text) html.get(0).getProperty("html")).getValue());
 
+				query = new Query("contestInfo");
+				Entity info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+				context.put("date", info.getProperty("updated"));
+				
 				StringWriter sw = new StringWriter();
 				Velocity.mergeTemplate("schoolScores.html", context, sw);
 				sw.close();

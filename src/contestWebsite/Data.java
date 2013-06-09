@@ -52,10 +52,7 @@ public class Data extends HttpServlet
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
 
 		if(!loggedIn)
-		{
 			resp.sendRedirect("/");
-			return;
-		}
 		else
 		{
 			String cookieContent = URLDecoder.decode(userCookie.getValue(), "UTF-8");
@@ -63,116 +60,117 @@ public class Data extends HttpServlet
 			{
 				context.put("user", cookieContent.split("\\$")[0]);
 				context.put("admin", true);
-			}
-			else
-			{
-				resp.sendRedirect("/");
-				return;
-			}
-		}
 
-		String choice = req.getParameter("choice");
-		if(choice == null)
-			resp.sendRedirect("/data?choice=overview");
-		else if(choice.equals("overview"))
-			context.put("overview", true);
-		else if(choice.equals("registrations"))
-		{
-			context.put("registration", true);
-			context.put("updated", req.getParameter("updated"));
-			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-			Query query = new Query("registration").addFilter("schoolLevel", FilterOperator.EQUAL, "middle");
-			List<Entity> middleRegs = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-			query = new Query("registration").addFilter("schoolLevel", FilterOperator.EQUAL, "high");
-			List<Entity> highRegs = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-			context.put("middleRegs", middleRegs);
-			context.put("highRegs", highRegs);
-		}
-		else if(choice.equals("questions"))
-		{
-			context.put("questions", true);
-			context.put("updated", req.getParameter("updated"));
-			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-			Query query = new Query("feedback").addFilter("resolved", FilterOperator.EQUAL, true);
-			List<Entity> resolvedQs = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-			query = new Query("feedback").addFilter("resolved", FilterOperator.NOT_EQUAL, true);
-			List<Entity> unresolvedQs = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-			context.put("resolvedQs" , resolvedQs);
-			context.put("unresolvedQs" , unresolvedQs);
-		}
-		else if(choice.equals("scores"))
-		{
-			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-			Query query;
-
-			String type = req.getParameter("type");
-			if(type != null)
-			{
-				String[] types = type.split("_");
-				Filter levelFilter = new FilterPredicate("level", FilterOperator.EQUAL, types[0]);
-				if(types.length == 2 && !types[1].equals("category"))
+				String choice = req.getParameter("choice");
+				if(choice == null)
+					resp.sendRedirect("/data?choice=overview");
+				else if(choice.equals("overview"))
+					context.put("overview", true);
+				else if(choice.equals("registrations"))
 				{
-					Filter typeFilter = new FilterPredicate("type", FilterOperator.EQUAL, types[1]);
+					context.put("registration", true);
+					context.put("updated", req.getParameter("updated"));
+					DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+					Query query = new Query("registration").addFilter("schoolLevel", FilterOperator.EQUAL, "middle");
+					List<Entity> middleRegs = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
+					query = new Query("registration").addFilter("schoolLevel", FilterOperator.EQUAL, "high");
+					List<Entity> highRegs = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
+					context.put("middleRegs", middleRegs);
+					context.put("highRegs", highRegs);
+				}
+				else if(choice.equals("questions"))
+				{
+					context.put("questions", true);
+					context.put("updated", req.getParameter("updated"));
+					DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+					Query query = new Query("feedback").addFilter("resolved", FilterOperator.EQUAL, true);
+					List<Entity> resolvedQs = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
+					query = new Query("feedback").addFilter("resolved", FilterOperator.NOT_EQUAL, true);
+					List<Entity> unresolvedQs = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
+					context.put("resolvedQs" , resolvedQs);
+					context.put("unresolvedQs" , unresolvedQs);
+				}
+				else if(choice.equals("scores"))
+				{
+					DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+					Query query;
+
+					String type = req.getParameter("type");
+					if(type != null)
+					{
+						String[] types = type.split("_");
+						Filter levelFilter = new FilterPredicate("level", FilterOperator.EQUAL, types[0]);
+						if(types.length == 2 && !types[1].equals("category"))
+						{
+							Filter typeFilter = new FilterPredicate("type", FilterOperator.EQUAL, types[1]);
+							Filter filter = CompositeFilterOperator.and(typeFilter, levelFilter);
+							query = new Query("html").setFilter(filter);
+							List<Entity> html = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+							if(!html.isEmpty())
+								context.put("html", ((com.google.appengine.api.datastore.Text) html.get(0).getProperty("html")).getValue());
+						}
+						else if(types.length == 3 && types[1].equals("school"))
+						{
+							Filter typeFilter = new FilterPredicate("type", FilterOperator.EQUAL, "school");
+							Filter nameFilter = new FilterPredicate("school", FilterOperator.EQUAL, types[2]);
+							Filter filter = CompositeFilterOperator.and(CompositeFilterOperator.and(typeFilter, levelFilter), nameFilter);
+							query = new Query("html").setFilter(filter);
+							List<Entity> html = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+							if(!html.isEmpty())
+								context.put("html", ((com.google.appengine.api.datastore.Text) html.get(0).getProperty("html")).getValue());
+						}
+						else if(types.length == 3 && types[1].equals("category"))
+						{
+							Filter typeFilter = new FilterPredicate("type", FilterOperator.EQUAL, types[1]);
+							Filter testFilter = new FilterPredicate("test", FilterOperator.EQUAL, types[2]);
+							Filter filter = CompositeFilterOperator.and(CompositeFilterOperator.and(typeFilter, levelFilter), testFilter);
+							query = new Query("html").setFilter(filter);
+							List<Entity> html = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+							if(!html.isEmpty())
+								context.put("html", ((com.google.appengine.api.datastore.Text) html.get(0).getProperty("html")).getValue());
+						}
+					}
+					else
+						context.put("overview", true);
+
+					Filter typeFilter = new FilterPredicate("type", FilterOperator.EQUAL, "school");
+					Filter levelFilter = new FilterPredicate("level", FilterOperator.EQUAL, "middle");
 					Filter filter = CompositeFilterOperator.and(typeFilter, levelFilter);
 					query = new Query("html").setFilter(filter);
-					List<Entity> html = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-					if(!html.isEmpty())
-						context.put("html", ((com.google.appengine.api.datastore.Text) html.get(0).getProperty("html")).getValue());
-				}
-				else if(types.length == 3 && types[1].equals("school"))
-				{
-					Filter typeFilter = new FilterPredicate("type", FilterOperator.EQUAL, "school");
-					Filter nameFilter = new FilterPredicate("school", FilterOperator.EQUAL, types[2]);
-					Filter filter = CompositeFilterOperator.and(CompositeFilterOperator.and(typeFilter, levelFilter), nameFilter);
+					List<Entity> middleSchools = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
+					if(!middleSchools.isEmpty())
+						context.put("middleSchools", middleSchools);
+
+					levelFilter = new FilterPredicate("level", FilterOperator.EQUAL, "high");
+					filter = CompositeFilterOperator.and(typeFilter, levelFilter);
 					query = new Query("html").setFilter(filter);
-					List<Entity> html = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-					if(!html.isEmpty())
-						context.put("html", ((com.google.appengine.api.datastore.Text) html.get(0).getProperty("html")).getValue());
+					List<Entity> highSchools = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
+					if(!highSchools.isEmpty())
+						context.put("highSchools", highSchools);
+					
+					query = new Query("contestInfo");
+					Entity info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+					context.put("date", info.getProperty("updated"));
+
+					context.put("esc", new EscapeTool());
+					context.put("scores", true);
 				}
-				else if(types.length == 3 && types[1].equals("category"))
+				else
 				{
-					Filter typeFilter = new FilterPredicate("type", FilterOperator.EQUAL, types[1]);
-					Filter testFilter = new FilterPredicate("test", FilterOperator.EQUAL, types[2]);
-					Filter filter = CompositeFilterOperator.and(CompositeFilterOperator.and(typeFilter, levelFilter), testFilter);
-					query = new Query("html").setFilter(filter);
-					List<Entity> html = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-					if(!html.isEmpty())
-						context.put("html", ((com.google.appengine.api.datastore.Text) html.get(0).getProperty("html")).getValue());
+					resp.sendRedirect("/data?choice=overview");
+					return;
 				}
+
+				context.put("loggedIn", loggedIn);
+				StringWriter sw = new StringWriter();
+				Velocity.mergeTemplate("data.html", context, sw);
+				sw.close();
+
+				resp.getWriter().print(sw);
 			}
 			else
-				context.put("overview", true);
-
-			Filter typeFilter = new FilterPredicate("type", FilterOperator.EQUAL, "school");
-			Filter levelFilter = new FilterPredicate("level", FilterOperator.EQUAL, "middle");
-			Filter filter = CompositeFilterOperator.and(typeFilter, levelFilter);
-			query = new Query("html").setFilter(filter);
-			List<Entity> middleSchools = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-			if(!middleSchools.isEmpty())
-				context.put("middleSchools", middleSchools);
-
-			levelFilter = new FilterPredicate("level", FilterOperator.EQUAL, "high");
-			filter = CompositeFilterOperator.and(typeFilter, levelFilter);
-			query = new Query("html").setFilter(filter);
-			List<Entity> highSchools = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-			if(!highSchools.isEmpty())
-				context.put("highSchools", highSchools);
-			
-			context.put("esc", new EscapeTool());
-			context.put("scores", true);
+				resp.sendRedirect("/");
 		}
-		else
-		{
-			resp.sendRedirect("/data?choice=overview");
-			return;
-		}
-
-		context.put("loggedIn", loggedIn);
-		StringWriter sw = new StringWriter();
-		Velocity.mergeTemplate("data.html", context, sw);
-		sw.close();
-
-		resp.getWriter().print(sw);
 	}
 
 	@SuppressWarnings("unchecked")

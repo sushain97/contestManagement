@@ -30,14 +30,37 @@
 		</br><b>Calculator:</b> 8:30 AM
 		</br><b>General Math:</b> 9:30 AM
 		</br><b>Science:</b> 10:30 AM
+		
+		<br /><br /><a href="#about" role="button" class="btn" data-toggle="modal">About the Website</a>
 	</div>
 	
+	<div id="about" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="aboutModal" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			<h3 id="aboutModal">About the Wesbite</h3>
+		</div>
+		<div class="modal-body">
+			<p><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US"> <img alt="Creative Commons License"
+				style="border-width: 0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png" /></a> <br /> 
+				<span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">TMSCA Tournament Management System</span>
+			by <a xmlns:cc="http://creativecommons.org/ns#" href="http://www.skc.name" property="cc:attributionName" rel="cc:attributionURL">Sushain
+				Cherivirala</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US">Creative
+				Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>.</p>
+			<p><a href="https://github.com/sushain97/contestManagement"><img src="/static/img/github.png" width="120px" /> sushain97/contestManagement</a></p>
+			<img src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" alt="Powered by Google App Engine" /> for Java
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Close</button>
+		</div>
+	</div>
+
 	<script type="text/javascript" src="/js/jquery.min.js"></script>
 	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
 	<script type="text/javascript" src="/js/bootstrap-transition.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-modal.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$('button').on('click', function() {
+			$('h1 button').on('click', function() {
 				$('.accordion-body').addClass('in');
 				$('button').hide();
 				window.print();

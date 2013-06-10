@@ -147,6 +147,8 @@
 		</div>
 		#end
 		<h2>Recorded Registrations</h2>
+		#set($middleTests = ["6n","6c","6m","6s","7n","7c","7m","7s","8n","8c","8m","8s"])
+		#set($highTests = ["9n","9c","9m","9s","10n","10c","10m","10s","11n","11c","11m","11s","12n","12c","12m","12s"])
 		<em>Note:</em> x/y indicates a registration for x tests and y tests actually taken
 		<form method="post">
 			<h3>Middle School</h3>
@@ -159,38 +161,49 @@
 						<th>Reg. Type</th>
 						<th>School</th>
 						<th>Aliases</th>
-						<th>Account</th> #set($tests = ["6n","6c","6m","6s","7n","7c","7m","7s","8n","8c","8m","8s"])
-						#foreach($test in $tests)
-						<th>$test</th> #end
+						<th>Payment</th>
+						<th>Account</th>
+						#foreach($test in $middleTests)
+						<th>$test</th> 
+						#end
 						<th>Cost</th>
 					</tr>
 				</thead>
 				<tbody>
-					#set($nums = [0,0,0,0,0,0,0,0,0,0,0,0,0]) #foreach($reg in $middleRegs)
+					#set($nums = [0,0,0,0,0,0,0,0,0,0,0,0,0]) 
+					#foreach($reg in $middleRegs)
 					<tr>
 						<td style="text-align: center"><input type="radio" name="edit" value="$reg.getKey().getId()"></td>
 						<td>$reg.getProperty("name")</td>
 						<td><a href="mailto:$reg.getProperty("email")">$reg.getProperty("email")</a></td>
 						<td>$reg.getProperty("registrationType")</td>
-						<td>$reg.getProperty("schoolName")</td> #if($reg.getProperty("aliases"))
-						<td>$reg.getProperty("aliases")</td> #else
-						<td></td> #end
-						<td>$reg.getProperty("account")</td> #set($tests =
-						["6n","6c","6m","6s","7n","7c","7m","7s","8n","8c","8m","8s"]) #set($i = 0) #foreach($test in $tests)
-						<td>$reg.getProperty($test)#if($reg.getProperty($test.toUpperCase()))/$reg.getProperty($test.toUpperCase())#else/0
-							#end</td> #set($nums[$i] = $nums[$i] + $reg.getProperty($test)) #set($i = $i + 1) #end
-						<td>&#36;$reg.getProperty("cost")</td> #set($nums[12] = $nums[12] + $reg.getProperty("cost"))
+						<td>$reg.getProperty("schoolName")</td>
+						
+						#if($reg.getProperty("aliases")) <td>$reg.getProperty("aliases")</td> #else	<td></td> #end
+						
+						#if($reg.getProperty("paid").length() > 12)
+						<td>$reg.getProperty("paid").substring(0,11)&hellip;</td> 
+						#else
+						<td>$reg.getProperty("paid")</td> 
+						#end
+						
+						<td>$reg.getProperty("account")</td>
+						#set($i = 0) 
+						#foreach($test in $middleTests)
+						<td>$reg.getProperty($test)#if($reg.getProperty($test.toUpperCase()))/$reg.getProperty($test.toUpperCase())#else/0#end</td>
+						#set($nums[$i] = $nums[$i] + $reg.getProperty($test)) #set($i = $i + 1)
+						#end
+						
+						<td>&#36;$reg.getProperty("cost")</td> 
+						#set($nums[12] = $nums[12] + $reg.getProperty("cost"))
 					</tr>
-					#end #set($nums[12] = "&#36;$nums[12]")
+					#end 
+					#set($nums[12] = "&#36;$nums[12]")
 					<tr>
 						<td><b>Total</b></td>
+						#foreach($i in [1..6]) <td></td> #end
 						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td> #foreach($num in $nums)
-						<td>$num</td> #end
+						#foreach($num in $nums)	<td>$num</td> #end
 					</tr>
 				</tbody>
 			</table>
@@ -205,40 +218,49 @@
 						<th>Reg. Type</th>
 						<th>School</th>
 						<th>Aliases</th>
-						<th>Account</th> #set($tests =
-						["9n","9c","9m","9s","10n","10c","10m","10s","11n","11c","11m","11s","12n","12c","12m","12s"])
-						#foreach($test in $tests)
-						<th>$test</th> #end
+						<th>Payment</th>
+						<th>Account</th>
+						#foreach($test in $highTests)
+						<th>$test</th> 
+						#end
 						<th>Cost</th>
 					</tr>
 				</thead>
 				<tbody>
-					#set($nums = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]) #foreach($reg in $highRegs)
+					#set($nums = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]) 
+					#foreach($reg in $highRegs)
 					<tr>
 						<td style="text-align: center"><input type="radio" name="edit" value="$reg.getKey().getId()"></td>
 						<td>$reg.getProperty("name")</td>
 						<td><a href="mailto:$reg.getProperty("email")">$reg.getProperty("email")</a></td>
 						<td>$reg.getProperty("registrationType")</td>
-						<td>$reg.getProperty("schoolName")</td> #if($reg.getProperty("aliases"))
-						<td>$reg.getProperty("aliases")</td> #else
-						<td></td> #end
-						<td>$reg.getProperty("account")</td> #set($tests =
-						["9n","9c","9m","9s","10n","10c","10m","10s","11n","11c","11m","11s","12n","12c","12m","12s"]) #set($i =
-						0) #foreach($test in $tests)
-						<td>$reg.getProperty($test)#if($reg.getProperty($test.toUpperCase()))/$reg.getProperty($test.toUpperCase())#else/0
-							#end</td> #set($nums[$i] = $nums[$i] + $reg.getProperty($test)) #set($i = $i + 1) #end
-						<td>&#36;$reg.getProperty("cost")</td> #set($nums[16] = $nums[16] + $reg.getProperty("cost"))
+						<td>$reg.getProperty("schoolName")</td> 
+						
+						#if($reg.getProperty("aliases")) <td>$reg.getProperty("aliases")</td> #else	<td></td> #end
+						
+						#if($reg.getProperty("paid").length() > 12)
+						<td>$reg.getProperty("paid").substring(0,11)&hellip;</td> 
+						#else
+						<td>$reg.getProperty("paid")</td> 
+						#end
+						
+						<td>$reg.getProperty("account")</td>
+						#set($i = 0)
+						#foreach($test in $highTests)
+						<td>$reg.getProperty($test)#if($reg.getProperty($test.toUpperCase()))/$reg.getProperty($test.toUpperCase())#else/0#end</td>
+						#set($nums[$i] = $nums[$i] + $reg.getProperty($test)) #set($i = $i + 1)
+						#end
+						
+						<td>&#36;$reg.getProperty("cost")</td> 
+						#set($nums[16] = $nums[16] + $reg.getProperty("cost"))
 					</tr>
-					#end #set($nums[16] = "&#36;$nums[16]")
+					#end 
+					#set($nums[16] = "&#36;$nums[16]")
 					<tr>
 						<td><b>Total</b></td>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td> #foreach($num in $nums)
-						<td>$num</td> #end
+						#foreach($i in [1..6]) <td></td> #end
+						<td></td> 
+						#foreach($num in $nums) <td>$num</td> #end
 					</tr>
 				</tbody>
 			</table>

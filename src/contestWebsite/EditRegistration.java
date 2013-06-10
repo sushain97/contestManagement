@@ -103,6 +103,7 @@ public class EditRegistration extends HttpServlet
 					context.put("aliases", props.get("aliases"));
 					context.put("name", props.get("name"));
 					context.put("email", props.get("email"));
+					context.put("paid", props.get("paid"));
 				}
 				catch(Exception e) { e.printStackTrace(); }
 
@@ -195,6 +196,7 @@ public class EditRegistration extends HttpServlet
 					registration.setProperty("schoolLevel", schoolLevel);
 					registration.setProperty("name", name);
 					registration.setProperty("email", email);
+					registration.setProperty("paid", params.get("paid")[0]);
 					if(!params.get("aliases")[0].equals("$aliases"))
 						registration.setProperty("aliases", params.get("aliases")[0]);
 	

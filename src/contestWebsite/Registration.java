@@ -287,6 +287,7 @@ public class Registration extends HttpServlet
 			registration.setProperty("schoolLevel", schoolLevel);
 			registration.setProperty("name", name);
 			registration.setProperty("email", email);
+			registration.setProperty("paid", "");
 			if(registrationType.equals("student"))
 				registration.setProperty("aliases", aliases);
 			

@@ -231,6 +231,7 @@ public class Registration extends HttpServlet
 				for(int j = 0; j < 4; j++)
 					nums.put(i + subjects[j], new Integer(Integer.parseInt(params.get(i + subjects[j])[0])));
 
+
 		Query query = new Query("registration").addFilter("email", FilterOperator.EQUAL, email);
 		List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 
@@ -302,7 +303,7 @@ public class Registration extends HttpServlet
 			for(Entry<String,Integer> test : nums.entrySet())
 			{
 				int num = test.getValue();
-				if(num > 0)
+				if(num >= 0)
 				{
 					registration.setProperty(test.getKey(), num);
 					cost += num * price;

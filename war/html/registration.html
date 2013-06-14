@@ -7,11 +7,10 @@
 	<meta name="robots" content="index, follow">
 	#include("head.html")
 	<style type="text/css">
-	body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */
-	span.tab { padding: 0 30px; }
-	span.tab2 { padding: 0 20px; }
-	#hi { display: none; }
+		body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */
+		#hi { display: none; }
 	</style>
+	#include("jquery.html")
 </head>
 
 <body>
@@ -22,16 +21,16 @@
 			nonfunctional.</noscript>
 		<h1>Contest Registration</h1>
 
-		#if( $updated )
+		#if($updated)
 		<div class="alert alert-success">
 			<a class="close" data-dismiss="alert">&times;</a> <strong>Success! </strong>Your registration has been
 			recorded. You will receive a confirmation e-mail soon.
 		</div>
-		#elseif( !$registrationError.equals('') )
+		#elseif(!$registrationError.equals(''))
 		<div class="alert alert-error">
 			<a class="close" data-dismiss="alert">&times;</a> <strong>Oh no!</strong> $registrationError
 		</div>
-		#elseif( $error )
+		#elseif($error)
 		<div class="alert alert-error">
 			<a class="close" data-dismiss="alert">&times;</a> <strong>Oh no!</strong> There has been a problem with
 			your registration, look below.
@@ -42,7 +41,8 @@
 			times, <a href="/contactUs">contact us</a> to make changes to your registration.
 		</div>
 		#end
-
+		
+		#if(!$updated)
 		<form method="post" class="form-horizontal">
 			<fieldset>
 				<div class="control-group">
@@ -79,18 +79,22 @@
 				<div class="control-group">
 					<label class="control-label" for="name">Your Name</label>
 					<div class="controls">
-						<input type="text" name="name" value="$name" class="input-xlarge" id="name" required>
+						<div class="input-prepend">
+	      					<span class="add-on"><i class="icon-user"></i></span>
+							<input type="text" name="name" value="$name" class="input-xlarge" id="name" required>
+						</div>
 					</div>
 				</div>
 
 				<div class=#if($userError) "control-group error" #else "control-group" #end>
 					<label class="control-label" for="email">Your E-Mail Address</label>
 					<div class="controls">
-						<input type="email" name="email" value="$email" class="input-xlarge" id="email" required>
-						#if($userError) <span class="help-inline">A registration already exists for that E-Mail Address.</span>
-						#end
+						<div class="input-prepend">
+	      					<span class="add-on"><i class="icon-envelope"></i></span>
+							<input type="email" name="email" value="$email" class="input-xlarge" id="email" required>
+						</div>
+						#if($userError) <span class="help-inline">A registration already exists for that E-Mail Address.</span> #end
 					</div>
-
 				</div>
 
 
@@ -103,20 +107,20 @@
 					</div>
 				</div>
 
-				<p class="help-block">
-					<b> <span class="tab"></span><span class="tab"></span><span class="tab"></span>Number Sense<span
-						class="tab"></span>&nbsp;Calculator <span class="tab2"></span>&nbsp;&nbsp;<span class="tab2"></span>Math<span
-						class="tab2"></span>&nbsp;<span class="tab"></span>Science
-					</b>
-				</p>
+				<div class="row">
+					<div class="span2" style="margin-left: 220px;"><b>Number Sense</b></div>
+					<div class="span2" style="margin-left: 35px;"><b>Calculator</b></div>
+					<div class="span2" style="margin-left: 35px;"><b>Math</b></div>
+					<div class="span2" style="margin-left: 10px;"><b>Science</b></div>
+				</div>
 
 				<div id="mid">
 					<div class="control-group">
 						<label class="control-label" for="level6">6th Grade Registration</label>
 						<div class="controls controls-row">
-							<input class="span2" type="number" value="$sixN" name="6n" id="level6" required> <input
-								class="span2" type="number" value="$sixC" name="6c" id="level6" required> <input class="span2"
-								type="number" value="$sixM" name="6m" id="level6" required> <input class="span2" type="number"
+							<input class="span2" type="number" min="0" value="$sixN" name="6n" id="level6" required> <input
+								class="span2" type="number" min="0" value="$sixC" name="6c" id="level6" required> <input class="span2"
+								type="number" value="$sixM" name="6m" id="level6" required> <input class="span2" type="number" min="0"
 								value="$sixS" name="6s" id="level6" required>
 						</div>
 					</div>
@@ -124,20 +128,20 @@
 					<div class="control-group">
 						<label class="control-label" for="level7">7th Grade Registration</label>
 						<div class="controls controls-row">
-							<input class="span2" type="number" value="$sevenN" name="7n" id="level7" required> <input
-								class="span2" type="number" value="$sevenC" name="7c" id="level7" required> <input
-								class="span2" type="number" value="$sevenM" name="7m" id="level7" required> <input
-								class="span2" type="number" value="$sevenS" name="7s" id="level7" required>
+							<input class="span2" type="number" min="0" value="$sevenN" name="7n" id="level7" required> <input
+								class="span2" type="number" min="0" value="$sevenC" name="7c" id="level7" required> <input
+								class="span2" type="number" min="0" value="$sevenM" name="7m" id="level7" required> <input
+								class="span2" type="number" min="0" value="$sevenS" name="7s" id="level7" required>
 						</div>
 					</div>
 
 					<div class="control-group">
 						<label class="control-label" for="level8">8th Grade Registration</label>
 						<div class="controls controls-row">
-							<input class="span2" type="number" value="$eightN" name="8n" id="level8" required> <input
-								class="span2" type="number" value="$eightC" name="8c" id="level8" required> <input
-								class="span2" type="number" value="$eightM" name="8m" id="level8" required> <input
-								class="span2" type="number" value="$eightS" name="8s" id="level8" required>
+							<input class="span2" type="number" min="0" value="$eightN" name="8n" id="level8" required> <input
+								class="span2" type="number" min="0" value="$eightC" name="8c" id="level8" required> <input
+								class="span2" type="number" min="0" value="$eightM" name="8m" id="level8" required> <input
+								class="span2" type="number" min="0" value="$eightS" name="8s" id="level8" required>
 						</div>
 					</div>
 				</div>
@@ -146,48 +150,52 @@
 					<div class="control-group">
 						<label class="control-label" for="level9">9th Grade Registration</label>
 						<div class="controls controls-row">
-							<input class="span2" type="number" value="$nineN" name="9n" id="level9" required> <input
-								class="span2" type="number" value="$nineC" name="9c" id="level9" required> <input
-								class="span2" type="number" value="$nineM" name="9m" id="level9" required> <input
-								class="span2" type="number" value="$nineS" name="9s" id="level9" required>
+							<input class="span2" type="number" min="0" value="$nineN" name="9n" id="level9" required> <input
+								class="span2" type="number" min="0" value="$nineC" name="9c" id="level9" required> <input
+								class="span2" type="number" min="0" value="$nineM" name="9m" id="level9" required> <input
+								class="span2" type="number" min="0" value="$nineS" name="9s" id="level9" required>
 						</div>
 					</div>
 
 					<div class="control-group">
 						<label class="control-label" for="level10">10th Grade Registration</label>
 						<div class="controls controls-row">
-							<input class="span2" type="number" value="$tenN" name="10n" id="level10" required> <input
-								class="span2" type="number" value="$tenC" name="10c" id="level10" required> <input
-								class="span2" type="number" value="$tenM" name="10m" id="level10" required> <input
-								class="span2" type="number" value="$tenS" name="10s" id="level10" required>
+							<input class="span2" type="number" min="0" value="$tenN" name="10n" id="level10" required> <input
+								class="span2" type="number" min="0" value="$tenC" name="10c" id="level10" required> <input
+								class="span2" type="number" min="0" value="$tenM" name="10m" id="level10" required> <input
+								class="span2" type="number" min="0" value="$tenS" name="10s" id="level10" required>
 						</div>
 					</div>
 
 					<div class="control-group">
 						<label class="control-label" for="level11">11th Grade Registration</label>
 						<div class="controls controls-row">
-							<input class="span2" type="number" value="$elevenN" name="11n" id="level11" required> <input
-								class="span2" type="number" value="$elevenC" name="11c" id="level11" required> <input
-								class="span2" type="number" value="$elevenM" name="11m" id="level11" required> <input
-								class="span2" type="number" value="$elevenS" name="11s" id="level11" required>
+							<input class="span2" type="number" min="0" value="$elevenN" name="11n" id="level11" required> <input
+								class="span2" type="number" min="0" value="$elevenC" name="11c" id="level11" required> <input
+								class="span2" type="number" min="0" value="$elevenM" name="11m" id="level11" required> <input
+								class="span2" type="number" min="0" value="$elevenS" name="11s" id="level11" required>
 						</div>
 					</div>
 
 					<div class="control-group">
 						<label class="control-label" for="level12">12th Grade Registration</label>
 						<div class="controls controls-row">
-							<input class="span2" type="number" value="$twelveN" name="12n" id="level12" required> <input
-								class="span2" type="number" value="$twelveC" name="12c" id="level12" required> <input
-								class="span2" type="number" value="$twelveM" name="12m" id="level12" required> <input
-								class="span2" type="number" value="$twelveS" name="12s" id="level12" required>
+							<input class="span2" type="number" min="0" value="$twelveN" name="12n" id="level12" required> <input
+								class="span2" type="number" min="0" value="$twelveC" name="12c" id="level12" required> <input
+								class="span2" type="number" min="0" value="$twelveM" name="12m" id="level12" required> <input
+								class="span2" type="number" min="0" value="$twelveS" name="12s" id="level12" required>
 						</div>
 					</div>
 				</div>
 
 				<div class="control-group">
-					<label class="control-label" for="schoolName">Registration Charges ($)</label>
+					<label class="control-label" for="schoolName">Registration Charges</label>
 					<div class="controls">
-						<input type="text" class="input-small" name="cost" id="cost" value="0" readonly>
+						<div class="input-prepend input-append">
+							<span class="add-on">$</span>
+							<input type="text" class="input-mini" name="cost" id="cost" value="0" readonly>
+							<span class="add-on">.00</span>
+						</div>
 					</div>
 				</div>
 
@@ -201,26 +209,32 @@
 					<div class="controls">
 						<label class="radio"> <input type="radio" name="account" id="account1" value="yes"
 							#if($account) checked #end> Yes
-						</label> <label class="radio"> <input type="radio" name="account" id="account2" value="no"
+						</label> 
+						<label class="radio"> <input type="radio" name="account" id="account2" value="no"
 							#if(!$account) checked #end> No
 						</label>
 					</div>
 				</div>
 
 				<div id="acc">
-
 					<div class="control-group">
 						<label class="control-label" for="password">Password</label>
 						<div class="controls">
-							<input type="password" id="password" name="password" value='' maxlength="32" required>
+							<div class="input-prepend">
+		      					<span class="add-on"><i class="icon-lock"></i></span>
+								<input type="password" pattern=".{8,}" title="Passwords must be atleast 8 characters" id="password" name="password" value='' maxlength="32" required>
+							</div>
 						</div>
 					</div>
 
 					<div class=#if($passwordError) "control-group error" #else "control-group" #end>
 						<label class="control-label" for="password">Confirm Password</label>
 						<div class="controls">
-							<input type="password" id="confPassword" name="confPassword" value='' maxlength="32" required>
-							#if($passwordError) <span class="help-inline">Those passwords didn't match, try again.</span> #end
+							<div class="input-prepend">
+		      					<span class="add-on"><i class="icon-lock"></i></span>
+								<input type="password" pattern=".{8,}" title="Passwords must be atleast 8 characters" id="confPassword" name="confPassword" value='' maxlength="32" required>
+								#if($passwordError) <span class="help-inline">Those passwords didn't match, try again.</span> #end
+							</div>
 						</div>
 					</div>
 				</div>
@@ -229,6 +243,7 @@
 					<label class="control-label" for="captcha">CAPTCHA</label>
 					<div class="controls">
 						<input type="text" name="captcha" class="input-small" id="captcha" required>
+						<span class="help-inline">Answer the question below in the box provided</span>
 						<p class="help-block">$captcha</p>
 					</div>
 				</div>
@@ -244,9 +259,9 @@
 			</fieldset>
 		</form>
 	</div>
+	#end
 
 	<script src="/js/md5hash.js" type="text/javascript"></script>
-	<script type="text/javascript" src="/js/jquery.min.js"></script>
 	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
 	<script type="text/javascript" src="/js/bootstrap-alert.js"></script>
 	<script type="text/javascript">
@@ -261,7 +276,6 @@
 				CalcCost();
 			});
 			$('#captcha').on('keyup', AuthCaptcha);
-			$('#captcha').on('blur', ResetSubmit);
 			$('#submit').on('click', AuthCaptcha);
 		});
 	</script>
@@ -271,18 +285,15 @@
 					.val()) {
 				$('#submit').prop('disabled', false)
 				$('#answerCaptcha').hide();
+				$('#captcha').closest('.control-group').removeClass('error');
 			} else {
+				$('#captcha').closest('.control-group').addClass('error');
 				$('#submit').prop('disabled', true)
 				$('#answerCaptcha').show();
 				$('#answerCaptcha')
 						.prop('innerHTML',
 								'Answer the captcha correctly to prove that you are not a robot.');
 			}
-		}
-
-		function ResetSubmit() {
-			$('#submit').prop('disabled', false)
-			$('#answerCaptcha').hide();
 		}
 
 		function EnableSubmit() {
@@ -322,8 +333,13 @@
 				sum += $price * parseInt($(start + "s']").get(0).value);
 				sum += $price * parseInt($(start + "m']").get(0).value);
 			}
-
-			$('#cost').val(sum)
+			if(isNaN(sum)) {
+				$('#cost').closest('.control-group').addClass('error');
+				if($('#cost').closest('.controls').find('.help-inline').length === 0)
+					$('#cost').closest('.controls').append('<span class="help-inline">Please enter only <b>numeric</b> values above</span>');
+			}
+			else
+				$('#cost').val(sum)
 		}
 	</script>
 	<script type="text/javascript">

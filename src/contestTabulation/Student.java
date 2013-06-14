@@ -4,9 +4,9 @@ import java.util.HashMap;
 
 public class Student
 {
-	private String name;
-	private School school;
-	private int grade;
+	final private String name;
+	final private School school;
+	final private int grade;
 	private HashMap<Character,Score> scores = new HashMap<Character,Score>();
 
 	Student(String name, School school, int grade) { this.name = name; this.grade = grade; this.school = school; }

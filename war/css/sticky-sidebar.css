@@ -1,0 +1,11 @@
+.sidebar-nav-fixed {
+    padding: 9px 0;
+    position:fixed;
+    left:150px;
+    top:60px;
+    width:180px;
+}
+
+.row-fluid > .span-fixed-sidebar {
+    margin-left: 290px;
+}

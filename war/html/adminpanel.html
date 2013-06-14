@@ -7,8 +7,10 @@
 	<meta name="robots" content="noindex, nofollow">
 	#include("head.html")
 	<style type="text/css">
-	body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */
+		body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */
 	</style>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	#include("jquery.html")
 </head>
 
 <body>
@@ -151,14 +153,13 @@
 				</div>
 
 				<div class="form-actions">
-					<button type="submit" class="btn btn-primary">Apply Changes</button>
-					<button type="reset" class="btn btn-danger">Reset to Last Settings</button>
+					<button type="submit" class="btn btn-primary"><i class="icon-pencil"></i> Apply Changes</button>
+					<button type="reset" class="btn btn-danger"><i class="icon-backward"></i> Reset to Last Settings</button>
 				</div>
 			</fieldset>
 		</form>
 	</div>
 
-	<script type="text/javascript" src="/js/jquery.min.js"></script>
 	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
 	<script type="text/javascript" src="/js/bootstrap-alert.js"></script>
 	<script type="text/javascript">

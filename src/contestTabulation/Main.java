@@ -1,11 +1,11 @@
 package contestTabulation;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.Scanner;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -44,14 +44,14 @@ import com.google.gdata.data.spreadsheet.WorksheetEntry;
 import com.google.gdata.data.spreadsheet.WorksheetFeed;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
+import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
 
 @SuppressWarnings("serial")
 public class Main extends HttpServlet
 {
-	static SpreadsheetService service;
 	static SpreadsheetFeed feed;
-	static DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-	static Scanner input = new Scanner(new InputStreamReader(System.in));
+	final static SpreadsheetService service = new SpreadsheetService("contestTabulation");
+	final static DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 	static List<Test> testsGraded = new ArrayList<Test>();
 	static SpreadsheetEntry middle, high;
@@ -77,7 +77,6 @@ public class Main extends HttpServlet
 			Map<String, String[]> params = req.getParameterMap();
 			String user = params.get("docAccount")[0];
 			String password = params.get("docPassword")[0];
-			service = new SpreadsheetService("contestTabulation");
 			service.setUserCredentials(user, password);
 
 			//Populate base data structures by traversing Google Documents Spreadsheets
@@ -109,7 +108,7 @@ public class Main extends HttpServlet
 		}
 		catch(Exception e) { e.printStackTrace(); }
 	}
-
+	
 	private static void getSpreadSheets(String docMid, String docHigh) throws AuthenticationException, MalformedURLException, IOException, ServiceException
 	{
 		feed = service.getFeed(new URL("https://spreadsheets.google.com/feeds/spreadsheets/private/full"), SpreadsheetFeed.class);
@@ -235,16 +234,18 @@ public class Main extends HttpServlet
 		Velocity.init(p);
 		StringWriter sw;
 		VelocityContext context;
+		HtmlCompressor compressor = new HtmlCompressor();
 		//TODO: Convert to Transaction
 		Entity html;
 		LinkedList<Entity> htmlEntries = new LinkedList<Entity>();
 		
 		try
 		{
-			for(School school : schools.values())
+			for(Entry<String, School> schoolEntry : schools.entrySet())
 			{
-				if(!school.getName().equals("?"))
+				if(!schoolEntry.getKey().equals("?"))
 				{
+					School school = schoolEntry.getValue();
 					context = new VelocityContext();
 					context.put("schoolLevel", Character.toString(school.getLevel().charAt(0)).toUpperCase() + school.getLevel().substring(1));
 					ArrayList<Student> schoolStudents = school.getStudents();
@@ -257,7 +258,7 @@ public class Main extends HttpServlet
 					html.setProperty("level", level);
 					html.setProperty("type", "school");
 					html.setProperty("school", school.getName());
-					html.setProperty("html", new Text(sw.toString()));
+					html.setProperty("html", new Text(compressor.compress(sw.toString())));
 					htmlEntries.add(html);
 					sw.close();
 				}
@@ -274,7 +275,7 @@ public class Main extends HttpServlet
 				html.setProperty("type", "category");
 				html.setProperty("level", level);
 				html.setProperty("test", test.toString());
-				html.setProperty("html", new Text(sw.toString()));
+				html.setProperty("html", new Text(compressor.compress(sw.toString())));
 				htmlEntries.add(html);
 				sw.close();
 			}
@@ -286,7 +287,7 @@ public class Main extends HttpServlet
 			html = new Entity("html", "categorySweep_" + level);
 			html.setProperty("type", "categorySweep");
 			html.setProperty("level", level);
-			html.setProperty("html", new Text(sw.toString()));
+			html.setProperty("html", new Text(compressor.compress(sw.toString())));
 			htmlEntries.add(html);
 			sw.close();
 
@@ -297,7 +298,7 @@ public class Main extends HttpServlet
 			html = new Entity("html", "sweep_" + level);
 			html.setProperty("type", "sweep");
 			html.setProperty("level", level);
-			html.setProperty("html", new Text(sw.toString()));
+			html.setProperty("html", new Text(compressor.compress(sw.toString())));
 			htmlEntries.add(html);
 			sw.close();
 
@@ -309,7 +310,7 @@ public class Main extends HttpServlet
 			html = new Entity("html", "students_" + level);
 			html.setProperty("type", "students");
 			html.setProperty("level", level);
-			html.setProperty("html", new Text(sw.toString()));
+			html.setProperty("html", new Text(compressor.compress(sw.toString())));
 			htmlEntries.add(html);
 			sw.close();
 
@@ -317,7 +318,9 @@ public class Main extends HttpServlet
 			
 			Query query = new Query("contestInfo");
 			Entity info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
-			info.setProperty("updated", new Date().toString());
+			SimpleDateFormat isoFormat = new SimpleDateFormat("hh:mm:ss a EEEEE MMMMM w, yyyy z");
+		    isoFormat.setTimeZone(TimeZone.getTimeZone("GMT-5:00"));
+			info.setProperty("updated", isoFormat.format(new Date()).toString());
 			datastore.put(info);
 		}
 		catch(Exception e) { e.printStackTrace(); }

@@ -6,8 +6,8 @@ import java.util.HashMap;
 
 public class School
 {
-	private String name;
-	private String level;
+	final private String name;
+	final private String level;
 	private ArrayList<Student> students = new ArrayList<Student>();
 	
 	private HashMap<Test,Integer> numTests = new HashMap<Test,Integer>();

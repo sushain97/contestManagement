@@ -2,7 +2,7 @@ package contestTabulation;
 
 public class Score implements Comparable<Score>
 {
-	private String score;
+	final private String score;
 	Score(String score) { this.score = score; }
 	public String getScore() { return score; }
 

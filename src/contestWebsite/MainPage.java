@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
+import org.apache.velocity.tools.generic.EscapeTool;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -119,6 +120,7 @@ public class MainPage extends HttpServlet
 		context.put("num", Math.min(titles.length, captions.length)-2);
 		context.put("titles", titles);
 		context.put("captions", captions);
+		context.put("esc", new EscapeTool());
 		
 		StringWriter sw = new StringWriter();
 		Velocity.mergeTemplate("main.html", context, sw);

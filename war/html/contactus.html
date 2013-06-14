@@ -9,7 +9,6 @@
 	<style type="text/css">
 		body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */
 	</style>
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 	#include("jquery.html")
 </head>
 
@@ -71,10 +70,13 @@
 					<label class="control-label" for="captcha">CAPTCHA</label>
 					<div class="controls">
 						<input type="text" name="captcha" class="input-small" id="captcha" required>
+						<span class="help-inline">Answer the question below in the box provided</span>
 						<p class="help-block">$captcha</p>
 					</div>
 				</div>
-				#end <input type="hidden" name="hash" id="hash" value="$hash" /> <input type="hidden" name="nocaptcha"
+				#end 
+				
+				<input type="hidden" name="hash" id="hash" value="$hash" /> <input type="hidden" name="nocaptcha"
 					id="nocaptcha" value="$nocaptcha" /> <input type="hidden" name="salt" id="salt" value="$salt" />
 
 				<div class="form-actions">
@@ -93,7 +95,6 @@
 			EnableSubmit();
 
 			$('#captcha').on('keyup', AuthCaptcha);
-			$('#captcha').on('blur', ResetSubmit);
 			$('#submit').on('click', AuthCaptcha);
 		});
 	</script>
@@ -104,11 +105,12 @@
 				$('#submit').prop('disabled', false)
 				$('#answerCaptcha').hide()
 			} else {
-				if (calcMD5($('#salt').val() + $('#captcha').val()) === $(
-						'#hash').val()) {
+				if (calcMD5($('#salt').val() + $('#captcha').val()) === $('#hash').val()) {
 					$('#submit').prop('disabled', false)
 					$('#answerCaptcha').hide();
+					$('#captcha').closest('.control-group').removeClass('error');
 				} else {
+					$('#captcha').closest('.control-group').addClass('error');
 					$('#submit').prop('disabled', true)
 					$('#answerCaptcha').show();
 					$('#answerCaptcha')
@@ -116,11 +118,6 @@
 									'Answer the captcha correctly to prove that you are not a robot.');
 				}
 			}
-		}
-
-		function ResetSubmit() {
-			$('#submit').prop('disabled', false)
-			$('#answerCaptcha').hide();
 		}
 
 		function EnableSubmit() {

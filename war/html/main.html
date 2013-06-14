@@ -28,9 +28,9 @@
 		#if($loggedIn)
 		<h1>Welcome, $name.</h1>
 
-		#if($admin) To manage the competition and the admin account go to the <a href="/adminPanel">Admin
-			Control Panel</a>. <br /> To view registrations, current scores and clarifications requested by coaches go to
-		the <a href="/data?choice=overview">Data Viewer</a>. 
+		#if($admin) To manage the competition and the admin account go to the <a href="/adminPanel">Admin Control Panel</a>.
+		<br /> To view registrations, current scores and clarifications requested by coaches go to the 
+		<a href="/data?choice=overview">Data Viewer</a>.
 		
 		#else To view the scores of your students, go to the <a
 			href="/viewScores">Score Viewer</a>.
@@ -46,35 +46,34 @@
 		<br/><br/>
 		
         <div id="myCarousel" class="carousel slide">
-        	
-        	<!--<ol class="carousel-indicators">
-        		<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-        		<li data-target="#myCarousel" data-slide-to="1"></li>
-        		<li data-target="#myCarousel" data-slide-to="2"></li>
-        	</ol>-->
-        
-
-		
-        <div class="carousel-inner">
-	        <div class="item">
-	    		<img src="/static/img/Pic0.jpg" alt="">
-	    		<div class="carousel-caption">
-	    			<h4>$titles[0]</h4>
-	    			<p>$captions[0]</p>	
-	    		</div>
+	       	<ol class="carousel-indicators">
+	       		#foreach($i in [0..$num])
+	       		<li data-target="#myCarousel" data-slide-to="$i"></li>
+	       		#end
+	       	</ol>
+	
+	        <div class="carousel-inner">
+		        <div class="item">
+		    		<img src="/static/img/Pic0.jpg" alt="$captions[0]">
+		    		<div class="carousel-caption">
+		    			<h4>$esc.html($titles[0])</h4>
+		    			<p>$esc.html($captions[0])</p>
+		    		</div>
+		        </div>
+				#foreach($i in [1..$num])
+					<div class="item">
+		        		<img src="/static/img/Pic${i}.jpg" alt="captions[$i]">
+		        		<div class="carousel-caption">
+		        			<h4>$esc.html($titles[$i])</h4>
+		        			<p>$esc.html($captions[$i])</p>
+		        		</div>
+		        	</div>
+				#end
 	        </div>
-			#foreach($i in [1..$num])
-				<div class="item">
-	        		<img src="/static/img/Pic${i}.jpg" alt="">
-	        		<div class="carousel-caption">
-	        			<h4>$titles[$i]</h4>
-	        			<p>$captions[$i]</p>	
-	        		</div>
-	        	</div>
-			#end
-        	<a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
-        	<a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
-        </div>
+	        
+	        <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+	        <a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+		</div>
 		#end
 	</div>
 	
@@ -83,9 +82,11 @@
 	<script type="text/javascript" src="/js/bootstrap-transition.js"></script>
 	<script>
 	$(document).ready(function() {
-		$('.item').eq(Math.floor((Math.random() * $('.item').length))).addClass("active");
-		$('.carousel').carousel({interval: 3500});
-		
+		var activeNum = Math.floor((Math.random() * $('.item').length));
+		$('.item').eq(activeNum).addClass('active');
+		$('.carousel-indicators li').eq(activeNum).addClass('active');
+		$('.carousel').carousel({interval: 3000});
+		$('.carousel').carousel('cycle');
 	});
 	</script>
 </body>

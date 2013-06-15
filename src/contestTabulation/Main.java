@@ -103,8 +103,17 @@ public class Main extends HttpServlet
 			storeHTML("high", highStudents, highSchools, highCategoryWinners, highCategorySweepstakesWinners, highSweepstakesWinners);
 
 			//Update Datastore by modifying registrations to include actual number of tests taken
-			updateRegistrations(middleSchools);
-			updateRegistrations(highSchools);
+			updateRegistrations("middle", middleSchools);
+			updateRegistrations("high", highSchools);
+			
+			/* This is NOT a solution... */
+			middleSweepstakesWinners.clear(); 
+			highSweepstakesWinners.clear();
+			middleStudents.clear();
+			highStudents.clear();
+			middleSchools.clear();
+			highSchools.clear();
+			System.gc();
 		}
 		catch(Exception e) { e.printStackTrace(); }
 	}
@@ -293,6 +302,7 @@ public class Main extends HttpServlet
 
 			context = new VelocityContext();
 			context.put("winners", sweepstakesWinners);
+			System.out.println(sweepstakesWinners.size());
 			sw = new StringWriter();
 			Velocity.mergeTemplate("sweepstakesWinners.html", context, sw);
 			html = new Entity("html", "sweep_" + level);
@@ -327,13 +337,15 @@ public class Main extends HttpServlet
 	}
 
 	@SuppressWarnings("deprecation")
-	private static void updateRegistrations(Map<String, School> schools)
+	private static void updateRegistrations(String level, Map<String, School> schools)
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 		for(School school : schools.values())
 		{
-			Query query = new Query("registration").addFilter("schoolName", FilterOperator.EQUAL, school.getName());
+			Query query = new Query("registration")
+									.addFilter("schoolName", FilterOperator.EQUAL, school.getName())
+									.addFilter("schoolLevel", FilterOperator.EQUAL, level);
 			List<Entity> registrations = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
 
 			if(registrations.size() > 0)

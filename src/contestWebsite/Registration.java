@@ -23,6 +23,7 @@ import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -74,7 +75,7 @@ public class Registration extends HttpServlet
 			Entity info = infos.get(0);
 			endDateStr = (String) info.getProperty("endDate");
 			startDateStr = (String) info.getProperty("startDate");
-			
+
 			Date endDate = new Date();
 			Date startDate = new Date();
 			try
@@ -88,7 +89,7 @@ public class Registration extends HttpServlet
 				context.put("registrationError", "Registration is closed, please try again next year.");
 			else
 				context.put("registrationError", "");
-			
+
 			if(info.getProperty("price") != null)
 				context.put("price", (Long) info.getProperty("price"));
 			else
@@ -108,63 +109,62 @@ public class Registration extends HttpServlet
 			context.put("salt", captcha.getSalt());
 		}
 		catch (NoSuchAlgorithmException e) { e.printStackTrace(); }
-
-		String numString = req.getParameter("nums");
+		
 		String[] subjects = {"N", "C", "M", "S"};
 		String[] numbers = { "", "one", "two", "three", "four", "five", "six", "seven",
 				"eight", "nine", "ten", "eleven", "twelve" };
-		if(numString != null)
+		
+		String userError = req.getParameter("userError");
+		String passwordError = req.getParameter("passwordError");
+		
+		HttpSession sess = req.getSession(false);
+		if(sess != null && ("1".equals(userError) || "1".equals(passwordError)))
 		{
-			String[] nums = req.getParameter("nums").split(",");
+			String numString = (String) sess.getAttribute("nums");
+			String[] nums = numString.split(",");
 			for(int i = 6; i <= 12; i++)
 				for(int j = 0; j < 4; j++)
 					context.put(numbers[i] + subjects[j], Integer.parseInt(nums[(i-6)*4+j]));
-		}
-		else
-			for(int i = 6; i <= 12; i++)
-				for(int j = 0; j < 4; j++)
-					context.put(numbers[i] + subjects[j], 0);
-
-		String registrationType = req.getParameter("registrationTypeV");
-		if(registrationType != null)
-			if(registrationType.equals("coach"))
+			
+			if(((String) sess.getAttribute("registrationType")).equals("coach"))
 				context.put("coach", true);
 			else
 				context.put("student", true);
-		else
-			context.put("coach", true);
-
-		String schoolLevel = req.getParameter("schoolLevelV");
-		if(schoolLevel != null)
-			if(schoolLevel.equals("middle"))
+			
+			if(((String) sess.getAttribute("schoolLevel")).equals("middle"))
 				context.put("middle", true);
 			else
 				context.put("high", true);
-		else
-			context.put("middle", true);
-
-		String account = req.getParameter("accountV");
-		if(account != null)
-			if(account.equals("yes"))
+			
+			if(((String) sess.getAttribute("account")).equals("yes"))
 				context.put("account", true);
 			else
 				context.put("account", false);
+			
+			context.put("schoolName", (String) sess.getAttribute("schoolName"));
+			context.put("aliases", (String) sess.getAttribute("aliases"));
+			context.put("name", (String) sess.getAttribute("name"));
+			context.put("email", (String) sess.getAttribute("email"));
+			context.put("updated", (String) sess.getAttribute("updated"));
+		}
 		else
+		{
+			for(int i = 6; i <= 12; i++)
+				for(int j = 0; j < 4; j++)
+					context.put(numbers[i] + subjects[j], 0);
+			
+			context.put("coach", true);
+			context.put("middle", true);
 			context.put("account", true);
-
-		String schoolName = req.getParameter("schoolNameV");
-		context.put("schoolName", schoolName == null ? "" : schoolName);
-		String aliases = req.getParameter("aliasesV");
-		context.put("aliases", aliases == null ? "" : aliases);
-		String name = req.getParameter("nameV");
-		context.put("name", name == null ? "" : name);
-		String email = req.getParameter("emailV");
-		context.put("email", email == null ? "" : email);
+			context.put("schoolName", "");
+			context.put("aliases", "");
+			context.put("name", "");
+			context.put("email", "");
+		}
+		
 		context.put("updated", req.getParameter("updated"));
-		String userError = req.getParameter("userError");
-		String passwordError = req.getParameter("passwordError");
-		context.put("userError", req.getParameter("userError"));
-		context.put("passwordError", req.getParameter("passwordError"));
+		context.put("userError", userError);
+		context.put("passwordError", passwordError);
 		if(userError != null || passwordError != null)
 			context.put("error", true);
 
@@ -189,7 +189,7 @@ public class Registration extends HttpServlet
 		String name = params.get("name")[0];
 		String password = null;
 		String confPassword = null;
-		
+
 		try
 		{
 			String plaintext = params.get("salt")[0] + params.get("captcha")[0];
@@ -201,7 +201,7 @@ public class Registration extends HttpServlet
 			String answer = bigInt.toString(16);
 			while(answer.length() < 32)
 				answer = "0" + answer;
-			
+
 			if(!answer.equals(params.get("hash")[0]))
 			{
 				resp.sendRedirect("/");
@@ -237,48 +237,48 @@ public class Registration extends HttpServlet
 
 		if(users.size() != 0 || (account.equals("yes") && !confPassword.equals(password)))
 		{
-			String redirectLink = "/registration?";
-			redirectLink += "registrationTypeV=" + registrationType;
-			redirectLink += "&accountV=" + account;
-			redirectLink += "&aliasesV=" + aliases;
-			redirectLink += "&nameV=" + name;
-			redirectLink += "&schoolNameV=" + schoolName;
-			redirectLink += "&schoolLevelV=" + schoolLevel;
-			redirectLink += "&emailV=" + email;
+			HttpSession sess = req.getSession(true);
+			sess.setAttribute("registrationType", registrationType);
+			sess.setAttribute("account", account);
+			sess.setAttribute("aliases", aliases);
+			sess.setAttribute("account", account);
+			sess.setAttribute("name", name);
+			sess.setAttribute("schoolName", schoolName);
+			sess.setAttribute("schoolLevel", schoolLevel);
+			sess.setAttribute("email", email);
 
-			redirectLink += "&nums=";
+			String numString = "";
 			if(schoolLevel.equals("middle"))
 			{
 				for(int i = 6; i <= 8; i++)
 					for(int j = 0; j < 4; j++)
-						redirectLink += nums.get(i + subjects[j]) + ",";
+						numString += nums.get(i + subjects[j]) + ",";
 				for(int i = 0; i < 16; i++)
-					redirectLink += "0,";
+					numString += "0,";
 			}
 			else
 			{
 				for(int i = 0; i < 12; i++)
-					redirectLink += "0,";
+					numString += "0,";
 				for(int i = 9; i <= 12; i++)
 					for(int j = 0; j < 4; j++)
-						redirectLink += nums.get(i + subjects[j]) + ",";
+						numString += nums.get(i + subjects[j]) + ",";
 			}
+			sess.setAttribute("nums", numString);
 
 			if(users.size() != 0)
-			{
-				redirectLink += "&userError=1";
-				resp.sendRedirect(redirectLink);
-			}
+				resp.sendRedirect("/registration?userError=1");
 			else if(!params.get("confPassword")[0].equals(params.get("password")[0]))
-			{
-				redirectLink += "&passwordError=1";
-				resp.sendRedirect(redirectLink);
-			}
+				resp.sendRedirect("/registration?passwordError=1");
 			else
 				resp.sendRedirect("/registration?updated=1");
 		}
 		else
 		{
+			HttpSession sess = req.getSession(false);
+			if (sess != null)
+				sess.invalidate();
+
 			resp.sendRedirect("/registration?updated=1");
 
 			Entity registration = new Entity("registration");
@@ -291,14 +291,14 @@ public class Registration extends HttpServlet
 			registration.setProperty("paid", "");
 			if(registrationType.equals("student"))
 				registration.setProperty("aliases", aliases);
-			
+
 			long price = 5;
 			query = new Query("contestInfo");
 			List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 			if(info.size() != 0 && info.get(0).getProperty("price") != null)
 				price = (Long) info.get(0).getProperty("price");
 
-			
+
 			int cost = 0;
 			for(Entry<String,Integer> test : nums.entrySet())
 			{
@@ -346,7 +346,7 @@ public class Registration extends HttpServlet
 
 			String url = req.getRequestURL().toString();
 			url = url.substring(0, url.indexOf(".com") + 4);
-			
+
 			try
 			{
 				Message msg = new MimeMessage(session);
@@ -356,14 +356,14 @@ public class Registration extends HttpServlet
 
 				String text = "Thank you for registering for the Dulles TMSCA Tournament, " + name + ". " +
 						"Your registration has been recorded in our database. Your total registration fees are: <b>$" + cost + ".</b> ";
-				
+
 				if(account.equals("yes"))
 					text += "If you desire to make changes to your registration please login at our <a href=\"" + url + "\"> tournament website</a> with your e-mail address and visit the contact us page. "
 							+ " Your account also allows you to check the scores of your students during and after the competition. ";
 				else
 					text += "If you desire to make changes to your registration please visit the contact us page at our tournament website. </br>";
 				text += " More information including directions to Dulles and a competition schedule can also be found at <a href=\"" + url + "\">our website</a>.";
-				
+
 				msg.setContent(text, "text/html");
 				Transport.send(msg);
 			}

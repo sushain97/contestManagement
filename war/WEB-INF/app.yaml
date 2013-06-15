@@ -1,7 +1,8 @@
 application: sushain97
-version: 29
+version: 31
 runtime: java
 threadsafe: false
+sessions_enabled: true
 
 handlers:
 - url: /

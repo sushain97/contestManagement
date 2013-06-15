@@ -32,6 +32,7 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Text;
+import com.google.gdata.client.Service;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.CellEntry;
 import com.google.gdata.data.spreadsheet.CellFeed;
@@ -49,44 +50,44 @@ import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
 @SuppressWarnings("serial")
 public class Main extends HttpServlet
 {
-	static SpreadsheetFeed feed;
-	final static SpreadsheetService service = new SpreadsheetService("contestTabulation");
-	final static DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-	static List<Test> testsGraded = new ArrayList<Test>();
-	static SpreadsheetEntry middle, high;
-	
-	static List<Student> middleStudents = new ArrayList<Student>();
-	static Map<String, School> middleSchools = new HashMap<String, School>(); //School Name, School
-	static Map<Test, List<Student>> middleCategoryWinners = new HashMap<Test, List<Student>>();
-	static Map<Character, List<School>> middleCategorySweepstakesWinners = new HashMap<Character, List<School>>(); //Test topic {N, M, S, C}, School array
-	static List<School> middleSweepstakesWinners = new ArrayList<School>();
-
-	static List<Student> highStudents = new ArrayList<Student>();
-	static Map<String, School> highSchools = new HashMap<String, School>(); //School Name, School
-	static Map<Test, List<Student>> highCategoryWinners = new HashMap<Test, List<Student>>();
-	static Map<Character, List<School>> highCategorySweepstakesWinners = new HashMap<Character, List<School>>(); //Test topic {N, M, S, C}, School array
-	static List<School> highSweepstakesWinners = new ArrayList<School>();
+	static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 	@SuppressWarnings("unchecked")
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
+		List<Test> testsGraded = new ArrayList<Test>();
+		final SpreadsheetEntry middle, high;
+		
+		final List<Student> middleStudents = new ArrayList<Student>();
+		final Map<String, School> middleSchools = new HashMap<String, School>(); //School Name, School
+		final Map<Test, List<Student>> middleCategoryWinners = new HashMap<Test, List<Student>>();
+		final Map<Character, List<School>> middleCategorySweepstakesWinners = new HashMap<Character, List<School>>(); //Test topic {N, M, S, C}, School array
+		final List<School> middleSweepstakesWinners = new ArrayList<School>();
+
+		final List<Student> highStudents = new ArrayList<Student>();
+		final Map<String, School> highSchools = new HashMap<String, School>(); //School Name, School
+		final Map<Test, List<Student>> highCategoryWinners = new HashMap<Test, List<Student>>();
+		final Map<Character, List<School>> highCategorySweepstakesWinners = new HashMap<Character, List<School>>(); //Test topic {N, M, S, C}, School array
+		final List<School> highSweepstakesWinners = new ArrayList<School>();
+		
 		try
 		{
 			//Authenticate to Google Documents Service using account details from Administration Panel
 			Map<String, String[]> params = req.getParameterMap();
 			String user = params.get("docAccount")[0];
 			String password = params.get("docPassword")[0];
+			SpreadsheetService service = new SpreadsheetService("contestTabulation");
 			service.setUserCredentials(user, password);
 
 			//Populate base data structures by traversing Google Documents Spreadsheets
-			getSpreadSheets(params.get("docMiddle")[0], params.get("docHigh")[0]);
-			updateDatabase(middle, middleStudents, middleSchools);
-			updateDatabase(high, highStudents, highSchools);
+			middle = getSpreadSheet(params.get("docMiddle")[0], service);
+			high = getSpreadSheet(params.get("docHigh")[0], service);
+			updateDatabase(middle, middleStudents, middleSchools, testsGraded, service);
+			updateDatabase(high, highStudents, highSchools, testsGraded, service);
 
 			//Populate categoryWinners maps with top 20 scorers 
-			tabulateCategoryWinners("middle", middleStudents, middleCategoryWinners);
-			tabulateCategoryWinners("high", highStudents, highCategoryWinners);
+			tabulateCategoryWinners("middle", middleStudents, middleCategoryWinners, testsGraded);
+			tabulateCategoryWinners("high", highStudents, highCategoryWinners, testsGraded);
 
 			//Calculate school fields with sweepstakes scores and populate sorted sweekstakes maps & arrays with all schools
 			for(School school : middleSchools.values())
@@ -105,32 +106,22 @@ public class Main extends HttpServlet
 			//Update Datastore by modifying registrations to include actual number of tests taken
 			updateRegistrations("middle", middleSchools);
 			updateRegistrations("high", highSchools);
-			
-			/* This is NOT a solution... */
-			middleSweepstakesWinners.clear(); 
-			highSweepstakesWinners.clear();
-			middleStudents.clear();
-			highStudents.clear();
-			middleSchools.clear();
-			highSchools.clear();
-			System.gc();
 		}
 		catch(Exception e) { e.printStackTrace(); }
 	}
 	
-	private static void getSpreadSheets(String docMid, String docHigh) throws AuthenticationException, MalformedURLException, IOException, ServiceException
+	private static SpreadsheetEntry getSpreadSheet(String docString, Service service) throws AuthenticationException, MalformedURLException, IOException, ServiceException
 	{
-		feed = service.getFeed(new URL("https://spreadsheets.google.com/feeds/spreadsheets/private/full"), SpreadsheetFeed.class);
+		SpreadsheetFeed feed = service.getFeed(new URL("https://spreadsheets.google.com/feeds/spreadsheets/private/full"), SpreadsheetFeed.class);
 		List<SpreadsheetEntry> spreadsheets = feed.getEntries();
 
 		for(SpreadsheetEntry spreadsheet : spreadsheets)
-			if(spreadsheet.getTitle().getPlainText().equals(docMid))
-				middle = spreadsheet;
-			else if(spreadsheet.getTitle().getPlainText().equals(docHigh))
-				high = spreadsheet;
+			if(spreadsheet.getTitle().getPlainText().equals(docString))
+				return spreadsheet;
+		return null;
 	}
 
-	private static void updateDatabase(SpreadsheetEntry spreadsheet, List<Student> students, Map<String, School> schools) throws IOException, ServiceException
+	private static void updateDatabase(SpreadsheetEntry spreadsheet, List<Student> students, Map<String, School> schools, List<Test> testsGraded, Service service) throws IOException, ServiceException
 	{
 		WorksheetFeed worksheetFeed = service.getFeed(spreadsheet.getWorksheetFeedUrl(), WorksheetFeed.class);
 		List<WorksheetEntry> worksheets = worksheetFeed.getEntries();
@@ -194,7 +185,7 @@ public class Main extends HttpServlet
 
 	}
 
-	private static void tabulateCategoryWinners(String level, List<Student> students, Map<Test, List<Student>> categoryWinners)
+	private static void tabulateCategoryWinners(String level, List<Student> students, Map<Test, List<Student>> categoryWinners, List<Test> testsGraded)
 	{
 		for(Test test : testsGraded)
 		{
@@ -302,7 +293,6 @@ public class Main extends HttpServlet
 
 			context = new VelocityContext();
 			context.put("winners", sweepstakesWinners);
-			System.out.println(sweepstakesWinners.size());
 			sw = new StringWriter();
 			Velocity.mergeTemplate("sweepstakesWinners.html", context, sw);
 			html = new Entity("html", "sweep_" + level);

@@ -18,6 +18,7 @@ public class Student
 	public HashMap<Character,Score> getScores() { return scores; }
 
 	public String getName() { return name; }
+	public String getPublicName() { return name.substring(0, name.indexOf(" ") + 2) + "."; }
 	public School getSchool() { return school; }
 	public int getGrade() { return grade; }
 

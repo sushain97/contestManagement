@@ -121,6 +121,6 @@ public class PublicResults extends HttpServlet
 		Velocity.mergeTemplate("publicResults.html", context, sw);
 		sw.close();
 
-		resp.getWriter().print(sw);
+		resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 	}
 }

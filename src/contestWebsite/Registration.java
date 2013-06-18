@@ -171,7 +171,7 @@ public class Registration extends HttpServlet
 		StringWriter sw = new StringWriter();
 		Velocity.mergeTemplate("registration.html", context, sw);
 		sw.close();
-		resp.getWriter().print(sw);
+		resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 	}
 
 	@SuppressWarnings({ "deprecation", "unchecked" })

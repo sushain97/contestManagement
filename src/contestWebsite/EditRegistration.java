@@ -124,7 +124,7 @@ public class EditRegistration extends HttpServlet
 				StringWriter sw = new StringWriter();
 				Velocity.mergeTemplate("editRegistration.html", context, sw);
 				sw.close();
-				resp.getWriter().print(sw);
+				resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 			}
 		}
 		else

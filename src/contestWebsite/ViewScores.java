@@ -72,7 +72,7 @@ public class ViewScores extends HttpServlet
 				Velocity.mergeTemplate("schoolScores.html", context, sw);
 				sw.close();
 
-				resp.getWriter().print(sw);
+				resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 			}
 		}
 		else

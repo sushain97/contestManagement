@@ -61,10 +61,9 @@ public class MainPage extends HttpServlet
 				ArrayList<String> regData = new ArrayList<String>();
 				Map<String, Object> props = reg.getProperties();
 
-				PropNames propNames = new PropNames();
 				for(String key : props.keySet())
-					if(!key.equals("account") && propNames.propNames.get(key) != null)
-						regData.add("<b>" + propNames.propNames.get(key) + "</b>: " + props.get(key));
+					if(!key.equals("account") && PropNames.names.get(key) != null)
+						regData.add("<b>" + PropNames.names.get(key) + "</b>: " + props.get(key));
 				Collections.sort(regData);
 				context.put("regData" , regData);
 				context.put("name", name);
@@ -126,6 +125,6 @@ public class MainPage extends HttpServlet
 		Velocity.mergeTemplate("main.html", context, sw);
 		sw.close();
 
-		resp.getWriter().print(sw);
+		resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 	}
 }

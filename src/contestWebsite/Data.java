@@ -166,7 +166,7 @@ public class Data extends HttpServlet
 				Velocity.mergeTemplate("data.html", context, sw);
 				sw.close();
 
-				resp.getWriter().print(sw);
+				resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 			}
 			else
 				resp.sendRedirect("/");

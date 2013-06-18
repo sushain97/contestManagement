@@ -63,7 +63,7 @@ public class ForgotPassword extends HttpServlet
 			StringWriter sw = new StringWriter();
 			Velocity.mergeTemplate("forgotPass.html", context, sw);
 			sw.close();
-			resp.getWriter().print(sw);
+			resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 		}
 		else
 		{
@@ -73,7 +73,7 @@ public class ForgotPassword extends HttpServlet
 			StringWriter sw = new StringWriter();
 			Velocity.mergeTemplate("resetPass.html", context, sw);
 			sw.close();
-			resp.getWriter().print(sw);
+			resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 		}
 	}
 

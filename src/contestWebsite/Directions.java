@@ -47,6 +47,6 @@ public class Directions extends HttpServlet
 		Velocity.mergeTemplate("directions.html", context, sw);
 		sw.close();
 
-		resp.getWriter().print(sw);
+		resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 	}
 }

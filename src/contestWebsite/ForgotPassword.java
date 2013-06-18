@@ -118,16 +118,18 @@ public class ForgotPassword extends HttpServlet
 					appEngineEmail = (String) info.get(0).getProperty("account");
 				
 				String url = req.getRequestURL().toString();
-				url = url.substring(0, url.indexOf(".com") + 4);
-				url = "<a href=\"" + url + "/forgotPass?noise=" + noise;
+				url = url.substring(0, url.indexOf("/", 7));
+				url = url + "/forgotPass?noise=" + noise;
 						
 				try
 				{
 					Message msg = new MimeMessage(session);
 					msg.setFrom(new InternetAddress(appEngineEmail, "Tournament Website Admin"));
-					msg.addRecipient(Message.RecipientType.TO, new InternetAddress((String) info.get(0).getProperty("email"), "Contest Administrator"));
+					msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email, (String) user.getProperty("name")));
 					msg.setSubject("Password Reset for Dulles Tournament Website");
-					msg.setContent("Please follow the link to reset the password for " + user.getProperty("user-id") + ": <a href=\"" + url + ">" + url + "</a>.", "text/html");
+					msg.setContent("<p>Please follow the link to reset the password for " + user.getProperty("user-id") + ": " +
+							"<a href=\"" + url + "\">" + "Reset your Password" + "</a></p>" +
+							"<p>If the above link does not work, navigate to the following URL: <br />" + url + "</p>", "text/html");
 					
 					Transport.send(msg);
 				}

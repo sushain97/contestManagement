@@ -18,13 +18,14 @@
 	<div class="container">
 		<h1>Request Password Reset</h1>
 
-		#if( $updated )
+		#if($updated)
 		<div class="alert alert-success">
 			<a class="close" data-dismiss="alert">&times;</a> <strong>Success! </strong>A password reset e-mail has
 			been sent to the provided e-mail address.
 		</div>
 		#end
-
+		
+		#if(!$updated)
 		<form method="post" class="form-horizontal">
 			<fieldset>
 				<div class="control-group">
@@ -39,6 +40,7 @@
 				</div>
 			</fieldset>
 		</form>
+		#end
 	</div>
 
 	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>

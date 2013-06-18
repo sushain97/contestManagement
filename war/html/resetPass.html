@@ -29,14 +29,14 @@
 				<div class="control-group">
 					<label class="control-label" for="schoolName">Your New Password</label>
 					<div class="controls">
-						<input type="password" name="password" id="password" value="" maxlength="32" required>
+						<input type="password" pattern=".{8,}" title="Passwords must be at least 8 characters" name="password" id="password" value="" maxlength="32" required>
 					</div>
 				</div>
 
 				<div class=#if($error) "control-group error" #else "control-group" #end>
 					<label class="control-label" for="password">Confirm Password</label>
 					<div class="controls">
-						<input type="password" id="confPassword" name="confPassword" value="" maxlength="32" required>
+						<input type="password" pattern=".{8,}" title="Passwords must be at least 8 characters" id="confPassword" name="confPassword" value="" maxlength="32" required>
 						#if($error) <span class="help-inline">Those passwords didn't match, try again.</span> #end
 					</div>
 				</div>

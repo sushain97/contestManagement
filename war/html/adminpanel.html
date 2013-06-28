@@ -6,8 +6,12 @@
 	<meta name="description" content="Dulles High School TMSCA Tournament Administration Panel">
 	<meta name="robots" content="noindex, nofollow">
 	#include("head.html")
+	<link type="text/css" href="/css/datepicker.css" rel="stylesheet">
+	<link type="text/css" href="/css/slider.css" rel="stylesheet">
 	<style type="text/css">
 		body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */
+		#updateScores { display: none; }
+		#changePass { display: none; }
 	</style>
 	#include("jquery.html")
 </head>
@@ -33,8 +37,15 @@
 				<div class="input control-group">
 					<label class="control-label" for="datepicker">Registration Dates</label>
 					<div class="controls">
-						<input data-datepicker="datepicker" class="small" type="text" value="$startDate" name="startDate">
-						to <input data-datepicker="datepicker" class="small" type="text" value="$endDate" name="endDate">
+						<div class="input-append date" id="dp1" data-date="$startDate" data-date-format="mm/dd/yyyy">
+							<input class="span2" size="16" type="text" value="$startDate" name="startDate" required>
+							<span class="add-on"><i class="icon-th"></i></span>
+						</div>
+						to 
+						<div class="input-append date" id="dp1" data-date="$endDate" data-date-format="mm/dd/yyyy">
+							<input class="span2" size="16" type="text" value="$endDate" name="endDate" required>
+							<span class="add-on"><i class="icon-th"></i></span>
+						</div>
 					</div>
 				</div>
 
@@ -44,7 +55,7 @@
 				<div class="control-group">
 					<label class="control-label" for="email">E-Mail Address</label>
 					<div class="controls">
-						<input type="email" value="$email" name="email" class="input-xlarge" id="email" required>
+						<input type="email" value="$email" name="email" class="input-large" id="email" required>
 					</div>
 				</div>
 
@@ -52,15 +63,16 @@
 				<div class="control-group">
 					<label class="control-label" for="email">Google E-Mail</label>
 					<div class="controls">
-						<input type="email" value="$account" name="account" class="input-xlarge" id="account" required>
+						<input type="email" value="$account" name="account" class="input-large" id="account" required>
 					</div>
 				</div>
 
 				<p class="help-block">How much should each test registration cost in dollars?</p>
 				<div class="control-group">
 					<label class="control-label" for="price">Test Charges</label>
-					<div class="controls">
-						<input type="number" value="$price" name="price" class="input-small" id="price" required>
+					<div class="controls" style="padding-top: 5px;">
+						<b id="priceText">$$price</b>
+						<input type="text" class="span2 price" id="price" data-slider-min="0" data-slider-max="15" data-slider-step="1" value="$value" required>
 					</div>
 				</div>
 
@@ -161,8 +173,19 @@
 
 	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
 	<script type="text/javascript" src="/js/bootstrap-alert.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-slider.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
+			$('.date').datepicker();
+			$('.price').slider({
+				formater: function(value) {
+				  return '$' + value;
+				}
+	        });
+			$('.price').slider().on('slideStop', function(ev) {
+				$('#priceText').html('$' + ev.value);
+			});
 			ChangeForm();
 			$('.radio').change(ChangeForm);
 		});

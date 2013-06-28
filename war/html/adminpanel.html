@@ -72,7 +72,7 @@
 					<label class="control-label" for="price">Test Charges</label>
 					<div class="controls" style="padding-top: 5px;">
 						<b id="priceText">$$price</b>
-						<input type="text" class="span2 price" id="price" data-slider-min="0" data-slider-max="15" data-slider-step="1" value="$value" required>
+						<input type="text" class="span2 price" id="price" name="price" data-slider-min="0" data-slider-max="15" data-slider-step="1" data-slider-value="$price" value="$value" required>
 					</div>
 				</div>
 
@@ -80,9 +80,8 @@
 					<p class="help-block">Would you like to update online scores?</p>
 					<label class="control-label" for="level">Update Scores?</label>
 					<div class="controls">
-						<label class="radio"><input type="radio" name="updateScores" id="update1" value="yes">
-							Yes</label> <label class="radio"><input type="radio" name="updateScores" id="update2" value="no"
-							checked> No</label>
+						<label class="radio"><input type="radio" name="updateScores" id="update1" value="yes"> Yes</label> 
+						<label class="radio"><input	type="radio" name="updateScores" id="update2" value="no" checked> No</label>
 					</div>
 				</div>
 

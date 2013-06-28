@@ -7,7 +7,9 @@ import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +42,7 @@ import com.google.appengine.api.datastore.TransactionOptions;
 @SuppressWarnings("serial")
 public class Registration extends HttpServlet
 {
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "deprecation", "unchecked" })
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
 		resp.setContentType("text/html");
@@ -109,14 +111,14 @@ public class Registration extends HttpServlet
 			context.put("salt", captcha.getSalt());
 		}
 		catch (NoSuchAlgorithmException e) { e.printStackTrace(); }
-		
+
 		String[] subjects = {"N", "C", "M", "S"};
 		String[] numbers = { "", "one", "two", "three", "four", "five", "six", "seven",
 				"eight", "nine", "ten", "eleven", "twelve" };
-		
+
 		String userError = req.getParameter("userError");
 		String passwordError = req.getParameter("passwordError");
-		
+
 		HttpSession sess = req.getSession(false);
 		if(sess != null && ("1".equals(userError) || "1".equals(passwordError)))
 		{
@@ -125,22 +127,22 @@ public class Registration extends HttpServlet
 			for(int i = 6; i <= 12; i++)
 				for(int j = 0; j < 4; j++)
 					context.put(numbers[i] + subjects[j], Integer.parseInt(nums[(i-6)*4+j]));
-			
+
 			if(((String) sess.getAttribute("registrationType")).equals("coach"))
 				context.put("coach", true);
 			else
 				context.put("student", true);
-			
+
 			if(((String) sess.getAttribute("schoolLevel")).equals("middle"))
 				context.put("middle", true);
 			else
 				context.put("high", true);
-			
+
 			if(((String) sess.getAttribute("account")).equals("yes"))
 				context.put("account", true);
 			else
 				context.put("account", false);
-			
+
 			context.put("schoolName", (String) sess.getAttribute("schoolName"));
 			context.put("aliases", (String) sess.getAttribute("aliases"));
 			context.put("name", (String) sess.getAttribute("name"));
@@ -152,7 +154,7 @@ public class Registration extends HttpServlet
 			for(int i = 6; i <= 12; i++)
 				for(int j = 0; j < 4; j++)
 					context.put(numbers[i] + subjects[j], 0);
-			
+
 			context.put("coach", true);
 			context.put("middle", true);
 			context.put("account", true);
@@ -161,8 +163,24 @@ public class Registration extends HttpServlet
 			context.put("name", "");
 			context.put("email", "");
 		}
-		
-		context.put("updated", req.getParameter("updated"));
+		if("1".equals(req.getParameter("updated")))
+		{
+			context.put("updated", true);
+			if (sess != null)
+			{
+				Map<String, Object> props = (Map<String, Object>) sess.getAttribute("props");
+				ArrayList<String> regData = new ArrayList<String>();
+				for(Entry<String, Object> prop : props.entrySet())
+				{
+					String key = prop.getKey();
+					if(!key.equals("account") && PropNames.names.get(key) != null)
+						regData.add("<dt>" + PropNames.names.get(key) + "</dt>\n<dd>" + prop.getValue() + "</dd>");
+				}
+				Collections.sort(regData);
+				context.put("regData", regData);
+				sess.invalidate();
+			}
+		}
 		context.put("userError", userError);
 		context.put("passwordError", passwordError);
 		if(userError != null || passwordError != null)
@@ -275,12 +293,6 @@ public class Registration extends HttpServlet
 		}
 		else
 		{
-			HttpSession sess = req.getSession(false);
-			if (sess != null)
-				sess.invalidate();
-
-			resp.sendRedirect("/registration?updated=1");
-
 			Entity registration = new Entity("registration");
 			registration.setProperty("registrationType", registrationType);
 			registration.setProperty("account", account);
@@ -337,6 +349,10 @@ public class Registration extends HttpServlet
 				if(txn.isActive())
 					txn.rollback();
 			}
+
+			HttpSession sess = req.getSession(true);
+			sess.setAttribute("props", registration.getProperties());
+			resp.sendRedirect("/registration?updated=1");
 
 			Session session = Session.getDefaultInstance(new Properties(), null);
 			query = new Query("contestInfo");

@@ -9,7 +9,12 @@
 	<style type="text/css">
 		body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */
 		#hi { display: none; }
-		
+		.dl-horizontal dt 
+		{
+			white-space: normal;
+			width: 280px;
+			margin-right: 8px;
+		}
 	</style>
 	#include("jquery.html")
 </head>
@@ -27,6 +32,13 @@
 			<a class="close" data-dismiss="alert">&times;</a> <strong>Success! </strong>Your registration has been
 			recorded. You will receive a confirmation e-mail soon.
 		</div>
+		
+		<h3>Your Registration Information</h3>
+		To make any changes to the following information, go to the <a href="/contactUs">Contact Us</a> page. <br />
+		<dl class="dl-horizontal"> 
+		#foreach($str in $regData) $str #end 
+		</dl>
+		
 		#elseif(!$registrationError.equals(''))
 		<div class="alert alert-error">
 			<a class="close" data-dismiss="alert">&times;</a> <strong>Oh no!</strong> $registrationError

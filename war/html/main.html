@@ -15,6 +15,12 @@
 		}
 		.carousel-inner { text-align: center; }
 		.carousel .item > img { display: inline-block; }
+		.dl-horizontal dt 
+		{
+			white-space: normal;
+			width: 280px;
+			margin-right: 8px;
+		}
 	</style>
 	#include("jquery.html")
 </head>
@@ -36,7 +42,9 @@
 			href="/viewScores">Score Viewer</a>.
 		<h3>Your Registration Information</h3>
 		To make any changes to the following information, go to the <a href="/contactUs">Contact Us</a> page. <br />
-		#foreach($str in $regData) $str <br /> #end
+		<dl class="dl-horizontal"> 
+		#foreach($str in $regData) $str #end 
+		</dl>
 
 		#end
 		#else

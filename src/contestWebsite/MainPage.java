@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +28,46 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 @SuppressWarnings("serial")
 public class MainPage extends HttpServlet
 {
+	private final static String[] captions = { "",
+												"Bobby S. awarded first place in Math by Larry White",
+												"First place: Bobby S., Daniel F., Rik N., Ms. Sarah Cleveland",
+												"",
+												"",
+												"First place: Bobby S., Daniel F., Rik N., Mr. Feng Li",
+												"First place: Bobby S., Greg C., Daniel F., Kevin L., Dr. Drew Poche",
+												"",
+												"",
+												"",
+												"Graduating Seniors with Ms. Sarah Cleveland",
+												"Graduating Seniors with Dr. Drew Poche",
+												"Graduating Seniors",
+												"Siddarth G., Kevin L., Bobby S., Daniel F., Keerthana K., Rik N., Saiesh K., Sushain C.",
+												"Bobby S., Arjun G., Saiesh K., Sushain C., Daniel F., Mitchell H., Siddarth G., Kevin L., Keerthana K., Rik N.",
+												"Keerthana K., Kevin L.",
+												"Siddarth G., Kevin L., Bobby S.",
+												"Roy H., Emily W., Daniel H., Prashant R., Mitchell H., Kaelan Y., Arjun G., Chung H."
+												};
+	private final static String[] titles = { "TMSCA State Awards: 2013",
+								"UIL State Math Individual Awards: 2013",
+								"UIL State Math Team Awards: 2013",
+								"Texas A&M University Math Competition: 2013",
+								"University of Houston Math Competition: 2012",
+								"TMSCA State Math Team Awards: 2012",
+								"TMSCA State Science Team Awards: 2012",
+								"TMSCA State Awards: 2012",
+								"Math & Science Club Banquet: 2013",
+								"Math & Science Club Banquet: 2013",
+								"Math & Science Club Banquet: 2013",
+								"Math & Science Club Banquet: 2013",
+								"Math & Science Club Banquet: 2013",
+								"UIL State Team: 2013",
+								"UIL State Team: 2013",
+								"Math & Science Club Co-Presidents: 2014",
+								"UIL State Team: 2013",
+								"UIL State Science Team: 2013",
+								"Math & Science Club Officers: 2013"
+								};
+	
 	@SuppressWarnings("deprecation")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
@@ -61,9 +102,12 @@ public class MainPage extends HttpServlet
 				ArrayList<String> regData = new ArrayList<String>();
 				Map<String, Object> props = reg.getProperties();
 
-				for(String key : props.keySet())
+				for(Entry<String, Object> prop : props.entrySet())
+				{
+					String key = prop.getKey();
 					if(!key.equals("account") && PropNames.names.get(key) != null)
-						regData.add("<b>" + PropNames.names.get(key) + "</b>: " + props.get(key));
+						regData.add("<dt>" + PropNames.names.get(key) + "</dt>\n<dd>" + prop.getValue() + "</dd>");
+				}
 				Collections.sort(regData);
 				context.put("regData" , regData);
 				context.put("name", name);
@@ -77,45 +121,6 @@ public class MainPage extends HttpServlet
 			}
 		}
 		
-		String[] titles = { "TMSCA State Awards: 2013",
-							"UIL State Math Individual Awards: 2013",
-							"UIL State Math Team Awards: 2013",
-							"Texas A&M University Math Competition: 2013",
-							"University of Houston Math Competition: 2012",
-							"TMSCA State Math Team Awards: 2012",
-							"TMSCA State Science Team Awards: 2012",
-							"TMSCA State Awards: 2012",
-							"Math & Science Club Banquet: 2013",
-							"Math & Science Club Banquet: 2013",
-							"Math & Science Club Banquet: 2013",
-							"Math & Science Club Banquet: 2013",
-							"Math & Science Club Banquet: 2013",
-							"UIL State Team: 2013",
-							"UIL State Team: 2013",
-							"Math & Science Club Co-Presidents: 2014",
-							"UIL State Team: 2013",
-							"UIL State Science Team: 2013",
-							"Math & Science Club Officers: 2013"
-							};
-		String[] captions = { "",
-							"Bobby S. awarded first place in Math by Larry White",
-							"First place: Bobby S., Daniel F., Rik N., Ms. Sarah Cleveland",
-							"",
-							"",
-							"First place: Bobby S., Daniel F., Rik N., Mr. Feng Li",
-							"First place: Bobby S., Greg C., Daniel F., Kevin L., Dr. Drew Poche",
-							"",
-							"",
-							"",
-							"Graduating Seniors with Ms. Sarah Cleveland",
-							"Graduating Seniors with Dr. Drew Poche",
-							"Graduating Seniors",
-							"Siddarth G., Kevin L., Bobby S., Daniel F., Keerthana K., Rik N., Saiesh K., Sushain C.",
-							"Bobby S., Arjun G., Saiesh K., Sushain C., Daniel F., Mitchell H., Siddarth G., Kevin L., Keerthana K., Rik N.",
-							"Keerthana K., Kevin L.",
-							"Siddarth G., Kevin L., Bobby S.",
-							"Roy H., Emily W., Daniel H., Prashant R., Mitchell H., Kaelan Y., Arjun G., Chung H."
-							};
 		context.put("num", Math.min(titles.length, captions.length)-2);
 		context.put("titles", titles);
 		context.put("captions", captions);

@@ -157,6 +157,7 @@ public class ForgotPassword extends HttpServlet
 					{
 						Entity user = users.get(0);
 						user.removeProperty("reset");
+						user.removeProperty("loginAttempts");
 						String hash = Password.getSaltedHash(password);
 						user.setProperty("salt", hash.split("\\$")[0]);
 						user.setProperty("hash", hash.split("\\$")[1]);

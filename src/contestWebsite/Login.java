@@ -45,7 +45,15 @@ public class Login extends HttpServlet
 			context.put("year", Calendar.getInstance().get(Calendar.YEAR));
 			context.put("username", user == null ? "" : user);
 			context.put("loggedIn", false);
-			context.put("error", error == null || error.equals("") ? null : "Invalid login");
+
+			if("401".equals(error))
+				error = "Invalid login";
+			else if("403".equals(error))
+				error = "Maximum login attempts exceeded, please reset your password";
+			else
+				error = null;
+			context.put("error", error);
+
 			StringWriter sw = new StringWriter();
 			Velocity.mergeTemplate("login.html", context, sw);
 			sw.close();
@@ -57,43 +65,70 @@ public class Login extends HttpServlet
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		String user = req.getParameter("username");
+		String username = req.getParameter("username");
 		String password = req.getParameter("password");
 		@SuppressWarnings("deprecation")
-		Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, user);
+		Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, username);
 		List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(3));
 		String hash = "";
 		String salt = "";
 		if(users.size() == 0)
-			resp.sendRedirect("/login?user=" + user + "&error=" + "1");
+			resp.sendRedirect("/login?user=" + username + "&error=" + "401");
 		else
 		{
-			hash = (String) users.get(0).getProperty("hash");
-			salt = (String) users.get(0).getProperty("salt");
-		}
+			Entity user = users.get(0);
+			hash = (String) user.getProperty("hash");
+			salt = (String) user.getProperty("salt");
 
-		Transaction txn = datastore.beginTransaction();
-		try
-		{
-			if(Password.check(password, salt + "$" + hash))
-			{
-				String newHash = Password.getSaltedHash(password);
-				resp.addCookie(new Cookie("user-id", URLEncoder.encode(user + "$" + newHash.split("\\$")[1], "UTF-8")));
+			Transaction txn = datastore.beginTransaction();
+			try
+			{	
+				if(Password.check(password, salt + "$" + hash))
+				{
+					String newHash = Password.getSaltedHash(password);
+					Cookie cookie = new Cookie("user-id", URLEncoder.encode(username + "$" + newHash.split("\\$")[1], "UTF-8"));
+					cookie.setMaxAge(604800);
+					resp.addCookie(cookie);
 
-				users.get(0).setProperty("salt", newHash.split("\\$")[0]);
-				users.get(0).setProperty("hash", newHash.split("\\$")[1]);
-				datastore.put(users.get(0));
-				resp.sendRedirect("/?refresh=1");
+					user.setProperty("salt", newHash.split("\\$")[0]);
+					user.setProperty("hash", newHash.split("\\$")[1]);
+					user.removeProperty("loginAttempts");
+					datastore.put(user);
+					resp.sendRedirect("/?refresh=1");
+				}
+				else
+				{
+					Long loginAttempts = (Long) user.getProperty("loginAttempts");
+					if(loginAttempts == null)
+					{
+						user.setProperty("loginAttempts", 1);
+						resp.sendRedirect("/login?user=" + username + "&error=" + "401");
+					}
+					else
+					{
+						if(loginAttempts >= 30)
+						{
+							user.setProperty("loginAttempts", ++loginAttempts);
+							resp.sendRedirect("/login?user=" + username + "&error=" + "403");
+						}
+						else
+						{
+							user.setProperty("loginAttempts", ++loginAttempts);
+							resp.sendRedirect("/login?user=" + username + "&error=" + "401");
+						}
+					}
+
+					datastore.put(user);
+				}
+
+				txn.commit();
 			}
-			else
-				resp.sendRedirect("/login?user=" + user + "&error=" + "1");
-			txn.commit();
-		}
-		catch(Exception e) { resp.sendRedirect("/login?user=" + user + "&error=" + "1"); }
-		finally
-		{
-			if(txn.isActive())
-				txn.rollback();
+			catch(Exception e) { e.printStackTrace(); }
+			finally
+			{
+				if(txn.isActive())
+					txn.rollback();
+			}
 		}
 	}
 }

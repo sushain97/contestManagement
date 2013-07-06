@@ -2,7 +2,6 @@ package contestWebsite;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.URLDecoder;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
@@ -37,7 +36,6 @@ public class ViewScores extends HttpServlet
 			user = userCookie.authenticateUser();
 		boolean loggedIn = userCookie != null && user != null;
 
-		String cookieContent = "";
 		Properties p = new Properties();
 		p.setProperty("file.resource.loader.path", "html");
 		Velocity.init(p);
@@ -46,34 +44,28 @@ public class ViewScores extends HttpServlet
 		context.put("loggedIn", loggedIn);
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-		if(loggedIn)
+		if(loggedIn && !userCookie.isAdmin())
 		{
-			cookieContent = URLDecoder.decode(userCookie.getValue(), "UTF-8");
-			if(cookieContent.split("\\$")[0].equals("admin"))
-				resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-			else
-			{
-				context.put("user", user.getProperty("user-id"));
-				context.put("name", user.getProperty("name"));
+			context.put("user", user.getProperty("user-id"));
+			context.put("name", user.getProperty("name"));
 
-				Filter typeFilter = new FilterPredicate("type", FilterOperator.EQUAL, "school");
-				Filter nameFilter = new FilterPredicate("school", FilterOperator.EQUAL, user.getProperty("school"));
-				Filter filter = CompositeFilterOperator.and(typeFilter, nameFilter);
-				Query query = new Query("html").setFilter(filter);
-				List<Entity> html = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-				if(html.size() != 0)
-					context.put("html", ((com.google.appengine.api.datastore.Text) html.get(0).getProperty("html")).getValue());
+			Filter typeFilter = new FilterPredicate("type", FilterOperator.EQUAL, "school");
+			Filter nameFilter = new FilterPredicate("school", FilterOperator.EQUAL, user.getProperty("school"));
+			Filter filter = CompositeFilterOperator.and(typeFilter, nameFilter);
+			Query query = new Query("html").setFilter(filter);
+			List<Entity> html = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+			if(html.size() != 0)
+				context.put("html", ((com.google.appengine.api.datastore.Text) html.get(0).getProperty("html")).getValue());
 
-				query = new Query("contestInfo");
-				Entity info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
-				context.put("date", info.getProperty("updated"));
-				
-				StringWriter sw = new StringWriter();
-				Velocity.mergeTemplate("schoolScores.html", context, sw);
-				sw.close();
+			query = new Query("contestInfo");
+			Entity info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+			context.put("date", info.getProperty("updated"));
 
-				resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
-			}
+			StringWriter sw = new StringWriter();
+			Velocity.mergeTemplate("schoolScores.html", context, sw);
+			sw.close();
+
+			resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 		}
 		else
 			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);

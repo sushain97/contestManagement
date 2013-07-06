@@ -44,6 +44,18 @@ public class UserCookie extends Cookie
 		return null;
 	}
 
+	public String getUsername() throws UnsupportedEncodingException
+	{
+		String cookieContent = URLDecoder.decode(getValue(), "UTF-8");
+		return cookieContent.split("\\$")[0];
+	}
+	
+	public boolean isAdmin() throws UnsupportedEncodingException
+	{
+		String cookieContent = URLDecoder.decode(getValue(), "UTF-8");
+		return "admin".equals(cookieContent.split("\\$")[0]);
+	}
+	
 	public boolean authenticate()
 	{
 		try

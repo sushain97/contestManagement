@@ -4,7 +4,6 @@ import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -53,79 +52,66 @@ public class AdminPanel extends HttpServlet
 			resp.sendRedirect("/adminPanel?updated=1");
 		context.put("updated", req.getParameter("updated"));
 
-		if(!loggedIn)
-			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
-		else
+		if(loggedIn && userCookie.isAdmin())
 		{
-			String cookieContent = URLDecoder.decode(userCookie.getValue(), "UTF-8");
-			if(loggedIn && cookieContent.split("\\$")[0].equals("admin"))
+			context.put("user", userCookie.getUsername());
+			context.put("admin", true);
+
+			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+			Query query = new Query("contestInfo");
+			String endDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
+			String startDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
+			String email = "";
+			String account = "";
+			String docHigh = "";
+			String docMiddle = "";
+			String docAccount = "";
+			Object price = "";
+			Boolean complete = null;
+			List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+			if(info.size() != 0)
 			{
-				context.put("user", cookieContent.split("\\$")[0]);
-				context.put("admin", true);
-
-				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-				Query query = new Query("contestInfo");
-				String endDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
-				String startDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
-				String email = "";
-				String account = "";
-				String docHigh = "";
-				String docMiddle = "";
-				String docAccount = "";
-				Object price = "";
-				Boolean complete = null;
-				List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-				if(info.size() != 0)
-				{
-					Entity contestInfo = info.get(0);
-					endDate = (String) contestInfo.getProperty("endDate");
-					startDate = (String) contestInfo.getProperty("startDate");
-					email = (String) contestInfo.getProperty("email");
-					account = (String) contestInfo.getProperty("account");
-					docMiddle = (String) contestInfo.getProperty("docMiddle");
-					docHigh = (String) contestInfo.getProperty("docHigh");
-					docAccount = (String) contestInfo.getProperty("docAccount");
-					price = contestInfo.getProperty("price");
-					complete = (Boolean) contestInfo.getProperty("complete");
-				}
-
-				context.put("loggedIn", loggedIn);
-				context.put("confPassError", req.getParameter("confPassError") != null && req.getParameter("confPassError").equals("1") ? "Those passwords didn't match, try again." : null);
-				context.put("passError", req.getParameter("passError") != null && req.getParameter("passError").equals("1") ? "That password is incorrect, try again." : null);
-				context.put("account", account == null ? "" : account);
-				context.put("email", email == null ? "" : email);
-				context.put("docAccount", docAccount == null ? "" : docAccount);
-				context.put("docHigh", docHigh == null ? "" : docHigh);
-				context.put("docMiddle", docMiddle == null ? "" : docMiddle);
-				context.put("complete", complete);
-				context.put("price", price);
-				context.put("startDate", startDate == null ? new SimpleDateFormat("MM/dd/yyyy").format(new Date()) : startDate);
-				context.put("endDate", endDate == null ? new SimpleDateFormat("MM/dd/yyyy").format(new Date()) : endDate);
-				StringWriter sw = new StringWriter();
-				Velocity.mergeTemplate("adminpanel.html", context, sw);
-				sw.close();
-
-				resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
+				Entity contestInfo = info.get(0);
+				endDate = (String) contestInfo.getProperty("endDate");
+				startDate = (String) contestInfo.getProperty("startDate");
+				email = (String) contestInfo.getProperty("email");
+				account = (String) contestInfo.getProperty("account");
+				docMiddle = (String) contestInfo.getProperty("docMiddle");
+				docHigh = (String) contestInfo.getProperty("docHigh");
+				docAccount = (String) contestInfo.getProperty("docAccount");
+				price = contestInfo.getProperty("price");
+				complete = (Boolean) contestInfo.getProperty("complete");
 			}
-			else
-				resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+
+			context.put("loggedIn", loggedIn);
+			context.put("confPassError", req.getParameter("confPassError") != null && req.getParameter("confPassError").equals("1") ? "Those passwords didn't match, try again." : null);
+			context.put("passError", req.getParameter("passError") != null && req.getParameter("passError").equals("1") ? "That password is incorrect, try again." : null);
+			context.put("account", account == null ? "" : account);
+			context.put("email", email == null ? "" : email);
+			context.put("docAccount", docAccount == null ? "" : docAccount);
+			context.put("docHigh", docHigh == null ? "" : docHigh);
+			context.put("docMiddle", docMiddle == null ? "" : docMiddle);
+			context.put("complete", complete);
+			context.put("price", price);
+			context.put("startDate", startDate == null ? new SimpleDateFormat("MM/dd/yyyy").format(new Date()) : startDate);
+			context.put("endDate", endDate == null ? new SimpleDateFormat("MM/dd/yyyy").format(new Date()) : endDate);
+			StringWriter sw = new StringWriter();
+			Velocity.mergeTemplate("adminpanel.html", context, sw);
+			sw.close();
+
+			resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 		}
+		else
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
 	}
 
 	@SuppressWarnings({ "deprecation", "unchecked" })
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
-		Cookie[] cookies = req.getCookies();
-		UserCookie userCookie = null;
-		if(cookies != null)
-			for(Cookie cookie : cookies)
-				if(cookie.getName().equals("user-id"))
-					userCookie = new UserCookie(cookie);
+		UserCookie userCookie = UserCookie.getCookie(req);
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
-		if(!loggedIn || !URLDecoder.decode(userCookie.getValue(), "UTF-8").split("\\$")[0].equals("admin"))
-			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
-		else
+		if(loggedIn && userCookie.isAdmin())
 		{
 			Map<String, String[]> params = req.getParameterMap();
 			String endDate = params.get("endDate")[0];
@@ -160,7 +146,7 @@ public class AdminPanel extends HttpServlet
 					String docMiddle = params.get("docMiddle")[0];
 					String docAccount = params.get("docAccount")[0];
 					String docPassword = params.get("docPassword")[0];
-					
+
 					contestInfo.setProperty("docAccount", docAccount);
 					contestInfo.setProperty("docHigh", docHigh);
 					contestInfo.setProperty("docMiddle", docMiddle);
@@ -181,7 +167,7 @@ public class AdminPanel extends HttpServlet
 					String curPassword = params.get("curPassword")[0];
 					String confPassword = params.get("confPassword")[0];
 					String newPassword = params.get("newPassword")[0];
-					
+
 					if(Password.check(curPassword, salt + "$" + hash))
 					{
 						if(confPassword.equals(newPassword))
@@ -215,5 +201,7 @@ public class AdminPanel extends HttpServlet
 					txn.rollback();
 			}
 		}
+		else
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
 	}
 }

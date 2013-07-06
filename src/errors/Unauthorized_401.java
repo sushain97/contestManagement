@@ -2,7 +2,6 @@ package errors;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.URLDecoder;
 import java.util.Calendar;
 import java.util.Properties;
 
@@ -27,7 +26,6 @@ public class Unauthorized_401 extends HttpServlet
 		UserCookie userCookie = UserCookie.getCookie(req);
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
 
-		String cookieContent = "";
 		Properties p = new Properties();
 		p.setProperty("file.resource.loader.path", "html");
 		Velocity.init(p);
@@ -36,11 +34,9 @@ public class Unauthorized_401 extends HttpServlet
 		context.put("loggedIn", loggedIn);
 		if(loggedIn)
 		{
-			cookieContent = URLDecoder.decode(userCookie.getValue(), "UTF-8");
-			context.put("user", cookieContent.split("\\$")[0]);
+			context.put("user", userCookie.getUsername());
+			context.put("admin", userCookie.isAdmin());
 		}
-		if(loggedIn && cookieContent.split("\\$")[0].equals("admin"))
-			context.put("admin", true);
 		StringWriter sw = new StringWriter();
 		Velocity.mergeTemplate("error401.html", context, sw);
 		sw.close();

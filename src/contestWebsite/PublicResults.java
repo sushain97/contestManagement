@@ -2,12 +2,10 @@ package contestWebsite;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.URLDecoder;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,12 +30,8 @@ public class PublicResults extends HttpServlet
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
 		resp.setContentType("text/html");
-		Cookie[] cookies = req.getCookies();
-		UserCookie userCookie = null;
-		if(cookies != null)
-			for(Cookie cookie : cookies)
-				if(cookie.getName().equals("user-id"))
-					userCookie = new UserCookie(cookie);
+
+		UserCookie userCookie = UserCookie.getCookie(req);
 		Entity user = null;
 		if(userCookie != null)
 			user = userCookie.authenticateUser();
@@ -53,12 +47,12 @@ public class PublicResults extends HttpServlet
 		VelocityContext context = new VelocityContext();
 		context.put("year", Calendar.getInstance().get(Calendar.YEAR));
 		context.put("loggedIn", loggedIn);
+		context.put("admin", userCookie.isAdmin());
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-		if(loggedIn)
+		if(loggedIn && !userCookie.isAdmin())
 		{
-			cookieContent = URLDecoder.decode(userCookie.getValue(), "UTF-8");
-			if(!cookieContent.split("\\$")[0].equals("admin"))
+			if(!userCookie.isAdmin())
 			{
 				String name = (String) user.getProperty("name");
 				context.put("name", name);
@@ -68,10 +62,8 @@ public class PublicResults extends HttpServlet
 			{
 				context.put("user", user.getProperty("user-id"));
 				context.put("name", "Contest Administrator");
-				context.put("admin", true);
 			}
 		}
-
 		Query query = new Query("contestInfo");
 		List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 		if(info.size() != 0)
@@ -108,7 +100,7 @@ public class PublicResults extends HttpServlet
 				}
 				else
 					context.put("overview", true);
-				
+
 				context.put("date", info.get(0).getProperty("updated"));
 			}
 			else
@@ -116,7 +108,7 @@ public class PublicResults extends HttpServlet
 		}
 		else
 			context.put("complete", false);
-		
+
 		StringWriter sw = new StringWriter();
 		Velocity.mergeTemplate("publicResults.html", context, sw);
 		sw.close();

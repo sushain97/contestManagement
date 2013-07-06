@@ -55,8 +55,7 @@ public class ForgotPassword extends HttpServlet
 		String error = req.getParameter("error");
 
 		context.put("loggedIn", loggedIn);
-		String cookieContent = "";
-		if(loggedIn && !URLDecoder.decode(userCookie.getValue(), "UTF-8").split("\\$")[0].equals("admin"))
+		if(loggedIn && !userCookie.isAdmin())
 			resp.sendRedirect("/signout");
 		else if(noise == null && updatedPass == null && error == null)
 		{

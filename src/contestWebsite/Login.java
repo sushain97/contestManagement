@@ -2,7 +2,6 @@ package contestWebsite;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Calendar;
 import java.util.List;
@@ -32,7 +31,7 @@ public class Login extends HttpServlet
 	{
 		UserCookie userCookie = UserCookie.getCookie(req);
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
-		if(loggedIn && !URLDecoder.decode(userCookie.getValue(), "UTF-8").split("\\$")[0].equals("admin"))
+		if(loggedIn && !userCookie.isAdmin())
 			resp.sendRedirect("/signout");
 		else
 		{

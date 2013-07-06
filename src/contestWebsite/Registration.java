@@ -3,7 +3,6 @@ package contestWebsite;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.math.BigInteger;
-import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
@@ -58,15 +57,12 @@ public class Registration extends HttpServlet
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
 
 		context.put("loggedIn", loggedIn);
-		String cookieContent = "";
 		if(loggedIn)
 		{
-			cookieContent = URLDecoder.decode(userCookie.getValue(), "UTF-8");
-			context.put("user", cookieContent.split("\\$")[0]);
+			context.put("admin", userCookie.isAdmin());
+			context.put("user", userCookie.getUsername());
 			context.put("registrationError", "You are already registered.");
 		}
-		if(loggedIn && cookieContent.split("\\$")[0].equals("admin"))
-			context.put("admin", true);
 
 		String endDateStr = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
 		String startDateStr = new SimpleDateFormat("MM/dd/yyyy").format(new Date());

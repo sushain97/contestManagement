@@ -3,7 +3,6 @@ package contestWebsite;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.math.BigInteger;
-import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
@@ -52,22 +51,13 @@ public class ContactUs extends HttpServlet
 		boolean loggedIn = userCookie != null && user != null;
 
 		context.put("loggedIn", loggedIn);
-		String cookieContent = "";
-		if(loggedIn)
+		context.put("admin", userCookie.isAdmin());
+		if(loggedIn && !userCookie.isAdmin())
 		{
-			cookieContent = URLDecoder.decode(userCookie.getValue(), "UTF-8");
-			if(cookieContent.split("\\$")[0].equals("admin"))
-			{
-				context.put("admin", true);
-				context.put("user", user.getProperty("user-id"));
-			}
-			else
-			{
-				context.put("user", user.getProperty("user-id"));
-				context.put("name", user.getProperty("name"));
-				context.put("email", user.getProperty("user-id"));
-				context.put("school", user.getProperty("school"));
-			}
+			context.put("user", user.getProperty("user-id"));
+			context.put("name", user.getProperty("name"));
+			context.put("email", user.getProperty("user-id"));
+			context.put("school", user.getProperty("school"));
 		}
 		else
 		{
@@ -78,7 +68,7 @@ public class ContactUs extends HttpServlet
 
 		try
 		{
-			if(!loggedIn || cookieContent.split("\\$")[0].equals("admin"))
+			if(!loggedIn || userCookie.isAdmin())
 			{
 				Captcha captcha = new Captcha();
 				context.put("captcha", captcha.getQuestion());
@@ -88,19 +78,19 @@ public class ContactUs extends HttpServlet
 			}
 			else
 				context.put("nocaptcha", true);
+			
+			context.put("updated", req.getParameter("updated"));
+			StringWriter sw = new StringWriter();
+			Velocity.mergeTemplate("contactus.html", context, sw);
+			sw.close();
+
+			resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 		}
 		catch (NoSuchAlgorithmException e)
 		{
 			e.printStackTrace();
 			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
-
-		context.put("updated", req.getParameter("updated"));
-		StringWriter sw = new StringWriter();
-		Velocity.mergeTemplate("contactus.html", context, sw);
-		sw.close();
-
-		resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 	}
 
 	@SuppressWarnings("deprecation")

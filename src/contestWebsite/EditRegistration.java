@@ -2,13 +2,11 @@ package contestWebsite;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.URLDecoder;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,87 +42,83 @@ public class EditRegistration extends HttpServlet
 		UserCookie userCookie = UserCookie.getCookie(req);
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
 
-		if(loggedIn)
+		if(loggedIn && userCookie.isAdmin())
 		{
-			String cookieContent = URLDecoder.decode(userCookie.getValue(), "UTF-8");
-			if(cookieContent.split("\\$")[0].equals("admin"))
+			context.put("user", userCookie.getUsername());
+			context.put("admin", true);
+			context.put("loggedIn", loggedIn);
+
+			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+			Key key = KeyFactory.createKey("registration", Integer.parseInt(req.getParameter("key")));
+			try
 			{
-				context.put("user", cookieContent.split("\\$")[0]);
-				context.put("admin", true);
-				context.put("loggedIn", loggedIn);
+				Entity registration = datastore.get(key);
+				Map<String, Object> props = registration.getProperties();
 
-				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-				Key key = KeyFactory.createKey("registration", Integer.parseInt(req.getParameter("key")));
-				try
-				{
-					Entity registration = datastore.get(key);
-					Map<String, Object> props = registration.getProperties();
+				String registrationType = (String) props.get("registrationType");
+				if(registrationType.equals("coach"))
+					context.put("coach", true);
+				else
+					context.put("student", true);
 
-					String registrationType = (String) props.get("registrationType");
-					if(registrationType.equals("coach"))
-						context.put("coach", true);
-					else
-						context.put("student", true);
+				String schoolLevel = (String) props.get("schoolLevel");
+				if(schoolLevel.equals("middle"))
+					context.put("middle", true);
+				else
+					context.put("high", true);
 
-					String schoolLevel = (String) props.get("schoolLevel");
-					if(schoolLevel.equals("middle"))
-						context.put("middle", true);
-					else
-						context.put("high", true);
+				String[] subjects = {"N", "C", "M", "S"};
+				String[] numbers = { "", "one", "two", "three", "four", "five", "six", "seven",
+						"eight", "nine", "ten", "eleven", "twelve" };
 
-					String[] subjects = {"N", "C", "M", "S"};
-					String[] numbers = { "", "one", "two", "three", "four", "five", "six", "seven",
-							"eight", "nine", "ten", "eleven", "twelve" };
+				for(int i = 6; i <= 12; i++)
+					for(int j = 0; j < 4; j++)
+						context.put(numbers[i] + subjects[j], props.get(i + subjects[j].toLowerCase()));
 
-					for(int i = 6; i <= 12; i++)
+				if(schoolLevel.equals("middle"))
+					for(int i = 9; i <= 12; i++)
 						for(int j = 0; j < 4; j++)
-							context.put(numbers[i] + subjects[j], props.get(i + subjects[j].toLowerCase()));
+							context.put(numbers[i] + subjects[j], 0);
+				else
+					for(int i = 6; i <= 8; i++)
+						for(int j = 0; j < 4; j++)
+							context.put(numbers[i] + subjects[j], 0);
 
-					if(schoolLevel.equals("middle"))
-						for(int i = 9; i <= 12; i++)
-							for(int j = 0; j < 4; j++)
-								context.put(numbers[i] + subjects[j], 0);
-					else
-						for(int i = 6; i <= 8; i++)
-							for(int j = 0; j < 4; j++)
-								context.put(numbers[i] + subjects[j], 0);
+				String account = (String) props.get("account");
+				if(account.equals("yes"))
+					context.put("account", true);
+				else
+					context.put("account", false);
 
-					String account = (String) props.get("account");
-					if(account.equals("yes"))
-						context.put("account", true);
-					else
-						context.put("account", false);
+				context.put("schoolName", props.get("schoolName"));
+				context.put("aliases", props.get("aliases"));
+				context.put("name", props.get("name"));
+				context.put("email", props.get("email"));
+				context.put("paid", props.get("paid"));
 
-					context.put("schoolName", props.get("schoolName"));
-					context.put("aliases", props.get("aliases"));
-					context.put("name", props.get("name"));
-					context.put("email", props.get("email"));
-					context.put("paid", props.get("paid"));
-					
-					Query query = new Query("contestInfo");
-					List<Entity> infos = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-					if(infos.size() != 0)
-					{
-						Entity info = infos.get(0);
-						if(info.getProperty("price") != null)
-							context.put("price", (Long) info.getProperty("price"));
-						else
-							context.put("price", 5);
-					}
+				Query query = new Query("contestInfo");
+				List<Entity> infos = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+				if(infos.size() != 0)
+				{
+					Entity info = infos.get(0);
+					if(info.getProperty("price") != null)
+						context.put("price", (Long) info.getProperty("price"));
 					else
 						context.put("price", 5);
-					
-					context.put("key", key);
-					StringWriter sw = new StringWriter();
-					Velocity.mergeTemplate("editRegistration.html", context, sw);
-					sw.close();
-					resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 				}
-				catch(EntityNotFoundException e)
-				{ 
-					e.printStackTrace();
-					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-				}
+				else
+					context.put("price", 5);
+
+				context.put("key", key);
+				StringWriter sw = new StringWriter();
+				Velocity.mergeTemplate("editRegistration.html", context, sw);
+				sw.close();
+				resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
+			}
+			catch(EntityNotFoundException e)
+			{ 
+				e.printStackTrace();
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			}
 		}
 		else
@@ -134,16 +128,9 @@ public class EditRegistration extends HttpServlet
 	@SuppressWarnings({ "unchecked", "deprecation" })
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
-		Cookie[] cookies = req.getCookies();
-		UserCookie userCookie = null;
-		if(cookies != null)
-			for(Cookie cookie : cookies)
-				if(cookie.getName().equals("user-id"))
-					userCookie = new UserCookie(cookie);
+		UserCookie userCookie = UserCookie.getCookie(req);
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
-		if(!loggedIn || !URLDecoder.decode(userCookie.getValue(), "UTF-8").split("\\$")[0].equals("admin"))
-			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
-		else
+		if(loggedIn && userCookie.isAdmin())
 		{
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 			Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
@@ -171,7 +158,7 @@ public class EditRegistration extends HttpServlet
 					String name = params.get("name")[0];
 					String schoolName = params.get("schoolName")[0];
 					String email = params.get("email")[0];
-	
+
 					String account = params.get("account")[0];
 					if(registration.getProperty("account").equals("yes") && account.equals("no"))
 					{
@@ -190,7 +177,7 @@ public class EditRegistration extends HttpServlet
 						user.setProperty("user-id", email);
 						datastore.put(user);
 					}
-	
+
 					registration.setProperty("registrationType", params.get("registrationType")[0]);
 					registration.setProperty("schoolName", schoolName);
 					registration.setProperty("schoolLevel", schoolLevel);
@@ -199,7 +186,7 @@ public class EditRegistration extends HttpServlet
 					registration.setProperty("paid", params.get("paid")[0]);
 					if(!params.get("aliases")[0].equals("$aliases"))
 						registration.setProperty("aliases", params.get("aliases")[0]);
-	
+
 					String[] subjects = {"n", "c", "m", "s"};
 					if(schoolLevel.equals("middle"))
 						for(int i = 6; i <= 8; i++)
@@ -209,11 +196,11 @@ public class EditRegistration extends HttpServlet
 						for(int i = 9; i <= 12; i++)
 							for(int j = 0; j < 4; j++)
 								registration.setProperty(i + subjects[j], new Integer(Integer.parseInt(params.get(i + subjects[j])[0])));
-	
+
 					datastore.put(registration);
 				}
 				txn.commit();
-				
+
 				resp.sendRedirect("/data?choice=registrations&updated=1");
 			}
 			catch(Exception e)
@@ -227,5 +214,7 @@ public class EditRegistration extends HttpServlet
 					txn.rollback();
 			}
 		}
+		else
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
 	}
 }

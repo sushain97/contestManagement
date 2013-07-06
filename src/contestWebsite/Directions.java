@@ -2,11 +2,9 @@ package contestWebsite;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.URLDecoder;
 import java.util.Calendar;
 import java.util.Properties;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,15 +19,10 @@ public class Directions extends HttpServlet
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
 		resp.setContentType("text/html");
-		Cookie[] cookies = req.getCookies();
-		UserCookie userCookie = null;
-		if(cookies != null)
-			for(Cookie cookie : cookies)
-				if(cookie.getName().equals("user-id"))
-					userCookie = new UserCookie(cookie);
+		
+		UserCookie userCookie = UserCookie.getCookie(req);
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
 
-		String cookieContent = "";
 		Properties p = new Properties();
 		p.setProperty("file.resource.loader.path", "html");
 		Velocity.init(p);
@@ -38,11 +31,9 @@ public class Directions extends HttpServlet
 		context.put("loggedIn", loggedIn);
 		if(loggedIn)
 		{
-			cookieContent = URLDecoder.decode(userCookie.getValue(), "UTF-8");
-			context.put("user", cookieContent.split("\\$")[0]);
+			context.put("user", userCookie.getUsername());
+			context.put("admin", userCookie.isAdmin());
 		}
-		if(loggedIn && cookieContent.split("\\$")[0].equals("admin"))
-			context.put("admin", true);
 		StringWriter sw = new StringWriter();
 		Velocity.mergeTemplate("directions.html", context, sw);
 		sw.close();

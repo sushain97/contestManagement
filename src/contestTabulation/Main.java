@@ -318,7 +318,7 @@ public class Main extends HttpServlet
 			
 			Query query = new Query("contestInfo");
 			Entity info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
-			SimpleDateFormat isoFormat = new SimpleDateFormat("hh:mm:ss a EEEEE MMMMM w, yyyy z");
+			SimpleDateFormat isoFormat = new SimpleDateFormat("hh:mm:ss a EEEE MMMM d, yyyy zzzz");
 		    isoFormat.setTimeZone(TimeZone.getTimeZone("America/Chicago"));
 			info.setProperty("updated", isoFormat.format(new Date()).toString());
 			datastore.put(info);

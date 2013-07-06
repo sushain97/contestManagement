@@ -91,4 +91,18 @@ public class Captcha
 		SecureRandom random = new SecureRandom();
 		salt = new BigInteger(130, random).toString(32);
 	}
+	
+	public static boolean authCaptcha(String salt, String captcha, String hash) throws NoSuchAlgorithmException
+	{
+		MessageDigest m = MessageDigest.getInstance("MD5");
+		String plaintext = salt + captcha;
+		m.reset();
+		m.update(plaintext.getBytes());
+		byte[] digest = m.digest();
+		BigInteger bigInt = new BigInteger(1,digest);
+		String answer = bigInt.toString(16);
+		while(answer.length() < 32)
+			answer = "0" + answer;
+		return answer.equals(hash);
+	}
 }

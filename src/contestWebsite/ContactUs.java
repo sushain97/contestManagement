@@ -2,8 +2,6 @@ package contestWebsite;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.math.BigInteger;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.List;
@@ -51,13 +49,16 @@ public class ContactUs extends HttpServlet
 		boolean loggedIn = userCookie != null && user != null;
 
 		context.put("loggedIn", loggedIn);
-		context.put("admin", userCookie.isAdmin());
-		if(loggedIn && !userCookie.isAdmin())
+		if(loggedIn)
 		{
-			context.put("user", user.getProperty("user-id"));
-			context.put("name", user.getProperty("name"));
-			context.put("email", user.getProperty("user-id"));
-			context.put("school", user.getProperty("school"));
+			context.put("admin", userCookie.isAdmin());
+			if(!userCookie.isAdmin())
+			{
+				context.put("user", user.getProperty("user-id"));
+				context.put("name", user.getProperty("name"));
+				context.put("email", user.getProperty("user-id"));
+				context.put("school", user.getProperty("school"));
+			}
 		}
 		else
 		{
@@ -103,31 +104,20 @@ public class ContactUs extends HttpServlet
 		if(users.size() != 0)
 			feedback.setProperty("user-id", users.get(0).getProperty("user-id"));
 
-		MessageDigest m = null;
-		try
-		{
-			m = MessageDigest.getInstance("MD5");
-		}
-		catch(NoSuchAlgorithmException e) 
-		{
-			e.printStackTrace();
-			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		}
-		
 		if(req.getParameter("nocaptcha").equals("false"))
 		{
-			String plaintext = req.getParameter("salt") + req.getParameter("captcha");
-			m.reset();
-			m.update(plaintext.getBytes());
-			byte[] digest = m.digest();
-			BigInteger bigInt = new BigInteger(1,digest);
-			String answer = bigInt.toString(16);
-			while(answer.length() < 32)
-				answer = "0" + answer;
-
-			if(!answer.equals(req.getParameter("hash")))
+			try
 			{
-				resp.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+				if(!Captcha.authCaptcha(req.getParameter("salt"), req.getParameter("captcha"), req.getParameter("hash")))
+				{
+					resp.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+					return;
+				}
+			}
+			catch(NoSuchAlgorithmException e)
+			{
+				e.printStackTrace();
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				return;
 			}
 		}
@@ -147,6 +137,30 @@ public class ContactUs extends HttpServlet
 		{
 			datastore.put(feedback);
 			txn.commit();
+			
+			resp.sendRedirect("/contactUs?updated=1");
+
+			Session session = Session.getDefaultInstance(new Properties(), null);
+			query = new Query("contestInfo");
+			List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+			String appEngineEmail = "";
+			if(info.size() != 0)
+				appEngineEmail = (String) info.get(0).getProperty("account");
+
+			try
+			{
+				Message msg = new MimeMessage(session);
+				msg.setFrom(new InternetAddress(appEngineEmail, "Tournament Website Admin"));
+				msg.addRecipient(Message.RecipientType.TO, new InternetAddress((String) info.get(0).getProperty("email"), "Contest Administrator"));
+				msg.setSubject("Question about Tournament from " + name);
+				msg.setContent("This question is from <b>" + name + "</b> from <b>" + school + "</b> with email address " + email + ". His/her message is as follows: <b>" + comment + "</b>.", "text/html");
+				Transport.send(msg);
+			}
+			catch (MessagingException e)
+			{ 
+				e.printStackTrace();
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
 		}
 		catch(Exception e)
 		{ 
@@ -157,30 +171,6 @@ public class ContactUs extends HttpServlet
 		{
 			if(txn.isActive())
 				txn.rollback();
-		}
-
-		resp.sendRedirect("/contactUs?updated=1");
-
-		Session session = Session.getDefaultInstance(new Properties(), null);
-		query = new Query("contestInfo");
-		List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-		String appEngineEmail = "";
-		if(info.size() != 0)
-			appEngineEmail = (String) info.get(0).getProperty("account");
-
-		try
-		{
-			Message msg = new MimeMessage(session);
-			msg.setFrom(new InternetAddress(appEngineEmail, "Tournament Website Admin"));
-			msg.addRecipient(Message.RecipientType.TO, new InternetAddress((String) info.get(0).getProperty("email"), "Contest Administrator"));
-			msg.setSubject("Question about Tournament from " + name);
-			msg.setContent("This question is from <b>" + name + "</b> from <b>" + school + "</b> with email address " + email + ". His/her message is as follows: <b>" + comment + "</b>.", "text/html");
-			Transport.send(msg);
-		}
-		catch (MessagingException e)
-		{ 
-			e.printStackTrace();
-			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 	}
 }

@@ -2,8 +2,6 @@ package contestWebsite;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.math.BigInteger;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -210,192 +208,179 @@ public class Registration extends HttpServlet
 		String password = null;
 		String confPassword = null;
 
-		MessageDigest m = null;
 		try
 		{
-			m = MessageDigest.getInstance("MD5");
-		}
-		catch(NoSuchAlgorithmException e) 
-		{ 
-			e.printStackTrace();
-			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		}
-
-		String plaintext = params.get("salt")[0] + params.get("captcha")[0];
-		m.reset();
-		m.update(plaintext.getBytes());
-		byte[] digest = m.digest();
-		BigInteger bigInt = new BigInteger(1,digest);
-		String answer = bigInt.toString(16);
-		while(answer.length() < 32)
-			answer = "0" + answer;
-
-		if(!answer.equals(params.get("hash")[0]))
-			resp.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
-		else
-		{
-
-			if(account.equals("yes"))
-			{
-				password = params.get("password")[0];
-				confPassword = params.get("confPassword")[0];
-			}
-
-			HashMap<String, Integer> nums = new HashMap<String, Integer>();
-			String[] subjects = {"n", "c", "m", "s"};
-			if(schoolLevel.equals("middle"))
-				for(int i = 6; i <= 8; i++)
-					for(int j = 0; j < 4; j++)
-						nums.put(i + subjects[j], new Integer(Integer.parseInt(params.get(i + subjects[j])[0])));
+			if(!Captcha.authCaptcha(req.getParameter("salt"), req.getParameter("captcha"), req.getParameter("hash")))
+				resp.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
 			else
-				for(int i = 9; i <= 12; i++)
-					for(int j = 0; j < 4; j++)
-						nums.put(i + subjects[j], new Integer(Integer.parseInt(params.get(i + subjects[j])[0])));
-
-
-			Query query = new Query("registration").addFilter("email", FilterOperator.EQUAL, email);
-			List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-
-			if(users.size() != 0 || (account.equals("yes") && !confPassword.equals(password)))
 			{
-				HttpSession sess = req.getSession(true);
-				sess.setAttribute("registrationType", registrationType);
-				sess.setAttribute("account", account);
-				sess.setAttribute("aliases", aliases);
-				sess.setAttribute("account", account);
-				sess.setAttribute("name", name);
-				sess.setAttribute("schoolName", schoolName);
-				sess.setAttribute("schoolLevel", schoolLevel);
-				sess.setAttribute("email", email);
-
-				String numString = "";
-				if(schoolLevel.equals("middle"))
+				if(account.equals("yes"))
 				{
+					password = params.get("password")[0];
+					confPassword = params.get("confPassword")[0];
+				}
+
+				HashMap<String, Integer> nums = new HashMap<String, Integer>();
+				String[] subjects = {"n", "c", "m", "s"};
+				if(schoolLevel.equals("middle"))
 					for(int i = 6; i <= 8; i++)
 						for(int j = 0; j < 4; j++)
-							numString += nums.get(i + subjects[j]) + ",";
-					for(int i = 0; i < 16; i++)
-						numString += "0,";
-				}
+							nums.put(i + subjects[j], new Integer(Integer.parseInt(params.get(i + subjects[j])[0])));
 				else
-				{
-					for(int i = 0; i < 12; i++)
-						numString += "0,";
 					for(int i = 9; i <= 12; i++)
 						for(int j = 0; j < 4; j++)
-							numString += nums.get(i + subjects[j]) + ",";
-				}
-				sess.setAttribute("nums", numString);
-
-				if(users.size() != 0)
-					resp.sendRedirect("/registration?userError=1");
-				else if(!params.get("confPassword")[0].equals(params.get("password")[0]))
-					resp.sendRedirect("/registration?passwordError=1");
-				else
-					resp.sendRedirect("/registration?updated=1");
-			}
-			else
-			{
-				Entity registration = new Entity("registration");
-				registration.setProperty("registrationType", registrationType);
-				registration.setProperty("account", account);
-				registration.setProperty("schoolName", schoolName);
-				registration.setProperty("schoolLevel", schoolLevel);
-				registration.setProperty("name", name);
-				registration.setProperty("email", email);
-				registration.setProperty("paid", "");
-				if(registrationType.equals("student"))
-					registration.setProperty("aliases", aliases);
-
-				long price = 5;
-				query = new Query("contestInfo");
-				List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-				if(info.size() != 0 && info.get(0).getProperty("price") != null)
-					price = (Long) info.get(0).getProperty("price");
+							nums.put(i + subjects[j], new Integer(Integer.parseInt(params.get(i + subjects[j])[0])));
 
 
-				int cost = 0;
-				for(Entry<String,Integer> test : nums.entrySet())
+				Query query = new Query("registration").addFilter("email", FilterOperator.EQUAL, email);
+				List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+
+				if(users.size() != 0 || (account.equals("yes") && !confPassword.equals(password)))
 				{
-					int num = test.getValue();
-					if(num >= 0)
+					HttpSession sess = req.getSession(true);
+					sess.setAttribute("registrationType", registrationType);
+					sess.setAttribute("account", account);
+					sess.setAttribute("aliases", aliases);
+					sess.setAttribute("account", account);
+					sess.setAttribute("name", name);
+					sess.setAttribute("schoolName", schoolName);
+					sess.setAttribute("schoolLevel", schoolLevel);
+					sess.setAttribute("email", email);
+
+					String numString = "";
+					if(schoolLevel.equals("middle"))
 					{
-						registration.setProperty(test.getKey(), num);
-						cost += num * price;
+						for(int i = 6; i <= 8; i++)
+							for(int j = 0; j < 4; j++)
+								numString += nums.get(i + subjects[j]) + ",";
+						for(int i = 0; i < 16; i++)
+							numString += "0,";
 					}
-				}
-				registration.setProperty("cost", cost);
-
-				Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
-				try
-				{
-					datastore.put(registration);
-
-					if(params.get("account")[0].equals("yes"))
-					{
-						Entity user = new Entity("user");
-						String hash = Password.getSaltedHash(password);
-						user.setProperty("name", name);
-						user.setProperty("school", schoolName);
-						user.setProperty("schoolLevel", schoolLevel);
-						user.setProperty("user-id", email);
-						user.setProperty("salt", hash.split("\\$")[0]);
-						user.setProperty("hash", hash.split("\\$")[1]);
-						datastore.put(user);
-					}
-
-					txn.commit();
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-				}
-				finally
-				{
-					if(txn.isActive())
-						txn.rollback();
-				}
-
-				HttpSession sess = req.getSession(true);
-				sess.setAttribute("props", registration.getProperties());
-				resp.sendRedirect("/registration?updated=1");
-
-				Session session = Session.getDefaultInstance(new Properties(), null);
-				query = new Query("contestInfo");
-				String appEngineEmail = "";
-				if(info.size() != 0)
-					appEngineEmail = (String) info.get(0).getProperty("account");
-
-				String url = req.getRequestURL().toString();
-				url = url.substring(0, url.indexOf(".com") + 4);
-
-				try
-				{
-					Message msg = new MimeMessage(session);
-					msg.setFrom(new InternetAddress(appEngineEmail, "Tournament Website Admin"));
-					msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email, name));
-					msg.setSubject("Thank you for your registration!");
-
-					String text = "Thank you for registering for the Dulles TMSCA Tournament, " + name + ". " +
-							"Your registration has been recorded in our database. Your total registration fees are: <b>$" + cost + ".</b> ";
-
-					if(account.equals("yes"))
-						text += "If you desire to make changes to your registration please login at our <a href=\"" + url + "\"> tournament website</a> with your e-mail address and visit the contact us page. "
-								+ " Your account also allows you to check the scores of your students during and after the competition. ";
 					else
-						text += "If you desire to make changes to your registration please visit the contact us page at our tournament website. </br>";
-					text += " More information including directions to Dulles and a competition schedule can also be found at <a href=\"" + url + "\">our website</a>.";
+					{
+						for(int i = 0; i < 12; i++)
+							numString += "0,";
+						for(int i = 9; i <= 12; i++)
+							for(int j = 0; j < 4; j++)
+								numString += nums.get(i + subjects[j]) + ",";
+					}
+					sess.setAttribute("nums", numString);
 
-					msg.setContent(text, "text/html");
-					Transport.send(msg);
+					if(users.size() != 0)
+						resp.sendRedirect("/registration?userError=1");
+					else if(!params.get("confPassword")[0].equals(params.get("password")[0]))
+						resp.sendRedirect("/registration?passwordError=1");
+					else
+						resp.sendRedirect("/registration?updated=1");
 				}
-				catch (MessagingException e)
+				else
 				{
-					e.printStackTrace();
-					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					Entity registration = new Entity("registration");
+					registration.setProperty("registrationType", registrationType);
+					registration.setProperty("account", account);
+					registration.setProperty("schoolName", schoolName);
+					registration.setProperty("schoolLevel", schoolLevel);
+					registration.setProperty("name", name);
+					registration.setProperty("email", email);
+					registration.setProperty("paid", "");
+					if(registrationType.equals("student"))
+						registration.setProperty("aliases", aliases);
+
+					long price = 5;
+					query = new Query("contestInfo");
+					List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+					if(info.size() != 0 && info.get(0).getProperty("price") != null)
+						price = (Long) info.get(0).getProperty("price");
+
+
+					int cost = 0;
+					for(Entry<String,Integer> test : nums.entrySet())
+					{
+						int num = test.getValue();
+						if(num >= 0)
+						{
+							registration.setProperty(test.getKey(), num);
+							cost += num * price;
+						}
+					}
+					registration.setProperty("cost", cost);
+
+					Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
+					try
+					{
+						datastore.put(registration);
+
+						if(params.get("account")[0].equals("yes"))
+						{
+							Entity user = new Entity("user");
+							String hash = Password.getSaltedHash(password);
+							user.setProperty("name", name);
+							user.setProperty("school", schoolName);
+							user.setProperty("schoolLevel", schoolLevel);
+							user.setProperty("user-id", email);
+							user.setProperty("salt", hash.split("\\$")[0]);
+							user.setProperty("hash", hash.split("\\$")[1]);
+							datastore.put(user);
+						}
+
+						txn.commit();
+
+						HttpSession sess = req.getSession(true);
+						sess.setAttribute("props", registration.getProperties());
+						resp.sendRedirect("/registration?updated=1");
+
+						Session session = Session.getDefaultInstance(new Properties(), null);
+						query = new Query("contestInfo");
+						String appEngineEmail = "";
+						if(info.size() != 0)
+							appEngineEmail = (String) info.get(0).getProperty("account");
+
+						String url = req.getRequestURL().toString();
+						url = url.substring(0, url.indexOf(".com") + 4);
+
+						try
+						{
+							Message msg = new MimeMessage(session);
+							msg.setFrom(new InternetAddress(appEngineEmail, "Tournament Website Admin"));
+							msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email, name));
+							msg.setSubject("Thank you for your registration!");
+
+							String text = "Thank you for registering for the Dulles TMSCA Tournament, " + name + ". " +
+									"Your registration has been recorded in our database. Your total registration fees are: <b>$" + cost + ".</b> ";
+
+							if(account.equals("yes"))
+								text += "If you desire to make changes to your registration please login at our <a href=\"" + url + "\"> tournament website</a> with your e-mail address and visit the contact us page. "
+										+ " Your account also allows you to check the scores of your students during and after the competition. ";
+							else
+								text += "If you desire to make changes to your registration please visit the contact us page at our tournament website. </br>";
+							text += " More information including directions to Dulles and a competition schedule can also be found at <a href=\"" + url + "\">our website</a>.";
+
+							msg.setContent(text, "text/html");
+							Transport.send(msg);
+						}
+						catch (MessagingException e)
+						{
+							e.printStackTrace();
+							resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+						}
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+						resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					}
+					finally
+					{
+						if(txn.isActive())
+							txn.rollback();
+					}
 				}
 			}
+		}
+		catch(NoSuchAlgorithmException e)
+		{
+			e.printStackTrace();
+			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 	}
 }

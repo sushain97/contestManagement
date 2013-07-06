@@ -47,11 +47,12 @@ public class PublicResults extends HttpServlet
 		VelocityContext context = new VelocityContext();
 		context.put("year", Calendar.getInstance().get(Calendar.YEAR));
 		context.put("loggedIn", loggedIn);
-		context.put("admin", userCookie.isAdmin());
+		
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-		if(loggedIn && !userCookie.isAdmin())
+		
+		if(loggedIn)
 		{
+			context.put("admin", userCookie.isAdmin());
 			if(!userCookie.isAdmin())
 			{
 				String name = (String) user.getProperty("name");

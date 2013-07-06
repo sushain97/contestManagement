@@ -87,7 +87,7 @@ public class Login extends HttpServlet
 				{
 					String newHash = Password.getSaltedHash(password);
 					Cookie cookie = new Cookie("user-id", URLEncoder.encode(username + "$" + newHash.split("\\$")[1], "UTF-8"));
-					cookie.setMaxAge(604800);
+					cookie.setMaxAge("stay".equals(req.getParameter("signedIn")) ? -1 : 3600);
 					resp.addCookie(cookie);
 
 					user.setProperty("salt", newHash.split("\\$")[0]);

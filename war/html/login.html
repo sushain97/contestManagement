@@ -27,6 +27,7 @@
 						</div>
 					</div>
 				</div>
+				
 				<div class=#if($error) "control-group error" #else "control-group" #end>
 					<label class="control-label" for="password">Password</label>
 					<div class="controls">
@@ -38,7 +39,14 @@
 						#if($error) <span class="help-block">$error</span> #end
 					</div>
 				</div>
-
+				
+				<div class="control-group">
+					<label class="control-label" for="signedin">Stay signed in?</label>
+					<div class="controls">
+							<input type="checkbox" id="signedIn" name="signedIn" value="stay">
+					</div>
+				</div>
+				
 				<div class="form-actions">
 					<button type="submit" class="btn btn-primary">Login</button>
 				</div>

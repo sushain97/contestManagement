@@ -19,6 +19,7 @@ import org.apache.velocity.app.Velocity;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -40,12 +41,7 @@ public class EditRegistration extends HttpServlet
 		VelocityContext context = new VelocityContext();
 		context.put("year", Calendar.getInstance().get(Calendar.YEAR));
 
-		Cookie[] cookies = req.getCookies();
-		UserCookie userCookie = null;
-		if(cookies != null)
-			for(Cookie cookie : cookies)
-				if(cookie.getName().equals("user-id"))
-					userCookie = new UserCookie(cookie);
+		UserCookie userCookie = UserCookie.getCookie(req);
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
 
 		if(loggedIn)
@@ -104,31 +100,35 @@ public class EditRegistration extends HttpServlet
 					context.put("name", props.get("name"));
 					context.put("email", props.get("email"));
 					context.put("paid", props.get("paid"));
-				}
-				catch(Exception e) { e.printStackTrace(); }
-
-				Query query = new Query("contestInfo");
-				List<Entity> infos = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-				if(infos.size() != 0)
-				{
-					Entity info = infos.get(0);
-					if(info.getProperty("price") != null)
-						context.put("price", (Long) info.getProperty("price"));
+					
+					Query query = new Query("contestInfo");
+					List<Entity> infos = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+					if(infos.size() != 0)
+					{
+						Entity info = infos.get(0);
+						if(info.getProperty("price") != null)
+							context.put("price", (Long) info.getProperty("price"));
+						else
+							context.put("price", 5);
+					}
 					else
 						context.put("price", 5);
+					
+					context.put("key", key);
+					StringWriter sw = new StringWriter();
+					Velocity.mergeTemplate("editRegistration.html", context, sw);
+					sw.close();
+					resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 				}
-				else
-					context.put("price", 5);
-				
-				context.put("key", key);
-				StringWriter sw = new StringWriter();
-				Velocity.mergeTemplate("editRegistration.html", context, sw);
-				sw.close();
-				resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
+				catch(EntityNotFoundException e)
+				{ 
+					e.printStackTrace();
+					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				}
 			}
 		}
 		else
-			resp.sendRedirect("/");
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
 	}
 
 	@SuppressWarnings({ "unchecked", "deprecation" })
@@ -142,7 +142,7 @@ public class EditRegistration extends HttpServlet
 					userCookie = new UserCookie(cookie);
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
 		if(!loggedIn || !URLDecoder.decode(userCookie.getValue(), "UTF-8").split("\\$")[0].equals("admin"))
-			resp.sendRedirect("/");
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
 		else
 		{
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -213,14 +213,19 @@ public class EditRegistration extends HttpServlet
 					datastore.put(registration);
 				}
 				txn.commit();
+				
+				resp.sendRedirect("/data?choice=registrations&updated=1");
 			}
-			catch(Exception e) { e.printStackTrace(); }
+			catch(Exception e)
+			{ 
+				e.printStackTrace();
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
 			finally
 			{
 				if(txn.isActive())
 					txn.rollback();
 			}
-			resp.sendRedirect("/data?choice=registrations&updated=1");
 		}
 	}
 }

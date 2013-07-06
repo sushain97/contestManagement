@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -88,8 +89,11 @@ public class ContactUs extends HttpServlet
 			else
 				context.put("nocaptcha", true);
 		}
-		catch (NoSuchAlgorithmException e) { e.printStackTrace(); }
-
+		catch (NoSuchAlgorithmException e)
+		{
+			e.printStackTrace();
+			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
 
 		context.put("updated", req.getParameter("updated"));
 		StringWriter sw = new StringWriter();
@@ -109,33 +113,35 @@ public class ContactUs extends HttpServlet
 		if(users.size() != 0)
 			feedback.setProperty("user-id", users.get(0).getProperty("user-id"));
 
+		MessageDigest m = null;
 		try
 		{
-			if(req.getParameter("nocaptcha").equals("false"))
+			m = MessageDigest.getInstance("MD5");
+		}
+		catch(NoSuchAlgorithmException e) 
+		{
+			e.printStackTrace();
+			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
+		
+		if(req.getParameter("nocaptcha").equals("false"))
+		{
+			String plaintext = req.getParameter("salt") + req.getParameter("captcha");
+			m.reset();
+			m.update(plaintext.getBytes());
+			byte[] digest = m.digest();
+			BigInteger bigInt = new BigInteger(1,digest);
+			String answer = bigInt.toString(16);
+			while(answer.length() < 32)
+				answer = "0" + answer;
+
+			if(!answer.equals(req.getParameter("hash")))
 			{
-				String plaintext = req.getParameter("salt") + req.getParameter("captcha");
-				MessageDigest m = MessageDigest.getInstance("MD5");
-				m.reset();
-				m.update(plaintext.getBytes());
-				byte[] digest = m.digest();
-				BigInteger bigInt = new BigInteger(1,digest);
-				String answer = bigInt.toString(16);
-				while(answer.length() < 32)
-					answer = "0" + answer;
-				
-				if(!answer.equals(req.getParameter("hash")))
-				{
-					resp.sendRedirect("/");
-					return;
-				}
+				resp.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+				return;
 			}
 		}
-		catch(Exception e)
-		{
-			resp.sendRedirect("/");
-			return;
-		}
-
+		
 		String name = req.getParameter("name");
 		String school = req.getParameter("school");
 		String comment = req.getParameter("text");
@@ -152,7 +158,11 @@ public class ContactUs extends HttpServlet
 			datastore.put(feedback);
 			txn.commit();
 		}
-		catch(Exception e) { e.printStackTrace(); }
+		catch(Exception e)
+		{ 
+			e.printStackTrace();
+			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
 		finally
 		{
 			if(txn.isActive())
@@ -177,6 +187,10 @@ public class ContactUs extends HttpServlet
 			msg.setContent("This question is from <b>" + name + "</b> from <b>" + school + "</b> with email address " + email + ". His/her message is as follows: <b>" + comment + "</b>.", "text/html");
 			Transport.send(msg);
 		}
-		catch (Exception e) { e.printStackTrace(); }
+		catch (MessagingException e)
+		{ 
+			e.printStackTrace();
+			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
 	}
 }

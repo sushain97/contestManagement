@@ -123,7 +123,11 @@ public class Login extends HttpServlet
 
 				txn.commit();
 			}
-			catch(Exception e) { e.printStackTrace(); }
+			catch(Exception e)
+			{
+				e.printStackTrace();
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
 			finally
 			{
 				if(txn.isActive())

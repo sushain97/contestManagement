@@ -50,7 +50,7 @@ public class ViewScores extends HttpServlet
 		{
 			cookieContent = URLDecoder.decode(userCookie.getValue(), "UTF-8");
 			if(cookieContent.split("\\$")[0].equals("admin"))
-				resp.sendRedirect("/");
+				resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 			else
 			{
 				context.put("user", user.getProperty("user-id"));
@@ -76,6 +76,6 @@ public class ViewScores extends HttpServlet
 			}
 		}
 		else
-			resp.sendRedirect("/");
+			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 	}
 }

@@ -52,7 +52,7 @@ public class Data extends HttpServlet
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
 
 		if(!loggedIn)
-			resp.sendRedirect("/");
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
 		else
 		{
 			String cookieContent = URLDecoder.decode(userCookie.getValue(), "UTF-8");
@@ -169,7 +169,7 @@ public class Data extends HttpServlet
 				resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 			}
 			else
-				resp.sendRedirect("/");
+				resp.sendError(HttpServletResponse.SC_FORBIDDEN);
 		}
 	}
 
@@ -184,9 +184,7 @@ public class Data extends HttpServlet
 					userCookie = new UserCookie(cookie);
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
 		if(!loggedIn || !URLDecoder.decode(userCookie.getValue(), "UTF-8").split("\\$")[0].equals("admin"))
-		{
-			resp.sendRedirect("/");
-		}
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
 		else
 		{
 			String choice = req.getParameter("choice");
@@ -229,7 +227,11 @@ public class Data extends HttpServlet
 						}
 					txn.commit();
 				}
-				catch (Exception e) { e.printStackTrace(); }
+				catch (Exception e)
+				{ 
+					e.printStackTrace();
+					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				}
 				finally
 				{
 					if(txn.isActive())

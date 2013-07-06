@@ -60,6 +60,14 @@
     <servlet-name>contestTabulation.Main</servlet-name>
     <servlet-class>contestTabulation.Main</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>errors.Prohibited_403</servlet-name>
+    <servlet-class>errors.Prohibited_403</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>errors.Unauthorized_401</servlet-name>
+    <servlet-class>errors.Unauthorized_401</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>contestWebsite.MainPage</servlet-name>
     <url-pattern>/</url-pattern>
@@ -129,4 +137,20 @@
     <servlet-name>contestTabulation.Main</servlet-name>
     <url-pattern>/tabulate</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>errors.Prohibited_403</servlet-name>
+    <url-pattern>/403</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>errors.Unauthorized_401</servlet-name>
+    <url-pattern>/401</url-pattern>
+  </servlet-mapping>
+<error-page>
+  <error-code>403</error-code>
+  <location>/403</location>
+</error-page>
+<error-page>
+  <error-code>401</error-code>
+  <location>/401</location>
+</error-page>
 </web-app>

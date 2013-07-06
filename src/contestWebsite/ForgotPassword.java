@@ -10,6 +10,7 @@ import java.util.Properties;
 import java.util.Random;
 
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -101,8 +102,8 @@ public class ForgotPassword extends HttpServlet
 				}
 				catch(Exception e)
 				{
-					resp.sendRedirect("/forgotPass?updated=1");
 					e.printStackTrace();
+					resp.sendError(HttpServletResponse.SC_FORBIDDEN);
 				}
 				finally
 				{
@@ -133,7 +134,11 @@ public class ForgotPassword extends HttpServlet
 					
 					Transport.send(msg);
 				}
-				catch (Exception e) { e.printStackTrace(); }
+				catch (MessagingException e)
+				{
+					e.printStackTrace();
+					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				}
 			}
 			resp.sendRedirect("/forgotPass?updated=1");
 		}
@@ -166,8 +171,8 @@ public class ForgotPassword extends HttpServlet
 					}
 					catch(Exception e)
 					{
-						resp.sendRedirect("/forgotPass");
 						e.printStackTrace();
+						resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 					}
 					finally
 					{
@@ -180,7 +185,7 @@ public class ForgotPassword extends HttpServlet
 					resp.sendRedirect("/forgotPass?error=1&noise=" + noise);
 			}
 			else
-				resp.sendRedirect("/");
+				resp.sendError(HttpServletResponse.SC_FORBIDDEN);
 		}
 	}
 }

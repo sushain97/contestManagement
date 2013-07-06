@@ -1,5 +1,6 @@
 package contestWebsite;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class UserCookie extends Cookie
 			List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(3));
 			return users.size() != 0 && users.get(0).getProperty("hash").equals(hash);
 		}
-		catch(Exception e)
+		catch(UnsupportedEncodingException e)
 		{
 			return false;
 		}
@@ -82,7 +83,7 @@ public class UserCookie extends Cookie
 			else
 				return null;
 		}
-		catch(Exception e)
+		catch(UnsupportedEncodingException e)
 		{
 			return null;
 		}

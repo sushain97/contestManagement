@@ -239,91 +239,87 @@ public class Main extends HttpServlet
 		Entity html;
 		LinkedList<Entity> htmlEntries = new LinkedList<Entity>();
 		
-		try
+		for(Entry<String, School> schoolEntry : schools.entrySet())
 		{
-			for(Entry<String, School> schoolEntry : schools.entrySet())
+			if(!schoolEntry.getKey().equals("?"))
 			{
-				if(!schoolEntry.getKey().equals("?"))
-				{
-					School school = schoolEntry.getValue();
-					context = new VelocityContext();
-					context.put("schoolLevel", Character.toString(school.getLevel().charAt(0)).toUpperCase() + school.getLevel().substring(1));
-					ArrayList<Student> schoolStudents = school.getStudents();
-					Collections.sort(schoolStudents, new Comparator<Student>() { public int compare(Student s1,Student s2) { return s1.getName().compareTo(s2.getName()); }});
-					context.put("school", school);
-					context.put("tests", Test.values());
-					sw = new StringWriter();
-					Velocity.mergeTemplate("schoolOverview.html", context, sw);
-					html = new Entity("html", "school_" + level + "_" + school.getName());
-					html.setProperty("level", level);
-					html.setProperty("type", "school");
-					html.setProperty("school", school.getName());
-					html.setProperty("html", new Text(compressor.compress(sw.toString())));
-					htmlEntries.add(html);
-					sw.close();
-				}
-			}
-
-			for(Test test : categoryWinners.keySet())
-			{
+				School school = schoolEntry.getValue();
 				context = new VelocityContext();
-				context.put("winners", categoryWinners.get(test));
-				context.put("subject", test);
+				context.put("schoolLevel", Character.toString(school.getLevel().charAt(0)).toUpperCase() + school.getLevel().substring(1));
+				ArrayList<Student> schoolStudents = school.getStudents();
+				Collections.sort(schoolStudents, new Comparator<Student>() { public int compare(Student s1,Student s2) { return s1.getName().compareTo(s2.getName()); }});
+				context.put("school", school);
+				context.put("tests", Test.values());
 				sw = new StringWriter();
-				Velocity.mergeTemplate("categoryWinners.html", context, sw);
-				html = new Entity("html", "category_" + level + "_" + test);
-				html.setProperty("type", "category");
+				Velocity.mergeTemplate("schoolOverview.html", context, sw);
+				html = new Entity("html", "school_" + level + "_" + school.getName());
 				html.setProperty("level", level);
-				html.setProperty("test", test.toString());
+				html.setProperty("type", "school");
+				html.setProperty("school", school.getName());
 				html.setProperty("html", new Text(compressor.compress(sw.toString())));
 				htmlEntries.add(html);
 				sw.close();
 			}
-
-			context = new VelocityContext();
-			context.put("winners", categorySweepstakesWinners);
-			sw = new StringWriter();
-			Velocity.mergeTemplate("categorySweepstakes.html", context, sw);
-			html = new Entity("html", "categorySweep_" + level);
-			html.setProperty("type", "categorySweep");
-			html.setProperty("level", level);
-			html.setProperty("html", new Text(compressor.compress(sw.toString())));
-			htmlEntries.add(html);
-			sw.close();
-
-			context = new VelocityContext();
-			context.put("winners", sweepstakesWinners);
-			sw = new StringWriter();
-			Velocity.mergeTemplate("sweepstakesWinners.html", context, sw);
-			html = new Entity("html", "sweep_" + level);
-			html.setProperty("type", "sweep");
-			html.setProperty("level", level);
-			html.setProperty("html", new Text(compressor.compress(sw.toString())));
-			htmlEntries.add(html);
-			sw.close();
-
-			context = new VelocityContext();
-			Collections.sort(students, new Comparator<Student>() { public int compare(Student s1,Student s2) { return s1.getName().compareTo(s2.getName()); }});
-			context.put("students", students);
-			sw = new StringWriter();
-			Velocity.mergeTemplate("studentsOverview.html", context, sw);
-			html = new Entity("html", "students_" + level);
-			html.setProperty("type", "students");
-			html.setProperty("level", level);
-			html.setProperty("html", new Text(compressor.compress(sw.toString())));
-			htmlEntries.add(html);
-			sw.close();
-
-			datastore.put(htmlEntries);
-			
-			Query query = new Query("contestInfo");
-			Entity info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
-			SimpleDateFormat isoFormat = new SimpleDateFormat("hh:mm:ss a EEEE MMMM d, yyyy zzzz");
-		    isoFormat.setTimeZone(TimeZone.getTimeZone("America/Chicago"));
-			info.setProperty("updated", isoFormat.format(new Date()).toString());
-			datastore.put(info);
 		}
-		catch(Exception e) { e.printStackTrace(); }
+
+		for(Test test : categoryWinners.keySet())
+		{
+			context = new VelocityContext();
+			context.put("winners", categoryWinners.get(test));
+			context.put("subject", test);
+			sw = new StringWriter();
+			Velocity.mergeTemplate("categoryWinners.html", context, sw);
+			html = new Entity("html", "category_" + level + "_" + test);
+			html.setProperty("type", "category");
+			html.setProperty("level", level);
+			html.setProperty("test", test.toString());
+			html.setProperty("html", new Text(compressor.compress(sw.toString())));
+			htmlEntries.add(html);
+			sw.close();
+		}
+
+		context = new VelocityContext();
+		context.put("winners", categorySweepstakesWinners);
+		sw = new StringWriter();
+		Velocity.mergeTemplate("categorySweepstakes.html", context, sw);
+		html = new Entity("html", "categorySweep_" + level);
+		html.setProperty("type", "categorySweep");
+		html.setProperty("level", level);
+		html.setProperty("html", new Text(compressor.compress(sw.toString())));
+		htmlEntries.add(html);
+		sw.close();
+
+		context = new VelocityContext();
+		context.put("winners", sweepstakesWinners);
+		sw = new StringWriter();
+		Velocity.mergeTemplate("sweepstakesWinners.html", context, sw);
+		html = new Entity("html", "sweep_" + level);
+		html.setProperty("type", "sweep");
+		html.setProperty("level", level);
+		html.setProperty("html", new Text(compressor.compress(sw.toString())));
+		htmlEntries.add(html);
+		sw.close();
+
+		context = new VelocityContext();
+		Collections.sort(students, new Comparator<Student>() { public int compare(Student s1,Student s2) { return s1.getName().compareTo(s2.getName()); }});
+		context.put("students", students);
+		sw = new StringWriter();
+		Velocity.mergeTemplate("studentsOverview.html", context, sw);
+		html = new Entity("html", "students_" + level);
+		html.setProperty("type", "students");
+		html.setProperty("level", level);
+		html.setProperty("html", new Text(compressor.compress(sw.toString())));
+		htmlEntries.add(html);
+		sw.close();
+
+		datastore.put(htmlEntries);
+		
+		Query query = new Query("contestInfo");
+		Entity info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+		SimpleDateFormat isoFormat = new SimpleDateFormat("hh:mm:ss a EEEE MMMM d, yyyy zzzz");
+		isoFormat.setTimeZone(TimeZone.getTimeZone("America/Chicago"));
+		info.setProperty("updated", isoFormat.format(new Date()).toString());
+		datastore.put(info);
 	}
 
 	@SuppressWarnings("deprecation")

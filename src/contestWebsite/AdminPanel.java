@@ -54,7 +54,7 @@ public class AdminPanel extends HttpServlet
 		context.put("updated", req.getParameter("updated"));
 
 		if(!loggedIn)
-			resp.sendRedirect("/");
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
 		else
 		{
 			String cookieContent = URLDecoder.decode(userCookie.getValue(), "UTF-8");
@@ -109,7 +109,7 @@ public class AdminPanel extends HttpServlet
 				resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 			}
 			else
-				resp.sendRedirect("/");
+				resp.sendError(HttpServletResponse.SC_FORBIDDEN);
 		}
 	}
 
@@ -124,44 +124,16 @@ public class AdminPanel extends HttpServlet
 					userCookie = new UserCookie(cookie);
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
 		if(!loggedIn || !URLDecoder.decode(userCookie.getValue(), "UTF-8").split("\\$")[0].equals("admin"))
-			resp.sendRedirect("/");
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
 		else
 		{
 			Map<String, String[]> params = req.getParameterMap();
-
-			String endDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
-			String startDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
-			String email = "";
-			String account = "";
-			String curPassword = "";
-			String confPassword = "";
-			String newPassword = "";
-			String docHigh = "";
-			String docMiddle = "";
-			String docAccount = "";
-			String docPassword = "";
-			int price = 5;
+			String endDate = params.get("endDate")[0];
+			String startDate = params.get("startDate")[0];
+			String email = params.get("email")[0];
+			String account = params.get("account")[0];
+			int price = Integer.parseInt(params.get("price")[0]);
 			String complete[] = params.get("complete");
-
-			try
-			{
-				startDate = params.get("startDate")[0];
-				endDate = params.get("endDate")[0];
-				email = params.get("email")[0];
-				account = params.get("account")[0];
-				curPassword = params.get("curPassword")[0];
-				confPassword = params.get("confPassword")[0];
-				newPassword = params.get("newPassword")[0];
-				price = Integer.parseInt(params.get("price")[0]);
-				if(params.get("updateScores")[0].equals("yes"))
-				{
-					docHigh = params.get("docHigh")[0];
-					docMiddle = params.get("docMiddle")[0];
-					docAccount = params.get("docAccount")[0];
-					docPassword = params.get("docPassword")[0];
-				}
-			}
-			catch(Exception e) { e.printStackTrace(); }
 
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 			Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
@@ -184,6 +156,11 @@ public class AdminPanel extends HttpServlet
 
 				if(params.get("updateScores")[0].equals("yes"))
 				{
+					String docHigh = params.get("docHigh")[0];
+					String docMiddle = params.get("docMiddle")[0];
+					String docAccount = params.get("docAccount")[0];
+					String docPassword = params.get("docPassword")[0];
+					
 					contestInfo.setProperty("docAccount", docAccount);
 					contestInfo.setProperty("docHigh", docHigh);
 					contestInfo.setProperty("docMiddle", docMiddle);
@@ -201,6 +178,10 @@ public class AdminPanel extends HttpServlet
 
 				if(params.get("changePass").equals("yes"))
 				{
+					String curPassword = params.get("curPassword")[0];
+					String confPassword = params.get("confPassword")[0];
+					String newPassword = params.get("newPassword")[0];
+					
 					if(Password.check(curPassword, salt + "$" + hash))
 					{
 						if(confPassword.equals(newPassword))
@@ -223,7 +204,11 @@ public class AdminPanel extends HttpServlet
 					resp.sendRedirect("/adminPanel?updated=1");
 				txn.commit();
 			}
-			catch(Exception e) { e.printStackTrace(); }
+			catch(Exception e) 
+			{ 
+				e.printStackTrace();
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
 			finally
 			{
 				if(txn.isActive())

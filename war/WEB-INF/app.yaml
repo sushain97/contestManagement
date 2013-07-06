@@ -1,5 +1,5 @@
 application: sushain97
-version: 31
+version: 33
 runtime: java
 threadsafe: false
 sessions_enabled: true
@@ -51,6 +51,12 @@ handlers:
 - url: /tabulate
   servlet: contestTabulation.Main
   
+- url: /403
+  servlet: errors.Prohibited_403
+
+- url: /401
+  servlet: errors.Unauthorized_401
+  
 static_files:
   - include: /favicon.ico
   - include: /css/**.css
@@ -58,3 +64,13 @@ static_files:
   - include: /static/*
   - include: /static/img/*
   - include: /img/*
+
+web_xml: |
+  <error-page>
+    <error-code>403</error-code>
+    <location>/403</location>
+  </error-page>
+  <error-page>
+    <error-code>401</error-code>
+    <location>/401</location>
+  </error-page>

@@ -59,9 +59,13 @@ handlers:
   
 static_files:
   - include: /favicon.ico
+    expiration: 14d
   - include: /css/**.css
+    expiration: 7d
   - include: /js/**.js
+    expiration: 7d
   - include: /img/**
+    expiration: 7d
 
 web_xml: |
   <error-page>

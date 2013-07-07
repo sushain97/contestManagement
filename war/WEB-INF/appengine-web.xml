@@ -3,10 +3,10 @@
   <application>sushain97</application>
   <version>34</version>
   <static-files>
-    <include path='/favicon.ico'/>
-    <include path='/css/**.css'/>
-    <include path='/js/**.js'/>
-    <include path='/img/**'/>
+    <include path='/favicon.ico' expiration='14d'/>
+    <include path='/css/**.css' expiration='7d'/>
+    <include path='/js/**.js' expiration='7d'/>
+    <include path='/img/**' expiration='7d'/>
   </static-files>
   <resource-files>
   </resource-files>

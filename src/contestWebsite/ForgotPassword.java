@@ -19,8 +19,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
+
+import util.HTMLCompressor;
+import util.Password;
+import util.UserCookie;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -33,14 +40,13 @@ import com.google.appengine.api.datastore.Transaction;
 @SuppressWarnings({ "serial", "unused" })
 public class ForgotPassword extends HttpServlet
 {
-	@SuppressWarnings("deprecation")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
-		resp.setContentType("text/html");
-		Properties p = new Properties();
-		p.setProperty("file.resource.loader.path", "html");
-		Velocity.init(p);
+		VelocityEngine ve = new VelocityEngine();
+		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
+		ve.init();
 		VelocityContext context = new VelocityContext();
+		
 		context.put("year", Calendar.getInstance().get(Calendar.YEAR));
 
 		UserCookie userCookie = UserCookie.getCookie(req);
@@ -61,8 +67,10 @@ public class ForgotPassword extends HttpServlet
 		{
 			context.put("updated", req.getParameter("updated"));
 			StringWriter sw = new StringWriter();
-			Velocity.mergeTemplate("forgotPass.html", context, sw);
+			Template t = ve.getTemplate("forgotPass.html");
+			t.merge(context, sw);
 			sw.close();
+			resp.setContentType("text/html");
 			resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 		}
 		else
@@ -71,8 +79,10 @@ public class ForgotPassword extends HttpServlet
 			context.put("updated", updatedPass);
 			context.put("error", error);
 			StringWriter sw = new StringWriter();
-			Velocity.mergeTemplate("resetPass.html", context, sw);
+			Template t = ve.getTemplate("resetPass.html");
+			t.merge(context, sw);
 			sw.close();
+			resp.setContentType("text/html");
 			resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 		}
 	}

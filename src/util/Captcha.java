@@ -1,4 +1,4 @@
-package contestWebsite;
+package util;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -8,6 +8,7 @@ import java.security.SecureRandom;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Random;
+
 
 public class Captcha
 {

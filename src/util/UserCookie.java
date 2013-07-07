@@ -1,4 +1,4 @@
-package contestWebsite;
+package util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

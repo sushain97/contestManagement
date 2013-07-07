@@ -1,4 +1,4 @@
-package contestWebsite;
+package util;
 
 import java.security.SecureRandom;
 
@@ -8,7 +8,7 @@ import javax.crypto.spec.PBEKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
 
-class Password
+public class Password
 {
 	// The higher the number of iterations the more
 	// expensive computing the hash is for us

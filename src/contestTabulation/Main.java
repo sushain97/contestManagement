@@ -15,15 +15,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -226,16 +227,15 @@ public class Main extends HttpServlet
 			sweepstakeWinners.add(school);
 	}
 
-	@SuppressWarnings("deprecation")
 	private static void storeHTML(String level, List<Student> students, Map<String, School> schools, Map<Test, List<Student>> categoryWinners, Map<Character, List<School>> categorySweepstakesWinners, List<School> sweepstakesWinners) throws IOException
 	{
-		Properties p = new Properties();
-		p.setProperty("file.resource.loader.path", "html");
-		Velocity.init(p);
+		VelocityEngine ve = new VelocityEngine();
+		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/templates");
+		ve.init();
+		Template t;
 		StringWriter sw;
 		VelocityContext context;
 		HtmlCompressor compressor = new HtmlCompressor();
-		//TODO: Convert to Transaction
 		Entity html;
 		LinkedList<Entity> htmlEntries = new LinkedList<Entity>();
 		
@@ -251,7 +251,8 @@ public class Main extends HttpServlet
 				context.put("school", school);
 				context.put("tests", Test.values());
 				sw = new StringWriter();
-				Velocity.mergeTemplate("schoolOverview.html", context, sw);
+				t = ve.getTemplate("schoolOverview.html");
+				t.merge(context, sw);
 				html = new Entity("html", "school_" + level + "_" + school.getName());
 				html.setProperty("level", level);
 				html.setProperty("type", "school");
@@ -268,7 +269,8 @@ public class Main extends HttpServlet
 			context.put("winners", categoryWinners.get(test));
 			context.put("subject", test);
 			sw = new StringWriter();
-			Velocity.mergeTemplate("categoryWinners.html", context, sw);
+			t = ve.getTemplate("categoryWinners.html");
+			t.merge(context, sw);
 			html = new Entity("html", "category_" + level + "_" + test);
 			html.setProperty("type", "category");
 			html.setProperty("level", level);
@@ -281,7 +283,8 @@ public class Main extends HttpServlet
 		context = new VelocityContext();
 		context.put("winners", categorySweepstakesWinners);
 		sw = new StringWriter();
-		Velocity.mergeTemplate("categorySweepstakes.html", context, sw);
+		t = ve.getTemplate("categorySweepstakes.html");
+		t.merge(context, sw);
 		html = new Entity("html", "categorySweep_" + level);
 		html.setProperty("type", "categorySweep");
 		html.setProperty("level", level);
@@ -292,7 +295,8 @@ public class Main extends HttpServlet
 		context = new VelocityContext();
 		context.put("winners", sweepstakesWinners);
 		sw = new StringWriter();
-		Velocity.mergeTemplate("sweepstakesWinners.html", context, sw);
+		t = ve.getTemplate("sweepstakesWinners.html");
+		t.merge(context, sw);
 		html = new Entity("html", "sweep_" + level);
 		html.setProperty("type", "sweep");
 		html.setProperty("level", level);
@@ -304,7 +308,8 @@ public class Main extends HttpServlet
 		Collections.sort(students, new Comparator<Student>() { public int compare(Student s1,Student s2) { return s1.getName().compareTo(s2.getName()); }});
 		context.put("students", students);
 		sw = new StringWriter();
-		Velocity.mergeTemplate("studentsOverview.html", context, sw);
+		t = ve.getTemplate("studentsOverview.html");
+		t.merge(context, sw);
 		html = new Entity("html", "students_" + level);
 		html.setProperty("type", "students");
 		html.setProperty("level", level);
@@ -312,7 +317,7 @@ public class Main extends HttpServlet
 		htmlEntries.add(html);
 		sw.close();
 
-		datastore.put(htmlEntries);
+		datastore.put(htmlEntries); //TODO: Convert to Transaction
 		
 		Query query = new Query("contestInfo");
 		Entity info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);

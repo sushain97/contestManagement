@@ -5,15 +5,20 @@ import java.io.StringWriter;
 import java.net.URLEncoder;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Properties;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
+
+import util.HTMLCompressor;
+import util.Password;
+import util.UserCookie;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -26,7 +31,6 @@ import com.google.appengine.api.datastore.Transaction;
 @SuppressWarnings("serial")
 public class Login extends HttpServlet
 {
-	@SuppressWarnings("deprecation")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
 		UserCookie userCookie = UserCookie.getCookie(req);
@@ -35,10 +39,12 @@ public class Login extends HttpServlet
 			resp.sendRedirect("/signout");
 		else
 		{
-			Properties p = new Properties();
-			p.setProperty("file.resource.loader.path", "html");
-			Velocity.init(p);
+			VelocityEngine ve = new VelocityEngine();
+			ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
+			ve.init();
+			Template t = ve.getTemplate("login.html");
 			VelocityContext context = new VelocityContext();
+			
 			String user = req.getParameter("user");
 			String error = req.getParameter("error");
 			context.put("year", Calendar.getInstance().get(Calendar.YEAR));
@@ -54,9 +60,9 @@ public class Login extends HttpServlet
 			context.put("error", error);
 
 			StringWriter sw = new StringWriter();
-			Velocity.mergeTemplate("login.html", context, sw);
+			t.merge(context, sw);
 			sw.close();
-
+			resp.setContentType("text/html");
 			resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 		}
 	}

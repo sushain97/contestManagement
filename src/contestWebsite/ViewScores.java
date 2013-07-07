@@ -4,14 +4,18 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Properties;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
+
+import util.HTMLCompressor;
+import util.UserCookie;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -26,20 +30,20 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 @SuppressWarnings("serial")
 public class ViewScores extends HttpServlet
 {
-	@SuppressWarnings("deprecation")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
-		resp.setContentType("text/html");
+		VelocityEngine ve = new VelocityEngine();
+		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
+		ve.init();
+		Template t = ve.getTemplate("schoolScores.html");
+		VelocityContext context = new VelocityContext();
+		
 		UserCookie userCookie = UserCookie.getCookie(req);
 		Entity user = null;
 		if(userCookie != null)
 			user = userCookie.authenticateUser();
 		boolean loggedIn = userCookie != null && user != null;
 
-		Properties p = new Properties();
-		p.setProperty("file.resource.loader.path", "html");
-		Velocity.init(p);
-		VelocityContext context = new VelocityContext();
 		context.put("year", Calendar.getInstance().get(Calendar.YEAR));
 		context.put("loggedIn", loggedIn);
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -62,9 +66,9 @@ public class ViewScores extends HttpServlet
 			context.put("date", info.getProperty("updated"));
 
 			StringWriter sw = new StringWriter();
-			Velocity.mergeTemplate("schoolScores.html", context, sw);
+			t.merge(context, sw);
 			sw.close();
-
+			resp.setContentType("text/html");
 			resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 		}
 		else

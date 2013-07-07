@@ -5,15 +5,20 @@ import java.io.StringWriter;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
+
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.tools.generic.EscapeTool;
+
+import util.HTMLCompressor;
+import util.UserCookie;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -34,11 +39,12 @@ public class Data extends HttpServlet
 	@SuppressWarnings("deprecation")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
-		resp.setContentType("text/html");
-		Properties p = new Properties();
-		p.setProperty("file.resource.loader.path", "html");
-		Velocity.init(p);
+		VelocityEngine ve = new VelocityEngine();
+		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
+		ve.init();
+		Template t = ve.getTemplate("data.html");
 		VelocityContext context = new VelocityContext();
+		
 		context.put("year", Calendar.getInstance().get(Calendar.YEAR));
 
 		UserCookie userCookie = UserCookie.getCookie(req);
@@ -153,9 +159,9 @@ public class Data extends HttpServlet
 
 			context.put("loggedIn", loggedIn);
 			StringWriter sw = new StringWriter();
-			Velocity.mergeTemplate("data.html", context, sw);
+			t.merge(context, sw);
 			sw.close();
-
+			resp.setContentType("text/html");
 			resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 		}
 	}

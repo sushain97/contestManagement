@@ -1,5 +1,5 @@
 application: sushain97
-version: 33
+version: 34
 runtime: java
 threadsafe: false
 sessions_enabled: true
@@ -61,9 +61,7 @@ static_files:
   - include: /favicon.ico
   - include: /css/**.css
   - include: /js/**.js
-  - include: /static/*
-  - include: /static/img/*
-  - include: /img/*
+  - include: /img/**
 
 web_xml: |
   <error-page>

@@ -5,14 +5,18 @@ import java.io.StringWriter;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
+
+import util.HTMLCompressor;
+import util.UserCookie;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -29,14 +33,14 @@ import com.google.appengine.api.datastore.TransactionOptions;
 @SuppressWarnings("serial")
 public class EditRegistration extends HttpServlet
 {
-	@SuppressWarnings("deprecation")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
-		resp.setContentType("text/html");
-		Properties p = new Properties();
-		p.setProperty("file.resource.loader.path", "html");
-		Velocity.init(p);
+		VelocityEngine ve = new VelocityEngine();
+		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
+		ve.init();
+		Template t = ve.getTemplate("editRegistration.html");
 		VelocityContext context = new VelocityContext();
+		
 		context.put("year", Calendar.getInstance().get(Calendar.YEAR));
 
 		UserCookie userCookie = UserCookie.getCookie(req);
@@ -111,8 +115,9 @@ public class EditRegistration extends HttpServlet
 
 				context.put("key", key);
 				StringWriter sw = new StringWriter();
-				Velocity.mergeTemplate("editRegistration.html", context, sw);
+				t.merge(context, sw);
 				sw.close();
+				resp.setContentType("text/html");
 				resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 			}
 			catch(EntityNotFoundException e)
@@ -149,8 +154,8 @@ public class EditRegistration extends HttpServlet
 						datastore.delete(user.getKey());
 					}
 					datastore.delete(registration.getKey());
-					resp.sendRedirect("/data?choice=registrations&updated=1");
 					txn.commit();
+					resp.sendRedirect("/data?choice=registrations&updated=1");
 				}
 				else
 				{
@@ -198,9 +203,9 @@ public class EditRegistration extends HttpServlet
 								registration.setProperty(i + subjects[j], new Integer(Integer.parseInt(params.get(i + subjects[j])[0])));
 
 					datastore.put(registration);
+					txn.commit();
 				}
-				txn.commit();
-
+				
 				resp.sendRedirect("/data?choice=registrations&updated=1");
 			}
 			catch(Exception e)

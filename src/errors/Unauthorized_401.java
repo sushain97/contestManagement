@@ -12,8 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 
-import contestWebsite.HTMLCompressor;
-import contestWebsite.UserCookie;
+import util.HTMLCompressor;
+import util.UserCookie;
+
 
 @SuppressWarnings("serial")
 public class Unauthorized_401 extends HttpServlet
@@ -27,7 +28,7 @@ public class Unauthorized_401 extends HttpServlet
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
 
 		Properties p = new Properties();
-		p.setProperty("file.resource.loader.path", "html");
+		p.setProperty("file.resource.loader.path", "html\\errors, html\\snippets");
 		Velocity.init(p);
 		VelocityContext context = new VelocityContext();
 		context.put("year", Calendar.getInstance().get(Calendar.YEAR));

@@ -4,14 +4,18 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Properties;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
+
+import util.HTMLCompressor;
+import util.UserCookie;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -26,11 +30,8 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 @SuppressWarnings("serial")
 public class PublicResults extends HttpServlet
 {
-	@SuppressWarnings("deprecation")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
-		resp.setContentType("text/html");
-
 		UserCookie userCookie = UserCookie.getCookie(req);
 		Entity user = null;
 		if(userCookie != null)
@@ -40,11 +41,12 @@ public class PublicResults extends HttpServlet
 		if(!loggedIn && req.getParameter("refresh") != null && req.getParameter("refresh").equals("1"))
 			resp.sendRedirect("/?refresh=1");
 
-		String cookieContent = "";
-		Properties p = new Properties();
-		p.setProperty("file.resource.loader.path", "html");
-		Velocity.init(p);
+		VelocityEngine ve = new VelocityEngine();
+		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
+		ve.init();
+		Template t = ve.getTemplate("publicResults.html");
 		VelocityContext context = new VelocityContext();
+		
 		context.put("year", Calendar.getInstance().get(Calendar.YEAR));
 		context.put("loggedIn", loggedIn);
 		
@@ -70,7 +72,7 @@ public class PublicResults extends HttpServlet
 		if(info.size() != 0)
 		{
 			Object complete = info.get(0).getProperty("complete");
-			if((complete != null && (Boolean) complete) || cookieContent.split("\\$")[0].equals("admin"))
+			if((complete != null && (Boolean) complete) || (loggedIn && userCookie.isAdmin()))
 			{
 				context.put("complete", true);
 
@@ -111,9 +113,9 @@ public class PublicResults extends HttpServlet
 			context.put("complete", false);
 
 		StringWriter sw = new StringWriter();
-		Velocity.mergeTemplate("publicResults.html", context, sw);
+		t.merge(context, sw);
 		sw.close();
-
+		resp.setContentType("text/html");
 		resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
 	}
 }

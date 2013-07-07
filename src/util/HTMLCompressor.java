@@ -1,5 +1,7 @@
 package util;
 
+import java.io.StringWriter;
+
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
 
 public class HTMLCompressor extends HtmlCompressor
@@ -13,5 +15,9 @@ public class HTMLCompressor extends HtmlCompressor
 	public static String customCompress(String html)
 	{
 		return compressor.compress(html);
+	}
+	public static String customCompress(StringWriter sw)
+	{
+		return compressor.compress(sw.toString());
 	}
 }

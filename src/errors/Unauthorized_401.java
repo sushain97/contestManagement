@@ -42,6 +42,6 @@ public class Unauthorized_401 extends HttpServlet
 		Velocity.mergeTemplate("error401.html", context, sw);
 		sw.close();
 		
-		resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
+		resp.getWriter().print(HTMLCompressor.customCompress(sw));
 	}
 }

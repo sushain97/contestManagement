@@ -106,7 +106,7 @@ public class AdminPanel extends HttpServlet
 			t.merge(context, sw);
 			sw.close();
 			resp.setContentType("text/html");
-			resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
+			resp.getWriter().print(HTMLCompressor.customCompress(sw));
 		}
 		else
 			resp.sendError(HttpServletResponse.SC_FORBIDDEN);

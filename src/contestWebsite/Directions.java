@@ -41,6 +41,6 @@ public class Directions extends HttpServlet
 		t.merge(context, sw);
 		sw.close();
 		resp.setContentType("text/html");
-		resp.getWriter().print(HTMLCompressor.compressor.compress(sw.toString()));
+		resp.getWriter().print(HTMLCompressor.customCompress(sw));
 	}
 }

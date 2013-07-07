@@ -53,7 +53,7 @@ public class EditRegistration extends HttpServlet
 			context.put("loggedIn", loggedIn);
 
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-			Key key = KeyFactory.createKey("registration", Integer.parseInt(req.getParameter("key")));
+			Key key = KeyFactory.createKey("registration", Long.parseLong(req.getParameter("key")));
 			try
 			{
 				Entity registration = datastore.get(key);
@@ -139,7 +139,7 @@ public class EditRegistration extends HttpServlet
 		{
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 			Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
-			Key key = KeyFactory.createKey("registration", Integer.parseInt(req.getParameter("key")));
+			Key key = KeyFactory.createKey("registration", Long.parseLong(req.getParameter("key")));
 			try
 			{
 				Entity registration = datastore.get(key);

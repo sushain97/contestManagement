@@ -92,26 +92,6 @@
 	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
 	<script type="text/javascript" src="/js/bootstrap-tab.js"></script>
 	<script type="text/javascript" src="/js/purl.js"></script>
-	<script type="text/javascript">
-		$(document).ready(function() {
-			ChangeActive()
-			$('button').on('click', function() {
-				$('button').hide();
-				window.print();
-				$('button').show();
-			});
-		});
-	</script>
-	<script type="text/javascript">
-		function ChangeActive() {
-			var type = $.url().param('type');
-			if (type == undefined)
-				$("#avail").addClass('active');
-			else {
-				$("#" + type).closest('.dropdown').addClass('active');
-				$('#' + type).addClass('active');
-			}
-		}
-	</script>
+	<script type="text/javascript" src="/js/pagescripts/publicResults.js"></script>
 </body>
 </html>

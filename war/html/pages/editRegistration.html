@@ -204,8 +204,7 @@
 					#else <input type="hidden" name="account" id="account" value="no" /> #end
 				</div>
 				<div class="form-actions">
-					<button type="submit" id="submit" class="btn btn-primary" disabled><i class="icon-pencil"></i>Apply
-						Changes</button>
+					<button type="submit" id="submit" class="btn btn-primary" disabled><i class="icon-pencil"></i>Apply Changes</button>
 					<button type="reset" id="reset" class="btn btn-danger" disabled>Reset</button>
 					<p class="help-inline" id="answerCaptcha">Please enable JavaScript to continue.</p>
 				</div>
@@ -214,89 +213,12 @@
 	</div>
 
 	<input type="hidden" name="key" id="key" value="$key" />
+	<input type="hidden" name="price" id="price" value="$price" />
 
 	<script src="/js/md5hash.js" type="text/javascript"></script>
 	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
 	<script type="text/javascript" src="/js/bootstrap-alert.js"></script>
-	<script type="text/javascript">
-		$(document).ready(function () {
-			ChangeForm();
-			EnableSubmit();
-			CalcCost();
-			
-			$('.span2').change(CalcCost);
-			
-			$('.radio').change(function() {
-				ChangeForm();
-				CalcCost();
-			});
-		});
-	</script>
-	
-	<script type="text/javascript">
-	function EnableSubmit() {
-		$('#submit').prop('disabled', false)
-		$('#reset').prop('disabled', false)
-		$('#answerCaptcha').prop('innerHTML','');
-	}
-	</script>
-	<script type="text/javascript">
-		function CalcCost() {
-			sum = 0;
-			var i;
-			var end;
-			
-			if ($('#schoolType1').is(':checked')) {
-				i = 6;
-				end = 8;
-			} else {
-				i = 9;
-				end = 12;
-			}
-			
-			for(; i <= end; i++)
-			{
-				var start = "[name=" + "'" + i;
-				if (parseInt($(start + "n']").get(0).value) < 0)
-					$(start + "n']").get(0).value = 0;
-				if (parseInt($(start + "c']").get(0).value) < 0)
-					$(start + "c']").get(0).value = 0;
-				if (parseInt($(start + "s']").get(0).value) < 0)
-					$(start + "s']").get(0).value = 0;
-				if (parseInt($(start + "m']").get(0).value) < 0)
-					$(start + "m']").get(0).value = 0;
-				sum += $price * parseInt($(start + "n']").get(0).value);
-				sum += $price * parseInt($(start + "c']").get(0).value);
-				sum += $price * parseInt($(start + "s']").get(0).value);
-				sum += $price * parseInt($(start + "m']").get(0).value);
-			}
-
-			$('#cost').val(sum)
-		}
-	</script>
-	<script type="text/javascript">
-		function ChangeForm() {
-			if ($('#schoolType1').is(':checked'))
-				$('#mid').show();
-			else
-				$('#mid').hide();
-
-			if ($('#schoolType2').is(':checked'))
-				$('#hi').show();
-			else
-				$('#hi').hide();
-
-			if ($('#regType2').is(':checked'))
-				$('#aliases').show();
-			else
-				$('#aliases').hide();
-			
-			if ($('#delete1').is(':checked'))
-				$('#info').hide();
-			else
-				$('#info').show();
-		}
-	</script>
+	<script type="text/javascript" src="/js/pagescripts/editRegistration.js"></script>
 </body>
 </html>
 

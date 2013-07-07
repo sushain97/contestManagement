@@ -335,61 +335,12 @@
 
 	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
 	<script type="text/javascript" src="/js/bootstrap-alert.js"></script>
+	#if($scores)
 	<script type="text/javascript" src="/js/purl.js"></script>
-	<script type="text/javascript">
-		$(document).ready(function () {
-			#if($scores) 
-				ChangeActive();
-				$('button').on('click', function() {
-					$('button').hide();
-					window.print();
-					$('button').show();
-				});
-			#end
-		});
-	</script>
-	<script type="text/javascript">
-		function ChangeActive() {
-			var type = $.url().param('type');
-			if (type == undefined)
-				$("#overview").addClass('active');
-			else {
-				$("#" + type).closest('.dropdown').addClass('active');
-				$('#' + type).addClass('active');
-				
-				if(type.indexOf('middle_school_') != -1 || type.indexOf('high_school_') != -1) {
-					var hash = hashCode(type.substring(type.indexOf('school_') + 7));
-					$("#" + hash).closest('.dropdown').addClass('active');
-					$('#' + hash).addClass('active');
-				}
-			}
-		}
-		
-		hashCode = function(s) {
-		    var hash = 0, i, c;
-		    if (s.length == 0) return hash;
-		    for (i = 0; i < s.length; i++) {
-		        c = s.charCodeAt(i);
-		        hash = ((hash << 5) - hash) + c;
-		        hash = hash & hash; // Convert to 32bit integer
-		    }
-		    return hash;
-		};
-	</script>
-	<script>
-		$(document).ready(
-			function() {
-				$("input:radio:checked").data("chk", true);
-				$("input:radio").click(
-					function() {
-						$(
-							"input[name='" + $(this).attr("name")
-									+ "']:radio").not(this)
-							.removeData("chk");
-						$(this).data("chk", !$(this).data("chk"));
-						$(this).prop("checked", $(this).data("chk"));
-					});
-			});
-	</script>
+	<script type="text/javascript" src="/js/pagescripts/data-scores.js"></script>
+	#end
+	#if($registration)
+	<script type="text/javascript" src="/js/pagescripts/data-registrations.js"></script>
+	#end
 </body>
 </html>

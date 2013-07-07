@@ -88,14 +88,8 @@
 	<script type="text/javascript" src="/js/bootstrap-dropdown.js"></script>
 	<script type="text/javascript" src="/js/bootstrap-carousel.js"></script>
 	<script type="text/javascript" src="/js/bootstrap-transition.js"></script>
-	<script>
-	$(document).ready(function() {
-		var activeNum = Math.floor((Math.random() * $('.item').length));
-		$('.item').eq(activeNum).addClass('active');
-		$('.carousel-indicators li').eq(activeNum).addClass('active');
-		$('.carousel').carousel({interval: 3000});
-		$('.carousel').carousel('cycle');
-	});
-	</script>
+	#if(!$loggedIn)
+	<script type="text/javascript" src="/js/pagescripts/main.js"></script>
+	#end
 </body>
 </html>

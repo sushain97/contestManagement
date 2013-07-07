@@ -355,17 +355,20 @@ public class Registration extends HttpServlet
 							msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email, name));
 							msg.setSubject("Thank you for your registration!");
 
-							String text = "Thank you for registering for the Dulles TMSCA Tournament, " + name + ". " +
-									"Your registration has been recorded in our database. Your total registration fees are: <b>$" + cost + ".</b> ";
-
-							if(account.equals("yes"))
-								text += "If you desire to make changes to your registration please login at our <a href=\"" + url + "\"> tournament website</a> with your e-mail address and visit the contact us page. "
-										+ " Your account also allows you to check the scores of your students during and after the competition. ";
-							else
-								text += "If you desire to make changes to your registration please visit the contact us page at our tournament website. </br>";
-							text += " More information including directions to Dulles and a competition schedule can also be found at <a href=\"" + url + "\">our website</a>.";
-
-							msg.setContent(text, "text/html");
+							VelocityEngine ve = new VelocityEngine();
+							ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/email");
+							ve.init();
+							Template t = ve.getTemplate("registration.html");
+							VelocityContext context = new VelocityContext();
+							
+							context.put("name", name);
+							context.put("url", url);
+							context.put("cost", cost);
+							context.put("account", account.equals("yes"));
+							
+							StringWriter sw = new StringWriter();
+							t.merge(context, sw);
+							msg.setContent(sw.toString(), "text/html");
 							Transport.send(msg);
 						}
 						catch (MessagingException e)

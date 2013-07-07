@@ -137,10 +137,19 @@ public class ForgotPassword extends HttpServlet
 					msg.setFrom(new InternetAddress(appEngineEmail, "Tournament Website Admin"));
 					msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email, (String) user.getProperty("name")));
 					msg.setSubject("Password Reset for Dulles Tournament Website");
-					msg.setContent("<p>Please follow the link to reset the password for " + user.getProperty("user-id") + ": " +
-							"<a href=\"" + url + "\">" + "Reset your Password" + "</a></p>" +
-							"<p>If the above link does not work, navigate to the following URL: <br />" + url + "</p>", "text/html");
 					
+					VelocityEngine ve = new VelocityEngine();
+					ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/email");
+					ve.init();
+					Template t = ve.getTemplate("forgotPass.html");
+					VelocityContext context = new VelocityContext();
+					
+					context.put("user", user.getProperty("user-id"));
+					context.put("url", url);
+					
+					StringWriter sw = new StringWriter();
+					t.merge(context, sw);
+					msg.setContent(sw.toString(), "text/html");
 					Transport.send(msg);
 				}
 				catch (MessagingException e)

@@ -34,7 +34,6 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Transaction;
 
-
 @SuppressWarnings("serial")
 public class ContactUs extends HttpServlet
 {
@@ -160,7 +159,20 @@ public class ContactUs extends HttpServlet
 				msg.setFrom(new InternetAddress(appEngineEmail, "Tournament Website Admin"));
 				msg.addRecipient(Message.RecipientType.TO, new InternetAddress((String) info.get(0).getProperty("email"), "Contest Administrator"));
 				msg.setSubject("Question about Tournament from " + name);
-				msg.setContent("This question is from <b>" + name + "</b> from <b>" + school + "</b> with email address " + email + ". His/her message is as follows: <b>" + comment + "</b>.", "text/html");
+				
+				VelocityEngine ve = new VelocityEngine();
+				ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/email");
+				ve.init();
+				Template t = ve.getTemplate("question.html");
+				VelocityContext context = new VelocityContext();
+				
+				context.put("name", name);
+				context.put("email", email);
+				context.put("message", comment);
+				
+				StringWriter sw = new StringWriter();
+				t.merge(context, sw);
+				msg.setContent(sw.toString(), "text/html");
 				Transport.send(msg);
 			}
 			catch (MessagingException e)

@@ -57,6 +57,9 @@ handlers:
 - url: /401
   servlet: errors.Unauthorized_401
   
+- url: /500
+  servlet: errors.ServerError_500
+  
 static_files:
   - include: /favicon.ico
     expiration: 14d
@@ -75,4 +78,8 @@ web_xml: |
   <error-page>
     <error-code>401</error-code>
     <location>/401</location>
+  </error-page>
+  <error-page>
+    <error-code>500</error-code>
+    <location>/500</location>
   </error-page>

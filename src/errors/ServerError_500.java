@@ -17,16 +17,15 @@ import org.apache.velocity.runtime.RuntimeConstants;
 import util.HTMLCompressor;
 import util.UserCookie;
 
-
 @SuppressWarnings("serial")
-public class Prohibited_403 extends HttpServlet
+public class ServerError_500 extends HttpServlet
 {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/errors, html/snippets");
 		ve.init();
-		Template t = ve.getTemplate("error401.html");
+		Template t = ve.getTemplate("error500.html");
 		VelocityContext context = new VelocityContext();
 		
 		UserCookie userCookie = UserCookie.getCookie(req);

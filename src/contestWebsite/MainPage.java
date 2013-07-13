@@ -108,7 +108,7 @@ public class MainPage extends HttpServlet
 				for(Entry<String, Object> prop : props.entrySet())
 				{
 					String key = prop.getKey();
-					if(!key.equals("account") && PropNames.names.get(key) != null)
+					if(!key.equals("account") && PropNames.names.get(key) != null && !prop.getValue().equals(""))
 						regData.add("<dt>" + PropNames.names.get(key) + "</dt>\n<dd>" + prop.getValue() + "</dd>");
 				}
 				Collections.sort(regData);

@@ -31,7 +31,7 @@ function sendAJAXReq(elem, value)
 		'url': '/editRegistration',
 		'type': 'post',
 		'data': {
-			'key': $(elem).siblings().first().html(),
+			'key': $(elem).parent().data('eid'),
 			'ajax': '1',
 			'account': $(elem).siblings('.account').html(),
 			'newValue': value,

@@ -158,134 +158,124 @@
 		#set($highTests = ["9n","9c","9m","9s","10n","10c","10m","10s","11n","11c","11m","11s","12n","12c","12m","12s"])
 		<em>Note:</em> first number indicates number of registrations and second the number of tests actually taken
 		<br/><strong>Click a cell to edit its registration</strong>
-		
-		<h3>Middle School</h3>
-		<table class="table table-striped table-condensed table-hover" id="middleReg">
-			<thead>
-				<tr>
-					<th>EID</th>
-					<th>Name</th>
-					<th colspan="2">E-Mail</th>
-					<th>Reg. Type</th>
-					<th>School</th>
-					<th>Aliases</th>
-					<th>Payment</th>
-					<th>Account</th>
-					#foreach($test in $middleTests)
-					<th colspan="2" style="text-align: center;">$test</th>
-					#end
-					<th>Cost</th>
-				</tr>
-			</thead>
-			<tbody>
-				#set($nums = [0,0,0,0,0,0,0,0,0,0,0,0,0]) 
-				#foreach($reg in $middleRegs)
-				<tr>
-					<td data-type="eid" class="uneditable">$reg.getKey().getId()</td>
-					<td data-type="name">$reg.getProperty("name")</td>
-					<td data-type="email" class="email" style="padding-right: 0px;">$reg.getProperty("email")</td>
-					<td class="uneditable" style="padding-left: 0px;"><a href="mailto:$reg.getProperty("name")<$reg.getProperty("email")>"><i class="icon-envelope"></i></a></td>
-					<td data-type="registrationType" class="regType uneditable">$reg.getProperty("registrationType")</td>
-					<td data-type="schoolName">$reg.getProperty("schoolName")</td>
-					
-					#if($reg.getProperty("aliases")) <td data-type="aliases">$reg.getProperty("aliases")</td> #else	<td></td> #end
-					
-					<td data-type="paid" class="paidComments">$reg.getProperty("paid")</td> 
-					<td class="account uneditable">$reg.getProperty("account")</td>
-					
-					#set($i = 0)
-					#foreach($test in $middleTests)
-					<td class="test" data-type="$test">$reg.getProperty($test)</td>
-					<td class="uneditable">#if($reg.getProperty($test.toUpperCase()))$reg.getProperty($test.toUpperCase())#else 0#end</td>
-					#set($nums[$i] = $nums[$i] + $reg.getProperty($test)) #set($i = $i + 1)
-					#end
-					
-					<td class="uneditable">&#36;$reg.getProperty("cost")</td> 
-					#set($nums[12] = $nums[12] + $reg.getProperty("cost"))
-				</tr>
-				#end 
-				#set($nums[12] = "&#36;$nums[12]")
-			</tbody>
-			<tfoot> 
-				<tr>
-					<td></td>
-					<td style="font-weight: bold;">Total</td>
-					#foreach($i in [1..7]) <td></td> #end
-					#foreach($i in [0..12])<td #if($i != 12) colspan="2" #end style="font-weight: bold;">$nums[$i]</td> #end
-				</tr>
-			</tfoot>
-		</table>
-
-		<h3>High School</h3>
-		<table class="table table-striped table-condensed table-hover" id="highReg">
-			<thead>
-				<tr>
-					<th>EID</th>
-					<th>Name</th>
-					<th colspan="2">E-Mail</th>
-					<th>Reg. Type</th>
-					<th>School</th>
-					<th>Aliases</th>
-					<th>Payment</th>
-					<th>Account</th>
-					#foreach($test in $highTests)
-					<th colspan="2" style="text-align: center;">$test</th>
-					#end
-					<th>Cost</th>
-				</tr>
-			</thead>
-			<tbody>
-				#set($nums = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]) 
-				#foreach($reg in $highRegs)
-				<tr>
-					<td data-type="eid" class="uneditable">$reg.getKey().getId()</td>
-					<td data-type="name">$reg.getProperty("name")</td>
-					<td data-type="email" class="email" style="padding-right: 0px;">$reg.getProperty("email")</td>
-					<td class="uneditable" style="padding-left: 0px;"><a href="mailto:$reg.getProperty("name")<$reg.getProperty("email")>"><i class="icon-envelope"></i></a></td>
-					<td data-type="registrationType" class="regType uneditable">$reg.getProperty("registrationType")</td>
-					<td data-type="schoolName">$reg.getProperty("schoolName")</td>
-					
-					#if($reg.getProperty("aliases")) <td data-type="aliases">$reg.getProperty("aliases")</td> #else	<td></td> #end
-					
-					<td data-type="paid" class="paidComments">$reg.getProperty("paid")</td> 
-					<td class="account uneditable">$reg.getProperty("account")</td>
-					
-					#set($i = 0)
-					#foreach($test in $highTests)
-					<td class="test" data-type="$test">$reg.getProperty($test)</td>
-					<td class="uneditable">#if($reg.getProperty($test.toUpperCase()))$reg.getProperty($test.toUpperCase())#else 0#end</td>
-					#set($nums[$i] = $nums[$i] + $reg.getProperty($test)) #set($i = $i + 1)
-					#end
-					
-					<td class="uneditable">&#36;$reg.getProperty("cost")</td>
-					#set($nums[16] = $nums[16] + $reg.getProperty("cost"))
-				</tr>
-				#end 
-				#set($nums[16] = "&#36;$nums[16]")
-			</tbody>
-			<tfoot>
-				<tr>
+		<form method="get" class="form-horizontal" action="/editRegistration">
+			<h3>Middle School</h3>
+			<table class="table table-striped table-condensed table-hover" id="middleReg">
+				<thead>
+					<tr>
+						<th>Edit</th>
+						<th>Name</th>
+						<th colspan="2">E-Mail</th>
+						<th>Reg. Type</th>
+						<th>School</th>
+						<th>Aliases</th>
+						<th>Payment</th>
+						<th>Account</th>
+						#foreach($test in $middleTests)
+						<th colspan="2" style="text-align: center;">$test</th>
+						#end
+						<th>Cost</th>
+					</tr>
+				</thead>
+				<tbody>
+					#set($nums = [0,0,0,0,0,0,0,0,0,0,0,0,0]) 
+					#foreach($reg in $middleRegs)
+					<tr data-eid="$reg.getKey().getId()">
+						<td class="uneditable" style="text-align: center;"><input type="radio" name="key" value="$reg.getKey().getId()"></td>
+						<td data-type="name">$reg.getProperty("name")</td>
+						<td data-type="email" class="email" style="padding-right: 0px;">$reg.getProperty("email")</td>
+						<td class="uneditable" style="padding-left: 0px;"><a href="mailto:$reg.getProperty("name")<$reg.getProperty("email")>"><i class="icon-envelope"></i></a></td>
+						<td data-type="registrationType" class="regType uneditable">$reg.getProperty("registrationType")</td>
+						<td data-type="schoolName">$reg.getProperty("schoolName")</td>
+						
+						#if($reg.getProperty("aliases")) <td data-type="aliases">$reg.getProperty("aliases")</td> #else	<td></td> #end
+						
+						<td data-type="paid" class="paidComments">$reg.getProperty("paid")</td> 
+						<td class="account uneditable">$reg.getProperty("account")</td>
+						
+						#set($i = 0)
+						#foreach($test in $middleTests)
+						<td class="test" data-type="$test">$reg.getProperty($test)</td>
+						<td class="uneditable">#if($reg.getProperty($test.toUpperCase()))$reg.getProperty($test.toUpperCase())#else 0#end</td>
+						#set($nums[$i] = $nums[$i] + $reg.getProperty($test)) #set($i = $i + 1)
+						#end
+						
+						<td class="uneditable">&#36;$reg.getProperty("cost")</td> 
+						#set($nums[12] = $nums[12] + $reg.getProperty("cost"))
+					</tr>
+					#end 
+					#set($nums[12] = "&#36;$nums[12]")
+				</tbody>
+				<tfoot> 
+					<tr>
 						<td></td>
 						<td style="font-weight: bold;">Total</td>
 						#foreach($i in [1..7]) <td></td> #end
-						#foreach($i in [0..16])<td #if($i != 16) colspan="2" #end style="font-weight: bold;">$nums[$i]</td> #end
-				</tr>
-			</tfoot>
-		</table>
+						#foreach($i in [0..12])<td #if($i != 12) colspan="2" #end style="font-weight: bold;">$nums[$i]</td> #end
+					</tr>
+				</tfoot>
+			</table>
+	
+			<h3>High School</h3>
+			<table class="table table-striped table-condensed table-hover" id="highReg">
+				<thead>
+					<tr data-eid="$reg.getKey().getId()">
+						<th>Edit</th>
+						<th>Name</th>
+						<th colspan="2">E-Mail</th>
+						<th>Reg. Type</th>
+						<th>School</th>
+						<th>Aliases</th>
+						<th>Payment</th>
+						<th>Account</th>
+						#foreach($test in $highTests)
+						<th colspan="2" style="text-align: center;">$test</th>
+						#end
+						<th>Cost</th>
+					</tr>
+				</thead>
+				<tbody>
+					#set($nums = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]) 
+					#foreach($reg in $highRegs)
+					<tr data-eid="$reg.getKey().getId()">
+						<td class="uneditable" style="text-align: center;"><input type="radio" name="key" value="$reg.getKey().getId()"></td>
+						<td data-type="name">$reg.getProperty("name")</td>
+						<td data-type="email" class="email" style="padding-right: 0px;">$reg.getProperty("email")</td>
+						<td class="uneditable" style="padding-left: 0px;"><a href="mailto:$reg.getProperty("name")<$reg.getProperty("email")>"><i class="icon-envelope"></i></a></td>
+						<td data-type="registrationType" class="regType uneditable">$reg.getProperty("registrationType")</td>
+						<td data-type="schoolName">$reg.getProperty("schoolName")</td>
+						
+						#if($reg.getProperty("aliases")) <td data-type="aliases">$reg.getProperty("aliases")</td> #else	<td></td> #end
+						
+						<td data-type="paid" class="paidComments">$reg.getProperty("paid")</td> 
+						<td class="account uneditable">$reg.getProperty("account")</td>
+						
+						#set($i = 0)
+						#foreach($test in $highTests)
+						<td class="test" data-type="$test">$reg.getProperty($test)</td>
+						<td class="uneditable">#if($reg.getProperty($test.toUpperCase()))$reg.getProperty($test.toUpperCase())#else 0#end</td>
+						#set($nums[$i] = $nums[$i] + $reg.getProperty($test)) #set($i = $i + 1)
+						#end
+						
+						<td class="uneditable">&#36;$reg.getProperty("cost")</td>
+						#set($nums[16] = $nums[16] + $reg.getProperty("cost"))
+					</tr>
+					#end 
+					#set($nums[16] = "&#36;$nums[16]")
+				</tbody>
+				<tfoot>
+					<tr>
+							<td></td>
+							<td style="font-weight: bold;">Total</td>
+							#foreach($i in [1..7]) <td></td> #end
+							#foreach($i in [0..16])<td #if($i != 16) colspan="2" #end style="font-weight: bold;">$nums[$i]</td> #end
+					</tr>
+				</tfoot>
+			</table>
 		
-		<form method="get" class="form-horizontal" action="/editRegistration">
-			<fieldset>
-				<div class="control-group">
-					<label class="control-label" for="key">Edit Individually by EID</label>
-					<div class="controls">
-						<input type="number" class="input" id="key" name="key" placeholder="Enter EID" required>
-					</div>
-				</div>
-				
-				<div class="form-actions">
-					<button type="submit" id="submit" class="btn btn-primary"><i class="icon-edit"></i> Edit Selected</button>
-				</div>
-			</fieldset>
+			
+			<button type="submit" id="submit" class="btn btn-primary"><i class="icon-edit"></i> Edit Selected</button>
+			<strong>Individual registration editing interface</strong>
 		</form>
 
 		#elseif($questions) 

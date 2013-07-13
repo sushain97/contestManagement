@@ -112,7 +112,7 @@ public class ForgotPassword extends HttpServlet
 				catch(Exception e)
 				{
 					e.printStackTrace();
-					resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 				}
 				finally
 				{
@@ -155,7 +155,7 @@ public class ForgotPassword extends HttpServlet
 				catch (MessagingException e)
 				{
 					e.printStackTrace();
-					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 				}
 			}
 			resp.sendRedirect("/forgotPass?updated=1");
@@ -190,7 +190,7 @@ public class ForgotPassword extends HttpServlet
 					catch(Exception e)
 					{
 						e.printStackTrace();
-						resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+						resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 					}
 					finally
 					{
@@ -203,7 +203,7 @@ public class ForgotPassword extends HttpServlet
 					resp.sendRedirect("/forgotPass?error=1&noise=" + noise);
 			}
 			else
-				resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+				resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid noise(" + noise +") for password recovery");
 		}
 	}
 }

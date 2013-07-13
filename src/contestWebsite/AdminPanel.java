@@ -109,7 +109,7 @@ public class AdminPanel extends HttpServlet
 			resp.getWriter().print(HTMLCompressor.customCompress(sw));
 		}
 		else
-			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Contest Administrator privileges required for that operation");
 	}
 
 	@SuppressWarnings({ "deprecation", "unchecked" })
@@ -199,7 +199,7 @@ public class AdminPanel extends HttpServlet
 			catch(Exception e) 
 			{ 
 				e.printStackTrace();
-				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 			}
 			finally
 			{
@@ -208,6 +208,6 @@ public class AdminPanel extends HttpServlet
 			}
 		}
 		else
-			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Contest Administrator privileges required for that operation");
 	}
 }

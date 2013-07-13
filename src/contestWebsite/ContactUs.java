@@ -96,7 +96,7 @@ public class ContactUs extends HttpServlet
 		catch (NoSuchAlgorithmException e)
 		{
 			e.printStackTrace();
-			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 		}
 	}
 
@@ -116,14 +116,14 @@ public class ContactUs extends HttpServlet
 			{
 				if(!Captcha.authCaptcha(req.getParameter("salt"), req.getParameter("captcha"), req.getParameter("hash")))
 				{
-					resp.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+					resp.sendError(HttpServletResponse.SC_PRECONDITION_FAILED, "Invalid Captcha hash provided");
 					return;
 				}
 			}
 			catch(NoSuchAlgorithmException e)
 			{
 				e.printStackTrace();
-				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 				return;
 			}
 		}
@@ -178,13 +178,13 @@ public class ContactUs extends HttpServlet
 			catch (MessagingException e)
 			{ 
 				e.printStackTrace();
-				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 			}
 		}
 		catch(Exception e)
 		{ 
 			e.printStackTrace();
-			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 		}
 		finally
 		{

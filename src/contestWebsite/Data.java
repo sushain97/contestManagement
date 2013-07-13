@@ -51,7 +51,7 @@ public class Data extends HttpServlet
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
 
 		if(!loggedIn || !userCookie.isAdmin())
-			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Contest Administrator privileges required for that operation");
 		else
 		{
 			context.put("user", userCookie.getUsername());
@@ -216,7 +216,7 @@ public class Data extends HttpServlet
 				catch (Exception e)
 				{ 
 					e.printStackTrace();
-					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 				}
 				finally
 				{
@@ -234,6 +234,6 @@ public class Data extends HttpServlet
 				resp.sendRedirect("/data?choice=overview");
 		}
 		else
-			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Contest Administrator privileges required for that operation");
 	}
 }

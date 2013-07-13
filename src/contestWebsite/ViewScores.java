@@ -72,6 +72,6 @@ public class ViewScores extends HttpServlet
 			resp.getWriter().print(HTMLCompressor.customCompress(sw));
 		}
 		else
-			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User account required for that operation");
 	}
 }

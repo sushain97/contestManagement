@@ -123,11 +123,11 @@ public class EditRegistration extends HttpServlet
 			catch(EntityNotFoundException e)
 			{ 
 				e.printStackTrace();
-				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 			}
 		}
 		else
-			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Contest Administrator privileges required for that operation");
 	}
 
 	@SuppressWarnings({ "unchecked", "deprecation" })
@@ -149,12 +149,24 @@ public class EditRegistration extends HttpServlet
 				{
 					String newValue = params.get("newValue")[0];
 					String modified = params.get("modified")[0];
-					if("yes".equals(params.get("account")[0]) && "email".equals(modified))
+					if("yes".equals(params.get("account")[0]) && ("email".equals(modified) || "schoolName".equals(modified) || "name".equals(modified)))
 					{
 						Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, registration.getProperty("email"));
 						Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
-						user.setProperty("user-id", newValue);
+						switch(modified)
+						{
+							case "email":
+								user.setProperty("user-id", newValue);
+								break;
+							case "schoolName":
+								user.setProperty("school", newValue);
+								break;
+							case "name":
+								user.setProperty("name", newValue);
+						}
 						datastore.put(user);
+						
+						registration.setProperty(modified, newValue);
 					}
 					else
 					{
@@ -188,8 +200,8 @@ public class EditRegistration extends HttpServlet
 						}
 						else
 							registration.setProperty(modified, newValue);
-						datastore.put(registration);
 					}
+					datastore.put(registration);
 					txn.commit();
 				}
 				else
@@ -263,7 +275,7 @@ public class EditRegistration extends HttpServlet
 			catch(Exception e)
 			{ 
 				e.printStackTrace();
-				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 			}
 			finally
 			{
@@ -272,6 +284,6 @@ public class EditRegistration extends HttpServlet
 			}
 		}
 		else
-			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Contest Administrator privileges required for that operation");
 	}
 }

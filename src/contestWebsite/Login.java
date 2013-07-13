@@ -131,7 +131,7 @@ public class Login extends HttpServlet
 			catch(Exception e)
 			{
 				e.printStackTrace();
-				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 			}
 			finally
 			{

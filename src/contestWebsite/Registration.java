@@ -93,7 +93,7 @@ public class Registration extends HttpServlet
 			catch(ParseException e)
 			{
 				e.printStackTrace();
-				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Incorrect date format");
 			}
 
 			if(new Date().after(endDate) || new Date().before(startDate) || new Date().equals(endDate) || new Date().equals(startDate))
@@ -221,7 +221,7 @@ public class Registration extends HttpServlet
 		try
 		{
 			if(!Captcha.authCaptcha(req.getParameter("salt"), req.getParameter("captcha"), req.getParameter("hash")))
-				resp.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+				resp.sendError(HttpServletResponse.SC_PRECONDITION_FAILED, "Invalid Captcha hash provided");
 			else
 			{
 				if(account.equals("yes"))
@@ -374,13 +374,13 @@ public class Registration extends HttpServlet
 						catch (MessagingException e)
 						{
 							e.printStackTrace();
-							resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+							resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 						}
 					}
 					catch (Exception e)
 					{
 						e.printStackTrace();
-						resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+						resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 					}
 					finally
 					{
@@ -393,7 +393,7 @@ public class Registration extends HttpServlet
 		catch(NoSuchAlgorithmException e)
 		{
 			e.printStackTrace();
-			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 		}
 	}
 }

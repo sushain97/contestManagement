@@ -40,7 +40,7 @@ public class EditRegistration extends HttpServlet
 		ve.init();
 		Template t = ve.getTemplate("editRegistration.html");
 		VelocityContext context = new VelocityContext();
-		
+
 		context.put("year", Calendar.getInstance().get(Calendar.YEAR));
 
 		UserCookie userCookie = UserCookie.getCookie(req);
@@ -144,69 +144,121 @@ public class EditRegistration extends HttpServlet
 			{
 				Entity registration = datastore.get(key);
 				Map<String, String[]> params = req.getParameterMap();
-
-				if(params.get("delete")[0].equals("yes"))
+				
+				if(params.get("ajax") != null  && "1".equals(params.get("ajax")[0]))
 				{
-					if(registration.getProperty("account").equals("yes"))
+					String newValue = params.get("newValue")[0];
+					String modified = params.get("modified")[0];
+					if("yes".equals(params.get("account")[0]) && "email".equals(modified))
 					{
 						Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, registration.getProperty("email"));
 						Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
-						datastore.delete(user.getKey());
+						user.setProperty("user-id", newValue);
+						datastore.put(user);
 					}
-					datastore.delete(registration.getKey());
+					else
+					{
+						if("true".equals(params.get("test")[0]))
+						{
+							registration.setProperty(modified, Integer.parseInt(newValue));
+							long cost = 0;
+							long price = 5;
+							
+							Query query = new Query("contestInfo");
+							List<Entity> infos = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+							if(infos.size() != 0 && infos.get(0).getProperty("price") != null)
+								price = (Long) infos.get(0).getProperty("price");
+
+							String[] subjects = {"n", "c", "m", "s"};
+							if(registration.getProperty("schoolLevel").equals("middle"))
+								for(int i = 6; i <= 8; i++)
+									for(int j = 0; j < 4; j++)
+									{
+										Object num = registration.getProperty(i + subjects[j]);
+										cost += (num instanceof Long ? (Long) num : (Integer) num) * price;
+									}
+							else
+								for(int i = 9; i <= 12; i++)
+									for(int j = 0; j < 4; j++)
+									{
+										Object num = registration.getProperty(i + subjects[j]);
+										cost += (num instanceof Long ? (Long) num : (Integer) num) * price;
+									}
+							registration.setProperty("cost", cost);
+						}
+						else
+							registration.setProperty(modified, newValue);
+						datastore.put(registration);
+					}
 					txn.commit();
-					resp.sendRedirect("/data?choice=registrations&updated=1");
 				}
 				else
 				{
-					String schoolLevel = params.get("schoolLevel")[0];
-					String name = params.get("name")[0];
-					String schoolName = params.get("schoolName")[0];
-					String email = params.get("email")[0];
-
-					String account = params.get("account")[0];
-					if(registration.getProperty("account").equals("yes") && account.equals("no"))
+					if(params.get("delete")[0].equals("yes"))
 					{
-						registration.setProperty("account", "no");
-						Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, registration.getProperty("email"));
-						Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
-						datastore.delete(user.getKey());
+						if(registration.getProperty("account").equals("yes"))
+						{
+							Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, registration.getProperty("email"));
+							Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+							datastore.delete(user.getKey());
+						}
+						datastore.delete(registration.getKey());
+						txn.commit();
+						resp.sendRedirect("/data?choice=registrations&updated=1");
 					}
-					else if(registration.getProperty("account").equals("yes"))
-					{
-						Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, registration.getProperty("email"));
-						Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
-						user.setProperty("name", name);
-						user.setProperty("school", schoolName);
-						user.setProperty("schoolLevel", schoolLevel);
-						user.setProperty("user-id", email);
-						datastore.put(user);
-					}
-
-					registration.setProperty("registrationType", params.get("registrationType")[0]);
-					registration.setProperty("schoolName", schoolName);
-					registration.setProperty("schoolLevel", schoolLevel);
-					registration.setProperty("name", name);
-					registration.setProperty("email", email);
-					registration.setProperty("paid", params.get("paid")[0]);
-					if(!params.get("aliases")[0].equals("$aliases"))
-						registration.setProperty("aliases", params.get("aliases")[0]);
-
-					String[] subjects = {"n", "c", "m", "s"};
-					if(schoolLevel.equals("middle"))
-						for(int i = 6; i <= 8; i++)
-							for(int j = 0; j < 4; j++)
-								registration.setProperty(i + subjects[j], new Integer(Integer.parseInt(params.get(i + subjects[j])[0])));
 					else
-						for(int i = 9; i <= 12; i++)
-							for(int j = 0; j < 4; j++)
-								registration.setProperty(i + subjects[j], new Integer(Integer.parseInt(params.get(i + subjects[j])[0])));
+					{
+						String schoolLevel = params.get("schoolLevel")[0];
+						String name = params.get("name")[0];
+						String schoolName = params.get("schoolName")[0];
+						String email = params.get("email")[0];
 
-					datastore.put(registration);
-					txn.commit();
+						String account = params.get("account")[0];
+						if(registration.getProperty("account").equals("yes") && account.equals("no"))
+						{
+							registration.setProperty("account", "no");
+							Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, registration.getProperty("email"));
+							Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+							datastore.delete(user.getKey());
+						}
+						else if(registration.getProperty("account").equals("yes"))
+						{
+							Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, registration.getProperty("email"));
+							Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+							user.setProperty("name", name);
+							user.setProperty("school", schoolName);
+							user.setProperty("schoolLevel", schoolLevel);
+							user.setProperty("user-id", email);
+							datastore.put(user);
+						}
+
+						registration.setProperty("registrationType", params.get("registrationType")[0]);
+						registration.setProperty("schoolName", schoolName);
+						registration.setProperty("schoolLevel", schoolLevel);
+						registration.setProperty("name", name);
+						registration.setProperty("email", email);
+						registration.setProperty("cost", Integer.parseInt(params.get("cost")[0]));
+						registration.setProperty("paid", params.get("paid")[0]);
+						if(!params.get("aliases")[0].equals("$aliases"))
+							registration.setProperty("aliases", params.get("aliases")[0]);
+
+						
+						String[] subjects = {"n", "c", "m", "s"};
+						if(schoolLevel.equals("middle"))
+							for(int i = 6; i <= 8; i++)
+								for(int j = 0; j < 4; j++)
+									registration.setProperty(i + subjects[j], new Integer(Integer.parseInt(params.get(i + subjects[j])[0])));
+						else
+							for(int i = 9; i <= 12; i++)
+								for(int j = 0; j < 4; j++)
+									registration.setProperty(i + subjects[j], new Integer(Integer.parseInt(params.get(i + subjects[j])[0])));
+
+						datastore.put(registration);
+						txn.commit();
+					}
+
+					resp.sendRedirect("/data?choice=registrations&updated=1");
 				}
-				
-				resp.sendRedirect("/data?choice=registrations&updated=1");
 			}
 			catch(Exception e)
 			{ 

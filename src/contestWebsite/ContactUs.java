@@ -1,5 +1,7 @@
 package contestWebsite;
 
+import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.security.NoSuchAlgorithmException;
@@ -128,10 +130,10 @@ public class ContactUs extends HttpServlet
 			}
 		}
 		
-		String name = req.getParameter("name");
-		String school = req.getParameter("school");
-		String comment = req.getParameter("text");
-		String email = req.getParameter("email");
+		String name = escapeHtml4(req.getParameter("name"));
+		String school = escapeHtml4(req.getParameter("school"));
+		String comment = escapeHtml4(req.getParameter("text"));
+		String email = escapeHtml4(req.getParameter("email"));
 		feedback.setProperty("name", name);
 		feedback.setProperty("school", school);
 		feedback.setProperty("email", email);

@@ -46,6 +46,8 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
 
+import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
+
 @SuppressWarnings("serial")
 public class Registration extends HttpServlet
 {
@@ -207,7 +209,10 @@ public class Registration extends HttpServlet
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-		Map<String, String[]> params = req.getParameterMap();
+		Map<String, String[]> params = new HashMap<String, String[]>(req.getParameterMap());
+		for(Entry<String, String[]> param : params.entrySet())
+			params.put(param.getKey(), new String[] { escapeHtml4(param.getValue()[0]) });
+		
 		String registrationType = params.get("registrationType")[0];
 		String account = params.get("account")[0];
 		String aliases = params.get("aliases")[0];

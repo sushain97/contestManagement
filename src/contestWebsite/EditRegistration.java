@@ -1,10 +1,14 @@
 package contestWebsite;
 
+import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -143,7 +147,9 @@ public class EditRegistration extends HttpServlet
 			try
 			{
 				Entity registration = datastore.get(key);
-				Map<String, String[]> params = req.getParameterMap();
+				Map<String, String[]> params = new HashMap<String, String[]>(req.getParameterMap());
+				for(Entry<String, String[]> param : params.entrySet())
+					param.setValue(new String[] { escapeHtml4(param.getValue()[0]) });
 				
 				if(params.get("ajax") != null  && "1".equals(params.get("ajax")[0]))
 				{

@@ -1,16 +1,34 @@
 $(document).ready(function() {
-	ChangeForm();
 	EnableSubmit();
 	CalcCost();
-
+	CheckAccount();
+	
 	$('.span2').change(CalcCost);
-	$('.radio').change(function() {
-		ChangeForm();
-		CalcCost();
-	});
 	$('#captcha').on('keyup', AuthCaptcha);
 	$('#submit').on('click', AuthCaptcha);
+	$('#regType1,#regType2').change(function() {
+		$('#aliases').toggle('slow');
+	});
+	
+	$('#schoolType1,#schoolType2').change(function() {
+		$('#mid').toggle();
+		$('#hi').toggle();
+		CalcCost();
+	});
+	
+	$('#account').change(function() {
+		$('#acc').toggle('slow');
+		CheckAccount();
+	});
 });
+
+function CheckAccount() {
+	var account = $('#account').prop('checked');
+	$('#password').prop('required', account);
+	$('#confPassword').prop('required', account);
+	if(account)
+		$('#acc').show();
+}
 
 function AuthCaptcha() {
 	if (calcMD5($('#salt').val() + $('#captcha').val()) === $('#hash').val()) {
@@ -69,29 +87,4 @@ function CalcCost() {
 	}
 	else
 		$('#cost').val(sum)
-}
-
-function ChangeForm() {
-	if ($('#schoolType1').is(':checked'))
-		$('#mid').show();
-	else
-		$('#mid').hide();
-
-	if ($('#schoolType2').is(':checked'))
-		$('#hi').show();
-	else
-		$('#hi').hide();
-
-	if ($('#regType2').is(':checked'))
-		$('#aliases').show();
-	else
-		$('#aliases').hide();
-
-	var account = $('#account1').is(':checked');
-	if (account)
-		$('#acc').show();
-	else
-		$('#acc').hide();
-	$('#password').prop('required', account)
-	$('#confPassword').prop('required', account)
 }

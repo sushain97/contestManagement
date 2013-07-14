@@ -11,7 +11,7 @@
 	<style type="text/css">
 		body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */
 		#updateScores { display: none; }
-		#changePass { display: none; }
+		#changePassword { display: none; }
 	</style>
 	#include("jquery.html")
 </head>
@@ -76,12 +76,11 @@
 					</div>
 				</div>
 
+				<p class="help-block">Would you like to update online scores?</p>
 				<div class="control-group">
-					<p class="help-block">Would you like to update online scores?</p>
-					<label class="control-label" for="level">Update Scores?</label>
+					<label class="control-label" for="email">Update Scores?</label>
 					<div class="controls">
-						<label class="radio"><input type="radio" name="updateScores" id="update1" value="yes"> Yes</label> 
-						<label class="radio"><input	type="radio" name="updateScores" id="update2" value="no" checked> No</label>
+						<input type="checkbox" name="update" id="update">
 					</div>
 				</div>
 
@@ -126,18 +125,16 @@
 						<input type="checkbox" name="complete" value="yes" id="checked" checked>
 					</div>
 				</div>
-
+				
+				<p class="help-block">Would you like to change the admin password?</p>
 				<div class="control-group">
-					<p class="help-block">Would you like to change the admin password?</p>
-					<label class="control-label" for="level">Change Password?</label>
+					<label class="control-label" for="changePass">Change Password?</label>
 					<div class="controls">
-						<label class="radio"><input type="radio" name="changePass" id="change1" value="yes">
-							Yes</label> <label class="radio"><input type="radio" name="changePass" id="change2" value="no" checked>
-							No</label>
+						<input type="checkbox" name="changePass" id="changePass" #if($passError || $confPassError) checked #end>
 					</div>
 				</div>
 
-				<div id="changePass">
+				<div id="changePassword">
 					<div class=#if($passError) "control-group error" #else "control-group" #end>
 						<label class="control-label" for="password">Current Password</label>
 						<div class="controls">
@@ -149,14 +146,14 @@
 					<div class="control-group">
 						<label class="control-label" for="password">New Password</label>
 						<div class="controls">
-							<input type="password" id="newPassword" name="newPassword" value="" maxlength="32">
+							<input type="password" id="newPassword" name="newPassword" pattern=".{8,}" title="Passwords must be at least 8 characters" value="" maxlength="32">
 						</div>
 					</div>
 
 					<div class=#if($confPassError) "control-group error" #else "control-group" #end>
 						<label class="control-label" for="password">Confirm New Password</label>
 						<div class="controls">
-							<input type="password" id="confPassword" name="confPassword" value="" maxlength="32">
+							<input type="password" id="confPassword" name="confPassword" pattern=".{8,}" title="Passwords must be at least 8 characters" value="" maxlength="32">
 							#if($confPassError) <span class="help-inline">$confPassError</span> #end
 						</div>
 					</div>

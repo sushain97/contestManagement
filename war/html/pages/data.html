@@ -131,7 +131,7 @@
 	
 	<div id="footer">
       <div class="container">
-        <p><i class="icon-time"></i> Last auto-generated <b>$date</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
+        <p><i class="icon-time"></i> Last auto-generated <b>#if($date) $date #else never #end</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
       </div>
     </div>
 	#else

@@ -212,7 +212,7 @@ public class EditRegistration extends HttpServlet
 				}
 				else
 				{
-					if(params.get("delete")[0].equals("yes"))
+					if(params.containsKey("delete"))
 					{
 						if(registration.getProperty("account").equals("yes"))
 						{

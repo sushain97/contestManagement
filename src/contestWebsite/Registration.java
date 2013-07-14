@@ -214,7 +214,9 @@ public class Registration extends HttpServlet
 			params.put(param.getKey(), new String[] { escapeHtml4(param.getValue()[0]) });
 		
 		String registrationType = params.get("registrationType")[0];
-		String account = params.get("account")[0];
+		String account = "no";
+		if(params.containsKey("account"))
+			account = "yes";
 		String aliases = params.get("aliases")[0];
 		String email = params.get("email")[0];
 		String schoolLevel = params.get("schoolLevel")[0];
@@ -325,7 +327,7 @@ public class Registration extends HttpServlet
 					{
 						datastore.put(registration);
 
-						if(params.get("account")[0].equals("yes"))
+						if(account.equals("yes"))
 						{
 							Entity user = new Entity("user");
 							String hash = Password.getSaltedHash(password);

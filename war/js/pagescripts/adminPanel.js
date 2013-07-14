@@ -1,36 +1,46 @@
 $(document).ready(function() {
+	CheckPassChange();
+	CheckUpdate();
+	
 	$('.date').datepicker();
+	
 	$('.price').slider({
 		formater: function(value) {
 		  return '$' + value;
 		}
     });
-	$('.price').slider().on('slideStop', function(ev) {
+	$('.price').slider().on('slide', function(ev) {
 		$('#priceText').html('$' + ev.value);
 	});
-	ChangeForm();
-	$('.radio').change(ChangeForm);
+	
+	$('#update').change(function() {
+		$('#updateScores').toggle('fast');
+		CheckUpdate();
+	});
+	
+	$('#changePass').change(function() {
+		$('#changePassword').toggle('slow');
+		CheckPassChange();
+	});
 });
 
-function ChangeForm() {
-	var change2 = $('#change2').is(':checked');
-	$('#curPassword').prop('required', !change2);
-	$('#newPassword').prop('required', !change2);
-	$('#confPassword').prop('required', !change2);
-
-	if (change2)
-		$('#changePass').hide();
-	else
-		$('#changePass').show();
-
-	var update2 = $('#update2').is(':checked');
-	$('#docAccount').prop('required', !update2);
-	$('#docPassword').prop('required', !update2);
-	$('#docHigh').prop('required', !update2);
-	$('#docMiddle').prop('required', !update2);
-
-	if (update2)
-		$('#updateScores').hide();
-	else
+function CheckUpdate() {
+	var update = $('#update').prop('checked');
+	$('#docAccount').prop('required', update);
+	$('#docPassword').prop('required', update);
+	$('#docHigh').prop('required', update);
+	$('#docMiddle').prop('required', update);
+	if(update)
 		$('#updateScores').show();
+}
+
+function CheckPassChange() {
+	var change = $('#changePass').prop('checked');
+	$('#curPassword').prop('required', change);
+	$('#newPassword').prop('required', change);
+	$('#confPassword').prop('required', change);
+	$('#password').prop('required', change);
+	$('#confPassword').prop('required', change);
+	if(change)
+		$('#changePassword').show();
 }

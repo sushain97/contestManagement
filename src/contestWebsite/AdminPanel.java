@@ -146,7 +146,7 @@ public class AdminPanel extends HttpServlet
 				contestInfo.setProperty("price", price);
 				contestInfo.setProperty("complete", complete == null ? false : true);
 
-				if(params.get("updateScores")[0].equals("yes"))
+				if(params.containsKey("update"))
 				{
 					String docHigh = params.get("docHigh")[0];
 					String docMiddle = params.get("docMiddle")[0];
@@ -168,7 +168,7 @@ public class AdminPanel extends HttpServlet
 				String hash = (String) user.getProperty("hash");
 				String salt = (String) user.getProperty("salt");
 
-				if(params.get("changePass").equals("yes"))
+				if(params.containsKey("changePass"))
 				{
 					String curPassword = params.get("curPassword")[0];
 					String confPassword = params.get("confPassword")[0];

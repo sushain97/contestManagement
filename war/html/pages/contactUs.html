@@ -8,6 +8,7 @@
 	#include("head.html")
 	<style type="text/css">
 		body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */
+		legend { margin: 0px; }
 	</style>
 	#include("jquery.html")
 </head>
@@ -18,19 +19,22 @@
 		<noscript>Please enable JavaScript, otherwise numerous areas of this website will be
 			nonfunctional.</noscript>
 		<h1>Contact Us</h1>
-		Please contact us for any <em>clarifications</em> or <em>registration changes</em>. #if(!$loggedIn &&
-		!$admin) Please <a href="/login">login</a> before submitting questions if you have an account. Thank you! <br />
-		<br /> #end #if( $updated )
+		#if($updated)
 		<div class="alert alert-success">
-			<a class="close" data-dismiss="alert">&times;</a> <strong>Success! </strong>Your feedback has been
+			<a class="close" data-dismiss="alert">&times;</a> <strong>Thank You! </strong>Your feedback has been
 			recorded, we will look into it as soon as possible.
 		</div>
-		#end
-
+		#else
 		<form method="post" class="form-horizontal">
 			<fieldset>
+				<legend>Please contact us for any <em>clarifications</em> or <em>registration changes</em>. 
+				#if(!$loggedIn && !$admin) 
+				Please <a href="/login">login</a> before submitting questions if you have an account. Thank you!
+				#end
+				</legend>
+				
 				<div class="control-group">
-					<label class="control-label" for="schoolName">Your Name</label>
+					<label class="control-label" for="name">Your Name</label>
 					<div class="controls">
 						<div class="input-prepend">
 	      					<span class="add-on"><i class="icon-user"></i></span> 
@@ -85,6 +89,7 @@
 				</div>
 			</fieldset>
 		</form>
+		#end
 	</div>
 
 	<script type="text/javascript" src="/js/md5hash.js"></script>

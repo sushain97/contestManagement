@@ -218,14 +218,11 @@
 						An account allows you to check your scores <em>online</em> during and after the competition and review
 						your registration.
 					</p>
-					<label class="control-label" for="level">Create an Account?</label>
+					<label class="control-label" for="account">Create an Account?</label>
 
 					<div class="controls">
-						<label class="radio"> <input type="radio" name="account" id="account1" value="yes"
-							#if($account) checked #end> Yes
-						</label> 
-						<label class="radio"> <input type="radio" name="account" id="account2" value="no"
-							#if(!$account) checked #end> No
+						<label class="checkbox">
+							<input type="checkbox" name="account" id="account" #if($account) checked #end>
 						</label>
 					</div>
 				</div>
@@ -242,7 +239,7 @@
 					</div>
 
 					<div class=#if($passwordError) "control-group error" #else "control-group" #end>
-						<label class="control-label" for="password">Confirm Password</label>
+						<label class="control-label" for="confPassword">Confirm Password</label>
 						<div class="controls">
 							<div class="input-prepend">
 		      					<span class="add-on"><i class="icon-lock"></i></span>

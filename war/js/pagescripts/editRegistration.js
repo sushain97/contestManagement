@@ -1,13 +1,17 @@
 $(document).ready(function () {
-	ChangeForm();
 	EnableSubmit();
 	CalcCost();
 	
 	$('.span2').change(CalcCost);
 	
-	$('.radio').change(function() {
-		ChangeForm();
+	$('#schoolType1,#schoolType2').change(function() {
+		$('#mid').toggle();
+		$('#hi').toggle();
 		CalcCost();
+	});
+	
+	$('#delete').change(function() {
+		$('#info').toggle('fast');
 	});
 });
 		
@@ -49,26 +53,4 @@ function CalcCost() {
 	}
 
 	$('#cost').val(sum)
-}
-
-function ChangeForm() {
-	if ($('#schoolType1').is(':checked'))
-		$('#mid').show();
-	else
-		$('#mid').hide();
-
-	if ($('#schoolType2').is(':checked'))
-		$('#hi').show();
-	else
-		$('#hi').hide();
-
-	if ($('#regType2').is(':checked'))
-		$('#aliases').show();
-	else
-		$('#aliases').hide();
-	
-	if ($('#delete1').is(':checked'))
-		$('#info').hide();
-	else
-		$('#info').show();
 }

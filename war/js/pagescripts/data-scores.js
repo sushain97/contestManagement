@@ -5,6 +5,7 @@ $(document).ready(function () {
 		window.print();
 		$('button').show();
 	});
+	$("table").tablesorter({sortList: [[0,0]]});
 });
 	
 function ChangeActive() {

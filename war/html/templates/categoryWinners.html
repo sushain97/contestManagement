@@ -13,12 +13,14 @@
 </h2>
 
 <table class="table table-striped table-condensed table-hover">
-    <tr>
-        <th>Rank</th>
-        <th>Student Name</th>
-        <th>School</th>
-        <th>Score</th>
-    </tr>
+    <thead>
+    	<tr>
+	        <th>Rank</th>
+	        <th>Student Name</th>
+	        <th>School</th>
+	        <th>Score</th>
+        </tr>
+    </thead>
     #set($i = 1)
     #foreach($student in $winners)
     	<tr>

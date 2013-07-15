@@ -14,17 +14,21 @@
 	</h2>
 	
 	<table class="table table-striped table-condensed table-hover">
-    	<th>Rank</th>
-    	<th>School</th>
-    	<th>Score</th>
-    	#set($i = 1)
-    	#foreach($school in $winners.get($test))
+		<thead>
     		<tr>
-        		<td> $i </td>
-        		<td> $school.getName() </td>
-        		<td> $school.getScore($test) </td>
-    		</tr>
-    		#set($i = $i + 1)
-    	#end
+		    	<th>Rank</th>
+		    	<th>School</th>
+		    	<th>Score</th>
+	    	</tr>
+	    </thead>
+	    	#set($i = 1)
+	    	#foreach($school in $winners.get($test))
+	    		<tr>
+	        		<td> $i </td>
+	        		<td> $school.getName() </td>
+	        		<td> $school.getScore($test) </td>
+	    		</tr>
+	    		#set($i = $i + 1)
+	    	#end
 	</table>
 #end

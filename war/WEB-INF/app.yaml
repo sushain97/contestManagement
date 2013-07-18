@@ -5,7 +5,7 @@ threadsafe: false
 sessions_enabled: true
 
 handlers:
-- url: /
+- url: /index.html
   servlet: contestWebsite.MainPage
   
 - url: /about
@@ -60,6 +60,9 @@ handlers:
 - url: /500
   servlet: errors.ServerError_500
   
+- url: /404
+  servlet: errors.NotFound_404
+  
 static_files:
   - include: /favicon.ico
     expiration: 14d
@@ -82,4 +85,8 @@ web_xml: |
   <error-page>
     <error-code>500</error-code>
     <location>/500</location>
+  </error-page>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/404</location>
   </error-page>

@@ -72,9 +72,13 @@
     <servlet-name>errors.ServerError_500</servlet-name>
     <servlet-class>errors.ServerError_500</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>errors.NotFound_404</servlet-name>
+    <servlet-class>errors.NotFound_404</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>contestWebsite.MainPage</servlet-name>
-    <url-pattern>/</url-pattern>
+    <url-pattern>/index.html</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>contestWebsite.About</servlet-name>
@@ -153,6 +157,10 @@
     <servlet-name>errors.ServerError_500</servlet-name>
     <url-pattern>/500</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>errors.NotFound_404</servlet-name>
+    <url-pattern>/404</url-pattern>
+  </servlet-mapping>
 <error-page>
   <error-code>403</error-code>
   <location>/403</location>
@@ -164,5 +172,9 @@
 <error-page>
   <error-code>500</error-code>
   <location>/500</location>
+</error-page>
+<error-page>
+  <error-code>404</error-code>
+  <location>/404</location>
 </error-page>
 </web-app>

@@ -20,6 +20,36 @@ $(document).ready(function() {
 		$('#acc').toggle('slow');
 		CheckAccount();
 	});
+	
+	$('#passStrength').tooltip({placement: 'right', html: 'true'});
+	
+	var passwordElem = $('#password');
+	passwordElem.data('oldVal', passwordElem);
+	passwordElem.bind("propertychange keyup input paste", function(event) {
+		$('#passHelp').show();
+		var passwordElem = $('#password');
+		if (passwordElem.data('oldVal') != passwordElem.val()) {
+			passwordElem.data('oldVal', passwordElem.val());
+			
+			var userInputs = ['tmsca', 'dulles'];
+			userInputs = userInputs.concat(userInputs, $("#schoolName").val().split(' '));
+			userInputs = userInputs.concat(userInputs, $("#name").val().split(' '));
+			userInputs.push($("#email").val().split('@')[0]);
+			
+			var passEval = zxcvbn($('#password').val(), userInputs);
+			$('#passStrength').html(passEval.crack_time_display);
+			var title = '<strong>Password Strength: </strong><br/> <strong>Crack Time: </strong>' + passEval.crack_time + 
+			' seconds</br> <strong>Informational Entropy: </strong>' + passEval.entropy + ' bits<br/>' + '<strong>Matched Sequences: </strong>'
+			var sequences = passEval.match_sequence;
+			for(var i = 0; i < sequences.length; i++)
+				title += '<em>' + sequences[i].pattern + ': </em>"' + sequences[i].token + '"<br/>';
+			$('#passStrength').data('tooltip').options.title = title;
+			$('#passStrength').tooltip('fixTitle').tooltip('show');
+		}
+	});
+	passwordElem.blur(function() {
+		$('#passStrength').tooltip('hide');
+	});
 });
 
 function CheckAccount() {

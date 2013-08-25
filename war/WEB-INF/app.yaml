@@ -72,6 +72,8 @@ static_files:
     expiration: 7d
   - include: /img/**
     expiration: 7d
+  - include: /robots.txt
+    expiration: 7d
 
 web_xml: |
   <error-page>

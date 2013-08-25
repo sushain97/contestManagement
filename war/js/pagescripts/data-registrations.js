@@ -8,8 +8,7 @@ $(document).ready(function() {
 	
 	$('tbody td:not(.uneditable)').editable(function(value, settings) {
 		sendAJAXReq(this, value);
-	},
-	{ 
+	}, { 
 		type: 'text',
 		tooltip: 'Click to edit...',
 		placeholder: '',
@@ -17,11 +16,18 @@ $(document).ready(function() {
 	
 	$('.regType').editable(function(value, settings) {
 		sendAJAXReq(this, value);
-	}, 
-	{ 
+	}, { 
 		data: " {'student':'student','coach':'coach'}",
 	    type: 'select',
 	    submit: 'OK'
+	});
+	
+	$('td').hover(function() {
+	    var t = parseInt($(this).index()) + 1;
+	    $('td:nth-child(' + t + '):not(tfoot td)', $(this).closest('table')).addClass('highlighted');
+	}, function() {
+	    var t = parseInt($(this).index()) + 1;
+	    $('td:nth-child(' + t + '):not(tfoot td)', $(this).closest('table')).removeClass('highlighted');
 	});
 });
 

@@ -6,6 +6,14 @@ $(document).ready(function () {
 		$('button').show();
 	});
 	$("table").tablesorter({sortList: [[0,0]]});
+	
+	$('td').hover(function() {
+	    var t = parseInt($(this).index()) + 1;
+	    $('td:nth-child(' + t + ')', $(this).closest('table')).addClass('highlighted');
+	}, function() {
+	    var t = parseInt($(this).index()) + 1;
+	    $('td:nth-child(' + t + ')', $(this).closest('table')).removeClass('highlighted');
+	});
 });
 	
 function ChangeActive() {

@@ -8,6 +8,7 @@
 	#include("head.html")
 	<style type="text/css">
 		body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */
+		.highlighted { background-color: #e8f8fd !important; }
 		#if($registration)
 			.container,
 			.navbar-static-top .container,
@@ -36,7 +37,6 @@
 				#footer { visibility: hidden; }
 			}
 			h1 button { float: right; }
-			
 		#elseif($questions)
 			@media print { @page { size: landscape; } }
 		#end
@@ -350,6 +350,8 @@
 	#elseif($registration)
 	<script type="text/javascript" src="/js/jquery.jeditable.mini.js"></script>
 	<script type="text/javascript" src="/js/pagescripts/data-registrations.js"></script>
+	#elseif($questions)
+	<script type="text/javascript" src="/js/pagescripts/data-questions.js"></script>
 	#end
 </body>
 </html>

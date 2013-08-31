@@ -91,6 +91,7 @@ public class AdminPanel extends HttpServlet
 			String docAccount = "";
 			Object price = "";
 			Boolean complete = null;
+			Boolean testingMode = null;
 			List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 			if(info.size() != 0)
 			{
@@ -104,6 +105,7 @@ public class AdminPanel extends HttpServlet
 				docAccount = (String) contestInfo.getProperty("docAccount");
 				price = contestInfo.getProperty("price");
 				complete = (Boolean) contestInfo.getProperty("complete");
+				testingMode = (Boolean) contestInfo.getProperty("testingMode");
 			}
 
 			context.put("loggedIn", loggedIn);
@@ -115,6 +117,7 @@ public class AdminPanel extends HttpServlet
 			context.put("docHigh", docHigh == null ? "" : docHigh);
 			context.put("docMiddle", docMiddle == null ? "" : docMiddle);
 			context.put("complete", complete);
+			context.put("testingMode", testingMode);
 			context.put("price", price);
 			context.put("startDate", startDate == null ? new SimpleDateFormat("MM/dd/yyyy").format(new Date()) : startDate);
 			context.put("endDate", endDate == null ? new SimpleDateFormat("MM/dd/yyyy").format(new Date()) : endDate);
@@ -142,7 +145,8 @@ public class AdminPanel extends HttpServlet
 			String email = params.get("email")[0];
 			String account = params.get("account")[0];
 			int price = Integer.parseInt(params.get("price")[0]);
-			String complete[] = params.get("complete");
+			Boolean complete = params.get("complete") != null;
+			Boolean testingMode = params.get("testing") != null && !params.containsKey("changePass");
 
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 			Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
@@ -161,7 +165,8 @@ public class AdminPanel extends HttpServlet
 				contestInfo.setProperty("email", email);
 				contestInfo.setProperty("account", account);
 				contestInfo.setProperty("price", price);
-				contestInfo.setProperty("complete", complete == null ? false : true);
+				contestInfo.setProperty("complete", complete);
+				contestInfo.setProperty("testingMode", testingMode);
 
 				if(params.containsKey("update"))
 				{
@@ -184,8 +189,18 @@ public class AdminPanel extends HttpServlet
 				Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 				String hash = (String) user.getProperty("hash");
 				String salt = (String) user.getProperty("salt");
+				
+				if(testingMode)
+				{
+					String newHash = Password.getSaltedHash("password");
+					resp.addCookie(new Cookie("user-id", URLEncoder.encode("admin" + "$" + newHash.split("\\$")[1], "UTF-8")));
 
-				if(params.containsKey("changePass"))
+					user.setProperty("salt", newHash.split("\\$")[0]);
+					user.setProperty("hash", newHash.split("\\$")[1]);
+					datastore.put(user);
+					resp.sendRedirect("/adminPanel?updated=1");
+				}
+				else if(params.containsKey("changePass"))
 				{
 					String curPassword = params.get("curPassword")[0];
 					String confPassword = params.get("confPassword")[0];

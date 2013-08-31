@@ -75,6 +75,12 @@ public class Login extends HttpServlet
 			else
 				error = null;
 			context.put("error", error);
+			
+			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+			Query query = new Query("contestInfo");
+			List<Entity> infos = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+			if(infos.size() > 0 && (Boolean) infos.get(0).getProperty("testingMode"))
+				context.put("testingMode", true);
 
 			StringWriter sw = new StringWriter();
 			t.merge(context, sw);

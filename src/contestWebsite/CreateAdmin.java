@@ -18,6 +18,7 @@
 package contestWebsite;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +29,8 @@ import util.Password;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Query;
 
 @SuppressWarnings("serial")
 public class CreateAdmin extends HttpServlet
@@ -50,5 +53,15 @@ public class CreateAdmin extends HttpServlet
 		catch(Exception e) { }
 
 		datastore.put(admin);
+		
+		Query query = new Query("contestInfo");
+		List<Entity> infos = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+		Entity info;
+		if(infos.size() > 0)
+			info = infos.get(0);
+		else
+			info = new Entity("contestInfo");
+		info.setProperty("testingMode", true);
+		datastore.put(info);
 	}
 }

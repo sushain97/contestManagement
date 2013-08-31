@@ -8,6 +8,8 @@
 	#include("head.html")
 	<style type="text/css">
 		body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */
+		.popover-title { font-size: 1.5em; }
+		.popover-content p { font-weight: normal; }
 	</style>
 	</head>
 <body>
@@ -48,9 +50,22 @@
 				
 				<div class="form-actions">
 					<button type="submit" class="btn btn-primary">Login</button>
+					<span style="padding-left: 15px"> 
+						#if($testingMode) 
+						<strong>
+							<a href="#" id="testingMode" data-toggle="popover" data-content="&lt;p&gt;During Testing Mode, 
+								the contest administrator account can be easily accessed with the credentials &quot;admin&quot; 
+								and &quot;password&quot;.&lt;/p&gt;
+								&lt;p&gt;Click &lt;a href=&quot;#&quot; id=&quot;fillCreds&quot;&gt;here&lt;/a&gt; to login as the admin.&lt;/p&gt" 
+								data-original-title="Testing Mode">Testing Mode</a> 
+							is currently enabled
+						</strong> 
+						#end 
+					</span>
 				</div>
 			</fieldset>
 		</form>
 	</div>
+	<script type="text/javascript" src="/js/pagescripts/login.js"></script>
 </body>
 </html>

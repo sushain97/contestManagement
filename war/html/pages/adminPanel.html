@@ -119,9 +119,9 @@
 
 				<p class="help-block">Is the contest complete?</p>
 				<div class="control-group">
-					<label class="control-label" for="email">Make results public</label>
+					<label class="control-label" for="complete">Make results public</label>
 					<div class="controls">
-						<input type="checkbox" name="complete" value="yes" id="checked" checked>
+						<input type="checkbox" name="complete" value="yes" id="complete" #if($complete) checked #end>
 					</div>
 				</div>
 				
@@ -132,7 +132,7 @@
 						<input type="checkbox" name="changePass" id="changePass" #if($passError || $confPassError) checked #end>
 					</div>
 				</div>
-
+				
 				<div id="changePassword">
 					<div class=#if($passError) "control-group error" #else "control-group" #end>
 						<label class="control-label" for="password">Current Password</label>
@@ -155,6 +155,25 @@
 							<input type="password" id="confPassword" name="confPassword" pattern=".{8,}" title="Passwords must be at least 8 characters" value="" maxlength="32">
 							#if($confPassError) <span class="help-inline">$confPassError</span> #end
 						</div>
+					</div>
+				</div>
+				
+				<p class="help-block">Testing mode force defaults the admin password to "password" and displays it on the login page.</p>
+				<div class="control-group">
+					<label class="control-label" for="testing">Enable Testing Mode</label>
+					<div class="controls">
+						<input type="checkbox" name="testing" value="yes" id="testing" #if($testingMode) checked #end>
+					</div>
+				</div>
+				
+				<p class="help-block">Full names will be hidden in public results (e.g. John Doe will be displayed as John D.).</p>
+				<div class="control-group">
+					<label class="control-label" for="fullnames">Hide Full Names</label>
+					<div class="controls">
+						<input type="checkbox" name="fullnames" value="yes" id="fullnames" disabled>
+						<span class="help-inline">
+							This feature is currently <strong>non-functional</strong>.
+						</span>
 					</div>
 				</div>
 

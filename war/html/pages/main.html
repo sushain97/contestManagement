@@ -16,11 +16,19 @@
 		}
 		.carousel-inner { text-align: center; }
 		.carousel .item > img { display: inline-block; }
-		.dl-horizontal dt
-		{
+		.dl-horizontal dt {
 			white-space: normal;
 			width: 280px;
 			margin-right: 8px;
+		}
+		.carousel-indicators, .carousel-control, .carousel-inner {
+			display: none;
+		}
+		.loading-gif {
+			display: block;
+		    margin-left: auto;
+		    margin-right: auto;
+		    margin-top: 250px;
 		}
 	</style>
 </head>
@@ -52,6 +60,8 @@
 		<h1>About our Tournament</h1>
 		#include("aboutText.html")
 		<br/><br/>
+		
+		<img class="loading-gif" src="/img/ajax-loader.gif" title="Loading..." alt="Loading...">
 		
         <div id="myCarousel" class="carousel slide">
 	       	<ol class="carousel-indicators">

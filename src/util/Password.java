@@ -1,3 +1,11 @@
+/* Code from Stack Overflow Question:
+ * http://stackoverflow.com/questions/2860943/suggestions-for-library-to-hash-passwords-in-java
+ * Ouestion by Chris Dutrow:
+ * http://stackoverflow.com/users/84131/chris-dutrow
+ * Answer by Martin Konicek
+ * http://stackoverflow.com/users/90998/martin-konicek
+ */
+
 package util;
 
 import java.security.SecureRandom;

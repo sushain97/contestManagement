@@ -5,8 +5,8 @@ table thead tr .header {
 	cursor: pointer;
 	min-width: 30px;
 }
-table thead tr .headerSortUp { background-image: url(../img/asc.gif); }
-table thead tr .headerSortDown { background-image: url(../img/desc.gif); }
+table thead tr .headerSortUp { background-image: url(../img/tablesorter/asc.gif); }
+table thead tr .headerSortDown { background-image: url(../img/tablesorter/desc.gif); }
 table th.header { 
 	padding-right: 15px; 
 	vertical-align:middle;

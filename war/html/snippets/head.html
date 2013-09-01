@@ -17,3 +17,21 @@
 <script type="text/javascript">
 	$.fn.modal || document.write('<script type="text/javascript" src="/js/bootstrap.min.js"><\/script>')
 </script>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		var tabName = $('meta[name="tab"]').prop('content');
+		if(tabName) {
+			var currentTab = $('#' + tabName + '-tab');
+			if(currentTab.length)
+				currentTab.addClass('current');
+			else
+				$('#PublicPages-tab').addClass('current');
+		}
+	});
+</script>
+
+<style type="text/css">
+	li.dropdown.current { background-color: #202020 !important; }
+	a.current { background-color: #202020 !important; }
+</style>

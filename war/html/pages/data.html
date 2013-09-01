@@ -6,6 +6,7 @@
 	<meta name="description" content="View the Dulles High School TMSCA Tournament Data including registrations, users, requested clarifications, and scores">
 	<meta name="robots" content="noindex, nofollow">
 	<meta name="tab" content="ContestData">
+	<meta name="type" content="$type">
 	#include("head.html")
 	<style type="text/css">
 		body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */
@@ -343,7 +344,6 @@
 	</div>
 
 	#if($scores)
-	<script type="text/javascript" src="/js/purl.js"></script>
 	<script type="text/javascript" src="/js/pagescripts/data-scores.js"></script>
 	<script type="text/javascript" src="/js/jquery.tablesorter.min.js"></script>
 	#elseif($registration)

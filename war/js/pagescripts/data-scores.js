@@ -34,8 +34,8 @@ $(document).ready(function () {
 });
 	
 function ChangeActive() {
-	var type = $.url().param('type');
-	if (type == undefined)
+	var type = $('meta[name="type"]').prop('content');
+	if (type === '$type')
 		$("#overview").addClass('active');
 	else {
 		$("#" + type).closest('.dropdown').addClass('active');

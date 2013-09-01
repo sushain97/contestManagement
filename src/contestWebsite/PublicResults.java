@@ -92,8 +92,9 @@ public class PublicResults extends HttpServlet
 			if((complete != null && (Boolean) complete) || (loggedIn && userCookie.isAdmin()))
 			{
 				context.put("complete", true);
-
 				String type = req.getParameter("type");
+				context.put("type", type);
+				
 				if(type != null)
 				{
 					String[] types = type.split("_");

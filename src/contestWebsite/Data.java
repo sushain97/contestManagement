@@ -109,6 +109,7 @@ public class Data extends HttpServlet
 				Query query;
 
 				String type = req.getParameter("type");
+				context.put("type", type);
 				if(type != null)
 				{
 					String[] types = type.split("_");

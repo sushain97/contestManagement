@@ -35,6 +35,7 @@ import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -91,18 +92,24 @@ public class ContactUs extends HttpServlet
 			context.put("school", null);
 		}
 
+		HttpSession sess = req.getSession(true);
 		try
 		{
 			if(!loggedIn || userCookie.isAdmin())
 			{
 				Captcha captcha = new Captcha();
+				sess.setAttribute("hash", captcha.getHashedAnswer());
+				sess.setAttribute("salt", captcha.getSalt());
+				sess.setAttribute("nocaptcha", false);
 				context.put("captcha", captcha.getQuestion());
 				context.put("hash", captcha.getHashedAnswer());
 				context.put("salt", captcha.getSalt());
 				context.put("nocaptcha", false);
 			}
-			else
+			else {
 				context.put("nocaptcha", true);
+				sess.setAttribute("nocaptcha", true);
+			}
 			
 			context.put("updated", req.getParameter("updated"));
 			
@@ -129,11 +136,12 @@ public class ContactUs extends HttpServlet
 		if(users.size() != 0)
 			feedback.setProperty("user-id", users.get(0).getProperty("user-id"));
 
-		if(req.getParameter("nocaptcha").equals("false"))
+		HttpSession sess = req.getSession(false);
+		if(!(Boolean) sess.getAttribute("nocaptcha"))
 		{
 			try
 			{
-				if(!Captcha.authCaptcha(req.getParameter("salt"), req.getParameter("captcha"), req.getParameter("hash")))
+				if(!Captcha.authCaptcha((String) sess.getAttribute("salt"), req.getParameter("captcha"), (String) sess.getAttribute("hash")))
 				{
 					resp.sendError(HttpServletResponse.SC_PRECONDITION_FAILED, "Invalid Captcha hash provided");
 					return;

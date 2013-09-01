@@ -131,9 +131,12 @@ public class Registration extends HttpServlet
 			context.put("price", 5);
 		}
 
+		HttpSession sess = req.getSession(true);
 		try
 		{
 			Captcha captcha = new Captcha();
+			sess.setAttribute("hash", captcha.getHashedAnswer());
+			sess.setAttribute("salt", captcha.getSalt());
 			context.put("captcha", captcha.getQuestion());
 			context.put("hash", captcha.getHashedAnswer());
 			context.put("salt", captcha.getSalt());
@@ -146,8 +149,7 @@ public class Registration extends HttpServlet
 
 		String userError = req.getParameter("userError");
 		String passwordError = req.getParameter("passwordError");
-
-		HttpSession sess = req.getSession(false);
+		
 		if(sess != null && ("1".equals(userError) || "1".equals(passwordError)))
 		{
 			String numString = (String) sess.getAttribute("nums");
@@ -241,10 +243,12 @@ public class Registration extends HttpServlet
 		String name = params.get("name")[0];
 		String password = null;
 		String confPassword = null;
+		
+		HttpSession sess = req.getSession(true);
 
 		try
 		{
-			if(!Captcha.authCaptcha(req.getParameter("salt"), req.getParameter("captcha"), req.getParameter("hash")))
+			if(!Captcha.authCaptcha((String) sess.getAttribute("salt"), req.getParameter("captcha"), (String) sess.getAttribute("hash")))
 				resp.sendError(HttpServletResponse.SC_PRECONDITION_FAILED, "Invalid Captcha hash provided");
 			else
 			{
@@ -271,7 +275,6 @@ public class Registration extends HttpServlet
 
 				if(users.size() != 0 || (account.equals("yes") && !confPassword.equals(password)))
 				{
-					HttpSession sess = req.getSession(true);
 					sess.setAttribute("registrationType", registrationType);
 					sess.setAttribute("account", account);
 					sess.setAttribute("aliases", aliases);
@@ -359,7 +362,6 @@ public class Registration extends HttpServlet
 
 						txn.commit();
 
-						HttpSession sess = req.getSession(true);
 						sess.setAttribute("props", registration.getProperties());
 						resp.sendRedirect("/registration?updated=1");
 

@@ -132,6 +132,9 @@ function CalcCost() {
 		if($('#cost').closest('.controls').find('.help-inline').length === 0)
 			$('#cost').closest('.controls').append('<span class="help-inline">Please enter only <b>numeric</b> values above</span>');
 	}
-	else
-		$('#cost').val(sum)
+	else {
+		$('#cost').val(sum);
+		$('#cost').closest('.control-group').removeClass('error');
+		$('#cost').closest('.controls').children('.help-inline').remove();
+	}
 }

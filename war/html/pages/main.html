@@ -30,6 +30,10 @@
 		    margin-right: auto;
 		    margin-top: 250px;
 		}
+		.carousel-pic {
+			vertical-align: middle;
+			height: 540px;
+		}
 	</style>
 </head>
 
@@ -72,7 +76,9 @@
 	
 	        <div class="carousel-inner">
 		        <div class="item">
-		    		<img src="/img/carousel/Pic0.jpg" alt="$captions[0]" width="720px">
+		        	<div class="carousel-pic">
+		    			<img src="/img/carousel/Pic0.jpg" alt="$captions[0]" width="710px" class="img-polaroid">
+		    		</div>
 		    		<div class="carousel-caption">
 		    			<h4>$esc.html($titles[0])</h4>
 		    			<p>$esc.html($captions[0])</p>
@@ -80,7 +86,9 @@
 		        </div>
 				#foreach($i in [1..$num])
 					<div class="item">
-		        		<img src="/img/carousel/Pic${i}.jpg" alt="captions[$i]" width="720px">
+						<div class="carousel-pic">
+		        			<img src="/img/carousel/Pic${i}.jpg" alt="captions[$i]" width="710px" class="img-polaroid">
+		        		</div>
 		        		<div class="carousel-caption">
 		        			<h4>$esc.html($titles[$i])</h4>
 		        			<p>$esc.html($captions[$i])</p>

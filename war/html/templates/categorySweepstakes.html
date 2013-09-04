@@ -26,7 +26,12 @@
 	    		<tr>
 	        		<td> $i </td>
 	        		<td> $school.getName() </td>
-	        		<td> $school.getScore($test) </td>
+	        		<td>
+		        		<a class="popovers" href="#" data-toggle="popover" 
+		        			title="#foreach($student in $school.getScoreStudents($test)) <strong>$student.getName():</strong> $student.getScore($test).getScoreNum() <br> #end">
+							$school.getScore($test)
+						</a>
+	        		</td>
 	    		</tr>
 	    		#set($i = $i + 1)
 	    	#end

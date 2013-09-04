@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
+import util.Pair;
+
 public class School
 {
 	final private String name;
@@ -32,7 +34,7 @@ public class School
 	
 	private HashMap<Test,Integer> numTests = new HashMap<Test,Integer>();
 
-	private HashMap<Character,Integer> scores = new HashMap<Character,Integer>();
+	private HashMap<Character,Pair<Student[],Integer>> scores = new HashMap<Character,Pair<Student[],Integer>>();
 	private HashMap<Test,ArrayList<Score>> anonScores = new HashMap<Test,ArrayList<Score>>();
 	private int totalScore;
 
@@ -50,8 +52,10 @@ public class School
 	public HashMap<Test,Integer> getNumTests() { return numTests; }
 	public String getLevel() { return level; }
 	
-	public int getScore(char subject) { return scores.get(subject); }
-	public int getScore(String subject) { return scores.get(subject.charAt(0)); }
+	public Student[] getScoreStudents(char subject) { return scores.get(subject).x; }
+	public Student[] getScoreStudents(String subject) { return scores.get(subject.charAt(0)).x; }
+	public int getScore(char subject) { return scores.get(subject).y; }
+	public int getScore(String subject) { return scores.get(subject.charAt(0)).y; }
 	public int getTotalScore() { return totalScore; }
 	
 	protected void addStudent(Student student) { students.add(student);	}
@@ -124,7 +128,7 @@ public class School
 		for(Score score : top4.values())
 			if(score != null)
 				totalScore += score.getScoreNum();
-		scores.put(subject, totalScore);
+		scores.put(subject, new Pair<Student[],Integer>(top4.keySet().toArray(new Student[top4.keySet().size()]), totalScore));
 		
 		return top4;
 	}
@@ -136,9 +140,9 @@ public class School
 		calculateScore('C');
 		calculateScore('M');
 		if(level.equals("middle"))
-			totalScore = scores.get('N') + scores.get('C') + (int) Math.round((scores.get('M') * 8.0/5.0) +(scores.get('S') * 8.0/5.0));
+			totalScore = scores.get('N').y + scores.get('C').y + (int) Math.round((scores.get('M').y * 8.0/5.0) +(scores.get('S').y * 8.0/5.0));
 		else
-			totalScore = scores.get('N') + (int) Math.round((scores.get('M') * 10.0/9.0) + (scores.get('S') * 10.0/9.0) + (scores.get('C') * 8.0/7.0));
+			totalScore = scores.get('N').y + (int) Math.round((scores.get('M').y * 10.0/9.0) + (scores.get('S').y * 10.0/9.0) + (scores.get('C').y * 8.0/7.0));
 	}
 
 	public int hashCode()

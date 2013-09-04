@@ -19,10 +19,30 @@
         	<td> $i </td>
         	<td> $school.getName() </td>
         	<td class="num"> $school.getNumStudents() </td>
-        	<td> $school.getScore("M") </td>
-        	<td> $school.getScore("C") </td>
-        	<td> $school.getScore("N") </td>
-        	<td> $school.getScore("S") </td>
+        	<td> 
+        		<a class="popovers" href="#" data-toggle="popover" 
+        			title="#foreach($student in $school.getScoreStudents("M")) <strong>$student.getName():</strong> $student.getScore("M").getScoreNum() <br> #end">
+					$school.getScore("M")
+				</a> 
+			</td>
+			<td> 
+        		<a class="popovers" href="#" data-toggle="popover" 
+        			title="#foreach($student in $school.getScoreStudents("C")) <strong>$student.getName():</strong> $student.getScore("C").getScoreNum() <br> #end">
+					$school.getScore("C")
+				</a> 
+			</td>
+			<td> 
+        		<a class="popovers" href="#" data-toggle="popover" 
+        			title="#foreach($student in $school.getScoreStudents("N")) <strong>$student.getName():</strong> $student.getScore("N").getScoreNum() <br> #end">
+					$school.getScore("N")
+				</a> 
+			</td>
+			<td> 
+        		<a class="popovers" href="#" data-toggle="popover" 
+        			title="#foreach($student in $school.getScoreStudents("S")) <strong>$student.getName():</strong> $student.getScore("S").getScoreNum() <br> #end">
+					$school.getScore("S")
+				</a>
+			</td>
         	<td> $school.getTotalScore() </td>
     	</tr>
     	#set($i = $i + 1)

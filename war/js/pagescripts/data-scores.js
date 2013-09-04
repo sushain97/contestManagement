@@ -24,6 +24,18 @@ $(document).ready(function () {
 	});
 	$("table").tablesorter({sortList: [[0,0]]});
 	
+	$('.popovers').popover({
+	    html: true,
+	    trigger: 'manual',
+	    placement: 'right'
+	}).click(function(e) {
+	    $(this).popover('toggle');
+	    e.stopPropagation();
+	});
+	$('html').click(function(e) {
+	    $('.popovers').popover('hide');
+	});
+
 	$('td').hover(function() {
 	    var t = parseInt($(this).index()) + 1;
 	    $('td:nth-child(' + t + ')', $(this).closest('table')).addClass('highlighted');

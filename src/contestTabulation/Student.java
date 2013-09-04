@@ -27,11 +27,14 @@ public class Student
 	private HashMap<Character,Score> scores = new HashMap<Character,Score>();
 
 	Student(String name, School school, int grade) { this.name = name; this.grade = grade; this.school = school; }
+	Student(int grade, School school) { this.name = "Anonymous"; this.grade = grade; this.school = school; }
 
 	public void setScore(char subject, Score score) { scores.put(subject, score); }
 
 	public Score getScore(char subject) { return scores.get(subject); }
 	public Score getScore(String subject) { return scores.get(subject.charAt(0)); }
+	public boolean hasScore(char subject) { return scores.get(subject) != null; }
+	public boolean hasScore(String subject) { return scores.get(subject.charAt(0)) != null; }
 	public HashMap<Character,Score> getScores() { return scores; }
 
 	public String getName() { return name; }

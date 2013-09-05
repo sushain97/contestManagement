@@ -27,7 +27,7 @@ public class Student
 	private HashMap<Character,Score> scores = new HashMap<Character,Score>();
 
 	Student(String name, School school, int grade) { this.name = name; this.grade = grade; this.school = school; }
-	Student(int grade, School school) { this.name = "Anonymous"; this.grade = grade; this.school = school; }
+	Student(int grade, School school) { this("Anonymous", school, grade); }
 
 	public void setScore(char subject, Score score) { scores.put(subject, score); }
 

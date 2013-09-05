@@ -65,6 +65,7 @@ public class Unauthorized_401 extends HttpServlet
 		t.merge(context, sw);
 		sw.close();
 		resp.setContentType("text/html");
+		resp.setHeader("X-Frame-Options", "SAMEORIGIN");
 		resp.getWriter().print(HTMLCompressor.customCompress(sw));
 	}
 }

@@ -24,7 +24,7 @@
 	    	#set($i = 1)
 	    	#foreach($school in $winners.get($test))
 	    		<tr>
-	        		<td> $i </td>
+	        		<td> $i #if($i <= 3) #include("trophyImage.html") #end</td>
 	        		<td> $school.getName() </td>
 	        		<td>
 		        		<a class="popovers" href="#" data-toggle="popover" 

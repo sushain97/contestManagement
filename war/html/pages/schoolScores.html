@@ -38,8 +38,13 @@
 			<h1>School Score Overview
 			<button class="btn btn-small">Print<i class="icon-print"></i></button>
 			</h1>
-			#if($html) $html #else No data is currently available, <a href="/contactUs">contact us</a> if you have any
-			questions. #end
+			#if($coach)
+				#if($html) $html #else <p> No data is currently available, <a href="/contactUs">contact us</a> if you have any
+				questions. </p>#end
+			#else
+				<p> Your account does not have sufficient permissions to view your school's scores (probably because you are a student).
+				If you believe that this error is incorrect, please <a href="/contactUs">contact us</a>.</p>
+			#end
 			<div id="push"></div>
 		</div>
 	</div>

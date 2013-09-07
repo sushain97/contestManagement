@@ -47,6 +47,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 @SuppressWarnings("serial")
 public class ViewScores extends HttpServlet
 {
+	@SuppressWarnings("deprecation")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
 		VelocityEngine ve = new VelocityEngine();
@@ -81,6 +82,11 @@ public class ViewScores extends HttpServlet
 			query = new Query("contestInfo");
 			Entity info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 			context.put("date", info.getProperty("updated"));
+			
+			query = new Query("registration").addFilter("email", FilterOperator.EQUAL, user.getProperty("user-id"));
+			List<Entity> registration = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+			if(registration.size() > 0 && registration.get(0).getProperty("registrationType").equals("coach"))
+				context.put("coach", true);
 
 			StringWriter sw = new StringWriter();
 			t.merge(context, sw);

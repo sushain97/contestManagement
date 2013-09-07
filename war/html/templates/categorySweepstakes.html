@@ -29,8 +29,8 @@
 	        		<td>
 		        		<a class="popovers" href="#" data-toggle="popover" 
 		        			title="#foreach($student in $school.getScoreStudents($test)) 
-		        				<strong>#[[#if($hideFullNames)]]#$student.getPublicName() 
-								#[[#else]]# $student.getName()#[[#end]]#</strong> - 
+		        				<strong>#[[#if($hideFullNames)]]#$student.getPublicName() ($student.getGrade())
+								#[[#else]]# $student.getName() ($student.getGrade())#[[#end]]#</strong> - 
 		        				$student.getScore($test).getScoreNum() <br> #end">
 							$school.getScore($test)
 						</a>

@@ -125,7 +125,7 @@
 					<button class="btn btn-small">Print<i class="icon-print"></i></button>
 					</h1>
 					#if($overview) Choose an option at the left to view specific results. #elseif(!$html) Results for this
-					competition are not yet available #else $html #end
+					competition are not yet available #else #evaluate($html) #end
 					
 					<div id="push"></div>
 				</div>

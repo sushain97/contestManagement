@@ -106,7 +106,10 @@ public class PublicResults extends HttpServlet
 						query = new Query("html").setFilter(filter);
 						List<Entity> html = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 						if(!html.isEmpty())
+						{
+							context.put("hideFullNames", info.get(0).getProperty("hideFullNames"));
 							context.put("html", ((com.google.appengine.api.datastore.Text) html.get(0).getProperty("html")).getValue());
+						}
 					}
 					else
 					{
@@ -116,7 +119,10 @@ public class PublicResults extends HttpServlet
 						query = new Query("html").setFilter(filter);
 						List<Entity> html = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 						if(!html.isEmpty())
+						{
+							context.put("hideFullNames", info.get(0).getProperty("hideFullNames"));
 							context.put("html", ((com.google.appengine.api.datastore.Text) html.get(0).getProperty("html")).getValue());
+						}
 					}
 				}
 				else

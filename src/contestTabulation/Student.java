@@ -38,10 +38,16 @@ public class Student
 	public HashMap<Character,Score> getScores() { return scores; }
 
 	public String getName() { return name; }
-	public String getPublicName() { return name.substring(0, name.indexOf(" ") + 2) + "."; }
 	public School getSchool() { return school; }
 	public int getGrade() { return grade; }
-
+	public String getPublicName()
+	{
+		if(name.indexOf(" ") != -1)
+			return name.substring(0, name.indexOf(" ") + 2) + ".";
+		else
+			return name;
+	}
+	
 	public int hashCode()
 	{
 		final int prime = 31;

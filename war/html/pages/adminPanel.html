@@ -171,11 +171,9 @@
 				<div class="control-group">
 					<label class="control-label" for="fullnames">Hide Full Names</label>
 					<div class="controls">
-						<input type="checkbox" name="fullnames" value="yes" id="fullnames" disabled>
-						<span class="help-inline">
-							This feature is currently <strong>non-functional</strong>.
-						</span>
+						<input type="checkbox" name="fullnames" value="yes" id="fullnames" #if($hideFullNames) checked #end>
 					</div>
+					
 				</div>
 
 				<div class="form-actions">

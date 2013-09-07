@@ -25,7 +25,7 @@
     #foreach($student in $winners)
     	<tr>
         	<td> $i #if(($i <= 10 && $subject.grade() <= 8) || ($i <= 3 && $subject.grade() >= 9)) #include("trophyImage.html") #end</td>
-        	<td> $student.getName() </td>
+        	<td> #[[#if($hideFullNames)]]# $student.getPublicName() #[[#else]]# $student.getName() #[[#end]]# </td>
         	<td> $student.getSchool().getName() </td>
         	<td> $student.getScore($subject.test()).getScore() </td>
     	</tr>

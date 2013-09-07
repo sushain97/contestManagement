@@ -84,14 +84,9 @@ public class AdminPanel extends HttpServlet
 			Query query = new Query("contestInfo");
 			String endDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
 			String startDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
-			String email = "";
-			String account = "";
-			String docHigh = "";
-			String docMiddle = "";
-			String docAccount = "";
+			String email = "", account = "", docHigh = "", docMiddle = "", docAccount = "";
+			Boolean complete = null, testingMode = null, hideFullNames = null;
 			Object price = "";
-			Boolean complete = null;
-			Boolean testingMode = null;
 			List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 			if(info.size() != 0)
 			{
@@ -106,6 +101,7 @@ public class AdminPanel extends HttpServlet
 				price = contestInfo.getProperty("price");
 				complete = (Boolean) contestInfo.getProperty("complete");
 				testingMode = (Boolean) contestInfo.getProperty("testingMode");
+				hideFullNames = (Boolean) contestInfo.getProperty("hideFullNames");
 			}
 
 			context.put("loggedIn", loggedIn);
@@ -118,6 +114,7 @@ public class AdminPanel extends HttpServlet
 			context.put("docMiddle", docMiddle == null ? "" : docMiddle);
 			context.put("complete", complete);
 			context.put("testingMode", testingMode);
+			context.put("hideFullNames", hideFullNames);
 			context.put("price", price);
 			context.put("startDate", startDate == null ? new SimpleDateFormat("MM/dd/yyyy").format(new Date()) : startDate);
 			context.put("endDate", endDate == null ? new SimpleDateFormat("MM/dd/yyyy").format(new Date()) : endDate);
@@ -147,6 +144,7 @@ public class AdminPanel extends HttpServlet
 			String account = params.get("account")[0];
 			int price = Integer.parseInt(params.get("price")[0]);
 			Boolean complete = params.get("complete") != null;
+			Boolean hideFullNames = params.get("fullnames") != null;
 			Boolean testingMode = params.get("testing") != null && !params.containsKey("changePass");
 
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -168,6 +166,7 @@ public class AdminPanel extends HttpServlet
 				contestInfo.setProperty("price", price);
 				contestInfo.setProperty("complete", complete);
 				contestInfo.setProperty("testingMode", testingMode);
+				contestInfo.setProperty("hideFullNames", hideFullNames);
 
 				if(params.containsKey("update"))
 				{

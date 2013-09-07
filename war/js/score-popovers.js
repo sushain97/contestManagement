@@ -1,11 +1,9 @@
 $(document).ready(function() {
 	$('.popovers').popover({
-	}
 	    html: true,
-	    trigger: 'manual',
+	    trigger: 'click',
 	    placement: 'right'
 	}).click(function(e) {
-	    $(this).popover('toggle');
 	    e.stopPropagation();
 	    e.preventDefault();
 	});

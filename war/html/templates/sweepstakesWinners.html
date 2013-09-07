@@ -20,26 +20,38 @@
         	<td> $school.getName() </td>
         	<td class="num"> $school.getNumStudents() </td>
         	<td> 
-        		<a class="popovers" href="#" data-toggle="popover" 
-        			title="#foreach($student in $school.getScoreStudents("M")) <strong>$student.getName():</strong> $student.getScore("M").getScoreNum() <br> #end">
+        		<a class="popovers" href="#" data-toggle="popover" title="#foreach($student in $school.getScoreStudents("M")) 
+        			<strong>#[[#if($hideFullNames)]]#$student.getPublicName() 
+					#[[#else]]# $student.getName()#[[#end]]#</strong> - 
+        			$student.getScore("M").getScoreNum() <br> #end">
+        			
 					$school.getScore("M")
 				</a> 
 			</td>
 			<td> 
-        		<a class="popovers" href="#" data-toggle="popover" 
-        			title="#foreach($student in $school.getScoreStudents("C")) <strong>$student.getName():</strong> $student.getScore("C").getScoreNum() <br> #end">
+        		<a class="popovers" href="#" data-toggle="popover" title="#foreach($student in $school.getScoreStudents("C")) 
+        			<strong>#[[#if($hideFullNames)]]#$student.getPublicName() 
+					#[[#else]]# $student.getName()#[[#end]]#</strong> - 
+        			$student.getScore("C").getScoreNum() <br> #end">
+        			
 					$school.getScore("C")
 				</a> 
 			</td>
 			<td> 
-        		<a class="popovers" href="#" data-toggle="popover" 
-        			title="#foreach($student in $school.getScoreStudents("N")) <strong>$student.getName():</strong> $student.getScore("N").getScoreNum() <br> #end">
+        		<a class="popovers" href="#" data-toggle="popover" title="#foreach($student in $school.getScoreStudents("N")) 
+        			<strong>#[[#if($hideFullNames)]]#$student.getPublicName() 
+					#[[#else]]# $student.getName()#[[#end]]#</strong> - 
+        			$student.getScore("N").getScoreNum() <br> #end">
+        			
 					$school.getScore("N")
 				</a> 
 			</td>
 			<td> 
-        		<a class="popovers" href="#" data-toggle="popover" 
-        			title="#foreach($student in $school.getScoreStudents("S")) <strong>$student.getName():</strong> $student.getScore("S").getScoreNum() <br> #end">
+        		<a class="popovers" href="#" data-toggle="popover" title="#foreach($student in $school.getScoreStudents("S")) 
+        			<strong>#[[#if($hideFullNames)]]#$student.getPublicName() 
+					#[[#else]]# $student.getName()#[[#end]]#</strong> - 
+        			$student.getScore("S").getScoreNum() <br> #end">
+        			
 					$school.getScore("S")
 				</a>
 			</td>

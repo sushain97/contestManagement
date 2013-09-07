@@ -80,7 +80,7 @@
 	
 					#if(!$complete) Results are not yet public, please return later. #elseif($overview) Choose an option
 					at the left to view specific results. #elseif($complete && !$html) Results for this competition are not
-					yet available #else $html #end
+					yet available #else #evaluate($html) #end
 					
 					<div id="push"></div>
 				</div>

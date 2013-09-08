@@ -25,6 +25,9 @@
 	#end
 </div>
 
+Outliers computed using <a href="https://en.wikipedia.org/wiki/Chauvenet's_criterion" target="_blank">Chauvenet's Criterion for Outliers</a>
+ with assumptions of Gaussian normality for sample populations of over 5 scores.
+
 #set($minGrade = 1000)
 #foreach($test in $tests)
 	#if($summaryStats[$test]) <div id="$test" style="display: none;">$summaryStats[$test]</div> #end

@@ -24,7 +24,6 @@ import java.net.URI;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -40,6 +39,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.math3.distribution.NormalDistribution;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -442,46 +443,48 @@ public class Main extends HttpServlet
 
 	private static Pair<List<Integer>,List<Integer>> calculateStats(List<Integer> list)
 	{
-		Collections.sort(list);
-		int size = list.size();
+		double[] data = new double[list.size()];
+		for(int i = 0; i < list.size(); i++)
+			data[i] = list.get(i);
+		DescriptiveStatistics dStats = new DescriptiveStatistics(data);
 		
 		List<Integer> summary = new ArrayList<Integer>(5);
-		try 
-		{
-			summary.add(list.get(0)); //Minimum
-			summary.add(list.get(size / 4)); //Lower Quartile (Q1)
-			summary.add(list.get(size / 2)); //Middle Quartile (Median - Q2)
-			summary.add(list.get(3 * size / 4)); //High Quartile (Q3)
-			summary.add(list.get(size -1)); //Maxiumum
-		}
-		catch(IndexOutOfBoundsException e)
-		{
-			summary = Arrays.asList(0, 0, 0, 0, 0);
-		}
+		summary.add((int) dStats.getMin()); //Minimum
+		summary.add((int) dStats.getPercentile(25)); //Lower Quartile (Q1)
+		summary.add((int) dStats.getPercentile(50)); //Middle Quartile (Median - Q2)
+		summary.add((int) dStats.getPercentile(75)); //High Quartile (Q3)
+		summary.add((int) dStats.getMax()); //Maxiumum
 		
-		int IQR = summary.get(3) - summary.get(1);
-		double lowerFence = summary.get(1) - IQR * 1.25;
-		double upperFence = summary.get(3) + IQR * 1.25;
-		
-		List<Integer> outliers = new ArrayList<Integer>(); //TODO: Improve outlier algorithm
-		Iterator<Integer> listIterator = list.iterator();
-		while(listIterator.hasNext())
+		List<Integer> outliers = new ArrayList<Integer>();
+		if(list.size() > 5 && dStats.getStandardDeviation() > 0) //Only remove outliers if relatively normal
 		{
-			int item = listIterator.next();
-			if(item < lowerFence || item > upperFence)
+			double mean = dStats.getMean();
+			double stDev = dStats.getStandardDeviation();
+			NormalDistribution normalDistribution = new NormalDistribution(mean, stDev);
+			
+			Iterator<Integer> listIterator = list.iterator();
+			double significanceLevel = .50 / list.size(); //Chauvenet's Criterion for Outliers
+			while(listIterator.hasNext())
 			{
-				outliers.add(item);
-				listIterator.remove();
+				int num = listIterator.next();
+				double pValue = normalDistribution.cumulativeProbability(num);
+				if(pValue < significanceLevel)
+				{
+					outliers.add(num);
+					listIterator.remove();
+				}
 			}
-				
+			
+			if(list.size() != dStats.getN()) //If and only if outliers have been removed
+			{
+				double[] significantData = new double[list.size()];
+				for(int i = 0; i < list.size(); i++)
+					significantData[i] = list.get(i);
+				dStats = new DescriptiveStatistics(significantData);
+				summary.set(0, (int) dStats.getMin());
+				summary.set(4, (int) dStats.getMax());
+			}
 		}
-		
-		try 
-		{
-			summary.set(0, list.get(0));
-			summary.set(4, list.get(list.size() - 1));
-		}
-		catch(IndexOutOfBoundsException e) { }
 		
 		return new Pair<List<Integer>,List<Integer>>(summary, outliers);
 	}

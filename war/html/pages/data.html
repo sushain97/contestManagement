@@ -347,17 +347,18 @@
 
 	#if($scores)
 		<script type="text/javascript" src="/js/pagescripts/data-scores.js"></script>
-		<script type="text/javascript" src="/js/jquery.tablesorter.min.js"></script>
+		<script type="text/javascript" src="/js/jquery/jquery.tablesorter.min.js"></script>
 		#if($type.toLowerCase().endsWith("sweep"))
 			<script type="text/javascript" src="/js/score-popovers.js"></script>
 		#end
 		#if($type.endsWith("visualizations") || $type.contains("school"))
-			<script type="text/javascript" src="/js/highcharts.js"></script>
-			<script type="text/javascript" src="/js/highcharts-more.js"></script>
-			<script type="text/javascript" src="/js/exporting.js"></script>
+			<script type="text/javascript" src="/js/highcharts/highcharts.js"></script>
+			<script type="text/javascript" src="/js/highcharts/highcharts-more.js"></script>
+			<script type="text/javascript" src="/js/highcharts/exporting.js"></script>
+			<script type="text/javascript" src="/js/highcharts/theme.js"></script>
 		#end
 	#elseif($registration)
-		<script type="text/javascript" src="/js/jquery.jeditable.mini.js"></script>
+		<script type="text/javascript" src="/js/jquery/jquery.jeditable.mini.js"></script>
 		<script type="text/javascript" src="/js/pagescripts/data-registrations.js"></script>
 	#elseif($questions)
 		<script type="text/javascript" src="/js/pagescripts/data-questions.js"></script>

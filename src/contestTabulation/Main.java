@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,8 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
+
+import util.Pair;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -82,12 +85,14 @@ public class Main extends HttpServlet
 		final Map<Test, List<Student>> middleCategoryWinners = new HashMap<Test, List<Student>>();
 		final Map<Character, List<School>> middleCategorySweepstakesWinners = new HashMap<Character, List<School>>(); //Test topic {N, M, S, C}, School array
 		final List<School> middleSweepstakesWinners = new ArrayList<School>();
+		final Map<Test, List<Score>> middleAnonScores = new HashMap<Test, List<Score>>();
 
 		final List<Student> highStudents = new ArrayList<Student>();
 		final Map<String, School> highSchools = new HashMap<String, School>(); //School Name, School
 		final Map<Test, List<Student>> highCategoryWinners = new HashMap<Test, List<Student>>();
 		final Map<Character, List<School>> highCategorySweepstakesWinners = new HashMap<Character, List<School>>(); //Test topic {N, M, S, C}, School array
 		final List<School> highSweepstakesWinners = new ArrayList<School>();
+		final Map<Test, List<Score>> highAnonScores = new HashMap<Test, List<Score>>();
 		
 		try
 		{
@@ -101,8 +106,8 @@ public class Main extends HttpServlet
 			//Populate base data structures by traversing Google Documents Spreadsheets
 			middle = getSpreadSheet(params.get("docMiddle")[0], service);
 			high = getSpreadSheet(params.get("docHigh")[0], service);
-			updateDatabase(middle, middleStudents, middleSchools, testsGraded, service);
-			updateDatabase(high, highStudents, highSchools, testsGraded, service);
+			updateDatabase(middle, middleStudents, middleSchools, middleAnonScores, testsGraded, service);
+			updateDatabase(high, highStudents, highSchools, highAnonScores, testsGraded, service);
 
 			//Populate categoryWinners maps with top 20 scorers 
 			tabulateCategoryWinners("middle", middleStudents, middleCategoryWinners, testsGraded);
@@ -119,8 +124,8 @@ public class Main extends HttpServlet
 			tabulateSweepstakesWinners(highSchools, highSweepstakesWinners);
 
 			//Generate and store HTML in Datastore
-			storeHTML("middle", middleStudents, middleSchools, middleCategoryWinners, middleCategorySweepstakesWinners, middleSweepstakesWinners);
-			storeHTML("high", highStudents, highSchools, highCategoryWinners, highCategorySweepstakesWinners, highSweepstakesWinners);
+			storeHTML("middle", middleStudents, middleSchools, middleCategoryWinners, middleCategorySweepstakesWinners, middleSweepstakesWinners, middleAnonScores);
+			storeHTML("high", highStudents, highSchools, highCategoryWinners, highCategorySweepstakesWinners, highSweepstakesWinners, highAnonScores);
 
 			//Update Datastore by modifying registrations to include actual number of tests taken
 			updateRegistrations("middle", middleSchools);
@@ -140,7 +145,7 @@ public class Main extends HttpServlet
 		return null;
 	}
 
-	private static void updateDatabase(SpreadsheetEntry spreadsheet, List<Student> students, Map<String, School> schools, List<Test> testsGraded, Service service) throws IOException, ServiceException
+	private static void updateDatabase(SpreadsheetEntry spreadsheet, List<Student> students, Map<String, School> schools, Map<Test, List<Score>> anonScores, List<Test> testsGraded, Service service) throws IOException, ServiceException
 	{
 		WorksheetFeed worksheetFeed = service.getFeed(spreadsheet.getWorksheetFeedUrl(), WorksheetFeed.class);
 		List<WorksheetEntry> worksheets = worksheetFeed.getEntries();
@@ -149,6 +154,7 @@ public class Main extends HttpServlet
 		{
 			int grade = Integer.parseInt(worksheet.getTitle().getPlainText().split(" ")[0]);
 			char subject = worksheet.getTitle().getPlainText().split(" ")[1].charAt(0);
+			Test test = Test.valueOf(Character.toString(subject) + grade);
 
 			URL listFeedUrl = worksheet.getListFeedUrl();
 			ListFeed listFeed = service.getFeed(listFeedUrl, ListFeed.class);
@@ -159,8 +165,18 @@ public class Main extends HttpServlet
 			{
 				CustomElementCollection row = r.getCustomElements();
 				String name = row.getValue("nameofstudent");
-				if(name == null) //TODO: Save these as Anonymous scores
+				if(name == null)
+				{
+					if(anonScores.containsKey(test) && row.getValue("score") != null)
+						anonScores.get(test).add(new Score(row.getValue("score").trim()));
+					else if(row.getValue("score") != null)
+					{
+						ArrayList<Score> scoreList = new ArrayList<Score>();
+						scoreList.add(new Score(row.getValue("score").trim()));
+						anonScores.put(test, scoreList);
+					}
 					break;
+				}
 				else
 					name = name.trim();
 				String schoolName = row.getValue("school").trim();
@@ -245,7 +261,7 @@ public class Main extends HttpServlet
 			sweepstakeWinners.add(school);
 	}
 
-	private static void storeHTML(String level, List<Student> students, Map<String, School> schools, Map<Test, List<Student>> categoryWinners, Map<Character, List<School>> categorySweepstakesWinners, List<School> sweepstakesWinners) throws IOException
+	private static void storeHTML(String level, List<Student> students, Map<String, School> schools, Map<Test, List<Student>> categoryWinners, Map<Character, List<School>> categorySweepstakesWinners, List<School> sweepstakesWinners, Map<Test, List<Score>> anonScores) throws IOException
 	{
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/templates, html/snippets");
@@ -280,11 +296,17 @@ public class Main extends HttpServlet
 					for(Score score : anonScoreEntry.getValue())
 						scores.get(anonScoreEntry.getKey()).add(score.getScoreNum());
 				
-				HashMap<Test,List<Integer>> scoreStats = new HashMap<Test,List<Integer>>();
+				HashMap<Test,List<Integer>> summaryStats = new HashMap<Test,List<Integer>>();
+				HashMap<Test,List<Integer>> outliers = new HashMap<Test,List<Integer>>();
 				for(Entry<Test,List<Integer>> scoreEntry : scores.entrySet())
-					scoreStats.put(scoreEntry.getKey(), calculateStats(scoreEntry.getValue())); //TODO: Add outlier data
+				{
+					Pair<List<Integer>,List<Integer>> stats = calculateStats(scoreEntry.getValue());
+					summaryStats.put(scoreEntry.getKey(), stats.x);
+					outliers.put(scoreEntry.getKey(), stats.y);
+				}
 					
-				context.put("scoreStats", scoreStats);
+				context.put("summaryStats", summaryStats);
+				context.put("outliers", outliers);
 				context.put("tests", tests);
 				context.put("subjects", Test.tests());
 				context.put("school", school);
@@ -373,12 +395,22 @@ public class Main extends HttpServlet
 					scores.get(anonScoreEntry.getKey()).add(score.getScoreNum());
 		}
 		
-		HashMap<Test,List<Integer>> scoreStats = new HashMap<Test,List<Integer>>();
+		for(Entry<Test,List<Score>> scoreEntry : anonScores.entrySet())
+			for(Score score : scoreEntry.getValue())
+				scores.get(scoreEntry.getKey()).add(score.getScoreNum());
+		
+		HashMap<Test,List<Integer>> summaryStats = new HashMap<Test,List<Integer>>();
+		HashMap<Test,List<Integer>> outliers = new HashMap<Test,List<Integer>>();
 		for(Entry<Test,List<Integer>> scoreEntry : scores.entrySet())
-			scoreStats.put(scoreEntry.getKey(), calculateStats(scoreEntry.getValue())); //TODO: Add outlier data
+		{
+			Pair<List<Integer>,List<Integer>> stats = calculateStats(scoreEntry.getValue());
+			summaryStats.put(scoreEntry.getKey(), stats.x);
+			outliers.put(scoreEntry.getKey(), stats.y);
+		}
 			
 		context = new VelocityContext();
-		context.put("scoreStats", scoreStats);
+		context.put("summaryStats", summaryStats);
+		context.put("outliers", outliers);
 		context.put("tests", tests);
 		context.put("subjects", Test.tests());
 		context.put("level", level);
@@ -402,24 +434,50 @@ public class Main extends HttpServlet
 		datastore.put(info);
 	}
 
-	private static List<Integer> calculateStats(List<Integer> list)
+	private static Pair<List<Integer>,List<Integer>> calculateStats(List<Integer> list)
 	{
 		Collections.sort(list);
 		int size = list.size();
-		List<Integer> stats = new ArrayList<Integer>(5);
+		
+		List<Integer> summary = new ArrayList<Integer>(5);
 		try 
 		{
-			stats.add(0, list.get(0));
-			stats.add(list.get(size / 4));
-			stats.add(list.get(size / 2));
-			stats.add(list.get(3 * size / 4));
-			stats.add(list.get(size - 1));
+			summary.add(list.get(0)); //Minimum
+			summary.add(list.get(size / 4)); //Lower Quartile (Q1)
+			summary.add(list.get(size / 2)); //Middle Quartile (Median - Q2)
+			summary.add(list.get(3 * size / 4)); //High Quartile (Q3)
+			summary.add(list.get(size -1)); //Maxiumum
 		}
 		catch(IndexOutOfBoundsException e)
 		{
-			return Arrays.asList(0, 0, 0, 0, 0);
+			summary = Arrays.asList(0, 0, 0, 0, 0);
 		}
-		return stats;
+		
+		int IQR = summary.get(3) - summary.get(1);
+		double lowerFence = summary.get(1) - IQR * 1.2;
+		double upperFence = summary.get(3) + IQR * 1.2;
+		
+		List<Integer> outliers = new ArrayList<Integer>();
+		Iterator<Integer> listIterator = list.iterator();
+		while(listIterator.hasNext())
+		{
+			int item = listIterator.next();
+			if(item < lowerFence || item > upperFence)
+			{
+				outliers.add(item);
+				listIterator.remove();
+			}
+				
+		}
+		
+		try 
+		{
+			summary.set(0, list.get(0));
+			summary.set(4, list.get(list.size() - 1));
+		}
+		catch(IndexOutOfBoundsException e) { }
+		
+		return new Pair<List<Integer>,List<Integer>>(summary, outliers);
 	}
 
 	@SuppressWarnings("deprecation")

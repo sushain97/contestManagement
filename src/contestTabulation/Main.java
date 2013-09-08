@@ -24,6 +24,7 @@ import java.net.URI;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -158,7 +159,7 @@ public class Main extends HttpServlet
 			{
 				CustomElementCollection row = r.getCustomElements();
 				String name = row.getValue("nameofstudent");
-				if(name == null)
+				if(name == null) //TODO: Save these as Anonymous scores
 					break;
 				else
 					name = name.trim();
@@ -265,8 +266,30 @@ public class Main extends HttpServlet
 				context.put("schoolLevel", Character.toString(school.getLevel().charAt(0)).toUpperCase() + school.getLevel().substring(1));
 				ArrayList<Student> schoolStudents = school.getStudents();
 				Collections.sort(schoolStudents, new Comparator<Student>() { public int compare(Student s1,Student s2) { return s1.getName().compareTo(s2.getName()); }});
+				
+				Test[] tests = level.equals("middle") ? Test.middleTests() : Test.highTests();
+				HashMap<Test,List<Integer>> scores = new HashMap<Test,List<Integer>>();
+				for(Test test : tests)
+					scores.put(test, new ArrayList<Integer>());
+				
+				for(Student student : school.getStudents())
+						for(Entry<Character, Score> scoreEntry : student.getScores().entrySet())
+							scores.get(Test.valueOf(scoreEntry.getKey().toString() + student.getGrade())).add(scoreEntry.getValue().getScoreNum());
+				
+				for(Entry<Test, ArrayList<Score>> anonScoreEntry : school.getAnonScores().entrySet())
+					for(Score score : anonScoreEntry.getValue())
+						scores.get(anonScoreEntry.getKey()).add(score.getScoreNum());
+				
+				HashMap<Test,List<Integer>> scoreStats = new HashMap<Test,List<Integer>>();
+				for(Entry<Test,List<Integer>> scoreEntry : scores.entrySet())
+					scoreStats.put(scoreEntry.getKey(), calculateStats(scoreEntry.getValue())); //TODO: Add outlier data
+					
+				context.put("scoreStats", scoreStats);
+				context.put("tests", tests);
+				context.put("subjects", Test.tests());
 				context.put("school", school);
-				context.put("tests", Test.values());
+				context.put("level", level);
+				
 				sw = new StringWriter();
 				t = ve.getTemplate("schoolOverview.html");
 				t.merge(context, sw);
@@ -333,7 +356,42 @@ public class Main extends HttpServlet
 		html.setProperty("html", new Text(compressor.compress(sw.toString())));
 		htmlEntries.add(html);
 		sw.close();
-
+		
+		HashMap<Test,List<Integer>> scores = new HashMap<Test,List<Integer>>();
+		Test[] tests = level.equals("middle") ? Test.middleTests() : Test.highTests();
+		for(Test test : tests)
+			scores.put(test, new ArrayList<Integer>());
+		
+		for(School school : schools.values())
+		{
+			for(Student student : school.getStudents())
+				for(Entry<Character, Score> scoreEntry : student.getScores().entrySet())
+					scores.get(Test.valueOf(scoreEntry.getKey().toString() + student.getGrade())).add(scoreEntry.getValue().getScoreNum());
+			
+			for(Entry<Test, ArrayList<Score>> anonScoreEntry : school.getAnonScores().entrySet())
+				for(Score score : anonScoreEntry.getValue())
+					scores.get(anonScoreEntry.getKey()).add(score.getScoreNum());
+		}
+		
+		HashMap<Test,List<Integer>> scoreStats = new HashMap<Test,List<Integer>>();
+		for(Entry<Test,List<Integer>> scoreEntry : scores.entrySet())
+			scoreStats.put(scoreEntry.getKey(), calculateStats(scoreEntry.getValue())); //TODO: Add outlier data
+			
+		context = new VelocityContext();
+		context.put("scoreStats", scoreStats);
+		context.put("tests", tests);
+		context.put("subjects", Test.tests());
+		context.put("level", level);
+		sw = new StringWriter();
+		t = ve.getTemplate("visualizations.html");
+		t.merge(context, sw);
+		html = new Entity("html", "visualizations_" + level);
+		html.setProperty("type", "visualizations");
+		html.setProperty("level", level);
+		html.setProperty("html", new Text(compressor.compress(sw.toString())));
+		htmlEntries.add(html);
+		sw.close();
+		
 		datastore.put(htmlEntries); //TODO: Convert to Transaction
 		
 		Query query = new Query("contestInfo");
@@ -342,6 +400,26 @@ public class Main extends HttpServlet
 		isoFormat.setTimeZone(TimeZone.getTimeZone("America/Chicago"));
 		info.setProperty("updated", isoFormat.format(new Date()).toString());
 		datastore.put(info);
+	}
+
+	private static List<Integer> calculateStats(List<Integer> list)
+	{
+		Collections.sort(list);
+		int size = list.size();
+		List<Integer> stats = new ArrayList<Integer>(5);
+		try 
+		{
+			stats.add(0, list.get(0));
+			stats.add(list.get(size / 4));
+			stats.add(list.get(size / 2));
+			stats.add(list.get(3 * size / 4));
+			stats.add(list.get(size - 1));
+		}
+		catch(IndexOutOfBoundsException e)
+		{
+			return Arrays.asList(0, 0, 0, 0, 0);
+		}
+		return stats;
 	}
 
 	@SuppressWarnings("deprecation")

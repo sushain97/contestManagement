@@ -1,0 +1,112 @@
+<h2>Visualizations</h2>
+
+<div class="accordion" id="accordion">
+	#foreach($subject in $subjects)
+		#if($subject == 'M')
+   			#set($title = "Math Grade Comparison")
+       	#elseif($subject == 'C')
+       		#set($title = "Calculator Grade Comparison")
+       	#elseif($subject == 'N')
+       		#set($title = "Number Sense Grade Comparison")
+       	#else
+       		#set($title = "Science Grade Comparison")
+       	#end
+        	
+		<div class="accordion-group">
+			<div class="accordion-heading">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse${subject}"> $title</a>
+			</div>
+			<div id="collapse$subject" class="accordion-body collapse in">
+				<div class="accordion-inner">
+					<div id="${subject}-graph" style="height: 400px; min-width: 310px; max-width: 600px"></div>
+				</div>
+			</div>
+		</div>
+	#end
+</div>
+
+#foreach($test in $tests)
+	#if($scoreStats[$test]) <div id="$test" style="display: none;">$scoreStats[$test]</div> #end
+#end
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		#foreach($subject in $subjects)
+			#if($subject == 'M')
+    			#set($title = "Math Scores")
+        	#elseif($subject == 'C')
+        		#set($title = "Calculator Scores")
+        	#elseif($subject == 'N')
+        		#set($title = "Number Sense Scores")
+        	#else
+        		#set($title = "Science Scores")
+        	#end
+        	
+			$('#${subject}-graph').highcharts({
+			    chart: {
+			        type: 'boxplot',
+		            inverted: true
+			    },
+			    title: {
+			        text: '$title'
+			    },
+			    legend: {
+			        enabled: false
+			    },
+			    xAxis: {
+			    	#if($level == "middle")
+			        	categories: ['6', '7', '8'],
+			        #else
+			        	categories: ['9', '10', '11', '12'],
+			        #end
+			        title: {
+			            text: 'Grade'
+			        }
+			    },
+			    yAxis: {
+			        title: {
+			            text: 'Score'
+			        }	 
+			    },
+			
+			    series: [{
+			        name: 'Score',
+			        data: [
+						#if($level == "middle")   
+			            	$.parseJSON($('#6${subject}').html()),
+			            	$.parseJSON($('#7${subject}').html()),
+			           		$.parseJSON($('#8${subject}').html())
+			           	#else
+			           		$.parseJSON($('#9${subject}').html()),
+			            	$.parseJSON($('#10${subject}').html()),
+			           		$.parseJSON($('#11${subject}').html()),
+			           		$.parseJSON($('#12${subject}').html())
+			            #end
+			        ],
+			        tooltip: {
+			            headerFormat: '<em>Grade {point.key}</em><br/>'
+			        }
+			    }]
+			});
+		#end
+	});
+</script>
+
+<!-- <script type="text/javascript">
+		{
+	        name: 'Outlier',
+	        color: Highcharts.getOptions().colors[0],
+	        type: 'scatter',
+	        data: [ // x, y positions where 0 is the first category
+	            [0, 644],
+	        ],
+	        marker: {
+	            fillColor: 'white',
+	            lineWidth: 1,
+	            lineColor: Highcharts.getOptions().colors[0]
+	        },
+	        tooltip: {
+	            pointFormat: 'Observation: {point.y}'
+	        }
+	    }*/]
+</script> -->

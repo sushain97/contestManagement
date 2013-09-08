@@ -47,8 +47,8 @@
 						<li id="avail"><a href="/contestResults">Availability</a></li>
 						<li class="nav-header">Middle School</li>
 						<li id="middle_sweep"><a href="/contestResults?type=middle_sweep">Sweepstakes</a></li>
-						<li id="middle_categorySweep"><a href="/contestResults?type=middle_categorySweep">Category
-								Sweekstakes</a></li>
+						<li id="middle_categorySweep"><a href="/contestResults?type=middle_categorySweep">Category Sweekstakes</a></li>
+						<li id="middle_visualizations"><a href="/contestResults?type=middle_visualizations">Visualizations</a></li>
 						<li class="divider"></li> #foreach($num in [6..8])
 						<li id="$num" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">${num}th Grade<b class="caret"></b></a>
 							<ul class="dropdown-menu">
@@ -60,8 +60,8 @@
 	
 						<li class="nav-header">High School</li>
 						<li id="high_sweep"><a href="/contestResults?type=high_sweep">Sweepstakes</a></li>
-						<li id="high_categorySweep"><a href="/contestResults?type=high_categorySweep">Category
-								Sweekstakes</a></li>
+						<li id="high_categorySweep"><a href="/contestResults?type=high_categorySweep">Category Sweekstakes</a></li>
+						<li id="high_visualizations"><a href="/contestResults?type=high_visualizations">Visualizations</a></li>
 						<li class="divider"></li> #foreach($num in [9..12])
 						<li id="$num" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">${num}th Grade<b class="caret"></b></a>
 							<ul class="dropdown-menu">
@@ -96,6 +96,13 @@
     
 	<script type="text/javascript" src="/js/pagescripts/publicResults.js"></script>
 	<script type="text/javascript" src="/js/jquery.tablesorter.min.js"></script>
+	#if($type.toLowerCase().endsWith("sweep"))
 	<script type="text/javascript" src="/js/score-popovers.js"></script>
+	#end
+	#if($type.endsWith("visualizations"))
+		<script type="text/javascript" src="/js/highcharts.js"></script>
+		<script type="text/javascript" src="/js/highcharts-more.js"></script>
+		<script type="text/javascript" src="/js/exporting.js"></script>
+	#end
 </body>
 </html>

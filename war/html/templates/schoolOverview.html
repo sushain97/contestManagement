@@ -49,3 +49,5 @@ all scores that did not fall in the top 20 are displayed below
 #foreach($score in $school.getAnonScores($test)) $score.getScore() #end
 <br />
 #end #end
+
+#parse("visualizations.html")

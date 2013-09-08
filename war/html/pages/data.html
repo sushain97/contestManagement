@@ -67,8 +67,8 @@
 						<li class="nav-header">Middle School</li>
 						<li id="middle_students"><a href="/data?choice=scores&type=middle_students">All Students</a></li>
 						<li id="middle_sweep"><a href="/data?choice=scores&type=middle_sweep">Sweepstakes</a></li>
-						<li id="middle_categorySweep"><a href="/data?choice=scores&type=middle_categorySweep">Category
-								Sweekstakes</a></li>
+						<li id="middle_categorySweep"><a href="/data?choice=scores&type=middle_categorySweep">Category Sweekstakes</a></li>
+						<li id="middle_visualizations"><a href="/data?choice=scores&type=middle_visualizations">Visualizations</a></li>
 						<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Schools<b
 								class="caret"></b></a>
 							<ul class="dropdown-menu">
@@ -94,8 +94,8 @@
 						<li class="nav-header">High School</li>
 						<li id="high_students"><a href="/data?choice=scores&type=high_students">All Students</a></li>
 						<li id="high_sweep"><a href="/data?choice=scores&type=high_sweep">Sweepstakes</a></li>
-						<li id="high_categorySweep"><a href="/data?choice=scores&type=high_categorySweep">Category
-								Sweekstakes</a></li>
+						<li id="high_categorySweep"><a href="/data?choice=scores&type=high_categorySweep">Category Sweekstakes</a></li>
+						<li id="high_visualizations"><a href="/data?choice=scores&type=high_visualizations">Visualizations</a></li>
 						<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Schools<b
 								class="caret"></b></a>
 							<ul class="dropdown-menu">
@@ -346,14 +346,21 @@
 	</div>
 
 	#if($scores)
-	<script type="text/javascript" src="/js/pagescripts/data-scores.js"></script>
-	<script type="text/javascript" src="/js/jquery.tablesorter.min.js"></script>
-	<script type="text/javascript" src="/js/score-popovers.js"></script>
+		<script type="text/javascript" src="/js/pagescripts/data-scores.js"></script>
+		<script type="text/javascript" src="/js/jquery.tablesorter.min.js"></script>
+		#if($type.toLowerCase().endsWith("sweep"))
+			<script type="text/javascript" src="/js/score-popovers.js"></script>
+		#end
+		#if($type.endsWith("visualizations") || $type.contains("school"))
+			<script type="text/javascript" src="/js/highcharts.js"></script>
+			<script type="text/javascript" src="/js/highcharts-more.js"></script>
+			<script type="text/javascript" src="/js/exporting.js"></script>
+		#end
 	#elseif($registration)
-	<script type="text/javascript" src="/js/jquery.jeditable.mini.js"></script>
-	<script type="text/javascript" src="/js/pagescripts/data-registrations.js"></script>
+		<script type="text/javascript" src="/js/jquery.jeditable.mini.js"></script>
+		<script type="text/javascript" src="/js/pagescripts/data-registrations.js"></script>
 	#elseif($questions)
-	<script type="text/javascript" src="/js/pagescripts/data-questions.js"></script>
+		<script type="text/javascript" src="/js/pagescripts/data-questions.js"></script>
 	#end
 </body>
 </html>

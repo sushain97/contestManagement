@@ -91,7 +91,7 @@ public class School
 		ArrayList<Student> subjectStudents = new ArrayList<Student>();
 
 		for(Student student : students)
-			if(student.hasScore(subject))
+			if(student.hasScore(subject) && student.getScore(subject).getScoreNum() >= 0)
 				subjectStudents.add(student);
 		
 		for(int grade = lowGrade; grade <= highGrade; grade++)
@@ -99,11 +99,12 @@ public class School
 			ArrayList<Score> scores = anonScores.get(Test.valueOf(subject + Integer.toString(grade)));
 			if(scores != null)
 				for(Score score : scores)
-				{
-					Student tempStudent = new Student(grade, this);
-					tempStudent.setScore(subject, score);
-					subjectStudents.add(tempStudent);
-				}
+					if(score.getScoreNum() > 0)
+					{
+						Student tempStudent = new Student(grade, this);
+						tempStudent.setScore(subject, score);
+						subjectStudents.add(tempStudent);
+					}
 		}
 		
 		Collections.sort(subjectStudents, Collections.reverseOrder(new Comparator<Student>() 

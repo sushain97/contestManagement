@@ -179,7 +179,7 @@ public class AdminPanel extends HttpServlet
 					contestInfo.setProperty("docHigh", docHigh);
 					contestInfo.setProperty("docMiddle", docMiddle);
 
-					Queue queue = QueueFactory.getDefaultQueue();
+					Queue queue = QueueFactory.getDefaultQueue(); //TODO: Use OAuth2
 					queue.add(withUrl("/tabulate").param("docPassword", docPassword).param("docAccount", docAccount).param("docMiddle", docMiddle).param("docHigh", docHigh));
 				}
 

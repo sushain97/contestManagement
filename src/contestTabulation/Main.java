@@ -77,6 +77,7 @@ public class Main extends HttpServlet
 	@SuppressWarnings("unchecked")
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
+		//TODO: Add Logging
 		List<Test> testsGraded = new ArrayList<Test>();
 		final SpreadsheetEntry middle, high;
 		
@@ -206,11 +207,16 @@ public class Main extends HttpServlet
 				for(int i = 0; i < cellFeed.getEntries().size(); i+=2)
 				{
 					List<CellEntry> entries = cellFeed.getEntries();
-					School school = schools.get(entries.get(i).getCell().getInputValue());
+					
+					String schoolName = entries.get(i).getCell().getInputValue();
+					if(!schools.containsKey(schoolName))
+						schools.put(schoolName, new School(schoolName, (grade > 8 ? "high" : "middle")));
+					School school = schools.get(schoolName);
+					
 					String[] scores = entries.get(i+1).getCell().getInputValue().split(" ");
 					ArrayList<Score> scoresArr = new ArrayList<Score>();
 					for(String score : scores)
-						if(score.length() != 0)
+						if(score != null && score.length() != 0)
 							scoresArr.add(new Score(score));
 					school.addAnonScores(Test.valueOf(Character.toString(subject) + grade), scoresArr);
 				}
@@ -370,7 +376,7 @@ public class Main extends HttpServlet
 		Collections.sort(students, new Comparator<Student>() { public int compare(Student s1,Student s2) { return s1.getName().compareTo(s2.getName()); }});
 		context.put("students", students);
 		sw = new StringWriter();
-		t = ve.getTemplate("studentsOverview.html");
+		t = ve.getTemplate("studentsOverview.html"); //TODO: Display Anonymous Scores here
 		t.merge(context, sw);
 		html = new Entity("html", "students_" + level);
 		html.setProperty("type", "students");
@@ -454,10 +460,10 @@ public class Main extends HttpServlet
 		}
 		
 		int IQR = summary.get(3) - summary.get(1);
-		double lowerFence = summary.get(1) - IQR * 1.2;
-		double upperFence = summary.get(3) + IQR * 1.2;
+		double lowerFence = summary.get(1) - IQR * 1.25;
+		double upperFence = summary.get(3) + IQR * 1.25;
 		
-		List<Integer> outliers = new ArrayList<Integer>();
+		List<Integer> outliers = new ArrayList<Integer>(); //TODO: Improve outlier algorithm
 		Iterator<Integer> listIterator = list.iterator();
 		while(listIterator.hasNext())
 		{

@@ -24,10 +24,11 @@ public class Student
 	final private String name;
 	final private School school;
 	final private int grade;
+	private static int anonCounter = 0;
 	private HashMap<Character,Score> scores = new HashMap<Character,Score>();
 
 	Student(String name, School school, int grade) { this.name = name; this.grade = grade; this.school = school; }
-	Student(int grade, School school) { this("Anonymous", school, grade); }
+	Student(int grade, School school) { this("Anonymous" + anonCounter, school, grade); anonCounter++; }
 
 	public void setScore(char subject, Score score) { scores.put(subject, score); }
 

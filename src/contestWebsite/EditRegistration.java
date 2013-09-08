@@ -238,7 +238,7 @@ public class EditRegistration extends HttpServlet
 							Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 							datastore.delete(user.getKey());
 						}
-						datastore.delete(registration.getKey());
+						datastore.delete(registration.getKey()); //TODO: Do not completely delete
 						txn.commit();
 						resp.sendRedirect("/data?choice=registrations&updated=1");
 					}

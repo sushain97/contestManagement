@@ -57,9 +57,6 @@
 	<div id="wrap">
 		#parse("navbar.html")
 		<div class="container-fluid">
-			<noscript>Please enable JavaScript, otherwise numerous areas of this website will be
-				nonfunctional.</noscript>
-	
 			<div class="row-fluid">
 				<div class="span2 offset1">
 					<ul class="nav nav-list navbar-inverse sidebar-nav-fixed">
@@ -141,8 +138,6 @@
 	#else
 	#parse("navbar.html")
 	<div class="container">
-		<noscript>Please enable JavaScript, otherwise numerous areas of this website will be
-			nonfunctional.</noscript>
 		<h1>Contest Data Viewer &amp; Editor</h1>
 		
 		#if($overview)
@@ -363,5 +358,6 @@
 	#elseif($questions)
 		<script type="text/javascript" src="/js/pagescripts/data-questions.js"></script>
 	#end
+	#include("noscript.html")
 </body>
 </html>

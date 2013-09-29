@@ -39,10 +39,8 @@
 
 <body>
 	#parse("navbar.html")
-
+	
 	<div class="container">
-		<noscript>Please enable JavaScript, otherwise numerous areas of this website will be
-			nonfunctional.</noscript>
 		#if($loggedIn)
 		<h1>Welcome, $name.</h1>
 
@@ -106,5 +104,6 @@
 	#if(!$loggedIn)
 	<script type="text/javascript" src="/js/pagescripts/main.js"></script>
 	#end
+	#include("noscript.html")
 </body>
 </html>

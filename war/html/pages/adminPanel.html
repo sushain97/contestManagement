@@ -20,9 +20,6 @@
 	#parse("navbar.html")
 
 	<div class="container">
-		<noscript>Please enable JavaScript, otherwise numerous areas of this website will be
-			nonfunctional.</noscript>
-
 		<h1>Admin Control Panel</h1>
 		#if($updated)
 		<div class="alert alert-success">
@@ -187,5 +184,6 @@
 	<script type="text/javascript" src="/js/bootstrap/bootstrap-datepicker.js"></script>
 	<script type="text/javascript" src="/js/bootstrap/bootstrap-slider.js"></script>
 	<script type="text/javascript" src="/js/pagescripts/adminPanel.js"></script>
+	#include("noscript.html")
 </body>
 </html>

@@ -27,8 +27,6 @@
 	#parse("navbar.html")
 
 	<div class="container">
-		<noscript>Please enable JavaScript, otherwise numerous areas of this website will be
-			nonfunctional.</noscript>
 		<h1>Contest Registration</h1>
 
 		#if($updated)
@@ -281,6 +279,7 @@
 	<script type="text/javascript" src="/js/md5hash.js"></script>
 	<script type="text/javascript" src="/js/pagescripts/registration.js"></script>
 	<script type="text/javascript" src="/js/zxcvbn/zxcvbn-async.js"></script>
+	#include("noscript.html")
 </body>
 </html>
 

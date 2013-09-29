@@ -16,8 +16,6 @@
 <body>
 	#parse("navbar.html")
 	<div class="container">
-		<noscript>Please enable JavaScript, otherwise numerous areas of this website will be
-			nonfunctional.</noscript>
 		<h1>Contact Us</h1>
 		#if($updated)
 		<div class="alert alert-success">
@@ -94,5 +92,6 @@
 
 	<script type="text/javascript" src="/js/md5hash.js"></script>
 	<script type="text/javascript" src="/js/pagescripts/contactUs.js"></script>
+	#include("noscript.html")
 </body>
 </html>

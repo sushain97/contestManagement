@@ -13,6 +13,8 @@
 	    @media print { h1 .btn { display: none; } }
 	    .modal { max-height: 800px; width: 620px; }
 	    .modal-body { max-height: 800px; width: 580px; }
+	    .dl-horizontal dt { width: 190px; }
+	    .dl-horizontal dd { margin-left: 210px; }
     </style>
 </head>
 
@@ -23,14 +25,39 @@
 		<h1>About our Tournament
 		<button class="btn btn-small">Print<i class="icon-print"></i></button>
 		</h1>
-		#include("aboutText.html")
-		</br>
-		</br><b>Contest Date:</b> November 23rd, 2013 <!-- TODO: Add FullCalendar JS Calendar -->
-		</br><b>Registration Open:</b> October 1st - November 23rd 7:30 AM
-		</br><b>Number Sense:</b> 8:00 AM
-		</br><b>Calculator:</b> 8:30 AM
-		</br><b>General Math:</b> 9:30 AM
-		</br><b>Science:</b> 10:30 AM
+		<p>#include("aboutText.html")</p>
+	
+		<dl class="dl-horizontal"> <!-- TODO: Add FullCalendar JS Calendar -->
+			<dt>Contest Date</dt>
+			<dd>November 23rd, 2013</dd>
+			
+			<dt>Registration Open</dt>
+			<dd>October 1st - November 23rd 8:15 AM in Commons Area</dd>
+			
+			<dt>Assembly and Instructions</dt>
+			<dd>8:15 AM - 8:30 AM (Cafeteria)</dd>
+			
+			<dt>Number Sense Test</dt>
+			<dd>8:40 AM - 8:50 AM</dd>
+			
+			<dt>Calculator Test</dt>
+			<dd>8:55 AM - 9:30 AM</dd>
+			
+			<dt>General Math Test</dt>
+			<dd>9:50 AM - 10:40 AM</dd>
+			
+			<dt>Science Test</dt>
+			<dd>10:50 AM - 12:00 PM (Middle School) / 12:50 PM (High School)<dd>
+			
+			<dt>Lunch</dt>
+			<dd>12:40 PM - 1:30 PM</dd>
+			
+			<dt>Middle School Awards</dt>
+			<dd>2:30 PM</dd>
+			
+			<dt>High School Awards</dt>
+			<dd>3:15 PM</dd>
+		</dl>
 		
 		<br><br><a href="#about" role="button" class="btn" data-toggle="modal">About the Website</a>
 	</div>

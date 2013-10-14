@@ -57,6 +57,10 @@
     <servlet-class>contestWebsite.ForgotPassword</servlet-class>
   </servlet>
   <servlet>
+    <servlet-name>contestWebsite.ChangePassword</servlet-name>
+    <servlet-class>contestWebsite.ChangePassword</servlet-class>
+  </servlet>
+  <servlet>
     <servlet-name>contestTabulation.Main</servlet-name>
     <servlet-class>contestTabulation.Main</servlet-class>
   </servlet>
@@ -140,6 +144,10 @@
   <servlet-mapping>
     <servlet-name>contestWebsite.ForgotPassword</servlet-name>
     <url-pattern>/forgotPass</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>contestWebsite.ChangePassword</servlet-name>
+    <url-pattern>/changePass</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>contestTabulation.Main</servlet-name>

@@ -49,6 +49,7 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.TransactionOptions;
 
 @SuppressWarnings("serial")
 public class Data extends HttpServlet
@@ -211,7 +212,7 @@ public class Data extends HttpServlet
 			{
 				Map<String, String[]> params = req.getParameterMap();
 				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-				Transaction txn = datastore.beginTransaction();
+				Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
 				try
 				{
 					for(String paramName : params.keySet())
@@ -236,6 +237,7 @@ public class Data extends HttpServlet
 				{ 
 					e.printStackTrace();
 					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+					return;
 				}
 				finally
 				{

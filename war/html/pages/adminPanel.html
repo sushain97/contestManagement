@@ -68,6 +68,9 @@
 				<div class="control-group">
 					<label class="control-label" for="price">Test Charges</label>
 					<div class="controls" style="padding-top: 5px;">
+						#if(!$price)
+						#set($price = 5)
+						#end
 						<b id="priceText">$$price</b>
 						<input type="text" class="span2 price" id="price" name="price" data-slider-min="0" data-slider-max="15" data-slider-step="1" data-slider-value="$price" value="$price" required>
 					</div>

@@ -199,16 +199,19 @@ public class Registration extends HttpServlet
 			if (sess != null)
 			{
 				Map<String, Object> props = (Map<String, Object>) sess.getAttribute("props");
-				ArrayList<String> regData = new ArrayList<String>();
-				for(Entry<String, Object> prop : props.entrySet())
+				if(props != null)
 				{
-					String key = prop.getKey();
-					if(!key.equals("account") && PropNames.names.get(key) != null)
-						regData.add("<dt>" + PropNames.names.get(key) + "</dt>\n<dd>" + prop.getValue() + "</dd>");
+					ArrayList<String> regData = new ArrayList<String>();
+					for(Entry<String, Object> prop : props.entrySet())
+					{
+						String key = prop.getKey();
+						if(!key.equals("account") && PropNames.names.get(key) != null)
+							regData.add("<dt>" + PropNames.names.get(key) + "</dt>\n<dd>" + prop.getValue() + "</dd>");
+					}
+					Collections.sort(regData);
+					context.put("regData", regData);
+					sess.invalidate();
 				}
-				Collections.sort(regData);
-				context.put("regData", regData);
-				sess.invalidate();
 			}
 		}
 		context.put("userError", userError);

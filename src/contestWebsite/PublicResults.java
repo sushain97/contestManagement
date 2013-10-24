@@ -44,6 +44,8 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
+import contestTabulation.Test;
+
 @SuppressWarnings("serial")
 public class PublicResults extends HttpServlet
 {
@@ -88,6 +90,16 @@ public class PublicResults extends HttpServlet
 		List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 		if(info.size() != 0)
 		{
+			if(info.get(0).getProperty("testsGraded") != null)
+			{
+				String testsGradedString = (String) info.get(0).getProperty("testsGraded");
+				String[] testsGraded = testsGradedString.substring(1, testsGradedString.length() - 1).split(",");
+				for(int i = 0; i < testsGraded.length; i++)
+					testsGraded[i] = testsGraded[i].trim().toUpperCase();
+				context.put("testsGraded", testsGraded);
+				context.put("Test", Test.class);
+			}
+			
 			Object complete = info.get(0).getProperty("complete");
 			if((complete != null && (Boolean) complete) || (loggedIn && userCookie.isAdmin()))
 			{

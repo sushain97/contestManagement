@@ -22,7 +22,8 @@ $(document).ready(function() {
 		window.print();
 		$('button').show();
 	});
-	$("table").tablesorter({sortList: [[0,0]]});
+	
+	$("table:not(#statusTable)").tablesorter({sortList: [[0,0]]});
 	
 	$('td').hover(function() {
 	    var t = parseInt($(this).index()) + 1;

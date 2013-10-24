@@ -28,6 +28,7 @@
 		.highlighted { background-color: #e8f8fd !important; }
 		table {	width: auto !important; }
 		th, td { text-align: center !important; }
+		td.row-header { font-weight: bold; }
 	</style>
 	<link type="text/css" href="/css/footer.css" rel="stylesheet">
 	<link type="text/css" href="/css/sticky-sidebar.css" rel="stylesheet">
@@ -76,9 +77,62 @@
 					<button class="btn btn-small">Print<i class="icon-print"></i></button>
 					</h1>
 	
-					#if(!$complete) Results are not yet public, please return later. #elseif($overview) Choose an option
-					at the left to view specific results. #elseif($complete && !$html) Results for this competition are not
-					yet available #else #evaluate($html) #end
+					#if(!$complete) Results are not yet public, please return later. 
+					#elseif($overview) 
+					Choose an option at the left to view specific results.
+					#elseif($complete && !$html) 
+					Results for this competition are not yet available 
+					#else
+					#evaluate($html)
+					#end
+					
+					#if(!$complete || $overview)
+					<h2>Grading Progress (Tests Graded)</h2>
+					
+					#set($percentComplete = $testsGraded.size() / 16 * 100)
+					<div class="progress progress-striped active" style="width: 400px">
+						<div class="bar" style="width: $percentComplete%;"></div> 
+					</div> 
+					
+					<table id="statusTable" class="table table-striped table-condensed table-hover">
+						<thead>
+							<tr>
+								<th>Grade</th>
+								<th>Number Sense</th>
+								<th>Calculator</th>
+								<th>General Math</th>
+								<th>General Science</th>
+							</tr>
+						</thead>
+						<tbody>
+							#foreach($grade in [6..8])
+							<tr>
+								<td class="row-header">${grade}th</td>
+								#foreach($subject in ["N", "C", "M", "S"])
+									#set($subjectString = $grade + $subject)
+									<td>#if($testsGraded.contains($subjectString)) <i class="icon-check"></i> #else &nbsp; #end</td>
+								#end
+							</tr>
+							#end
+							<tr>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+							#foreach($grade in [9..12])
+							<tr>
+								<td class="row-header">${grade}th</td>
+								#foreach($subject in ["N", "C", "M", "S"])
+									#set($subjectString = $grade + $subject)
+									<td>#if($testsGraded.contains($subjectString)) <i class="icon-check"></i> #else &nbsp; #end</td>
+								#end
+							</tr>
+							#end
+						</tbody>
+					</table>
+					#end
 					
 					<div id="push"></div>
 				</div>

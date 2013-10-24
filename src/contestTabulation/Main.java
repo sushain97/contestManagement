@@ -132,6 +132,9 @@ public class Main extends HttpServlet
 			//Update Datastore by modifying registrations to include actual number of tests taken
 			updateRegistrations("middle", middleSchools);
 			updateRegistrations("high", highSchools);
+			
+			//Update Datastore by modifying contest information entity to include tests graded
+			updateContestInfo(testsGraded);
 		}
 		catch(Exception e) { e.printStackTrace(); }
 	}
@@ -432,13 +435,6 @@ public class Main extends HttpServlet
 		sw.close();
 		
 		datastore.put(htmlEntries); //TODO: Convert to Transaction
-		
-		Query query = new Query("contestInfo");
-		Entity info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
-		SimpleDateFormat isoFormat = new SimpleDateFormat("hh:mm:ss a EEEE MMMM d, yyyy zzzz");
-		isoFormat.setTimeZone(TimeZone.getTimeZone("America/Chicago"));
-		info.setProperty("updated", isoFormat.format(new Date()).toString());
-		datastore.put(info);
 	}
 
 	private static Pair<List<Integer>,List<Integer>> calculateStats(List<Integer> list)
@@ -510,5 +506,16 @@ public class Main extends HttpServlet
 				datastore.put(registration);
 			}
 		}
+	}
+	
+	private static void updateContestInfo(List<Test> testsGraded)
+	{
+		Query query = new Query("contestInfo");
+		Entity info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+		SimpleDateFormat isoFormat = new SimpleDateFormat("hh:mm:ss a EEEE MMMM d, yyyy zzzz");
+		isoFormat.setTimeZone(TimeZone.getTimeZone("America/Chicago"));
+		info.setProperty("updated", isoFormat.format(new Date()).toString());
+		info.setProperty("testsGraded", testsGraded.toString());
+		datastore.put(info);
 	}
 }

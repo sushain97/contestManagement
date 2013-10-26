@@ -180,7 +180,7 @@
 					#set($nums = [0,0,0,0,0,0,0,0,0,0,0,0,0]) 
 					#foreach($reg in $middleRegs)
 					<tr data-eid="$reg.getKey().getId()">
-						<td class="uneditable" style="text-align: center;"><input type="radio" name="key" value="$reg.getKey().getId()"></td>
+						<td class="uneditable" style="text-align: center;" title="$reg.getProperty("timestamp")"><input type="radio" name="key" value="$reg.getKey().getId()"></td>
 						<td data-type="name">$reg.getProperty("name")</td>
 						<td data-type="email" class="email" style="padding-right: 0px;">$reg.getProperty("email")</td>
 						<td class="uneditable" style="padding-left: 0px;"><a href="mailto:$reg.getProperty("name")<$reg.getProperty("email")>"><i class="icon-envelope"></i></a></td>
@@ -237,7 +237,7 @@
 					#set($nums = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]) 
 					#foreach($reg in $highRegs)
 					<tr data-eid="$reg.getKey().getId()">
-						<td class="uneditable" style="text-align: center;"><input type="radio" name="key" value="$reg.getKey().getId()"></td>
+						<td class="uneditable" style="text-align: center;" title="$reg.getProperty("timestamp")"><input type="radio" name="key" value="$reg.getKey().getId()"></td>
 						<td data-type="name">$reg.getProperty("name")</td>
 						<td data-type="email" class="email" style="padding-right: 0px;">$reg.getProperty("email")</td>
 						<td class="uneditable" style="padding-left: 0px;"><a href="mailto:$reg.getProperty("name")<$reg.getProperty("email")>"><i class="icon-envelope"></i></a></td>

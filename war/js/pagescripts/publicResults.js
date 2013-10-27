@@ -25,7 +25,7 @@ $(document).ready(function() {
 	
 	$("table:not(#statusTable)").tablesorter({sortList: [[0,0]]});
 	
-	$('td').hover(function() {
+	$('.table-hover td').hover(function() {
 	    var t = parseInt($(this).index()) + 1;
 	    $('td:nth-child(' + t + ')', $(this).closest('table')).addClass('highlighted');
 	}, function() {

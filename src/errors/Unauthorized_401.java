@@ -32,6 +32,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
 import util.HTMLCompressor;
+import util.RequestPrinter;
 import util.UserCookie;
 
 
@@ -54,6 +55,7 @@ public class Unauthorized_401 extends HttpServlet
 		context.put("error", req.getAttribute("javax.servlet.error.message"));
 		context.put("uri", req.getAttribute("javax.servlet.error.request_uri"));
 		context.put("servlet", req.getAttribute("javax.servlet.error.servlet_name"));
+		context.put("diaginfo", RequestPrinter.debugString(req, true).replaceAll("\n", "<br>"));
 		context.put("date", new Date().toString());
 		if(loggedIn)
 		{

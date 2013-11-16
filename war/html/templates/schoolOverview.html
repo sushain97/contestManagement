@@ -1,4 +1,4 @@
-<h2>"Top 20" Scores</h2>
+<h2><a class="anchor" id="top20"></a>"Top 20" Scores</h2>
 <em>Note: </em>
 only scores that fall in the top 20 are displayed below
 <br />
@@ -34,7 +34,7 @@ only scores that fall in the top 20 are displayed below
 	#end
 </table>
 
-<h2>"Anonymous" Scores</h2>
+<h2><a class="anchor" id="anonScores"></a>"Anonymous" Scores</h2>
 <em>Note: </em>
 all scores that did not fall in the top 20 are displayed below
 <br />
@@ -51,3 +51,40 @@ all scores that did not fall in the top 20 are displayed below
 #end #end
 
 #parse("visualizations.html")
+
+<h2><a class="anchor" id="sweepstakes"></a>Current Sweepstakes Scores</h2>
+
+<div>
+	<div class="lead">Math: <strong>$school.getScore("M")</strong></div>
+	#foreach($student in $school.getScoreStudents("M")) 
+		<strong>$student.getName() ($student.getGrade())</strong> - 
+		$student.getScore("M").getScoreNum() <br> 
+	#end
+	<br>
+</div>
+   		
+<div>	
+	<div class="lead">Calculator: <strong>$school.getScore("C")</strong></div>
+	#foreach($student in $school.getScoreStudents("C")) 
+		<strong>$student.getName() ($student.getGrade())</strong> - 
+		$student.getScore("C").getScoreNum() <br> 
+	#end
+	<br>
+</div>
+
+<div>
+	<div class="lead">Number Sense: <strong>$school.getScore("N")</strong></div>
+	#foreach($student in $school.getScoreStudents("N")) 
+		<strong>$student.getName() ($student.getGrade())</strong> - 
+		$student.getScore("N").getScoreNum() <br> 
+	#end
+	<br>
+</div>
+
+<div>
+	<div class="lead">Science: <strong>$school.getScore("S")</strong></div>
+	#foreach($student in $school.getScoreStudents("S")) 
+		<strong>$student.getName() ($student.getGrade())</strong> - 
+		$student.getScore("S").getScoreNum() <br> 
+	#end
+</div>

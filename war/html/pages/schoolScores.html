@@ -8,7 +8,7 @@
     <meta name="tab" content="ViewScores">
     #include("head.html")
     <style type="text/css">
-	    body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */
+	    body { padding-top: 110px; } /* 60px to make the container go all the way to the bottom of the topbar */
 	    @media print {
 	    	.container {
 	    		position: absolute;
@@ -19,11 +19,19 @@
 			@page {	size: potrait; }
 			h1 .btn { display: none; }
 			#footer { visibility: hidden; }
+			.navbar { display: none; }
 		}
 		h1 button {	float: right; }
 		.highlighted { background-color: #e8f8fd !important; }
 		table {	width: auto !important; }
 		th, td { text-align: center !important; }
+		.lead { margin-bottom: 0px !important; }
+		a.anchor { 
+			display: block; 
+			position: relative; 
+			top: -100px; 
+			visibility: hidden;
+		}
     </style>
     <link type="text/css" href="/css/footer.css" rel="stylesheet">
     <link type="text/css" href="/css/sortedtable.css" rel="stylesheet">
@@ -32,6 +40,22 @@
 <body>
 	<div id="wrap">
 		#parse("navbar.html")
+		
+		<div class="navbar navbar-inverse navbar-fixed-top" style="margin-top: 50px !important;">
+			<div class="navbar-inner">
+				<div class="container">
+					<div class="nav-collapse">
+						<ul class="nav">
+							<li><a href="#top20">"Top 20" Scores</a></li>
+							<li><a href="#anonScores">"Anonymous" Scores</a></li>
+							<li><a href="#visualizations">Visualizations</a></li>
+							<li><a href="#sweepstakes">Current Sweepstakes</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		
 		<div class="container">
 			<h1>School Score Overview
 			<button class="btn btn-small">Print<i class="icon-print"></i></button>

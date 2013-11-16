@@ -41,6 +41,16 @@
 			h1 button { float: right; }
 			table {	width: auto !important; }
 			th, td { text-align: center !important; }
+			.lead { margin-bottom: 0px !important; }
+			a.anchor { 
+				display: block; 
+				position: relative; 
+				top: -100px; 
+				visibility: hidden;
+			}
+			#if($type.contains("school"))
+				body { padding-top: 110px; }
+			#end
 		#elseif($questions)
 			@media print { @page { size: landscape; } }
 		#end
@@ -56,10 +66,28 @@
 	#if($scores)
 	<div id="wrap">
 		#parse("navbar.html")
+		
+		#if($type.contains("school"))
+		<div class="navbar navbar-inverse navbar-fixed-top" style="margin-top: 50px !important;">
+			<div class="navbar-inner">
+				<div class="container">
+					<div class="nav-collapse">
+						<ul class="nav">
+							<li><a href="#top20">"Top 20" Scores</a></li>
+							<li><a href="#anonScores">"Anonymous" Scores</a></li>
+							<li><a href="#visualizations">Visualizations</a></li>
+							<li><a href="#sweepstakes">Current Sweepstakes</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		#end
+		
 		<div class="container-fluid">
 			<div class="row-fluid">
 				<div class="span2 offset1">
-					<ul class="nav nav-list navbar-inverse sidebar-nav-fixed">
+					<ul class="nav nav-list navbar-inverse sidebar-nav-fixed" #if($type.contains("school")) style="padding-top: 50px" #end>
 						<li id="overview"><a href="/data?choice=scores">Overview</a></li>
 						<li class="nav-header">Middle School</li>
 						<li id="middle_students"><a href="/data?choice=scores&type=middle_students">All Students</a></li>

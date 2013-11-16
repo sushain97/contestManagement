@@ -8,6 +8,7 @@
     <include path='/js/**.js' expiration='7d'/>
     <include path='/img/**' expiration='7d'/>
     <include path='/robots.txt' expiration='7d'/>
+    <include path='/fonts/**' expiration='14d'/>
   </static-files>
   <resource-files>
   </resource-files>

@@ -17,11 +17,9 @@
 
 $(document).ready(function() {
 	$('button').on('click', function() {
-		$('.accordion-body').addClass('in');
-		$('button').hide();
+		$('.panel-collapse').addClass('in');
 		window.print();
-		$('.accordion-body').removeClass('in');
-		$('button').show();
+		$('.panel-collapse').removeClass('in');
 	});
 });
 

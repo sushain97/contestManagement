@@ -16,11 +16,17 @@
  */
 
 $(document).ready(function() {
-	EnableSubmit();
-	CalcCost();
-	CheckAccount();
+	if($('form').length) {
+		EnableSubmit();
+		CalcCost();
+		CheckAccount();
+	}
 	
-	$('.span2').change(CalcCost);
+	$('h1 button').on('click', function() {
+		window.print();
+	});
+	
+	$('input[type="number"]').change(CalcCost);
 	$('#captcha').on('keyup', AuthCaptcha);
 	$('#submit').on('click', AuthCaptcha);
 	$('#regType1,#regType2').change(function() {
@@ -60,8 +66,7 @@ $(document).ready(function() {
 			var sequences = passEval.match_sequence;
 			for(var i = 0; i < sequences.length; i++)
 				title += '<em>' + sequences[i].pattern + ': </em>"' + sequences[i].token + '"<br/>';
-			$('#passStrength').data('tooltip').options.title = title;
-			$('#passStrength').tooltip('fixTitle').tooltip('show');
+			$('#passStrength').attr('data-original-title', title).tooltip('fixTitle').tooltip('show');
 		}
 	});
 	passwordElem.blur(function() {
@@ -128,13 +133,13 @@ function CalcCost() {
 		sum += price * parseInt($(start + "m']").get(0).value);
 	}
 	if(isNaN(sum)) {
-		$('#cost').closest('.control-group').addClass('error');
-		if($('#cost').closest('.controls').find('.help-inline').length === 0)
-			$('#cost').closest('.controls').append('<span class="help-inline">Please enter only <b>numeric</b> values above</span>');
+		$('#cost').closest('.form-group').addClass('has-error');
+		if($('#cost').closest('.input-prepend').find('.help-block').length === 0)
+			$('#cost').closest('.input-prepend').append('<span class="help-block">Please enter only <b>numeric</b> values above</span>');
 	}
 	else {
 		$('#cost').val(sum);
-		$('#cost').closest('.control-group').removeClass('error');
-		$('#cost').closest('.controls').children('.help-inline').remove();
+		$('#cost').closest('.form-group').removeClass('has-error');
+		$('#cost').closest('.input-prepend').children('.help-block').remove();
 	}
 }

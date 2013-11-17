@@ -31,18 +31,20 @@
 				<legend>
 					Please enter your E-Mail Address below to recieve a password reset E-Mail. 
 					It is impossible for us to retrieve your original password due to the secure construction of 
-					<a href="http://en.wikipedia.org/wiki/PBKDF2" class="muted" target="_blank">PDKDF2</a>.
+					<a href="http://en.wikipedia.org/wiki/PBKDF2" class="muted" target="_blank"><abbr title="Password-Based Key Derivation Function 2">PDKDF2</abbr></a>.
 				</legend>
-				<div class="control-group">
-					<label class="control-label" for="schoolName">Your E-Mail Address</label>
-					<div class="controls">
-						<input type="email" name="email" class="input-xlarge" id="email" required>
+
+				<div class="form-group">
+					<label class="col-sm-2 control-label" for="email">Your E-Mail Address</label>
+					<div class="input-prepend col-sm-5">
+	      				<div class="input-group">
+							<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+							<input type="email" name="email" class="input-xlarge form-control" id="email" required>
+						</div>
 					</div>
 				</div>
 
-				<div class="form-actions">
-					<button type="submit" id="submit" class="btn btn-primary">Request Password Reset</button>
-				</div>
+				<button type="submit" id="submit" class="btn btn-primary">Request Password Reset</button>
 			</fieldset>
 		</form>
 		#end

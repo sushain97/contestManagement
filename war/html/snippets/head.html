@@ -13,7 +13,7 @@
     <script type="text/javascript" src="/js/html5shiv-printshiv.js"></script>
 <![endif]-->
 
-<script type="text/javascript" src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 	$.fn.modal || document.write('<script type="text/javascript" src="/js/bootstrap/bootstrap.min.js"><\/script>')
 </script>
@@ -46,4 +46,6 @@
 
 <style type="text/css">
 	li.dropdown.current, a.current { font-weight: bold; font-size: 110%; }
+	@media print { .navbar { display: none; } }
+	/* table { page-break-inside: avoid; } */
 </style>

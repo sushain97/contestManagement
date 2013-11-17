@@ -1,6 +1,6 @@
 <h2><a class="anchor" id="visualizations"></a>Visualizations</h2>
 
-<div class="accordion" id="accordion">
+<div class="panel-group" id="accordion">
 	#foreach($subject in $subjects)
 		#if($subject == 'M')
    			#set($title = "Math Grade Comparison")
@@ -12,12 +12,12 @@
        		#set($title = "Science Grade Comparison")
        	#end
         	
-		<div class="accordion-group">
-			<div class="accordion-heading">
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse${subject}"> $title</a>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<a class="panel-title" data-toggle="collapse" data-parent="#accordion" href="#collapse${subject}"> $title</a>
 			</div>
-			<div id="collapse$subject" class="accordion-body collapse #if($foreach.first) in #end">
-				<div class="accordion-inner">
+			<div id="collapse$subject" class="panel-collapse collapse #if($foreach.first) in #end">
+				<div class="panel-body">
 					<div id="${subject}-graph" style="height: 400px; min-width: 310px; max-width: 600px"></div>
 				</div>
 			</div>
@@ -25,7 +25,7 @@
 	#end
 </div>
 
-<div>
+<div style="padding-top: 10px;">
 	Outliers computed using <a href="https://en.wikipedia.org/wiki/Chauvenet's_criterion" target="_blank">Chauvenet's Criterion for Outliers</a>
 	with assumptions of Gaussian normality for sample populations of over 5 scores.
 </div>

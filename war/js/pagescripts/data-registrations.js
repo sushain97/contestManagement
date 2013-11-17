@@ -16,6 +16,10 @@
  */
 
 $(document).ready(function() {
+	$('h1 button').on('click', function() {
+		window.print();
+	});
+	
 	$("input:radio:checked").data("chk", true);
 	$("input:radio").click(function() {
 		$("input[name='" + $(this).attr("name") + "']:radio").not(this).removeData("chk");

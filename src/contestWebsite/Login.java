@@ -91,18 +91,23 @@ public class Login extends HttpServlet
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		String username = req.getParameter("username");
 		String password = req.getParameter("password");
-		@SuppressWarnings("deprecation")
+		
+		String redirect = req.getParameter("redirect");
+		if(redirect == null)
+			redirect = "/?refresh=1";
+		
 		Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, username);
 		List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(3));
 		String hash = "";
 		String salt = "";
 		if(users.size() == 0)
-			resp.sendRedirect("/login?user=" + username + "&error=" + "401");
+			resp.sendRedirect("/login?user=" + username + "&error=" + "401" + "&redirect=" + redirect);
 		else
 		{
 			Entity user = users.get(0);
@@ -123,7 +128,7 @@ public class Login extends HttpServlet
 					user.setProperty("hash", newHash.split("\\$")[1]);
 					user.removeProperty("loginAttempts");
 					datastore.put(user);
-					resp.sendRedirect("/?refresh=1");
+					resp.sendRedirect(redirect);
 				}
 				else
 				{
@@ -131,19 +136,19 @@ public class Login extends HttpServlet
 					if(loginAttempts == null)
 					{
 						user.setProperty("loginAttempts", 1);
-						resp.sendRedirect("/login?user=" + username + "&error=" + "401");
+						resp.sendRedirect("/login?user=" + username + "&error=" + "401" + "&redirect=" + redirect);
 					}
 					else
 					{
 						if(loginAttempts >= 30)
 						{
 							user.setProperty("loginAttempts", ++loginAttempts);
-							resp.sendRedirect("/login?user=" + username + "&error=" + "403");
+							resp.sendRedirect("/login?user=" + username + "&error=" + "403" + "&redirect=" + redirect);
 						}
 						else
 						{
 							user.setProperty("loginAttempts", ++loginAttempts);
-							resp.sendRedirect("/login?user=" + username + "&error=" + "401");
+							resp.sendRedirect("/login?user=" + username + "&error=" + "401" + "&redirect=" + redirect);
 						}
 					}
 

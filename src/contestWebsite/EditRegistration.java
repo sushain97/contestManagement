@@ -169,7 +169,7 @@ public class EditRegistration extends HttpServlet
 				for(Entry<String, String[]> param : params.entrySet())
 					param.setValue(new String[] { escapeHtml4(param.getValue()[0]) });
 				
-				if(params.get("ajax") != null  && "1".equals(params.get("ajax")[0]))
+				if(params.get("ajax") != null && "1".equals(params.get("ajax")[0]))
 				{
 					String newValue = params.get("newValue")[0];
 					String modified = params.get("modified")[0];

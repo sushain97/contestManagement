@@ -61,7 +61,7 @@ public class Captcha
 			args.add(gen.compose(rand.nextInt(2)+2) + " " + gen.compose(rand.nextInt(2)+2) + " " + gen.compose(rand.nextInt(2)+2));
 			args.add(String.valueOf(y));
 			args.add(String.valueOf(z));
-			answer = y * (x + z);
+			answer = y * (x + z) - z;
 		}
 		else if(captcha == 1)
 		{

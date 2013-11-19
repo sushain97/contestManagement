@@ -59,7 +59,7 @@ function sendAJAXReq(elem, value)
 			'account': $(elem).siblings('.account').html(),
 			'newValue': value,
 			'modified': $(elem).data('type'),
-			'test': $(elem).attr('class') === 'test'
+			'test': $(elem).hasClass('test')
 		}
 	}).done(function() {
 		window.location = '/data?choice=registrations&updated=1';

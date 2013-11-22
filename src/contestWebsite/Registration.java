@@ -377,7 +377,7 @@ public class Registration extends HttpServlet
 							appEngineEmail = (String) info.get(0).getProperty("account");
 
 						String url = req.getRequestURL().toString();
-						url = url.substring(0, url.indexOf(".com") + 4);
+						url = url.substring(0, url.indexOf("/", 7));
 
 						try
 						{

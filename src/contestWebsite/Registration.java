@@ -241,7 +241,7 @@ public class Registration extends HttpServlet
 		if(params.containsKey("account"))
 			account = "yes";
 		String aliases = params.get("aliases")[0];
-		String email = params.get("email")[0];
+		String email = params.get("email")[0].toLowerCase();
 		String schoolLevel = params.get("schoolLevel")[0];
 		String schoolName = params.get("schoolName")[0];
 		String name = params.get("name")[0];

@@ -95,7 +95,7 @@ public class Login extends HttpServlet
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		String username = req.getParameter("username");
+		String username = req.getParameter("username").toLowerCase();
 		String password = req.getParameter("password");
 		
 		String redirect = req.getParameter("redirect");

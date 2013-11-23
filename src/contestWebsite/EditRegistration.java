@@ -180,7 +180,7 @@ public class EditRegistration extends HttpServlet
 						switch(modified)
 						{
 							case "email":
-								user.setProperty("user-id", newValue);
+								user.setProperty("user-id", newValue.toLowerCase());
 								break;
 							case "schoolName":
 								user.setProperty("school", newValue);

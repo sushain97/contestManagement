@@ -184,6 +184,7 @@ public class Main extends HttpServlet
 				}
 				else
 					name = name.trim();
+
 				String schoolName = row.getValue("school").trim();
 				String score = row.getValue("score").trim();
 
@@ -212,13 +213,14 @@ public class Main extends HttpServlet
 				{
 					List<CellEntry> entries = cellFeed.getEntries();
 					
-					String schoolName = entries.get(i).getCell().getInputValue();
+					String schoolName = entries.get(i).getCell().getInputValue().trim();
 					if(!schools.containsKey(schoolName))
 						schools.put(schoolName, new School(schoolName, (grade > 8 ? "high" : "middle")));
 					School school = schools.get(schoolName);
 					
 					String[] scores = entries.get(i+1).getCell().getInputValue().split(" ");
 					ArrayList<Score> scoresArr = new ArrayList<Score>();
+					Collections.sort(scoresArr);
 					for(String score : scores)
 						if(score != null && score.length() != 0)
 							scoresArr.add(new Score(score));

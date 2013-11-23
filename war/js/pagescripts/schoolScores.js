@@ -21,7 +21,9 @@ $(document).ready(function() {
 		window.print();
 		$('button').show();
 	});
-	$("table").tablesorter({sortList: [[0,0]]});
+	
+	if($('table tr').length > 1)
+		$("table").tablesorter({sortList: [[0,0]]});
 	
 	$('td').hover(function() {
 	    var t = parseInt($(this).index()) + 1;

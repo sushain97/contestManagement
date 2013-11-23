@@ -9,7 +9,6 @@
 	#include("head.html")
 	<style type="text/css">
 		body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */
-		#hi { display: none; }
 	</style>
 </head>
 
@@ -100,8 +99,8 @@
 						<div class="span2" style="margin-left: 35px;"><b>Math</b></div>
 						<div class="span2" style="margin-left: 10px;"><b>Science</b></div>
 					</div>
-	
-					<div id="mid">
+					
+					<div id="mid" #if($high) style="display: none"; #end>
 						<div class="control-group">
 							<label class="control-label" for="level">6th Grade Registration</label>
 							<div class="controls controls-row">
@@ -132,8 +131,8 @@
 							</div>
 						</div>
 					</div>
-	
-					<div id="hi">
+					
+					<div id="hi" #if($middle) style="display: none;" #end>
 						<div class="control-group">
 							<label class="control-label" for="level">9th Grade Registration</label>
 							<div class="controls controls-row">

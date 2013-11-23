@@ -71,10 +71,16 @@ public class ViewScores extends HttpServlet
 			context.put("user", user.getProperty("user-id"));
 			context.put("name", user.getProperty("name"));
 
+			Query query = new Query("registration").addFilter("email", FilterOperator.EQUAL, user.getProperty("user-id"));
+			List<Entity> registration = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+			if(registration.size() > 0 && registration.get(0).getProperty("registrationType").equals("coach"))
+				context.put("coach", true);
+			
 			Filter typeFilter = new FilterPredicate("type", FilterOperator.EQUAL, "school");
+			Filter levelFilter = new FilterPredicate("level", FilterOperator.EQUAL, (String) registration.get(0).getProperty("schoolLevel"));
 			Filter nameFilter = new FilterPredicate("school", FilterOperator.EQUAL, user.getProperty("school"));
-			Filter filter = CompositeFilterOperator.and(typeFilter, nameFilter);
-			Query query = new Query("html").setFilter(filter);
+			Filter filter = CompositeFilterOperator.and(typeFilter, nameFilter, levelFilter);
+			query = new Query("html").setFilter(filter);
 			List<Entity> html = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 			if(html.size() != 0)
 				context.put("html", ((com.google.appengine.api.datastore.Text) html.get(0).getProperty("html")).getValue());
@@ -82,11 +88,6 @@ public class ViewScores extends HttpServlet
 			query = new Query("contestInfo");
 			Entity info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 			context.put("date", info.getProperty("updated"));
-			
-			query = new Query("registration").addFilter("email", FilterOperator.EQUAL, user.getProperty("user-id"));
-			List<Entity> registration = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-			if(registration.size() > 0 && registration.get(0).getProperty("registrationType").equals("coach"))
-				context.put("coach", true);
 
 			StringWriter sw = new StringWriter();
 			t.merge(context, sw);

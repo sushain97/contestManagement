@@ -220,10 +220,10 @@ public class Main extends HttpServlet
 					
 					String[] scores = entries.get(i+1).getCell().getInputValue().split(" ");
 					ArrayList<Score> scoresArr = new ArrayList<Score>();
-					Collections.sort(scoresArr);
 					for(String score : scores)
 						if(score != null && score.length() != 0)
 							scoresArr.add(new Score(score));
+					Collections.sort(scoresArr, Collections.reverseOrder());
 					school.addAnonScores(Test.valueOf(Character.toString(subject) + grade), scoresArr);
 				}
 			}

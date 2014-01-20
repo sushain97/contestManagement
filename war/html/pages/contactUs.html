@@ -79,8 +79,12 @@
 				<input type="hidden" name="hash" id="hash" value="$hash" /> <input type="hidden" name="nocaptcha"
 					id="nocaptcha" value="$nocaptcha" /> <input type="hidden" name="salt" id="salt" value="$salt" />
 
-				<button type="submit" id="submit" class="btn btn-primary">Submit Feedback</button>
-				<span class="lead" id="answerCaptcha">Please enable JavaScript to continue.</span>
+				<div class="form-group">
+   					<div class="col-sm-offset-2 col-sm-10">
+						<button type="submit" id="submit" class="btn btn-primary">Submit Feedback</button>
+						<span class="help-block lead" id="answerCaptcha">Please enable JavaScript to continue.</span>
+					</div>
+				</div>
 			</fieldset>
 		</form>
 		#end

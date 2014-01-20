@@ -45,25 +45,32 @@
 				</div>
 				
 				<div class="form-group">
-					<label class="col-sm-2 control-label" for="signedIn">Stay signed in?</label>
-					<div class="input-group col-sm-1">
-						<input type="checkbox" id="signedIn" name="signedIn" class="form-control" value="stay">
+					<div class="col-sm-offset-2 col-sm-10">
+						<div class="checkbox">
+							<label for="signedIn">
+								<input type="checkbox" id="signedIn" name="signedIn" value="stay"> Stay signed in?
+							</label>
+						</div>
 					</div>
 				</div>
-				
-					<button type="submit" class="btn btn-primary">Login</button>
-					<span style="padding-left: 15px"> 
-						#if($testingMode) 
-						<strong>
-							<a href="#" id="testingMode" data-toggle="popover" data-content="&lt;p&gt;During Testing Mode, 
-								the contest administrator account can be easily accessed with the credentials &quot;admin&quot; 
-								and &quot;password&quot;.&lt;/p&gt;
-								&lt;p&gt;Click &lt;a href=&quot;#&quot; id=&quot;fillCreds&quot;&gt;here&lt;/a&gt; to login as the admin.&lt;/p&gt" 
-								data-original-title="Testing Mode">Testing Mode</a> 
-							is currently enabled
-						</strong> 
-						#end 
-					</span>
+
+				<div class="form-group">
+   					<div class="col-sm-offset-2 col-sm-10">
+						<button type="submit" class="btn btn-primary">Login</button>
+						<span style="padding-left: 15px"> 
+							#if($testingMode) 
+							<strong>
+								<a href="#" id="testingMode" data-toggle="popover" data-content="&lt;p&gt;During Testing Mode, 
+									the contest administrator account can be easily accessed with the credentials &quot;admin&quot; 
+									and &quot;password&quot;.&lt;/p&gt;
+									&lt;p&gt;Click &lt;a href=&quot;#&quot; id=&quot;fillCreds&quot;&gt;here&lt;/a&gt; to login as the admin.&lt;/p&gt" 
+									data-original-title="Testing Mode">Testing Mode</a> 
+								is currently enabled
+							</strong> 
+							#end 
+						</span>
+					</div>
+				</div>
 			</fieldset>
 		</form>
 	</div>

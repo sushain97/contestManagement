@@ -19,7 +19,7 @@ $(document).ready(function () {
 	EnableSubmit();
 	CalcCost();
 	
-	$('.span2').change(CalcCost);
+	$('input[type="number"]').change(CalcCost);
 	
 	$('#schoolType1,#schoolType2').change(function() {
 		$('#mid').toggle();

@@ -19,7 +19,7 @@ $(document).ready(function() {
 	CheckPassChange();
 	CheckUpdate();
 	
-	$('.date').datepicker();
+	$('.input-daterange').datepicker();
 	
 	$('.price').slider({
 		formater: function(value) {
@@ -36,7 +36,7 @@ $(document).ready(function() {
 	});
 	
 	$('#changePass').change(function() {
-		$('#changePassword').toggle('slow');
+		$('#changePassword').toggle('fast');
 		CheckPassChange();
 	});
 });

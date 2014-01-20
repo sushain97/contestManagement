@@ -7,7 +7,7 @@
 	<meta name="robots" content="noindex, nofollow">
 	<meta name="tab" content="ControlPanel">
 	#include("head.html")
-	<link type="text/css" href="/css/datepicker.css" rel="stylesheet">
+	<link type="text/css" href="/css/datepicker3.min.css" rel="stylesheet">
 	<link type="text/css" href="/css/slider.css" rel="stylesheet">
 	<style type="text/css">
 		body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */
@@ -30,150 +30,168 @@
 
 		<form method="post" class="form-horizontal">
 			<fieldset>
-				<p class="help-block">When is contest registration open?</p>
-				<div class="input control-group">
-					<label class="control-label" for="datepicker">Registration Dates</label>
-					<div class="controls">
-						<div class="input-append date" id="dp1" data-date="$startDate" data-date-format="mm/dd/yyyy">
-							<input class="span2" size="16" type="text" value="$startDate" name="startDate" required>
-							<span class="add-on"><i class="icon-th"></i></span>
+				<div class="form-group">
+					<label class="col-sm-2 control-label" for="datepicker">Registration Dates</label>
+					<div class="input-daterange input-group" id="datepicker" data-date-format="mm/dd/yyyy" data-date-start-date="$startDate">
+					    <input type="text" class="col-sm-3 form-control" name="startDate" value="$startDate">
+					    <span class="input-group-addon"><strong>to</strong></span>
+					    <input type="text" class="col-sm-3 form-control" name="endDate" value="$endDate">
+					</div>
+				</div>	
+				
+				<div class="form-group">
+					<label class="col-sm-2 control-label" for="email">E-Mail Address</label>
+					<div class="input-prepend col-sm-6">
+	      				<div class="input-group">
+	      					<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+							<input type="email" value="$email" name="email" id="email" class="form-control" required>
 						</div>
-						to 
-						<div class="input-append date" id="dp1" data-date="$endDate" data-date-format="mm/dd/yyyy">
-							<input class="span2" size="16" type="text" value="$endDate" name="endDate" required>
-							<span class="add-on"><i class="icon-th"></i></span>
+						<span class="help-block">Where should questions submitted through the <a href="\contactUs">contact us</a> page be sent?</span>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label class="col-sm-2 control-label" for="email">Google E-Mail</label>
+					<div class="input-prepend col-sm-6">
+	      				<div class="input-group">
+	      					<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+							<input type="email" value="$account" name="account" id="account" class="form-control" required>
 						</div>
+						<span class="help-block">Whose Google App Engine Account is this website currently deployed on?</span>
 					</div>
 				</div>
 
-				<p class="help-block">
-					Where should questions submitted through the <a href="\contactUs">contact us</a> page be sent?
-				</p>
-				<div class="control-group">
-					<label class="control-label" for="email">E-Mail Address</label>
-					<div class="controls">
-						<input type="email" value="$email" name="email" class="input-large" id="email" required>
-					</div>
-				</div>
-
-				<p class="help-block">Whose Google App Engine Account is this website currently deployed on?</p>
-				<div class="control-group">
-					<label class="control-label" for="email">Google E-Mail</label>
-					<div class="controls">
-						<input type="email" value="$account" name="account" class="input-large" id="account" required>
-					</div>
-				</div>
-
-				<p class="help-block">How much should each test registration cost in dollars?</p>
-				<div class="control-group">
-					<label class="control-label" for="price">Test Charges</label>
-					<div class="controls" style="padding-top: 5px;">
+				<div class="form-group">
+					<label class="col-sm-2 control-label" for="price">Test Charges</label>
+					<div class="col-sm-5" style="padding-top: 5px;">
 						#if(!$price)
 						#set($price = 5)
 						#end
 						<b id="priceText">$$price</b>
 						<input type="text" class="span2 price" id="price" name="price" data-slider-min="0" data-slider-max="15" data-slider-step="1" data-slider-value="$price" value="$price" required>
+					<p class="help-block">How much should each test registration cost in dollars?</p>
 					</div>
 				</div>
 
-				<p class="help-block">Would you like to update online scores?</p>
-				<div class="control-group">
-					<label class="control-label" for="email">Update Scores?</label>
-					<div class="controls">
-						<input type="checkbox" name="update" id="update">
+				<div class="form-group">
+					<label class="col-sm-3 control-label" for="update">Update Online Scores?</label>
+					<div class="input-group col-sm-5">
+						<label class="checkbox-inline">
+							<input type="checkbox" name="update" id="update">
+						</label>
 					</div>
 				</div>
 
 				<div id="updateScores">
-					<div class="control-group">
-						<label class="control-label" for="email">Google E-Mail</label>
-						<div class="controls">
-							<input type="email" value="$docAccount" name="docAccount" class="input-xlarge" id="docAccount">
-							<span class="help-inline">Google Docs Account containing Score Spreadsheets in required format</span>
+					<div class="form-group">
+						<label class="col-sm-3 control-label" for="email">Google E-Mail</label>
+						<div class="input-prepend col-sm-6">
+	      					<div class="input-group">
+	      						<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+								<input type="email" value="$docAccount" name="docAccount" class="form-control" id="docAccount">
+							</div>
+							<span class="help-block">Google Docs Account containing Score Spreadsheets in required format</span>
 						</div>
 					</div>
 
-					<div class="control-group">
-						<label class="control-label" for="password">Account Password</label>
-						<div class="controls">
-							<input type="password" id="docPassword" name="docPassword" value="" class="input-xlarge"> <span
-								class="help-inline">Password will NOT be stored</span>
+					<div class="form-group">
+						<label class="col-sm-3 control-label" for="password">Account Password</label>
+						<div class="input-prepend col-sm-5">
+							<div class="input-group">
+		      					<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+								<input type="password" id="docPassword" name="docPassword" value="" class="form-control"> 
+							</div>
+							<span class="help-block">Password will NOT be stored</span>
 						</div>
 					</div>
 
-					<div class="control-group">
-						<label class="control-label" for="schoolName">Middle School Doc</label>
-						<div class="controls">
-							<input type="text" name="docMiddle" class="input-xlarge" id="docMiddle" value="$docMiddle"> <span
-								class="help-inline">Name of Google Spreadsheet with Middle School Scores</span>
+					<div class="form-group">
+						<label class="col-sm-3 control-label" for="schoolName">Middle School Doc</label>
+						<div class="col-sm-5">
+							<input type="text" name="docMiddle" class="form-control" id="docMiddle" value="$docMiddle"> <span
+								class="help-block">Name of Google Spreadsheet with Middle School Scores</span>
 						</div>
 					</div>
 
-					<div class="control-group">
-						<label class="control-label" for="schoolName">High School Doc</label>
-						<div class="controls">
-							<input type="text" name="docHigh" class="input-xlarge" id="docHigh" value="$docHigh"> <span
-								class="help-inline">Name of Google Spreadsheet with High School Scores</span>
+					<div class="form-group">
+						<label class="col-sm-3 control-label" for="schoolName">High School Doc</label>
+						<div class="col-sm-5">
+							<input type="text" name="docHigh" class="form-control" id="docHigh" value="$docHigh"> <span
+								class="help-block">Name of Google Spreadsheet with High School Scores</span>
 						</div>
 					</div>
 				</div>
 
-				<p class="help-block">Is the contest complete?</p>
-				<div class="control-group">
-					<label class="control-label" for="complete">Make results public</label>
-					<div class="controls">
-						<input type="checkbox" name="complete" value="yes" id="complete" #if($complete) checked #end>
+				<div class="form-group">
+					<label class="col-sm-3 control-label" for="complete">Make results public</label>
+					<div class="input-group col-sm-5">
+						<label class="checkbox-inline">
+							<input type="checkbox" name="complete" value="yes" id="complete" #if($complete) checked #end>
+						</label>
 					</div>
 				</div>
 				
-				<p class="help-block">Would you like to change the admin password?</p>
-				<div class="control-group">
-					<label class="control-label" for="changePass">Change Password?</label>
-					<div class="controls">
-						<input type="checkbox" name="changePass" id="changePass" #if($passError || $confPassError) checked #end>
+				<div class="form-group">
+					<label class="col-sm-3 control-label" for="changePass">Change Admin Password?</label>
+					<div class="input-group col-sm-5">
+						<label class="checkbox-inline">
+							<input type="checkbox" name="changePass" id="changePass" #if($passError || $confPassError) checked #end>
+						</label>
 					</div>
 				</div>
 				
 				<div id="changePassword">
-					<div class=#if($passError) "control-group error" #else "control-group" #end>
-						<label class="control-label" for="password">Current Password</label>
-						<div class="controls">
-							<input type="password" id="curPassword" name="curPassword" value="" maxlength="32">
-							#if($passError) <span class="help-inline">$passError</span> #end
+					<div class=#if($passError) "form-group has-error" #else "form-group" #end>
+						<label class="control-label col-sm-3" for="password">Current Password</label>
+						<div class="input-prepend col-sm-5">
+							<div class="input-group">
+								<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+								<input type="password" id="curPassword" name="curPassword" class="form-control" value="" maxlength="32">
+							</div>
+							#if($passError) <span class="help-block">$passError</span> #end
 						</div>
 					</div>
 
-					<div class="control-group">
-						<label class="control-label" for="password">New Password</label>
-						<div class="controls">
-							<input type="password" id="newPassword" name="newPassword" pattern=".{8,}" title="Passwords must be at least 8 characters" value="" maxlength="32">
+					<div class="form-group">
+						<label class="control-label col-sm-3" for="password">New Password</label>
+						<div class="input-prepend col-sm-5">
+							<div class="input-group">
+								<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+								<input type="password" id="newPassword" name="newPassword" class="form-control" pattern=".{8,}" title="Passwords must be at least 8 characters" value="" maxlength="32">
+							</div>
 						</div>
 					</div>
 
-					<div class=#if($confPassError) "control-group error" #else "control-group" #end>
-						<label class="control-label" for="password">Confirm New Password</label>
-						<div class="controls">
-							<input type="password" id="confPassword" name="confPassword" pattern=".{8,}" title="Passwords must be at least 8 characters" value="" maxlength="32">
-							#if($confPassError) <span class="help-inline">$confPassError</span> #end
+					<div class=#if($confPassError) "form-group has-error" #else "form-group" #end>
+						<label class="control-label col-sm-3" for="password">Confirm New Password</label>
+						<div class="input-prepend col-sm-5">
+							<div class="input-group">
+								<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+								<input type="password" id="confPassword" name="confPassword" class="form-control" pattern=".{8,}" title="Passwords must be at least 8 characters" value="" maxlength="32">
+							</div>
+							#if($confPassError) <span class="help-block">$confPassError</span> #end
 						</div>
 					</div>
 				</div>
 				
-				<p class="help-block">Testing mode force defaults the admin password to "password" and displays it on the login page.</p>
-				<div class="control-group">
-					<label class="control-label" for="testing">Enable Testing Mode</label>
-					<div class="controls">
-						<input type="checkbox" name="testing" value="yes" id="testing" #if($testingMode) checked #end>
+				<div class="form-group">
+					<label class="col-sm-3 control-label" for="testing">Enable Testing Mode?</label>
+					<div class="input-group col-sm-5">
+						<label class="checkbox-inline">
+							<input type="checkbox" name="testing" id="testing" value="yes" id="testing" #if($testingMode) checked #end>
+							Testing mode force defaults the admin password to "password" and displays it on the login page.
+						</label>
 					</div>
 				</div>
 				
-				<p class="help-block">Full names will be hidden in public results (e.g. John Doe will be displayed as John D.).</p>
-				<div class="control-group">
-					<label class="control-label" for="fullnames">Hide Full Names</label>
-					<div class="controls">
-						<input type="checkbox" name="fullnames" value="yes" id="fullnames" #if($hideFullNames) checked #end>
+				<div class="form-group">
+					<label class="col-sm-3 control-label" for="fullnames">Hide Full Names?</label>
+					<div class="input-group col-sm-5">
+						<label class="checkbox-inline">
+							<input type="checkbox" name="fullnames" id="fullnames" value="yes" id="fullnames" #if($hideFullNames) checked #end>
+							Full names will be hidden in public results (e.g. John Doe will be displayed as John D.).
+						</label>
 					</div>
-					
 				</div>
 
 				<div class="form-actions">
@@ -184,7 +202,7 @@
 		</form>
 	</div>
 	
-	<script type="text/javascript" src="/js/bootstrap/bootstrap-datepicker.js"></script>
+	<script type="text/javascript" src="/js/bootstrap/bootstrap-datepicker.min.js"></script>
 	<script type="text/javascript" src="/js/bootstrap/bootstrap-slider.js"></script>
 	<script type="text/javascript" src="/js/pagescripts/adminPanel.js"></script>
 	#include("noscript.html")

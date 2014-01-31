@@ -31,8 +31,8 @@
 				</legend>
 				
 				<div class="form-group">
-					<label class="col-sm-2 control-label" for="name">Your Name</label>
-					<div class="input-prepend col-sm-5">
+					<label class="col-sm-2 col-xs-4 control-label" for="name">Your Name</label>
+					<div class="input-prepend col-sm-5 col-xs-8">
 	      				<div class="input-group">
 							<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
 							<input type="text" name="name" class="form-control" id="name" #if($name) value="$name" readonly #else required #end>
@@ -41,8 +41,8 @@
 				</div>
 
 				<div class="form-group">
-					<label class="col-sm-2 control-label" for="email">Your E-Mail Address</label>
-					<div class="input-prepend col-sm-5">
+					<label class="col-sm-2 col-xs-4 control-label" for="email">Your E-Mail Address</label>
+					<div class="input-prepend col-sm-5 col-xs-8">
 	      				<div class="input-group">
 							<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
 							<input type="email" name="email" class="form-control" id="email" #if($email) value="$email" readonly #else required #end>
@@ -51,24 +51,24 @@
 				</div>
 
 				<div class="form-group">
-					<label class="col-sm-2 control-label" for="school">Official School Name</label>
-					<div class="input-group col-sm-5">
+					<label class="col-sm-2 col-xs-4 control-label" for="school">Official School Name</label>
+					<div class="input-group col-sm-5 col-xs-8">
 						<input type="text" name="school" class="form-control" id="school" #if($school) value="$school" readonly #else required #end>
 						<p class="help-block">The school with which you are affiliated</p>
 					</div>
 				</div>
 
 				<div class="form-group">
-					<label class="col-sm-2 control-label" for="message">Your Message</label>
-					<div class="input-group col-sm-5">
+					<label class="col-sm-2 col-xs-4 control-label" for="message">Your Message</label>
+					<div class="input-group col-sm-5 col-xs-8">
 						<textarea class="form-control" id="message" rows="5" name="text" required></textarea>
 					</div>
 				</div>
 
 				#if(!$nocaptcha)
 				<div class="form-group">
-					<label class="col-sm-2 control-label" for="captcha">CAPTCHA</label>
-					<div class="input-group col-sm-5">
+					<label class="col-sm-2 col-xs-4 control-label" for="captcha">CAPTCHA</label>
+					<div class="input-group col-sm-5 col-xs-8">
 						<input type="text" name="captcha" class="input-small form-control" id="captcha" placeholder="Answer the question below in the box provided" required>
 						<span class="help-block"></span>
 						<p class="help-block">$captcha</p>

@@ -9,9 +9,10 @@
     #include("head.html")
     <style type="text/css">
 	    body { padding-top: 60px; }
-	    .modal-content { width: 650px; }
-	    .dl-horizontal dt { width: 190px; }
-	    .dl-horizontal dd { margin-left: 210px; }
+	    .dl-horizontal dt {
+	    	white-space: normal;
+	    	padding-bottom: 4px;
+	    }
     </style>
 </head>
 
@@ -61,7 +62,7 @@
 	</div>
 	
 	<div id="about" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="aboutModal" aria-hidden="true">
-		<div class="modal-dialog">
+		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>

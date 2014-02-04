@@ -11,16 +11,13 @@
 	<style type="text/css">
 		body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */
 		@media print {
-			.col-md-3 * { visibility: hidden; }
-			.col-md-8 * { visibility: visible; }
-			.col-md-8 {
+			.col-md-9 {
 				position: absolute;
 				left: 0;
 				top: 0;
 				width: 100% !important;
 			}
 			@page {	size: potrait; }
-			#footer { visibility: hidden; }
 		}
 		.num { display: none; }
 		.highlighted { background-color: #e8f8fd !important; }
@@ -36,7 +33,10 @@
 			height: 1px;
 			margin: 9px 1px;
 		}
-		.nav-header { text-transform: uppercase; font-weight: bold; }
+		.nav-header { 
+			text-transform: uppercase; 
+			font-weight: bold; 
+		}
 	</style>
 	<link type="text/css" href="/css/footer.css" rel="stylesheet">
 	<link type="text/css" href="/css/sticky-sidebar.css" rel="stylesheet">
@@ -50,8 +50,8 @@
 	
 		<div class="container">
 			<div class="row">
-				<div class="col-md-3">
-					<ul class="nav nav-pills nav-stacked" data-spy="affix">
+				<div class="col-md-3 col-xs-5 hidden-print">
+					<ul class="nav nav-pills nav-stacked" >
 						<li id="avail"><a href="/contestResults">Availability</a></li>
 						<li class="nav-header"><h4>Middle School</h4></li>
 						<li id="middle_sweep"><a href="/contestResults?type=middle_sweep">Sweepstakes</a></li>
@@ -85,9 +85,10 @@
 							</li> 
 						#end
 					</ul>
+					<div id="push"></div>
 				</div>
-	
-				<div class="col-md-9">
+				
+				<div class="col-md-9 col-xs-7">
 					<h1>Contest Results
 					#include("printButton.html")
 					</h1>

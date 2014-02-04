@@ -18,9 +18,7 @@
 $(document).ready(function () {
 	ChangeActive();
 	$('button').on('click', function() {
-		$('button').hide();
 		window.print();
-		$('button').show();
 	});
 	
 	if($('table tr').length > 1)

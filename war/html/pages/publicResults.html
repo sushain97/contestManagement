@@ -11,19 +11,14 @@
 	<style type="text/css">
 		body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */
 		@media print {
-			.span2 * { visibility: hidden; }
-			.span8 * { visibility: visible; }
-			.span8 {
+			.col-md-9 {
 				position: absolute;
 				left: 0;
 				top: 0;
 				width: 100% !important;
 			}
 			@page {	size: potrait; }
-			h1 .btn { display: none; }
-			#footer { visibility: hidden; }
 		}
-		h1 button {	float: right; }
 		.num { display: none; }
 		.highlighted { background-color: #e8f8fd !important; }
 		table {	width: auto !important; }
@@ -32,6 +27,16 @@
 		.success { background-color: #3fb618;}
 		.error { background-color: #ff0039;}
 		.warning { background-color: #ff7518;}
+		.divider {
+			background-color: #bbb;
+			border-bottom: 0;
+			height: 1px;
+			margin: 9px 1px;
+		}
+		.nav-header { 
+			text-transform: uppercase; 
+			font-weight: bold; 
+		}
 	</style>
 	<link type="text/css" href="/css/footer.css" rel="stylesheet">
 	<link type="text/css" href="/css/sticky-sidebar.css" rel="stylesheet">
@@ -43,42 +48,49 @@
 	<div id="wrap">
 		#parse("navbar.html")
 	
-		<div class="container-fluid">
-			<div class="row-fluid">
-				<div class="span2 offset1">
-					<ul class="nav nav-list navbar-inverse sidebar-nav-fixed">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-3 col-xs-5 hidden-print">
+					<ul class="nav nav-pills nav-stacked" >
 						<li id="avail"><a href="/contestResults">Availability</a></li>
-						<li class="nav-header">Middle School</li>
+						<li class="nav-header"><h4>Middle School</h4></li>
 						<li id="middle_sweep"><a href="/contestResults?type=middle_sweep">Sweepstakes</a></li>
 						<li id="middle_categorySweep"><a href="/contestResults?type=middle_categorySweep">Category Sweekstakes</a></li>
 						<li id="middle_visualizations"><a href="/contestResults?type=middle_visualizations">Visualizations</a></li>
-						<li class="divider"></li> #foreach($num in [6..8])
+						<li class="divider"></li>
+						#foreach($num in [6..8])
 						<li id="$num" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">${num}th Grade<b class="caret"></b></a>
 							<ul class="dropdown-menu">
 								<li id="middle_category_${num}C"><a href="/contestResults?type=middle_category_${num}C">Calculator</a></li>
 								<li id="middle_category_${num}N"><a href="/contestResults?type=middle_category_${num}N">Number Sense</a></li>
 								<li id="middle_category_${num}M"><a href="/contestResults?type=middle_category_${num}M">Math</a></li>
 								<li id="middle_category_${num}S"><a href="/contestResults?type=middle_category_${num}S">Science</a></li>
-							</ul></li> #end
+							</ul>
+						</li> 
+						#end
 	
-						<li class="nav-header">High School</li>
+						<li class="nav-header"><h4>High School</h4></li>
 						<li id="high_sweep"><a href="/contestResults?type=high_sweep">Sweepstakes</a></li>
 						<li id="high_categorySweep"><a href="/contestResults?type=high_categorySweep">Category Sweekstakes</a></li>
 						<li id="high_visualizations"><a href="/contestResults?type=high_visualizations">Visualizations</a></li>
-						<li class="divider"></li> #foreach($num in [9..12])
-						<li id="$num" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">${num}th Grade<b class="caret"></b></a>
-							<ul class="dropdown-menu">
-								<li id="high_category_${num}C"><a href="/contestResults?type=high_category_${num}C">Calculator</a></li>
-								<li id="high_category_${num}N"><a href="/contestResults?type=high_category_${num}N">Number Sense</a></li>
-								<li id="high_category_${num}M"><a href="/contestResults?type=high_category_${num}M">Math</a></li>
-								<li id="high_category_${num}S"><a href="/contestResults?type=high_category_${num}S">Science</a></li>
-							</ul></li> #end
+						<li class="divider"></li> 
+						#foreach($num in [9..12])
+							<li id="$num" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">${num}th Grade<b class="caret"></b></a>
+								<ul class="dropdown-menu">
+									<li id="high_category_${num}C"><a href="/contestResults?type=high_category_${num}C">Calculator</a></li>
+									<li id="high_category_${num}N"><a href="/contestResults?type=high_category_${num}N">Number Sense</a></li>
+									<li id="high_category_${num}M"><a href="/contestResults?type=high_category_${num}M">Math</a></li>
+									<li id="high_category_${num}S"><a href="/contestResults?type=high_category_${num}S">Science</a></li>
+								</ul>
+							</li> 
+						#end
 					</ul>
+					<div id="push"></div>
 				</div>
-	
-				<div class="span8">
+				
+				<div class="col-md-9 col-xs-7">
 					<h1>Contest Results
-					<button class="btn btn-small">Print<i class="icon-print"></i></button>
+					#include("printButton.html")
 					</h1>
 	
 					#if(!$complete) Results are not yet public, please return later. 
@@ -94,8 +106,8 @@
 					<h2>Grading Progress (Tests Graded)</h2>
 					
 					#set($percentComplete = $testsGraded.size() / 16 * 100)
-					<div class="progress progress-striped active" style="width: 400px">
-						<div class="bar" style="width: $percentComplete%;"></div> 
+					<div class="progress progress-striped active" style="width: 65%">
+						<div class="progress-bar" role="progressbar" aria-valuenow="$percentComplete" aria-valuemin="0" aria-valuemax="100" style="width: $percentComplete%;"></div> 
 					</div> 
 					
 					<table id="statusTable" class="table table-condensed">
@@ -116,11 +128,11 @@
 									#set($subjectString = $grade + $subject)
 									#if($testsGraded.contains($subjectString))
 									<td class="success">
-										<i class="icon-check"></i>
+										<i class="glyphicon glyphicon-check"></i>
 									</td>
 									#else
 									<td class="warning">
-										<i class="icon-remove"></i>
+										<i class="glyphicon glyphicon-remove"></i>
 									</td>
 									#end
 								#end
@@ -140,11 +152,11 @@
 									#set($subjectString = $grade + $subject)
 									#if($testsGraded.contains($subjectString))
 									<td class="success">
-										<i class="icon-check"></i>
+										<i class="glyphicon glyphicon-check"></i>
 									</td>
 									#else
 									<td class="warning">
-										<i class="icon-remove"></i>
+										<i class="glyphicon glyphicon-remove"></i>
 									</td>
 									#end
 								#end
@@ -161,7 +173,7 @@
 	</div>
 	
 	<div id="footer">
-      <div class="container">
+      <div class="container text-center">
         <p><i class="icon-time"></i> Last auto-generated <b>#if($date) $date #else never #end</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
       </div>
     </div>

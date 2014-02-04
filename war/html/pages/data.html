@@ -26,19 +26,14 @@
 			select { width: 90px; }
 		#elseif($scores)
 			@media print {
-				.span2 * { visibility: hidden; }
-				.span8 * { visibility: visible; }
-				.span8 {
+				.col-md-9 {
 					position: absolute;
 					left: 0;
 					top: 0;
 					width: 100% !important;
 				}
 				@page {	size: potrait; }
-				h1 .btn { display: none; }
-				#footer { visibility: hidden; }
 			}
-			h1 button { float: right; }
 			table {	width: auto !important; }
 			th, td { text-align: center !important; }
 			.lead { margin-bottom: 0px !important; }
@@ -48,8 +43,15 @@
 				top: -100px; 
 				visibility: hidden;
 			}
+			.divider {
+				background-color: #bbb;
+				border-bottom: 0;
+				height: 1px;
+				margin: 9px 1px;
+			}
+			.nav-header { text-transform: uppercase; font-weight: bold; }
 			#if($type.contains("school"))
-				body { padding-top: 110px; }
+				body { padding-top: 51px; }
 			#end
 		#elseif($questions)
 			@media print { @page { size: landscape; } }
@@ -69,28 +71,34 @@
 		#parse("navbar.html")
 		
 		#if($type.contains("school"))
-		<div class="navbar navbar-inverse navbar-fixed-top" style="margin-top: 50px !important;">
-			<div class="navbar-inner">
-				<div class="container">
-					<div class="nav-collapse">
-						<ul class="nav">
-							<li><a href="#top20">"Top 20" Scores</a></li>
-							<li><a href="#anonScores">"Anonymous" Scores</a></li>
-							<li><a href="#visualizations">Visualizations</a></li>
-							<li><a href="#sweepstakes">Current Sweepstakes</a></li>
-						</ul>
-					</div>
+		<div class="navbar navbar-inverse hidden-xs" style="margin-bottom: 0px;">
+			<div class="container">
+				<div class="navbar-header">
+			    	<a class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse"> 
+				    	<span class="sr-only">Toggle navigation</span> 
+						<span class="icon-bar"></span> 
+						<span class="icon-bar"></span> 
+						<span class="icon-bar"></span>
+					</a>
+			    </div>
+				<div class="collapse navbar-collapse" id="navbar-collapse">
+					<ul class="nav navbar-nav">
+						<li><a href="#top20">"Top 20" Scores</a></li>
+						<li><a href="#anonScores">"Anonymous" Scores</a></li>
+						<li><a href="#visualizations">Visualizations</a></li>
+						<li><a href="#sweepstakes">Current Sweepstakes</a></li>
+					</ul>
 				</div>
 			</div>
 		</div>
 		#end
 		
-		<div class="container-fluid">
-			<div class="row-fluid">
-				<div class="span2 offset1">
-					<ul class="nav nav-list navbar-inverse sidebar-nav-fixed" #if($type.contains("school")) style="padding-top: 50px" #end>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-3 col-xs-5 hidden-print">
+					<ul class="nav nav-pills nav-stacked">
 						<li id="overview"><a href="/data?choice=scores">Overview</a></li>
-						<li class="nav-header">Middle School</li>
+						<li class="nav-header"><h4>Middle School</h4></li>
 						<li id="middle_students"><a href="/data?choice=scores&type=middle_students">All Students</a></li>
 						<li id="middle_sweep"><a href="/data?choice=scores&type=middle_sweep">Sweepstakes</a></li>
 						<li id="middle_categorySweep"><a href="/data?choice=scores&type=middle_categorySweep">Category Sweekstakes</a></li>
@@ -117,7 +125,7 @@
 							</ul></li>
 						#end
 	
-						<li class="nav-header">High School</li>
+						<li class="nav-header"><h4>High School</h4></li>
 						<li id="high_students"><a href="/data?choice=scores&type=high_students">All Students</a></li>
 						<li id="high_sweep"><a href="/data?choice=scores&type=high_sweep">Sweepstakes</a></li>
 						<li id="high_categorySweep"><a href="/data?choice=scores&type=high_categorySweep">Category Sweekstakes</a></li>
@@ -144,11 +152,12 @@
 							</ul></li>
 						#end
 					</ul>
+					<div id="push"></div>
 				</div>
 	
-				<div class="span8">
+				<div class="col-md-9 col-xs-7">
 					<h1>Contest Results
-					<button class="btn btn-small">Print<i class="icon-print"></i></button>
+					#include("printButton.html")
 					</h1>
 					#if($overview) Choose an option at the left to view specific results. #elseif(!$html) Results for this
 					competition are not yet available #else #evaluate($html) #end
@@ -160,14 +169,14 @@
 	</div>
 	
 	<div id="footer">
-      <div class="container">
+      <div class="container text-center">
         <p><i class="icon-time"></i> Last auto-generated <b>#if($date) $date #else never #end</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
       </div>
     </div>
 	#else
 	#parse("navbar.html")
 	<div class="container">
-		<h1>Contest Data Viewer &amp; Editor</h1>
+		<h1>Contest Data Viewer &amp; Editor #include("printButton.html")</h1>
 		
 		#if($overview)
 		<h2>Overview</h2>
@@ -301,9 +310,12 @@
 				</tfoot>
 			</table>
 		
-			
-			<button type="submit" id="submit" class="btn btn-primary"><i class="icon-edit"></i> Edit Selected</button>
-			<strong>Individual registration editing interface</strong>
+			<div class="form-group">
+  				<div class="col-sm-12">
+					<button type="submit" id="submit" class="btn btn-primary"><i class="icon-edit"></i> Edit Selected</button>
+					<span class="lead">Individual registration editing interface</span>
+				</div>
+			</div>
 		</form>
 
 		#elseif($questions) 

@@ -16,6 +16,10 @@
  */
 
 $(document).ready(function() {
+	$('h1 button').on('click', function() {
+		window.print();
+	});
+	
 	$('td').hover(function() {
 	    var t = parseInt($(this).index()) + 1;
 	    $('td:nth-child(' + t + '):not(tfoot td)', $(this).closest('table')).addClass('highlighted');

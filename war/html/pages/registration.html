@@ -9,9 +9,7 @@
 	#include("head.html")
 	<style type="text/css">
 		body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */
-		#hi { display: none; }
 		#acc { display: none; }
-		#aliases { display: none; }
 		.dl-horizontal dt {
 			white-space: normal;
 			width: 300px;
@@ -19,6 +17,17 @@
 		}
 		#passHelp { display: none; }
 		div[class="tooltip-inner"] { max-width: 350px; }
+		.testCheckbox {
+			-ms-transform: scale(1.25);
+			-moz-transform: scale(1.25);
+			-webkit-transform: scale(1.25);
+			-o-transform: scale(1.25);
+			margin-top: 8px !important;
+		}
+		.tableBtn {
+			margin-top: 6px; 
+			padding-top: 2px;
+		}
 	</style>
 </head>
 
@@ -58,7 +67,6 @@
 		#if(!$updated)
 		<form method="post" class="form-horizontal">
 			<fieldset>
-				
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-5 control-label" for="registration">Registration Type</label>
 					<div class="input-group col-sm-5 col-xs-7">
@@ -74,12 +82,16 @@
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-5 control-label" for="schoolLevel">School Level</label>
 					<div class="input-group col-sm-5 col-xs-7">
+						#if($levels.contains("middle"))
 						<label class="radio-inline">
-							<input type="radio" name="schoolLevel" id="schoolType1" value="middle" #if($middle) checked #end> Middle
-						</label> 
-						<label class="radio-inline">
-							<input type="radio" name="schoolLevel" id="schoolType2" value="high" #if($high) checked #end> High
+							<input type="radio" name="schoolLevel" id="schoolType1" value="middle" #if($middle || !$levels.contains("high")) checked #end> Middle
 						</label>
+						#end
+						#if($levels.contains("high"))
+						<label class="radio-inline">
+							<input type="radio" name="schoolLevel" id="schoolType2" value="high" #if($high || !$levels.contains("middle")) checked #end> High
+						</label>
+						#end
 					</div>
 				</div>
 
@@ -113,151 +125,7 @@
 					</div>
 				</div>
 
-
-				<div class="form-group" id="aliases">
-					<label class="col-sm-2 control-label" for="schoolAliases">School Aliases</label>
-					<div class="input-group col-sm-7">
-						<input type="text" name="aliases" value="$aliases" class="form-control" id="schoolAliases">
-						<p class="help-block">Please list any other names your school is commonly called (separated by commas).</p>
-					</div>
-				</div>
-
-				<div class="row" style="padding-bottom: 10px;">
-					<div class="col-xs-2"><b></b></div>
-					<div class="col-xs-2 text-center"><b>Number Sense</b></div>
-					<div class="col-xs-2 text-center"><b>Calculator</b></div>
-					<div class="col-xs-2 text-center"><b>Math</b></div>
-					<div class="col-xs-2 text-center"><b>Science</b></div>
-				</div>
-
-				<div id="mid">
-					<div class="form-group">
-						<label class="col-xs-2 control-label" for="level6">6th Grade Registration</label>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$sixN" name="6n" id="level6" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$sixC" name="6c" id="level6" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$sixM" name="6m" id="level6" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$sixS" name="6s" id="level6" required>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label class="col-xs-2 control-label" for="level7">7th Grade Registration</label>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$sevenN" name="7n" id="level7" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$sevenC" name="7c" id="level7" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$sevenM" name="7m" id="level7" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$sevenS" name="7s" id="level7" required>
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="col-xs-2 control-label" for="level8">8th Grade Registration</label>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$eightN" name="8n" id="level8" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$eightC" name="8c" id="level8" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$eightM" name="8m" id="level8" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$eightS" name="8s" id="level8" required>
-						</div>
-					</div>
-				</div>
-
-				<div id="hi">
-					<div class="form-group">
-						<label class="col-xs-2 control-label" for="level9">9th Grade Registration</label>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$nineN" name="9n" id="level9" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$nineC" name="9c" id="level9" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$nineM" name="9m" id="level9" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$nineS" name="9s" id="level9" required>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label class="col-xs-2 control-label" for="level10">10th Grade Registration</label>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$tenN" name="10n" id="level10" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$tenC" name="10c" id="level10" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$tenM" name="10m" id="level10" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$tenS" name="10s" id="level10" required>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label class="col-xs-2 control-label" for="level11">11th Grade Registration</label>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$elevenN" name="11n" id="level11" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$elevenC" name="11c" id="level11" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$elevenM" name="11m" id="level11" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$elevenS" name="11s" id="level11" required>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label class="col-xs-2 control-label" for="level12">12th Grade Registration</label>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$twelveN" name="12n" id="level12" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$twelveC" name="12c" id="level12" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$twelveM" name="12m" id="level12" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$twelveS" name="12s" id="level12" required>
-						</div>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-2 col-xs-4 control-label" for="schoolName">Registration Charges</label>
-					<div class="input-prepend col-sm-3 col-xs-8">
-						<div class="input-group">
-							<span class="input-group-addon">$</span>
-							<input type="text" class="form-control" name="cost" id="cost" value="0" readonly>
-							<span class="input-group-addon">.00</span>
-						</div>
-					</div>
-				</div>
-
-				<div class="form-group">
+				<div class="form-group" id="makeAccount">
 					<p class="help-block">
 						An account allows you to check your scores <em>online</em> during and after the competition and review your registration.
 					</p>
@@ -270,7 +138,7 @@
 					</div>
 				</div>
 
-				<div id="acc">
+				<div id="accountCreds">
 					<div class="form-group">
 						<label class="col-sm-2 col-xs-4 control-label" for="password">Password</label>
 						<div class="input-prepend col-sm-5 col-xs-8">
@@ -290,6 +158,78 @@
 								<input type="password" class="form-control" pattern=".{8,}" title="Passwords must be at least 8 characters" id="confPassword" name="confPassword" value='' maxlength="32" required>
 							</div>
 							#if($passwordError) <span class="help-block">Those passwords didn't match, try again.</span> #end
+						</div>
+					</div>
+				</div>
+				<div class="lead">Registrations</div>
+				<div class="col-md-offset-1 col-md-10">
+					<table class="table table-striped table-condensed table-hover table-responsive">
+						<thead>
+							<tr>
+								<th></th>
+								<th class="col-xs-3 text-center">Student Name</th>
+								<th class="col-xs-1 text-center" style="border-right: 2px solid #ddd;">Grade</th>
+								<th class="col-xs-2 text-center">Number Sense</th>
+								<th class="col-xs-2 text-center">Calculator</th>
+								<th class="col-xs-2 text-center">Math</th>
+								<th class="col-xs-2 text-center">Science</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class="text-center">
+									<span class="btn btn-xs btn-default tableBtn deleteBtn"><i class="glyphicon glyphicon-remove"></i></span>
+								</td>
+								<td><input type="text" class="form-control input-sm" required></td>
+								<td class="text-center">
+									<select class="midGrades">
+										<option value="6">6</option>
+										<option value="7">7</option>
+										<option value="8">8</option>
+									</select>
+									<select class="highGrades">
+										<option value="9">9</option>
+										<option value="10">10</option>
+										<option value="11">11</option>
+										<option value="12">12</option>
+									</select>
+								</td>
+								<td class="text-center"><input type="checkbox" class="testCheckbox"></td>
+								<td class="text-center"><input type="checkbox" class="testCheckbox"></td>
+								<td class="text-center"><input type="checkbox" class="testCheckbox"></td>
+								<td class="text-center"><input type="checkbox" class="testCheckbox"></td>
+							</tr>
+							<tr id="addOptions">
+								<td class="text-center" colspan=2>
+									<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="1">
+										<i class="glyphicon glyphicon-plus"></i>
+										Add a student
+									</span>
+								</td>
+								<td class="text-center" colspan=2>
+									<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="5">
+										<i class="glyphicon glyphicon-plus"></i>
+										Add 5 students
+									</span>
+								</td>
+								<td class="text-center" colspan=2>
+									<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="10">
+										<i class="glyphicon glyphicon-plus"></i>
+										Add 10 students
+									</span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2 col-xs-4 control-label" for="schoolName">Registration Charges</label>
+					<div class="input-prepend col-sm-3 col-xs-8">
+						<div class="input-group">
+							<span class="input-group-addon">$</span>
+							<input type="text" class="form-control" name="cost" id="cost" value="0" readonly>
+							<span class="input-group-addon">.00</span>
 						</div>
 					</div>
 				</div>

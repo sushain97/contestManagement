@@ -20,25 +20,21 @@ package contestWebsite;
 import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
-import util.HTMLCompressor;
+import util.Pair;
 import util.Password;
 import util.UserCookie;
 
@@ -54,20 +50,18 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 
 @SuppressWarnings("serial")
-public class AdminPanel extends HttpServlet
+public class AdminPanel extends BaseHttpServlet
 {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
 		ve.init();
-		Template t = ve.getTemplate("adminPanel.html");
 		VelocityContext context = new VelocityContext();
-		
-		context.put("year", Calendar.getInstance().get(Calendar.YEAR));
+		Pair<Entity, UserCookie> infoAndCookie = init(context, req);
 
-		UserCookie userCookie = UserCookie.getCookie(req);
-		boolean loggedIn = userCookie != null && userCookie.authenticate();
+		UserCookie userCookie = infoAndCookie.y;
+		boolean loggedIn = (boolean) context.get("loggedIn");
 
 		String updated = req.getParameter("updated");
 		if(updated != null && updated.equals("1") && !loggedIn)
@@ -76,21 +70,15 @@ public class AdminPanel extends HttpServlet
 
 		if(loggedIn && userCookie.isAdmin())
 		{
-			context.put("user", userCookie.getUsername());
-			context.put("admin", true);
-
-			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-			Query query = new Query("contestInfo");
 			String endDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
 			String startDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
-			String email = "", account = "", docHigh = "", docMiddle = "", docAccount = "";
+			String email = "", account = "", docHigh = "", docMiddle = "", docAccount = "", levels = "", title = "";
 			Boolean complete = null, testingMode = null, hideFullNames = null;
 			Object price = "";
-			List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-			if(info.size() != 0)
+			
+			Entity contestInfo = infoAndCookie.x;
+			if(contestInfo != null)
 			{
-				Entity contestInfo = info.get(0);
 				endDate = (String) contestInfo.getProperty("endDate");
 				startDate = (String) contestInfo.getProperty("startDate");
 				email = (String) contestInfo.getProperty("email");
@@ -98,13 +86,14 @@ public class AdminPanel extends HttpServlet
 				docMiddle = (String) contestInfo.getProperty("docMiddle");
 				docHigh = (String) contestInfo.getProperty("docHigh");
 				docAccount = (String) contestInfo.getProperty("docAccount");
+				levels = (String) contestInfo.getProperty("levels");
+				title = (String) contestInfo.getProperty("title");
 				price = contestInfo.getProperty("price");
 				complete = (Boolean) contestInfo.getProperty("complete");
 				testingMode = (Boolean) contestInfo.getProperty("testingMode");
 				hideFullNames = (Boolean) contestInfo.getProperty("hideFullNames");
 			}
 
-			context.put("loggedIn", loggedIn);
 			context.put("confPassError", req.getParameter("confPassError") != null && req.getParameter("confPassError").equals("1") ? "Those passwords didn't match, try again." : null);
 			context.put("passError", req.getParameter("passError") != null && req.getParameter("passError").equals("1") ? "That password is incorrect, try again." : null);
 			context.put("account", account == null ? "" : account);
@@ -112,6 +101,8 @@ public class AdminPanel extends HttpServlet
 			context.put("docAccount", docAccount == null ? "" : docAccount);
 			context.put("docHigh", docHigh == null ? "" : docHigh);
 			context.put("docMiddle", docMiddle == null ? "" : docMiddle);
+			context.put("levels", levels == null ? "" : levels);
+			context.put("title", title == null ? "" : title);
 			context.put("complete", complete);
 			context.put("testingMode", testingMode);
 			context.put("hideFullNames", hideFullNames);
@@ -119,12 +110,7 @@ public class AdminPanel extends HttpServlet
 			context.put("startDate", startDate == null ? new SimpleDateFormat("MM/dd/yyyy").format(new Date()) : startDate);
 			context.put("endDate", endDate == null ? new SimpleDateFormat("MM/dd/yyyy").format(new Date()) : endDate);
 			
-			StringWriter sw = new StringWriter();
-			t.merge(context, sw);
-			sw.close();
-			resp.setContentType("text/html");
-			resp.setHeader("X-Frame-Options", "SAMEORIGIN");
-			resp.getWriter().print(HTMLCompressor.customCompress(sw));
+			close(context, ve.getTemplate("adminPanel.html"), resp);
 		}
 		else
 			resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Contest Administrator privileges required for that operation");
@@ -138,14 +124,7 @@ public class AdminPanel extends HttpServlet
 		if(loggedIn && userCookie.isAdmin())
 		{
 			Map<String, String[]> params = req.getParameterMap();
-			String endDate = params.get("endDate")[0];
-			String startDate = params.get("startDate")[0];
-			String email = params.get("email")[0];
-			String account = params.get("account")[0];
-			int price = Integer.parseInt(params.get("price")[0]);
-			Boolean complete = params.get("complete") != null;
-			Boolean hideFullNames = params.get("fullnames") != null;
-			Boolean testingMode = params.get("testing") != null && !params.containsKey("changePass");
+			boolean testingMode = params.get("testing") != null && !params.containsKey("changePass");
 
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 			Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
@@ -153,20 +132,18 @@ public class AdminPanel extends HttpServlet
 			{
 				Query query = new Query("contestInfo");
 				List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-				Entity contestInfo;
-				if(info.size() != 0)
-					contestInfo = info.get(0);
-				else
-					contestInfo =  new Entity("contestInfo");
+				Entity contestInfo = info.size() != 0 ? info.get(0) : new Entity("contestInfo");
 
-				contestInfo.setProperty("endDate", endDate);
-				contestInfo.setProperty("startDate", startDate);
-				contestInfo.setProperty("email", email);
-				contestInfo.setProperty("account", account);
-				contestInfo.setProperty("price", price);
-				contestInfo.setProperty("complete", complete);
+				contestInfo.setProperty("endDate", params.get("endDate")[0]);
+				contestInfo.setProperty("startDate", params.get("startDate")[0]);
+				contestInfo.setProperty("email", params.get("email")[0]);
+				contestInfo.setProperty("account", params.get("account")[0]);
+				contestInfo.setProperty("price", Integer.parseInt(params.get("price")[0]));
+				contestInfo.setProperty("complete", params.get("complete") != null);
 				contestInfo.setProperty("testingMode", testingMode);
-				contestInfo.setProperty("hideFullNames", hideFullNames);
+				contestInfo.setProperty("hideFullNames", params.get("fullnames") != null);
+				contestInfo.setProperty("levels", params.get("levels")[0]);
+				contestInfo.setProperty("title", params.get("title")[0]);
 
 				if(params.containsKey("update"))
 				{

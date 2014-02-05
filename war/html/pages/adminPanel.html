@@ -31,6 +31,28 @@
 		<form method="post" class="form-horizontal">
 			<fieldset>
 				<div class="form-group">
+					<label class="col-sm-2 control-label" for="title">Contest Title</label>
+					<div class="col-sm-6">
+						<input type="text" value="$title" name="title" class="form-control" required>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label class="col-sm-2 col-xs-5 control-label" for="levels">School Levels</label>
+					<div class="input-group col-sm-5 col-xs-7">
+						<label class="radio-inline">
+							<input type="radio" name="levels" value="middle" #if($levels == "middle") checked #end> Middle
+						</label> 
+						<label class="radio-inline">
+							<input type="radio" name="levels" value="high" #if($levels == "high") checked #end> High
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="levels" value="middle+high" #if($levels == "middle+high" || !$levels) checked #end> Middle &amp; High
+						</label>
+					</div>
+				</div>
+				
+				<div class="form-group">
 					<label class="col-sm-2 control-label" for="datepicker">Registration Dates</label>
 					<div class="input-daterange input-group" id="datepicker" data-date-format="mm/dd/yyyy" data-date-start-date="$startDate">
 					    <input type="text" class="col-sm-3 form-control" name="startDate" value="$startDate">

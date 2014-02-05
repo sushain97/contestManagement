@@ -18,20 +18,16 @@
 package contestWebsite;
 
 import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Calendar;
 import java.util.List;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
-import util.HTMLCompressor;
+import util.Pair;
 import util.UserCookie;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -45,7 +41,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 @SuppressWarnings("serial")
-public class ViewScores extends HttpServlet
+public class ViewScores extends BaseHttpServlet
 {
 	@SuppressWarnings("deprecation")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
@@ -53,17 +49,13 @@ public class ViewScores extends HttpServlet
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
 		ve.init();
-		Template t = ve.getTemplate("schoolScores.html");
 		VelocityContext context = new VelocityContext();
-		
-		UserCookie userCookie = UserCookie.getCookie(req);
-		Entity user = null;
-		if(userCookie != null)
-			user = userCookie.authenticateUser();
-		boolean loggedIn = userCookie != null && user != null;
+		Pair<Entity, UserCookie> infoAndCookie = init(context, req);
 
-		context.put("year", Calendar.getInstance().get(Calendar.YEAR));
-		context.put("loggedIn", loggedIn);
+		UserCookie userCookie = infoAndCookie.y;
+		Entity user = userCookie != null ? userCookie.authenticateUser() : null;
+		boolean loggedIn = (boolean) context.get("loggedIn");
+		
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 		if(loggedIn && !userCookie.isAdmin())
@@ -85,16 +77,9 @@ public class ViewScores extends HttpServlet
 			if(html.size() != 0)
 				context.put("html", ((com.google.appengine.api.datastore.Text) html.get(0).getProperty("html")).getValue());
 
-			query = new Query("contestInfo");
-			Entity info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
-			context.put("date", info.getProperty("updated"));
+			context.put("date", infoAndCookie.x.getProperty("updated"));
 
-			StringWriter sw = new StringWriter();
-			t.merge(context, sw);
-			sw.close();
-			resp.setContentType("text/html");
-			resp.setHeader("X-Frame-Options", "SAMEORIGIN");
-			resp.getWriter().print(HTMLCompressor.customCompress(sw));
+			close(context, ve.getTemplate("schoolScores.html"), resp);
 		}
 		else
 			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User account required for that operation");

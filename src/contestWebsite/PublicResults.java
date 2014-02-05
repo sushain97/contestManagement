@@ -18,20 +18,16 @@
 package contestWebsite;
 
 import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Calendar;
 import java.util.List;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
-import util.HTMLCompressor;
+import util.Pair;
 import util.UserCookie;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -47,29 +43,24 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import contestTabulation.Test;
 
 @SuppressWarnings("serial")
-public class PublicResults extends HttpServlet
+public class PublicResults extends BaseHttpServlet
 {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
-		UserCookie userCookie = UserCookie.getCookie(req);
-		Entity user = null;
-		if(userCookie != null)
-			user = userCookie.authenticateUser();
-		boolean loggedIn = userCookie != null && user != null;
-
-		if(!loggedIn && req.getParameter("refresh") != null && req.getParameter("refresh").equals("1"))
-			resp.sendRedirect("/?refresh=1");
-
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
 		ve.init();
-		Template t = ve.getTemplate("publicResults.html");
 		VelocityContext context = new VelocityContext();
-		
-		context.put("year", Calendar.getInstance().get(Calendar.YEAR));
-		context.put("loggedIn", loggedIn);
+		Pair<Entity, UserCookie> infoAndCookie = init(context, req);
+
+		UserCookie userCookie = infoAndCookie.y;
+		Entity user = userCookie != null ? userCookie.authenticateUser() : null;
+		boolean loggedIn = (boolean) context.get("loggedIn");
 		
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		
+		if(!loggedIn && req.getParameter("refresh") != null && req.getParameter("refresh").equals("1"))
+			resp.sendRedirect("/?refresh=1");
 		
 		if(loggedIn)
 		{
@@ -86,13 +77,13 @@ public class PublicResults extends HttpServlet
 				context.put("name", "Contest Administrator");
 			}
 		}
-		Query query = new Query("contestInfo");
-		List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-		if(info.size() != 0)
+		
+		Entity contestInfo = infoAndCookie.x;
+		if(contestInfo != null)
 		{
-			if(info.get(0).getProperty("testsGraded") != null)
+			if(contestInfo.getProperty("testsGraded") != null)
 			{
-				String testsGradedString = (String) info.get(0).getProperty("testsGraded");
+				String testsGradedString = (String) contestInfo.getProperty("testsGraded");
 				String[] testsGraded = testsGradedString.substring(1, testsGradedString.length() - 1).split(",");
 				for(int i = 0; i < testsGraded.length; i++)
 					testsGraded[i] = testsGraded[i].trim().toUpperCase();
@@ -100,7 +91,7 @@ public class PublicResults extends HttpServlet
 				context.put("Test", Test.class);
 			}
 			
-			Object complete = info.get(0).getProperty("complete");
+			Object complete = contestInfo.getProperty("complete");
 			if((complete != null && (Boolean) complete) || (loggedIn && userCookie.isAdmin()))
 			{
 				context.put("complete", true);
@@ -115,11 +106,11 @@ public class PublicResults extends HttpServlet
 					{
 						Filter typeFilter = new FilterPredicate("type", FilterOperator.EQUAL, types[1]);
 						Filter filter = CompositeFilterOperator.and(typeFilter, levelFilter);
-						query = new Query("html").setFilter(filter);
+						Query query = new Query("html").setFilter(filter);
 						List<Entity> html = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 						if(!html.isEmpty())
 						{
-							context.put("hideFullNames", info.get(0).getProperty("hideFullNames"));
+							context.put("hideFullNames", contestInfo.getProperty("hideFullNames"));
 							context.put("html", ((com.google.appengine.api.datastore.Text) html.get(0).getProperty("html")).getValue());
 						}
 					}
@@ -128,11 +119,11 @@ public class PublicResults extends HttpServlet
 						Filter typeFilter = new FilterPredicate("type", FilterOperator.EQUAL, types[1]);
 						Filter testFilter = new FilterPredicate("test", FilterOperator.EQUAL, types[2]);
 						Filter filter = CompositeFilterOperator.and(CompositeFilterOperator.and(typeFilter, levelFilter), testFilter);
-						query = new Query("html").setFilter(filter);
+						Query query = new Query("html").setFilter(filter);
 						List<Entity> html = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 						if(!html.isEmpty())
 						{
-							context.put("hideFullNames", info.get(0).getProperty("hideFullNames"));
+							context.put("hideFullNames", contestInfo.getProperty("hideFullNames"));
 							context.put("html", ((com.google.appengine.api.datastore.Text) html.get(0).getProperty("html")).getValue());
 						}
 					}
@@ -140,7 +131,7 @@ public class PublicResults extends HttpServlet
 				else
 					context.put("overview", true);
 
-				context.put("date", info.get(0).getProperty("updated"));
+				context.put("date", contestInfo.getProperty("updated"));
 			}
 			else
 				context.put("complete", false);
@@ -148,11 +139,6 @@ public class PublicResults extends HttpServlet
 		else
 			context.put("complete", false);
 
-		StringWriter sw = new StringWriter();
-		t.merge(context, sw);
-		sw.close();
-		resp.setContentType("text/html");
-		resp.setHeader("X-Frame-Options", "SAMEORIGIN");
-		resp.getWriter().print(HTMLCompressor.customCompress(sw));
+		close(context, ve.getTemplate("publicResults.html"), resp);
 	}
 }

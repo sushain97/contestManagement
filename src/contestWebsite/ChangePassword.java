@@ -45,6 +45,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
 import util.HTMLCompressor;
+import util.Pair;
 import util.Password;
 import util.UserCookie;
 
@@ -60,24 +61,19 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Transaction;
 
 @SuppressWarnings({ "serial", "unused" })
-public class ChangePassword extends HttpServlet
+public class ChangePassword extends BaseHttpServlet
 {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
 		ve.init();
-		Template t = ve.getTemplate("changePassword.html");
 		VelocityContext context = new VelocityContext();
-		
-		UserCookie userCookie = UserCookie.getCookie(req);
-		Entity user = null;
-		if(userCookie != null)
-			user = userCookie.authenticateUser();
-		boolean loggedIn = userCookie != null && user != null;
+		Pair<Entity, UserCookie> infoAndCookie = init(context, req);
 
-		context.put("year", Calendar.getInstance().get(Calendar.YEAR));
-		context.put("loggedIn", loggedIn);
+		UserCookie userCookie = infoAndCookie.y;
+		boolean loggedIn = (boolean) context.get("loggedIn");
+		
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 		if(loggedIn && !userCookie.isAdmin())
@@ -85,12 +81,8 @@ public class ChangePassword extends HttpServlet
 			context.put("updated", req.getParameter("updated"));
 			context.put("passError", req.getParameter("passError"));
 			context.put("confPassError", req.getParameter("confPassError"));
-			StringWriter sw = new StringWriter();
-			t.merge(context, sw);
-			sw.close();
-			resp.setContentType("text/html");
-			resp.setHeader("X-Frame-Options", "SAMEORIGIN");
-			resp.getWriter().print(HTMLCompressor.customCompress(sw));
+			
+			close(context, ve.getTemplate("changePassword.html"), resp);
 		}
 		else
 			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User account required for that operation");
@@ -100,9 +92,7 @@ public class ChangePassword extends HttpServlet
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
 		UserCookie userCookie = UserCookie.getCookie(req);
-		Entity user = null;
-		if(userCookie != null)
-			user = userCookie.authenticateUser();
+		Entity user = userCookie != null ? userCookie.authenticateUser() : null;
 		boolean loggedIn = userCookie != null && user != null;
 		
 		if(loggedIn)

@@ -18,23 +18,18 @@
 package contestWebsite;
 
 import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.tools.generic.EscapeTool;
 
-import util.HTMLCompressor;
+import util.Pair;
 import util.UserCookie;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -52,7 +47,7 @@ import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
 
 @SuppressWarnings("serial")
-public class Data extends HttpServlet
+public class Data extends BaseHttpServlet
 {
 	@SuppressWarnings("deprecation")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
@@ -60,21 +55,17 @@ public class Data extends HttpServlet
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
 		ve.init();
-		Template t = ve.getTemplate("data.html");
 		VelocityContext context = new VelocityContext();
 		
-		context.put("year", Calendar.getInstance().get(Calendar.YEAR));
+		Pair<Entity, UserCookie> infoAndCookie = init(context, req);
 
-		UserCookie userCookie = UserCookie.getCookie(req);
-		boolean loggedIn = userCookie != null && userCookie.authenticate();
+		UserCookie userCookie = infoAndCookie.y;
+		boolean loggedIn = (boolean) context.get("loggedIn");
 
 		if(!loggedIn || !userCookie.isAdmin())
 			resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Contest Administrator privileges required for that operation");
 		else
 		{
-			context.put("user", userCookie.getUsername());
-			context.put("admin", true);
-
 			String choice = req.getParameter("choice");
 			if(choice == null)
 				resp.sendRedirect("/data?choice=overview");
@@ -176,13 +167,7 @@ public class Data extends HttpServlet
 				return;
 			}
 
-			context.put("loggedIn", loggedIn);
-			StringWriter sw = new StringWriter();
-			t.merge(context, sw);
-			sw.close();
-			resp.setContentType("text/html");
-			resp.setHeader("X-Frame-Options", "SAMEORIGIN");
-			resp.getWriter().print(HTMLCompressor.customCompress(sw));
+			close(context, ve.getTemplate("data.html"), resp);
 		}
 	}
 

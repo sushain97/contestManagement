@@ -22,7 +22,6 @@ import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.security.NoSuchAlgorithmException;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
 
@@ -32,7 +31,6 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -43,7 +41,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
 import util.Captcha;
-import util.HTMLCompressor;
+import util.Pair;
 import util.UserCookie;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -55,25 +53,20 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Transaction;
 
 @SuppressWarnings("serial")
-public class ContactUs extends HttpServlet
+public class ContactUs extends BaseHttpServlet
 {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
 		ve.init();
-		Template t = ve.getTemplate("contactUs.html");
 		VelocityContext context = new VelocityContext();
-		
-		context.put("year", Calendar.getInstance().get(Calendar.YEAR));
+		Pair<Entity, UserCookie> infoAndCookie = init(context, req);
 
-		UserCookie userCookie = UserCookie.getCookie(req);
-		Entity user = null;
-		if(userCookie != null)
-			user = userCookie.authenticateUser();
-		boolean loggedIn = userCookie != null && user != null;
+		UserCookie userCookie = infoAndCookie.y;
+		boolean loggedIn = (boolean) context.get("loggedIn");
+		Entity user = userCookie != null ? userCookie.authenticateUser() : null;
 
-		context.put("loggedIn", loggedIn);
 		if(loggedIn)
 		{
 			context.put("admin", userCookie.isAdmin());
@@ -113,12 +106,7 @@ public class ContactUs extends HttpServlet
 			
 			context.put("updated", req.getParameter("updated"));
 			
-			StringWriter sw = new StringWriter();
-			t.merge(context, sw);
-			sw.close();
-			resp.setContentType("text/html");
-			resp.setHeader("X-Frame-Options", "SAMEORIGIN");
-			resp.getWriter().print(HTMLCompressor.customCompress(sw));
+			close(context, ve.getTemplate("contactUs.html"), resp);
 		}
 		catch (NoSuchAlgorithmException e)
 		{

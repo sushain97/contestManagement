@@ -56,11 +56,7 @@ public class CreateAdmin extends HttpServlet
 		
 		Query query = new Query("contestInfo");
 		List<Entity> infos = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-		Entity info;
-		if(infos.size() > 0)
-			info = infos.get(0);
-		else
-			info = new Entity("contestInfo");
+		Entity info = infos.size() > 0 ? infos.get(0) : new Entity("contestInfo");
 		info.setProperty("testingMode", true);
 		datastore.put(info);
 	}

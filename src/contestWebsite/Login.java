@@ -18,22 +18,19 @@
 package contestWebsite;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.net.URLEncoder;
 import java.util.Calendar;
 import java.util.List;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
-import util.HTMLCompressor;
+import util.Pair;
 import util.Password;
 import util.UserCookie;
 
@@ -46,7 +43,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Transaction;
 
 @SuppressWarnings("serial")
-public class Login extends HttpServlet
+public class Login extends BaseHttpServlet
 {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
@@ -59,14 +56,13 @@ public class Login extends HttpServlet
 			VelocityEngine ve = new VelocityEngine();
 			ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
 			ve.init();
-			Template t = ve.getTemplate("login.html");
 			VelocityContext context = new VelocityContext();
+			Pair<Entity, UserCookie> infoAndCookie = init(context, req);
 			
 			String user = req.getParameter("user");
 			String error = req.getParameter("error");
 			context.put("year", Calendar.getInstance().get(Calendar.YEAR));
 			context.put("username", user == null ? "" : user);
-			context.put("loggedIn", false);
 
 			if("401".equals(error))
 				error = "Invalid login";
@@ -76,18 +72,11 @@ public class Login extends HttpServlet
 				error = null;
 			context.put("error", error);
 			
-			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-			Query query = new Query("contestInfo");
-			List<Entity> infos = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-			if(infos.size() > 0 && infos.get(0).getProperty("testingMode") != null && (Boolean) infos.get(0).getProperty("testingMode"))
+			Entity contestInfo = infoAndCookie.x;
+			if(contestInfo != null && contestInfo.hasProperty("testingMode") && (Boolean) contestInfo.getProperty("testingMode"))
 				context.put("testingMode", true);
 
-			StringWriter sw = new StringWriter();
-			t.merge(context, sw);
-			sw.close();
-			resp.setContentType("text/html");
-			resp.setHeader("X-Frame-Options", "SAMEORIGIN");
-			resp.getWriter().print(HTMLCompressor.customCompress(sw));
+			close(context, ve.getTemplate("login.html"), resp);
 		}
 	}
 

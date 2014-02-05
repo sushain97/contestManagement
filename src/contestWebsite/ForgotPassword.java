@@ -43,6 +43,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
 import util.HTMLCompressor;
+import util.Pair;
 import util.Password;
 import util.UserCookie;
 
@@ -55,7 +56,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Transaction;
 
 @SuppressWarnings({ "serial", "unused" })
-public class ForgotPassword extends HttpServlet
+public class ForgotPassword extends BaseHttpServlet
 {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
@@ -63,45 +64,30 @@ public class ForgotPassword extends HttpServlet
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
 		ve.init();
 		VelocityContext context = new VelocityContext();
-		
-		context.put("year", Calendar.getInstance().get(Calendar.YEAR));
+		Pair<Entity, UserCookie> infoAndCookie = init(context, req);
 
-		UserCookie userCookie = UserCookie.getCookie(req);
-
-		Entity user = null;
-		if(userCookie != null)
-			user = userCookie.authenticateUser();
-		boolean loggedIn = userCookie != null && user != null;
+		UserCookie userCookie = infoAndCookie.y;
+		boolean loggedIn = (boolean) context.get("loggedIn");
 
 		String noise = req.getParameter("noise");
 		String updatedPass = req.getParameter("updatedPass");
 		String error = req.getParameter("error");
 
-		context.put("loggedIn", loggedIn);
 		if(loggedIn && !userCookie.isAdmin())
 			resp.sendRedirect("/signout");
 		else if(noise == null && updatedPass == null && error == null)
 		{
 			context.put("updated", req.getParameter("updated"));
-			StringWriter sw = new StringWriter();
-			Template t = ve.getTemplate("forgotPass.html");
-			t.merge(context, sw);
-			sw.close();
-			resp.setContentType("text/html");
-			resp.getWriter().print(HTMLCompressor.customCompress(sw));
+			
+			close(context, ve.getTemplate("forgotPass.html"), resp);
 		}
 		else
 		{
 			context.put("noise", noise);
 			context.put("updated", updatedPass);
 			context.put("error", error);
-			StringWriter sw = new StringWriter();
-			Template t = ve.getTemplate("resetPass.html");
-			t.merge(context, sw);
-			sw.close();
-			resp.setContentType("text/html");
-			resp.setHeader("X-Frame-Options", "SAMEORIGIN");
-			resp.getWriter().print(HTMLCompressor.customCompress(sw));
+			
+			close(context, ve.getTemplate("resetPass.html"), resp);
 		}
 	}
 

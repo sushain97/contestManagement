@@ -17,13 +17,14 @@
 
 package contestWebsite;
 
+import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,7 +39,6 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -49,7 +49,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
 import util.Captcha;
-import util.HTMLCompressor;
+import util.Pair;
 import util.Password;
 import util.PropNames;
 import util.UserCookie;
@@ -63,10 +63,8 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
 
-import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
-
 @SuppressWarnings("serial")
-public class Registration extends HttpServlet
+public class Registration extends BaseHttpServlet
 {
 	@SuppressWarnings("unchecked")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
@@ -74,33 +72,21 @@ public class Registration extends HttpServlet
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
 		ve.init();
-		Template t = ve.getTemplate("registration.html");
 		VelocityContext context = new VelocityContext();
-		
-		context.put("year", Calendar.getInstance().get(Calendar.YEAR));
+		Pair<Entity, UserCookie> infoAndCookie = init(context, req);
+		boolean loggedIn = (boolean) context.get("loggedIn");
 
-		UserCookie userCookie = UserCookie.getCookie(req);
-		boolean loggedIn = userCookie != null && userCookie.authenticate();
-
-		context.put("loggedIn", loggedIn);
 		if(loggedIn)
-		{
-			context.put("admin", userCookie.isAdmin());
-			context.put("user", userCookie.getUsername());
 			context.put("registrationError", "You are already registered.");
-		}
 
 		String endDateStr = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
 		String startDateStr = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
 
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Query query = new Query("contestInfo");
-		List<Entity> infos = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-		if(infos.size() != 0)
+		Entity contestInfo = infoAndCookie.x;
+		if(contestInfo != null)
 		{
-			Entity info = infos.get(0);
-			endDateStr = (String) info.getProperty("endDate");
-			startDateStr = (String) info.getProperty("startDate");
+			endDateStr = (String) contestInfo.getProperty("endDate");
+			startDateStr = (String) contestInfo.getProperty("startDate");
 
 			Date endDate = new Date();
 			Date startDate = new Date();
@@ -120,8 +106,8 @@ public class Registration extends HttpServlet
 			else
 				context.put("registrationError", "");
 
-			if(info.getProperty("price") != null)
-				context.put("price", (Long) info.getProperty("price"));
+			if(contestInfo.getProperty("price") != null)
+				context.put("price", (Long) contestInfo.getProperty("price"));
 			else
 				context.put("price", 5);
 		}
@@ -219,12 +205,7 @@ public class Registration extends HttpServlet
 		if(userError != null || passwordError != null)
 			context.put("error", true);
 
-		StringWriter sw = new StringWriter();
-		t.merge(context, sw);
-		sw.close();
-		resp.setContentType("text/html");
-		resp.setHeader("X-Frame-Options", "SAMEORIGIN");
-		resp.getWriter().print(HTMLCompressor.customCompress(sw));
+		close(context, ve.getTemplate("registration.html"), resp);
 	}
 
 	@SuppressWarnings({ "deprecation", "unchecked" })
@@ -333,7 +314,6 @@ public class Registration extends HttpServlet
 					List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 					if(info.size() != 0 && info.get(0).getProperty("price") != null)
 						price = (Long) info.get(0).getProperty("price");
-
 
 					int cost = 0;
 					for(Entry<String,Integer> test : nums.entrySet())

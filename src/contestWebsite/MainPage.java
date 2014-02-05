@@ -18,24 +18,20 @@
 package contestWebsite;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.tools.generic.EscapeTool;
 
-import util.HTMLCompressor;
+import util.Pair;
 import util.PropNames;
 import util.UserCookie;
 
@@ -47,7 +43,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 
 @SuppressWarnings("serial")
-public class MainPage extends HttpServlet
+public class MainPage extends BaseHttpServlet
 {
 	private final static String[] captions = { "",
 		"Bobby S. awarded first place in Math by Larry White",
@@ -92,23 +88,19 @@ public class MainPage extends HttpServlet
 	@SuppressWarnings("deprecation")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
-		UserCookie userCookie = UserCookie.getCookie(req);
-		Entity user = null;
-		if(userCookie != null)
-			user = userCookie.authenticateUser();
-		boolean loggedIn = userCookie != null && user != null;
-
-		if(!loggedIn && req.getParameter("refresh") != null && req.getParameter("refresh").equals("1"))
-			resp.sendRedirect("/?refresh=1");
-
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
 		ve.init();
-		Template t = ve.getTemplate("main.html");
 		VelocityContext context = new VelocityContext();
+		Pair<Entity, UserCookie> infoAndCookie = init(context, req);
+
+		UserCookie userCookie = infoAndCookie.y;
+		Entity user = userCookie != null ? userCookie.authenticateUser() : null;
+		boolean loggedIn = (boolean) context.get("loggedIn");
 		
-		context.put("year", Calendar.getInstance().get(Calendar.YEAR));
-		context.put("loggedIn", loggedIn);
+		if(!loggedIn && req.getParameter("refresh") != null && req.getParameter("refresh").equals("1"))
+			resp.sendRedirect("/?refresh=1");
+		
 		if(loggedIn)
 		{
 			if(!userCookie.isAdmin())
@@ -146,11 +138,6 @@ public class MainPage extends HttpServlet
 		context.put("captions", captions);
 		context.put("esc", new EscapeTool());
 
-		StringWriter sw = new StringWriter();
-		t.merge(context, sw);
-		sw.close();
-		resp.setContentType("text/html");
-		resp.setHeader("X-Frame-Options", "SAMEORIGIN");
-		resp.getWriter().print(HTMLCompressor.customCompress(sw));
+		close(context, ve.getTemplate("main.html"), resp);
 	}
 }

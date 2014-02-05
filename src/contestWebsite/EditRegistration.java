@@ -20,23 +20,19 @@ package contestWebsite;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 
 import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
-import util.HTMLCompressor;
+import util.Pair;
 import util.UserCookie;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -52,27 +48,21 @@ import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
 
 @SuppressWarnings("serial")
-public class EditRegistration extends HttpServlet
+public class EditRegistration extends BaseHttpServlet
 {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
 		ve.init();
-		Template t = ve.getTemplate("editRegistration.html");
 		VelocityContext context = new VelocityContext();
+		Pair<Entity, UserCookie> infoAndCookie = init(context, req);
 
-		context.put("year", Calendar.getInstance().get(Calendar.YEAR));
-
-		UserCookie userCookie = UserCookie.getCookie(req);
-		boolean loggedIn = userCookie != null && userCookie.authenticate();
+		UserCookie userCookie = infoAndCookie.y;
+		boolean loggedIn = (boolean) context.get("loggedIn");
 
 		if(loggedIn && userCookie.isAdmin())
 		{
-			context.put("user", userCookie.getUsername());
-			context.put("admin", true);
-			context.put("loggedIn", loggedIn);
-
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 			Key key = KeyFactory.createKey("registration", Long.parseLong(req.getParameter("key")));
 			try
@@ -135,12 +125,8 @@ public class EditRegistration extends HttpServlet
 					context.put("price", 5);
 
 				context.put("key", key);
-				StringWriter sw = new StringWriter();
-				t.merge(context, sw);
-				sw.close();
-				resp.setContentType("text/html");
-				resp.setHeader("X-Frame-Options", "SAMEORIGIN");
-				resp.getWriter().print(HTMLCompressor.customCompress(sw));
+				
+				close(context, ve.getTemplate("editRegistration.html"), resp);
 			}
 			catch(EntityNotFoundException e)
 			{ 

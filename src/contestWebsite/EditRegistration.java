@@ -32,6 +32,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
+import util.BaseHttpServlet;
 import util.Pair;
 import util.UserCookie;
 

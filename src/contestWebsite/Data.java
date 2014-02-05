@@ -29,6 +29,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.tools.generic.EscapeTool;
 
+import util.BaseHttpServlet;
 import util.Pair;
 import util.UserCookie;
 

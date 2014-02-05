@@ -15,7 +15,7 @@
  * along with this program.  If not, see [http://www.gnu.org/licenses/]. 
  */
 
-package contestWebsite;
+package util;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -29,9 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 
-import util.HTMLCompressor;
-import util.Pair;
-import util.UserCookie;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;

@@ -45,6 +45,7 @@ import javax.servlet.http.HttpSession;
 import net.tanesha.recaptcha.ReCaptchaImpl;
 import net.tanesha.recaptcha.ReCaptchaResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -67,6 +68,8 @@ import com.google.appengine.api.datastore.TransactionOptions;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
+
+import contestTabulation.Test;
 
 @SuppressWarnings("serial")
 public class Registration extends BaseHttpServlet
@@ -181,7 +184,44 @@ public class Registration extends BaseHttpServlet
 							regData.add("<dt>" + PropNames.names.get(key) + "</dt>\n<dd>" + prop.getValue() + "</dd>");
 					}
 					Collections.sort(regData);
+					
+					ArrayList<String> students = new ArrayList<String>();
+					
+					JSONArray studentData = null;
+					try
+					{
+						studentData = new JSONArray((String) sess.getAttribute("studentData"));
+					}
+					catch(JSONException e)
+					{	
+						e.printStackTrace();
+						resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+						return;
+					}
+					
+					for(int i = 0; i < studentData.length(); i++)
+					{
+						try
+						{
+							JSONObject studentRegData = studentData.getJSONObject(i);
+							
+							ArrayList<String> tests = new ArrayList<String>();
+							for(String subject: Test.tests())
+								if(studentRegData.getBoolean(subject))
+									tests.add(Test.letterToName(subject));
+							
+							students.add("<dt>" + studentRegData.getString("name") + " (" + studentRegData.getInt("grade") + "th)</dt>\n<dd>" + StringUtils.join(tests.toArray(), ", ") + "</dd>");
+						}
+						catch(JSONException e)
+						{
+							e.printStackTrace();
+							resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+							return;
+						}
+					}
+					
 					context.put("regData", regData);
+					context.put("studentData", students);
 					sess.invalidate();
 				}
 			}
@@ -295,8 +335,7 @@ public class Registration extends BaseHttpServlet
 					try
 					{
 						JSONObject studentRegData = regData.getJSONObject(i);
-						String[] subjects = {"N", "C", "M", "S"};
-						for(String subject: subjects)
+						for(String subject: Test.tests())
 							cost += price * (studentRegData.getBoolean(subject) ? 1 : 0);
 					}
 					catch(JSONException e)

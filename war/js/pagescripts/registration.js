@@ -16,6 +16,35 @@
  */
 
 $(document).ready(function() {
+	if($('input[name=studentData]').length) {
+		var studentData = JSON.parse($('input[name=studentData]').val());
+		var subjects = ['N', 'C', 'M', 'S'];
+		if(studentData.length > 0)
+			$('.student').remove();
+			
+		$.each(studentData, function() {
+			var tr = $('<tr class="student"></tr>');
+			tr.append($('<td class="text-center"><span class="btn btn-xs btn-default tableBtn deleteBtn"><i class="glyphicon glyphicon-remove"></i></span></td>'));
+			
+			var td = $('<td class="text-center"></td>');
+			td.append($('<input type="text" class="form-control input-sm" value required></td>').val(this["name"]));
+			tr.append(td);
+			
+			var td = $('<td class="text-center"></td>');
+			td.append($('<select class="midGrades"><option value="6">6</option><option value="7">7</option><option value="8">8</option></select>').val(this["grade"]));
+			td.append($('<select class="highGrades"><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select>').val(this["grade"]));
+			tr.append(td);
+			
+			for(var j = 0; j < 4; j++) {
+				var td = $('<td class="text-center"></td>');
+				td.append($('<input type="checkbox" class="testCheckbox">').prop('checked', this[subjects[j]]))
+				tr.append(td);
+			}
+				
+			$('tr#addOptions').before(tr);
+		});
+	}
+	
 	if($('form').length) {
 		EnableSubmit();
 		CalcCost();
@@ -28,8 +57,6 @@ $(document).ready(function() {
 	});
 	
 	$('input[type="number"]').change(CalcCost);
-	$('#captcha').on('keyup', AuthCaptcha);
-	$('#submit').on('click', AuthCaptcha);
 	
 	$(document).on('change', 'table input[type=checkbox]', function() {
 		CalcCost();
@@ -43,7 +70,7 @@ $(document).ready(function() {
 	$('.addStudentBtn').click(function() {
 		var numStudents = $(this).attr('data-numStudents');
 		for(var i = 0; i < numStudents; i++) {
-			var tr = $('<tr></tr>');
+			var tr = $('<tr class="student"></tr>');
 			tr.append($('<td class="text-center"><span class="btn btn-xs btn-default tableBtn deleteBtn"><i class="glyphicon glyphicon-remove"></i></span></td>'));
 			tr.append($('<td><input type="text" class="form-control input-sm" required></td>'));
 			tr.append($('<td class="text-center"><select class="midGrades"><option value="6">6</option><option value="7">7</option><option value="8">8</option></select><select class="highGrades"><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select></td>'));
@@ -56,6 +83,23 @@ $(document).ready(function() {
 	$(document).on('click', '.deleteBtn', function() {
 		var tr = $(this).parents('tr');
 		tr.hide('fast', function() { tr.remove(); });
+	});
+	
+	$('form').submit(function(ev) {
+		var students = [];
+		$.each($('.student'), function() {
+			var td = $('td', this);
+			students.push({
+				"name": $(td[1]).find('input').val(), 
+				"grade": parseInt($(td[2]).find('select:visible').val()),
+				"N": $(td[3]).find('input').prop('checked'),
+				"C": $(td[4]).find('input').prop('checked'),
+				"M": $(td[5]).find('input').prop('checked'),
+				"S": $(td[6]).find('input').prop('checked')
+			});
+		});
+		$('input[name=studentData]').remove();
+		$(this).append($('<input>').attr('type', 'hidden').attr('name', 'studentData').val(JSON.stringify(students)));
 	});
 	
 	$('#passStrength').tooltip({placement: 'right', html: 'true'});
@@ -92,10 +136,14 @@ function CheckAccount() {
 	var account = $('#account').prop('checked') && $('#regType1').prop('checked');
 	$('#password').prop('required', account);
 	$('#confPassword').prop('required', account);
-	if(account) 
+	if(account) {
 		$('#accountCreds').show('fast');
-	else
+		$('#account').prop('checked', true);
+	}
+	else {
 		$('#accountCreds').hide('fast');
+		$('#account').prop('checked', false);
+	}
 	
 	if($('#regType2').prop('checked'))
 		$('#makeAccount').hide('fast');
@@ -109,19 +157,6 @@ function adjustGradeSelect() {
 		$('<style id="gradeSelects"> .midGrades { display: block; } .highGrades { display: none; }</style>').appendTo('head');
 	else
 		$('<style id="gradeSelects"> .midGrades { display: none; } .highGrades { display: block; }</style>').appendTo('head');
-}
-
-function AuthCaptcha() {
-	if (calcMD5($('#salt').val() + $('#captcha').val()) === $('#hash').val()) {
-		$('#submit').prop('disabled', false)
-		$('#answerCaptcha').hide();
-		$('#captcha').closest('.control-group').removeClass('error');
-	} else {
-		$('#captcha').closest('.control-group').addClass('error');
-		$('#submit').prop('disabled', true)
-		$('#answerCaptcha').show();
-		$('#answerCaptcha').html('Answer the captcha correctly to prove that you are not a robot.');
-	}
 }
 
 function EnableSubmit() {

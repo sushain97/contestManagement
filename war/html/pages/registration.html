@@ -28,6 +28,7 @@
 			margin-top: 6px; 
 			padding-top: 2px;
 		}
+		.tooltip { width: 300px !important; }
 	</style>
 </head>
 
@@ -94,6 +95,27 @@
 						#end
 					</div>
 				</div>
+				
+				<div class="form-group">
+					<label class="col-sm-2 col-xs-5 control-label" for="division">Division</label>
+					<div class="input-group col-sm-5 col-xs-7">
+						<label class="radio-inline"> 
+							<input type="radio" name="division" value="1A" #if($division == "1A") checked #end> 1A
+						</label>
+						<label class="radio-inline"> 
+							<input type="radio" name="division" value="2A" #if($division == "2A") checked #end> 2A
+						</label>
+						<label class="radio-inline"> 
+							<input type="radio" name="division" value="3A" #if($division == "3A") checked #end> 3A
+						</label>
+						<label class="radio-inline"> 
+							<input type="radio" name="division" value="4A" #if($division == "4A") checked #end> 4A
+						</label>
+						<label class="radio-inline"> 
+							<input type="radio" name="division" value="5A" #if($division == "5A") checked #end> 5A
+						</label>
+					</div>
+				</div>
 
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-4 control-label" for="schoolName">Official School Name</label>
@@ -146,7 +168,7 @@
 		      					<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
 								<input type="password" class="form-control" pattern=".{8,}" title="Passwords must be at least 8 characters" id="password" name="password" value='' maxlength="32" required>
 							</div>
-							<span id="passHelp" class="help-block">Your password would be broken in <span class="text-info" data-toggle="tooltip" id="passStrength"></span></span>
+							<div id="passHelp" class="help-block">Your password would be broken in <span class="text-info" data-toggle="tooltip" id="passStrength"></span></div>
 						</div>
 					</div>
 
@@ -157,7 +179,7 @@
 		      					<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
 								<input type="password" class="form-control" pattern=".{8,}" title="Passwords must be at least 8 characters" id="confPassword" name="confPassword" value='' maxlength="32" required>
 							</div>
-							#if($passwordError) <span class="help-block">Those passwords didn't match, try again.</span> #end
+							#if($passwordError) <span class="help-block text-danger">Those passwords didn't match, try again.</span> #end
 						</div>
 					</div>
 				</div>
@@ -176,7 +198,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr>
+							<tr class="student">
 								<td class="text-center">
 									<span class="btn btn-xs btn-default tableBtn deleteBtn"><i class="glyphicon glyphicon-remove"></i></span>
 								</td>
@@ -234,19 +256,22 @@
 					</div>
 				</div>
 
-				<div class="form-group">
-					<label class="col-sm-2 col-xs-4 control-label" for="captcha">CAPTCHA</label>
-					<div class="input-group col-sm-5 col-xs-8">
-						<input type="text" name="captcha" class="input-small form-control" id="captcha" placeholder="Answer the question below in the box provided" required>
-						<span class="help-block"></span>
-						<p class="help-block">$captcha</p>
+				<div class="form-group" id="reCaptchaGroup">
+					<div class="input-group col-md-offset-2">
+						<script type="text/javascript"> var RecaptchaOptions = { theme : 'clean' }; </script>
+						<script type="text/javascript" src="//www.google.com/recaptcha/api/challenge?k=$publicKey"></script>
+						<noscript>
+							<iframe src="http://www.google.com/recaptcha/api/noscript?k=$publicKey" height="300" width="500" frameborder="0"></iframe> <br>
+							<textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
+							<input type="hidden" name="recaptcha_response_field" value="manual_challenge">
+						</noscript>
+						#if($captchaError) <span class="help-block text-danger lead">Incorrect captcha, try again.</span> #end
 					</div>
 				</div>
-
-				<input type="hidden" name="hash" id="hash" value="$hash"> 
-				<input type="hidden" name="salt" id="salt" value="$salt"> 
-				<input type="hidden" name="regError" id="regError" value="$registrationError">
 				
+				<input type="hidden" name="regError" id="regError" value="$registrationError">
+				<input type="hidden" name="studentData" id="studentData" value='$studentData'>
+
 				<div class="form-group">
    					<div class="col-sm-offset-2 col-sm-10">
 						<button type="submit" id="submit" class="btn btn-primary" disabled>Submit Registration</button>

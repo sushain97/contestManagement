@@ -21,8 +21,6 @@ import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -71,45 +69,9 @@ public class AdminPanel extends BaseHttpServlet
 
 		if(loggedIn && userCookie.isAdmin())
 		{
-			String endDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
-			String startDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
-			String email = "", account = "", docHigh = "", docMiddle = "", docAccount = "", levels = "", title = "";
-			Boolean complete = null, testingMode = null, hideFullNames = null;
-			Object price = "";
-			
-			Entity contestInfo = infoAndCookie.x;
-			if(contestInfo != null)
-			{
-				endDate = (String) contestInfo.getProperty("endDate");
-				startDate = (String) contestInfo.getProperty("startDate");
-				email = (String) contestInfo.getProperty("email");
-				account = (String) contestInfo.getProperty("account");
-				docMiddle = (String) contestInfo.getProperty("docMiddle");
-				docHigh = (String) contestInfo.getProperty("docHigh");
-				docAccount = (String) contestInfo.getProperty("docAccount");
-				levels = (String) contestInfo.getProperty("levels");
-				title = (String) contestInfo.getProperty("title");
-				price = contestInfo.getProperty("price");
-				complete = (Boolean) contestInfo.getProperty("complete");
-				testingMode = (Boolean) contestInfo.getProperty("testingMode");
-				hideFullNames = (Boolean) contestInfo.getProperty("hideFullNames");
-			}
-
+			context.put("contestInfo", infoAndCookie.x);
 			context.put("confPassError", req.getParameter("confPassError") != null && req.getParameter("confPassError").equals("1") ? "Those passwords didn't match, try again." : null);
 			context.put("passError", req.getParameter("passError") != null && req.getParameter("passError").equals("1") ? "That password is incorrect, try again." : null);
-			context.put("account", account == null ? "" : account);
-			context.put("email", email == null ? "" : email);
-			context.put("docAccount", docAccount == null ? "" : docAccount);
-			context.put("docHigh", docHigh == null ? "" : docHigh);
-			context.put("docMiddle", docMiddle == null ? "" : docMiddle);
-			context.put("levels", levels == null ? "" : levels);
-			context.put("title", title == null ? "" : title);
-			context.put("complete", complete);
-			context.put("testingMode", testingMode);
-			context.put("hideFullNames", hideFullNames);
-			context.put("price", price);
-			context.put("startDate", startDate == null ? new SimpleDateFormat("MM/dd/yyyy").format(new Date()) : startDate);
-			context.put("endDate", endDate == null ? new SimpleDateFormat("MM/dd/yyyy").format(new Date()) : endDate);
 			
 			close(context, ve.getTemplate("adminPanel.html"), resp);
 		}
@@ -145,6 +107,8 @@ public class AdminPanel extends BaseHttpServlet
 				contestInfo.setProperty("hideFullNames", params.get("fullnames") != null);
 				contestInfo.setProperty("levels", params.get("levels")[0]);
 				contestInfo.setProperty("title", params.get("title")[0]);
+				contestInfo.setProperty("publicKey", params.get("publicKey")[0]);
+				contestInfo.setProperty("privateKey", params.get("privateKey")[0]);
 
 				if(params.containsKey("update"))
 				{

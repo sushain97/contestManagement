@@ -21,7 +21,6 @@ import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -43,13 +42,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import net.tanesha.recaptcha.ReCaptchaImpl;
+import net.tanesha.recaptcha.ReCaptchaResponse;
+
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
 import util.BaseHttpServlet;
-import util.Captcha;
 import util.Pair;
 import util.Password;
 import util.PropNames;
@@ -63,6 +64,9 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
+import com.google.appengine.labs.repackaged.org.json.JSONArray;
+import com.google.appengine.labs.repackaged.org.json.JSONException;
+import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 @SuppressWarnings("serial")
 public class Registration extends BaseHttpServlet
@@ -113,6 +117,7 @@ public class Registration extends BaseHttpServlet
 				context.put("price", 5);
 			
 			context.put("levels", (String) contestInfo.getProperty("levels"));
+			context.put("publicKey", (String) contestInfo.getProperty("publicKey"));
 		}
 		else
 		{
@@ -121,32 +126,13 @@ public class Registration extends BaseHttpServlet
 		}
 
 		HttpSession sess = req.getSession(true);
-		try
-		{
-			Captcha captcha = new Captcha();
-			sess.setAttribute("hash", captcha.getHashedAnswer());
-			sess.setAttribute("salt", captcha.getSalt());
-			context.put("captcha", captcha.getQuestion());
-			context.put("hash", captcha.getHashedAnswer());
-			context.put("salt", captcha.getSalt());
-		}
-		catch (NoSuchAlgorithmException e) { e.printStackTrace(); }
-
-		String[] subjects = {"N", "C", "M", "S"};
-		String[] numbers = { "", "one", "two", "three", "four", "five", "six", "seven",
-				"eight", "nine", "ten", "eleven", "twelve" };
 
 		String userError = req.getParameter("userError");
 		String passwordError = req.getParameter("passwordError");
+		String captchaError = req.getParameter("captchaError");
 		
-		if(sess != null && ("1".equals(userError) || "1".equals(passwordError)))
+		if(sess != null && (userError + passwordError + captchaError).contains("1"))
 		{
-			String numString = (String) sess.getAttribute("nums");
-			String[] nums = numString.split(",");
-			for(int i = 6; i <= 12; i++)
-				for(int j = 0; j < 4; j++)
-					context.put(numbers[i] + subjects[j], Integer.parseInt(nums[(i-6)*4+j]));
-
 			if(((String) sess.getAttribute("registrationType")).equals("coach"))
 				context.put("coach", true);
 			else
@@ -163,24 +149,21 @@ public class Registration extends BaseHttpServlet
 				context.put("account", false);
 
 			context.put("schoolName", (String) sess.getAttribute("schoolName"));
-			context.put("aliases", (String) sess.getAttribute("aliases"));
 			context.put("name", (String) sess.getAttribute("name"));
 			context.put("email", (String) sess.getAttribute("email"));
 			context.put("updated", (String) sess.getAttribute("updated"));
+			context.put("division", (String) sess.getAttribute("division"));
+			context.put("studentData", (String) sess.getAttribute("studentData"));
 		}
 		else
 		{
-			for(int i = 6; i <= 12; i++)
-				for(int j = 0; j < 4; j++)
-					context.put(numbers[i] + subjects[j], 0);
-
 			context.put("coach", true);
 			context.put("middle", true);
 			context.put("account", true);
 			context.put("schoolName", "");
-			context.put("aliases", "");
 			context.put("name", "");
 			context.put("email", "");
+			context.put("studentData", "[]");
 		}
 		if("1".equals(req.getParameter("updated")))
 		{
@@ -205,7 +188,8 @@ public class Registration extends BaseHttpServlet
 		}
 		context.put("userError", userError);
 		context.put("passwordError", passwordError);
-		if(userError != null || passwordError != null)
+		context.put("captchaError", captchaError);
+		if(userError != null || passwordError != null || captchaError != null)
 			context.put("error", true);
 
 		close(context, ve.getTemplate("registration.html"), resp);
@@ -215,6 +199,9 @@ public class Registration extends BaseHttpServlet
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		
+		Query query = new Query("contestInfo");
+		Entity contestInfo = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 
 		Map<String, String[]> params = new HashMap<String, String[]>(req.getParameterMap());
 		for(Entry<String, String[]> param : params.entrySet())
@@ -224,190 +211,173 @@ public class Registration extends BaseHttpServlet
 		String account = "no";
 		if(params.containsKey("account"))
 			account = "yes";
-		String aliases = params.get("aliases")[0];
 		String email = params.get("email")[0].toLowerCase();
 		String schoolLevel = params.get("schoolLevel")[0];
 		String schoolName = params.get("schoolName")[0];
 		String name = params.get("name")[0];
+		String division = params.containsKey("division") ? params.get("division")[0] : "";
+		String studentData = req.getParameter("studentData");
 		String password = null;
 		String confPassword = null;
 		
 		HttpSession sess = req.getSession(true);
+		sess.setAttribute("registrationType", registrationType);
+		sess.setAttribute("account", account);
+		sess.setAttribute("account", account);
+		sess.setAttribute("name", name);
+		sess.setAttribute("division", division);
+		sess.setAttribute("schoolName", schoolName);
+		sess.setAttribute("schoolLevel", schoolLevel);
+		sess.setAttribute("email", email);
+		sess.setAttribute("studentData", studentData);
 
-		try
+		String remoteAddr = req.getRemoteAddr();
+		ReCaptchaImpl reCaptcha = new ReCaptchaImpl();
+		reCaptcha.setPrivateKey((String) contestInfo.getProperty("privateKey"));
+
+		String challenge = req.getParameter("recaptcha_challenge_field");
+		String userResponse = req.getParameter("recaptcha_response_field");
+		ReCaptchaResponse reCaptchaResponse = reCaptcha.checkAnswer(remoteAddr, challenge, userResponse);
+		
+		if(!reCaptchaResponse.isValid())
+			resp.sendRedirect("/registration?captchaError=1");
+		else
 		{
-			if(!Captcha.authCaptcha((String) sess.getAttribute("salt"), req.getParameter("captcha"), (String) sess.getAttribute("hash")))
-				resp.sendError(HttpServletResponse.SC_PRECONDITION_FAILED, "Invalid Captcha hash provided");
+			if(account.equals("yes"))
+			{
+				password = params.get("password")[0];
+				confPassword = params.get("confPassword")[0];
+			}
+
+			query = new Query("registration").addFilter("email", FilterOperator.EQUAL, email);
+			List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+
+			if(users.size() != 0 || (account.equals("yes") && !confPassword.equals(password)))
+			{
+				if(users.size() != 0)
+					resp.sendRedirect("/registration?userError=1");
+				else if(!params.get("confPassword")[0].equals(params.get("password")[0]))
+					resp.sendRedirect("/registration?passwordError=1");
+				else
+					resp.sendRedirect("/registration?updated=1");
+			}
 			else
 			{
-				if(account.equals("yes"))
+				Entity registration = new Entity("registration");
+				registration.setProperty("registrationType", registrationType);
+				registration.setProperty("account", account);
+				registration.setProperty("schoolName", schoolName);
+				registration.setProperty("schoolLevel", schoolLevel);
+				registration.setProperty("name", name);
+				registration.setProperty("division", division);
+				registration.setProperty("studentData", studentData);
+				registration.setProperty("email", email);
+				registration.setProperty("paid", "");
+				registration.setProperty("timestamp", new Date());
+				
+				JSONArray regData = null;
+				try
 				{
-					password = params.get("password")[0];
-					confPassword = params.get("confPassword")[0];
+					regData = new JSONArray(studentData);
 				}
-
-				HashMap<String, Integer> nums = new HashMap<String, Integer>();
-				String[] subjects = {"n", "c", "m", "s"};
-				if(schoolLevel.equals("middle"))
-					for(int i = 6; i <= 8; i++)
-						for(int j = 0; j < 4; j++)
-							nums.put(i + subjects[j], new Integer(Integer.parseInt(params.get(i + subjects[j])[0])));
-				else
-					for(int i = 9; i <= 12; i++)
-						for(int j = 0; j < 4; j++)
-							nums.put(i + subjects[j], new Integer(Integer.parseInt(params.get(i + subjects[j])[0])));
-
-
-				Query query = new Query("registration").addFilter("email", FilterOperator.EQUAL, email);
-				List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-
-				if(users.size() != 0 || (account.equals("yes") && !confPassword.equals(password)))
-				{
-					sess.setAttribute("registrationType", registrationType);
-					sess.setAttribute("account", account);
-					sess.setAttribute("aliases", aliases);
-					sess.setAttribute("account", account);
-					sess.setAttribute("name", name);
-					sess.setAttribute("schoolName", schoolName);
-					sess.setAttribute("schoolLevel", schoolLevel);
-					sess.setAttribute("email", email);
-
-					String numString = "";
-					if(schoolLevel.equals("middle"))
-					{
-						for(int i = 6; i <= 8; i++)
-							for(int j = 0; j < 4; j++)
-								numString += nums.get(i + subjects[j]) + ",";
-						for(int i = 0; i < 16; i++)
-							numString += "0,";
-					}
-					else
-					{
-						for(int i = 0; i < 12; i++)
-							numString += "0,";
-						for(int i = 9; i <= 12; i++)
-							for(int j = 0; j < 4; j++)
-								numString += nums.get(i + subjects[j]) + ",";
-					}
-					sess.setAttribute("nums", numString);
-
-					if(users.size() != 0)
-						resp.sendRedirect("/registration?userError=1");
-					else if(!params.get("confPassword")[0].equals(params.get("password")[0]))
-						resp.sendRedirect("/registration?passwordError=1");
-					else
-						resp.sendRedirect("/registration?updated=1");
+				catch(JSONException e)
+				{	
+					e.printStackTrace();
+					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+					return;
 				}
-				else
+				
+				long price = (Long) contestInfo.getProperty("price");
+				int cost = (int) (0 * price);
+				
+				for(int i = 0; i < regData.length(); i++)
 				{
-					Entity registration = new Entity("registration");
-					registration.setProperty("registrationType", registrationType);
-					registration.setProperty("account", account);
-					registration.setProperty("schoolName", schoolName);
-					registration.setProperty("schoolLevel", schoolLevel);
-					registration.setProperty("name", name);
-					registration.setProperty("email", email);
-					registration.setProperty("paid", "");
-					registration.setProperty("timestamp", new Date());
-					if(registrationType.equals("student"))
-						registration.setProperty("aliases", aliases);
-
-					long price = 5;
-					query = new Query("contestInfo");
-					List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-					if(info.size() != 0 && info.get(0).getProperty("price") != null)
-						price = (Long) info.get(0).getProperty("price");
-
-					int cost = 0;
-					for(Entry<String,Integer> test : nums.entrySet())
-					{
-						int num = test.getValue();
-						if(num >= 0)
-						{
-							registration.setProperty(test.getKey(), num);
-							cost += num * price;
-						}
-					}
-					registration.setProperty("cost", cost);
-
-					Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
 					try
 					{
-						datastore.put(registration);
-
-						if(account.equals("yes"))
-						{
-							Entity user = new Entity("user");
-							String hash = Password.getSaltedHash(password);
-							user.setProperty("name", name);
-							user.setProperty("school", schoolName);
-							user.setProperty("schoolLevel", schoolLevel);
-							user.setProperty("user-id", email);
-							user.setProperty("salt", hash.split("\\$")[0]);
-							user.setProperty("hash", hash.split("\\$")[1]);
-							datastore.put(user);
-						}
-
-						txn.commit();
-
-						sess.setAttribute("props", registration.getProperties());
-						resp.sendRedirect("/registration?updated=1");
-
-						Session session = Session.getDefaultInstance(new Properties(), null);
-						query = new Query("contestInfo");
-						String appEngineEmail = "";
-						if(info.size() != 0)
-							appEngineEmail = (String) info.get(0).getProperty("account");
-
-						String url = req.getRequestURL().toString();
-						url = url.substring(0, url.indexOf("/", 7));
-
-						try
-						{
-							Message msg = new MimeMessage(session);
-							msg.setFrom(new InternetAddress(appEngineEmail, "Tournament Website Admin"));
-							msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email, name));
-							msg.setSubject("Thank you for your registration!");
-
-							VelocityEngine ve = new VelocityEngine();
-							ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/email");
-							ve.init();
-							Template t = ve.getTemplate("registration.html");
-							VelocityContext context = new VelocityContext();
-							
-							context.put("name", name);
-							context.put("url", url);
-							context.put("cost", cost);
-							context.put("account", account.equals("yes"));
-							
-							StringWriter sw = new StringWriter();
-							t.merge(context, sw);
-							msg.setContent(sw.toString(), "text/html");
-							Transport.send(msg);
-						}
-						catch (MessagingException e)
-						{
-							e.printStackTrace();
-							resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
-						}
+						JSONObject studentRegData = regData.getJSONObject(i);
+						String[] subjects = {"N", "C", "M", "S"};
+						for(String subject: subjects)
+							cost += price * (studentRegData.getBoolean(subject) ? 1 : 0);
 					}
-					catch (Exception e)
+					catch(JSONException e)
+					{
+						e.printStackTrace();
+						resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+						return;
+					}
+				}
+				
+				registration.setProperty("cost", cost);
+
+				Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
+				try
+				{
+					datastore.put(registration);
+
+					if(account.equals("yes") && password != null && password.length() > 0)
+					{
+						Entity user = new Entity("user");
+						String hash = Password.getSaltedHash(password);
+						user.setProperty("name", name);
+						user.setProperty("school", schoolName);
+						user.setProperty("schoolLevel", schoolLevel);
+						user.setProperty("user-id", email);
+						user.setProperty("salt", hash.split("\\$")[0]);
+						user.setProperty("hash", hash.split("\\$")[1]);
+						datastore.put(user);
+					}
+
+					txn.commit();
+
+					sess.setAttribute("props", registration.getProperties());
+					resp.sendRedirect("/registration?updated=1");
+
+					Session session = Session.getDefaultInstance(new Properties(), null);
+					String appEngineEmail = (String) contestInfo.getProperty("account");
+
+					String url = req.getRequestURL().toString();
+					url = url.substring(0, url.indexOf("/", 7));
+
+					try
+					{
+						Message msg = new MimeMessage(session);
+						msg.setFrom(new InternetAddress(appEngineEmail, "Tournament Website Admin"));
+						msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email, name));
+						msg.setSubject("Thank you for your registration!");
+
+						VelocityEngine ve = new VelocityEngine();
+						ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/email");
+						ve.init();
+						Template t = ve.getTemplate("registration.html");
+						VelocityContext context = new VelocityContext();
+						
+						context.put("name", name);
+						context.put("url", url);
+						context.put("cost", cost);
+						context.put("account", account.equals("yes"));
+						
+						StringWriter sw = new StringWriter();
+						t.merge(context, sw);
+						msg.setContent(sw.toString(), "text/html");
+						Transport.send(msg);
+					}
+					catch (MessagingException e)
 					{
 						e.printStackTrace();
 						resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 					}
-					finally
-					{
-						if(txn.isActive())
-							txn.rollback();
-					}
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+				}
+				finally
+				{
+					if(txn.isActive())
+						txn.rollback();
 				}
 			}
-		}
-		catch(NoSuchAlgorithmException e)
-		{
-			e.printStackTrace();
-			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 		}
 	}
 }

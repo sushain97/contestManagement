@@ -44,6 +44,7 @@ import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
+import util.BaseHttpServlet;
 import util.HTMLCompressor;
 import util.Pair;
 import util.Password;

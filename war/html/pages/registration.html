@@ -2,16 +2,14 @@
 
 <html lang="en-US">
 <head>
-	<title>Register for the Tournament</title>
-	<meta name="description" content="Register for the Dulles High School TMSCA Tournament">
+	<title>Register | $title</title>
+	<meta name="description" content="Register for the $title">
 	<meta name="robots" content="index, follow">
 	<meta name="tab" content="Registration">
 	#include("head.html")
 	<style type="text/css">
 		body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */
-		#hi { display: none; }
 		#acc { display: none; }
-		#aliases { display: none; }
 		.dl-horizontal dt {
 			white-space: normal;
 			width: 300px;
@@ -19,6 +17,18 @@
 		}
 		#passHelp { display: none; }
 		div[class="tooltip-inner"] { max-width: 350px; }
+		.testCheckbox {
+			-ms-transform: scale(1.25);
+			-moz-transform: scale(1.25);
+			-webkit-transform: scale(1.25);
+			-o-transform: scale(1.25);
+			margin-top: 8px !important;
+		}
+		.tableBtn {
+			margin-top: 6px; 
+			padding-top: 2px;
+		}
+		.tooltip { width: 300px !important; }
 	</style>
 </head>
 
@@ -37,7 +47,11 @@
 		<h3>Your Registration Information</h3>
 		To make any changes to the following information, go to the <a href="/contactUs">Contact Us</a> page. <br />
 		<dl class="dl-horizontal"> 
-		#foreach($str in $regData) $str #end 
+			#foreach($str in $regData) $str #end 
+		</dl>
+		
+		<dl class="dl-horizontal"> 
+			#foreach($str in $studentData) $str #end 
 		</dl>
 		
 		#elseif(!$registrationError.equals(''))
@@ -58,7 +72,6 @@
 		#if(!$updated)
 		<form method="post" class="form-horizontal">
 			<fieldset>
-				
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-5 control-label" for="registration">Registration Type</label>
 					<div class="input-group col-sm-5 col-xs-7">
@@ -74,11 +87,36 @@
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-5 control-label" for="schoolLevel">School Level</label>
 					<div class="input-group col-sm-5 col-xs-7">
+						#if($enabledLevels.contains("middle"))
 						<label class="radio-inline">
-							<input type="radio" name="schoolLevel" id="schoolType1" value="middle" #if($middle) checked #end> Middle
-						</label> 
+							<input type="radio" name="schoolLevel" id="schoolType1" value="middle" #if($middle || !$enabledLevels.contains("high")) checked #end> Middle
+						</label>
+						#end
+						#if($enabledLevels.contains("high"))
 						<label class="radio-inline">
-							<input type="radio" name="schoolLevel" id="schoolType2" value="high" #if($high) checked #end> High
+							<input type="radio" name="schoolLevel" id="schoolType2" value="high" #if($high || !$enabledLevels.contains("middle")) checked #end> High
+						</label>
+						#end
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label class="col-sm-2 col-xs-5 control-label" for="division">Division</label>
+					<div class="input-group col-sm-5 col-xs-7">
+						<label class="radio-inline"> 
+							<input type="radio" name="division" value="1A" #if($division == "1A") checked #end> 1A
+						</label>
+						<label class="radio-inline"> 
+							<input type="radio" name="division" value="2A" #if($division == "2A") checked #end> 2A
+						</label>
+						<label class="radio-inline"> 
+							<input type="radio" name="division" value="3A" #if($division == "3A") checked #end> 3A
+						</label>
+						<label class="radio-inline"> 
+							<input type="radio" name="division" value="4A" #if($division == "4A") checked #end> 4A
+						</label>
+						<label class="radio-inline"> 
+							<input type="radio" name="division" value="5A" #if($division == "5A") checked #end> 5A
 						</label>
 					</div>
 				</div>
@@ -89,7 +127,6 @@
 						<input type="text" name="schoolName" class="form-control"  id="schoolName" value="$schoolName" required>
 						<span class="help-block">Omit "Middle School", "High School", "Junior High School", etc.</span>
 					</div>
-
 				</div>
 
 				<div class="form-group">
@@ -113,137 +150,102 @@
 					</div>
 				</div>
 
+				<div class="form-group" id="makeAccount">
+					<p class="help-block">
+						An account allows you to check your scores <em>online</em> during and after the competition and review your registration.
+					</p>
+					<label class="col-sm-2 col-xs-6 control-label" for="account">Create an Account?</label>
 
-				<div class="form-group" id="aliases">
-					<label class="col-sm-2 control-label" for="schoolAliases">School Aliases</label>
-					<div class="input-group col-sm-7">
-						<input type="text" name="aliases" value="$aliases" class="form-control" id="schoolAliases">
-						<p class="help-block">Please list any other names your school is commonly called (separated by commas).</p>
+					<div class="input-group col-sm-5 col-xs-1">
+						<label class="checkbox-inline">
+							<input type="checkbox" name="account" id="account" #if($account) checked #end>
+						</label>
 					</div>
 				</div>
 
-				<div class="row" style="padding-bottom: 10px;">
-					<div class="col-xs-2"><b></b></div>
-					<div class="col-xs-2 text-center"><b>Number Sense</b></div>
-					<div class="col-xs-2 text-center"><b>Calculator</b></div>
-					<div class="col-xs-2 text-center"><b>Math</b></div>
-					<div class="col-xs-2 text-center"><b>Science</b></div>
-				</div>
-
-				<div id="mid">
+				<div id="accountCreds">
 					<div class="form-group">
-						<label class="col-xs-2 control-label" for="level6">6th Grade Registration</label>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$sixN" name="6n" id="level6" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$sixC" name="6c" id="level6" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$sixM" name="6m" id="level6" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$sixS" name="6s" id="level6" required>
+						<label class="col-sm-2 col-xs-4 control-label" for="password">Password</label>
+						<div class="input-prepend col-sm-5 col-xs-8">
+							<div class="input-group">
+		      					<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+								<input type="password" class="form-control" pattern=".{8,}" title="Passwords must be at least 8 characters" id="password" name="password" value='' maxlength="32" required>
+							</div>
+							<div id="passHelp" class="help-block">Your password would be broken in <span class="text-info" data-toggle="tooltip" id="passStrength"></span></div>
 						</div>
 					</div>
 
-					<div class="form-group">
-						<label class="col-xs-2 control-label" for="level7">7th Grade Registration</label>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$sevenN" name="7n" id="level7" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$sevenC" name="7c" id="level7" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$sevenM" name="7m" id="level7" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$sevenS" name="7s" id="level7" required>
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="col-xs-2 control-label" for="level8">8th Grade Registration</label>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$eightN" name="8n" id="level8" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$eightC" name="8c" id="level8" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$eightM" name="8m" id="level8" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$eightS" name="8s" id="level8" required>
+					<div class=#if($passwordError) "form-group has-error" #else "form-group" #end>
+						<label class="col-sm-2 col-xs-4 control-label" for="confPassword">Confirm Password</label>
+						<div class="input-prepend col-sm-5 col-xs-8">
+							<div class="input-group">
+		      					<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+								<input type="password" class="form-control" pattern=".{8,}" title="Passwords must be at least 8 characters" id="confPassword" name="confPassword" value='' maxlength="32" required>
+							</div>
+							#if($passwordError) <span class="help-block text-danger">Those passwords didn't match, try again.</span> #end
 						</div>
 					</div>
 				</div>
-
-				<div id="hi">
-					<div class="form-group">
-						<label class="col-xs-2 control-label" for="level9">9th Grade Registration</label>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$nineN" name="9n" id="level9" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$nineC" name="9c" id="level9" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$nineM" name="9m" id="level9" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$nineS" name="9s" id="level9" required>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label class="col-xs-2 control-label" for="level10">10th Grade Registration</label>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$tenN" name="10n" id="level10" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$tenC" name="10c" id="level10" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$tenM" name="10m" id="level10" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$tenS" name="10s" id="level10" required>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label class="col-xs-2 control-label" for="level11">11th Grade Registration</label>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$elevenN" name="11n" id="level11" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$elevenC" name="11c" id="level11" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$elevenM" name="11m" id="level11" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$elevenS" name="11s" id="level11" required>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label class="col-xs-2 control-label" for="level12">12th Grade Registration</label>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$twelveN" name="12n" id="level12" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$twelveC" name="12c" id="level12" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$twelveM" name="12m" id="level12" required>
-						</div>
-						<div class="col-xs-2">
-							<input class="form-control" type="number" min="0" value="$twelveS" name="12s" id="level12" required>
-						</div>
-					</div>
+				<div class="lead">Registrations</div>
+				<div class="col-md-offset-1 col-md-10">
+					<table class="table table-striped table-condensed table-hover table-responsive">
+						<thead>
+							<tr>
+								<th></th>
+								<th class="col-xs-3 text-center">Student Name</th>
+								<th class="col-xs-1 text-center" style="border-right: 2px solid #ddd;">Grade</th>
+								<th class="col-xs-2 text-center">Number Sense</th>
+								<th class="col-xs-2 text-center">Calculator</th>
+								<th class="col-xs-2 text-center">Math</th>
+								<th class="col-xs-2 text-center">Science</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="student">
+								<td class="text-center">
+									<span class="btn btn-xs btn-default tableBtn deleteBtn"><i class="glyphicon glyphicon-remove"></i></span>
+								</td>
+								<td><input type="text" class="form-control input-sm" required></td>
+								<td class="text-center">
+									<select class="midGrades">
+										<option value="6">6</option>
+										<option value="7">7</option>
+										<option value="8">8</option>
+									</select>
+									<select class="highGrades">
+										<option value="9">9</option>
+										<option value="10">10</option>
+										<option value="11">11</option>
+										<option value="12">12</option>
+									</select>
+								</td>
+								<td class="text-center"><input type="checkbox" class="testCheckbox"></td>
+								<td class="text-center"><input type="checkbox" class="testCheckbox"></td>
+								<td class="text-center"><input type="checkbox" class="testCheckbox"></td>
+								<td class="text-center"><input type="checkbox" class="testCheckbox"></td>
+							</tr>
+							<tr id="addOptions">
+								<td class="text-center" colspan=2>
+									<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="1">
+										<i class="glyphicon glyphicon-plus"></i>
+										Add a student
+									</span>
+								</td>
+								<td class="text-center" colspan=2>
+									<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="5">
+										<i class="glyphicon glyphicon-plus"></i>
+										Add 5 students
+									</span>
+								</td>
+								<td class="text-center" colspan=2>
+									<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="10">
+										<i class="glyphicon glyphicon-plus"></i>
+										Add 10 students
+									</span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 
 				<div class="form-group">
@@ -257,56 +259,22 @@
 					</div>
 				</div>
 
-				<div class="form-group">
-					<p class="help-block">
-						An account allows you to check your scores <em>online</em> during and after the competition and review your registration.
-					</p>
-					<label class="col-sm-2 col-xs-6 control-label" for="account">Create an Account?</label>
-
-					<div class="input-group col-sm-5 col-xs-1">
-						<label class="checkbox-inline">
-							<input type="checkbox" name="account" id="account" #if($account) checked #end>
-						</label>
+				<div class="form-group" id="reCaptchaGroup">
+					<div class="input-group col-md-offset-2">
+						<script type="text/javascript"> var RecaptchaOptions = { theme : 'clean' }; </script>
+						<script type="text/javascript" src="//www.google.com/recaptcha/api/challenge?k=$publicKey"></script>
+						<noscript>
+							<iframe src="http://www.google.com/recaptcha/api/noscript?k=$publicKey" height="300" width="500" frameborder="0"></iframe> <br>
+							<textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
+							<input type="hidden" name="recaptcha_response_field" value="manual_challenge">
+						</noscript>
+						#if($captchaError) <span class="help-block text-danger lead">Incorrect captcha, try again.</span> #end
 					</div>
 				</div>
-
-				<div id="acc">
-					<div class="form-group">
-						<label class="col-sm-2 col-xs-4 control-label" for="password">Password</label>
-						<div class="input-prepend col-sm-5 col-xs-8">
-							<div class="input-group">
-		      					<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-								<input type="password" class="form-control" pattern=".{8,}" title="Passwords must be at least 8 characters" id="password" name="password" value='' maxlength="32" required>
-							</div>
-							<span id="passHelp" class="help-block">Your password would be broken in <span class="text-info" data-toggle="tooltip" id="passStrength"></span></span>
-						</div>
-					</div>
-
-					<div class=#if($passwordError) "form-group has-error" #else "form-group" #end>
-						<label class="col-sm-2 col-xs-4 control-label" for="confPassword">Confirm Password</label>
-						<div class="input-prepend col-sm-5 col-xs-8">
-							<div class="input-group">
-		      					<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-								<input type="password" class="form-control" pattern=".{8,}" title="Passwords must be at least 8 characters" id="confPassword" name="confPassword" value='' maxlength="32" required>
-							</div>
-							#if($passwordError) <span class="help-block">Those passwords didn't match, try again.</span> #end
-						</div>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-2 col-xs-4 control-label" for="captcha">CAPTCHA</label>
-					<div class="input-group col-sm-5 col-xs-8">
-						<input type="text" name="captcha" class="input-small form-control" id="captcha" placeholder="Answer the question below in the box provided" required>
-						<span class="help-block"></span>
-						<p class="help-block">$captcha</p>
-					</div>
-				</div>
-
-				<input type="hidden" name="hash" id="hash" value="$hash"> 
-				<input type="hidden" name="salt" id="salt" value="$salt"> 
-				<input type="hidden" name="regError" id="regError" value="$registrationError">
 				
+				<input type="hidden" name="regError" id="regError" value="$registrationError">
+				<input type="hidden" name="studentData" id="studentData" value='$studentData'>
+
 				<div class="form-group">
    					<div class="col-sm-offset-2 col-sm-10">
 						<button type="submit" id="submit" class="btn btn-primary" disabled>Submit Registration</button>
@@ -321,7 +289,6 @@
 	
 	<input type="hidden" name="price" id="price" value="$price" />
 
-	<script type="text/javascript" src="/js/md5hash.js"></script>
 	<script type="text/javascript" src="/js/pagescripts/registration.js"></script>
 	<script type="text/javascript" src="/js/zxcvbn/zxcvbn-async.js"></script>
 	#include("noscript.html")

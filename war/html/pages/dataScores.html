@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+<head>
+	<title>Data Viewer: Scores | $title</title>
+	<meta name="description" content="View the $title scores">
+	<meta name="robots" content="noindex, nofollow">
+	<meta name="tab" content="ContestData">
+	<meta name="type" content="$type">
+	#include("head.html")
+	<style type="text/css">
+		body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */
+		.highlighted { background-color: #e8f8fd !important; }
+		@media print {
+			.col-md-9 {
+				position: absolute;
+				left: 0;
+				top: 0;
+				width: 100% !important;
+			}
+			@page {	size: potrait; }
+		}
+		table {	width: auto !important; }
+		th, td { text-align: center !important; }
+		.lead { margin-bottom: 0px !important; }
+		a.anchor { 
+			display: block; 
+			position: relative; 
+			top: -100px; 
+			visibility: hidden;
+		}
+		.divider {
+			background-color: #bbb;
+			border-bottom: 0;
+			height: 1px;
+			margin: 9px 1px;
+		}
+		.nav-header { text-transform: uppercase; font-weight: bold; }
+		#if($type.contains("school"))
+			body { padding-top: 51px; }
+		#end
+	</style>
+	<link type="text/css" href="/css/footer.css" rel="stylesheet">
+	<link type="text/css" href="/css/sticky-sidebar.css" rel="stylesheet">
+	<link type="text/css" href="/css/sortedtable.css" rel="stylesheet">
+	<link type="text/css" href="/css/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+	<div id="wrap">
+		#parse("navbar.html")
+		
+		#if($type.contains("school"))
+		<div class="navbar navbar-inverse hidden-xs" style="margin-bottom: 0px;">
+			<div class="container">
+				<div class="navbar-header">
+			    	<a class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse"> 
+				    	<span class="sr-only">Toggle navigation</span> 
+						<span class="icon-bar"></span> 
+						<span class="icon-bar"></span> 
+						<span class="icon-bar"></span>
+					</a>
+			    </div>
+				<div class="collapse navbar-collapse" id="navbar-collapse">
+					<ul class="nav navbar-nav">
+						<li><a href="#top20">"Top 20" Scores</a></li>
+						<li><a href="#anonScores">"Anonymous" Scores</a></li>
+						<li><a href="#visualizations">Visualizations</a></li>
+						<li><a href="#sweepstakes">Current Sweepstakes</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		#end
+		
+		<div class="container">
+			<div class="row">
+				<div class="col-md-3 col-xs-5 hidden-print">
+					<ul class="nav nav-pills nav-stacked">
+						<li id="overview"><a href="/data?choice=scores">Overview</a></li>
+						
+						#if($enabledLevels.contains("middle"))
+							<li class="nav-header"><h4>Middle School</h4></li>
+							<li id="middle_students"><a href="/data?choice=scores&type=middle_students">All Students</a></li>
+							<li id="middle_sweep"><a href="/data?choice=scores&type=middle_sweep">Sweepstakes</a></li>
+							<li id="middle_categorySweep"><a href="/data?choice=scores&type=middle_categorySweep">Category Sweekstakes</a></li>
+							<li id="middle_visualizations"><a href="/data?choice=scores&type=middle_visualizations">Visualizations</a></li>
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+									Schools<b class="caret"></b>
+								</a>
+								<ul class="dropdown-menu">
+									#foreach($school in $middleSchools)
+									<li id='$school.getProperty("school").hashCode()'>
+										<a href='/data?choice=scores&type=middle_school_$esc.url($school.getProperty("school"))'>$school.getProperty("school")</a>
+									</li>
+									#end
+								</ul>
+							</li>
+							<li class="divider"></li>
+		
+							#foreach($num in [6..8])
+								<li id="${num}" class="dropdown">
+									<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+										${num}th Grade <b class="caret"></b>
+									</a>
+									<ul class="dropdown-menu">
+										<li id="middle_category_${num}C"><a href="/data?choice=scores&type=middle_category_${num}C">Calculator</a></li>
+										<li id="middle_category_${num}N"><a href="/data?choice=scores&type=middle_category_${num}N">Number Sense</a></li>
+										<li id="middle_category_${num}M"><a href="/data?choice=scores&type=middle_category_${num}M">Math</a></li>
+										<li id="middle_category_${num}S"><a href="/data?choice=scores&type=middle_category_${num}S">Science</a></li>
+									</ul>
+								</li>
+							#end
+						#end
+	
+						#if($enabledLevels.contains("high"))
+							<li class="nav-header"><h4>High School</h4></li>
+							<li id="high_students"><a href="/data?choice=scores&type=high_students">All Students</a></li>
+							<li id="high_sweep"><a href="/data?choice=scores&type=high_sweep">Sweepstakes</a></li>
+							<li id="high_categorySweep"><a href="/data?choice=scores&type=high_categorySweep">Category Sweekstakes</a></li>
+							<li id="high_visualizations"><a href="/data?choice=scores&type=high_visualizations">Visualizations</a></li>
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+									Schools <b class="caret"></b>
+								</a>
+								<ul class="dropdown-menu">
+									#foreach($school in $highSchools)
+									<li id='$school.getProperty("school").hashCode()'>
+										<a href='/data?choice=scores&type=high_school_$esc.url($school.getProperty("school"))'>$school.getProperty("school")</a>
+									</li>
+									#end
+								</ul>
+							</li>
+							<li class="divider"></li>
+			
+							#foreach($num in [9..12])
+							<li id="${num}" class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+									${num}th Grade<b class="caret"></b>
+								</a>
+								<ul class="dropdown-menu">
+									<li id="high_category_${num}C"><a href="/data?choice=scores&type=high_category_${num}C">Calculator</a></li>
+									<li id="high_category_${num}N"><a href="/data?choice=scores&type=high_category_${num}N">Number Sense</a></li>
+									<li id="high_category_${num}M"><a href="/data?choice=scores&type=high_category_${num}M">Math</a></li>
+									<li id="high_category_${num}S"><a href="/data?choice=scores&type=high_category_${num}S">Science</a></li>
+								</ul>
+							</li>
+							#end
+						#end
+					</ul>
+					<div id="push"></div>
+				</div>
+	
+				<div class="col-md-9 col-xs-7">
+					<h1>Contest Results
+					#include("printButton.html")
+					</h1>
+					#if($overview) Choose an option at the left to view specific results. #elseif(!$html) Results for this
+					competition are not yet available #else #evaluate($html) #end
+					
+					<div id="push"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div id="footer">
+      <div class="container text-center">
+        <p><i class="icon-time"></i> Last auto-generated <b>#if($date) $date #else never #end</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
+      </div>
+    </div>
+
+	<script type="text/javascript" src="/js/pagescripts/data-scores.js"></script>
+	<script type="text/javascript" src="/js/jquery/jquery.tablesorter.min.js"></script>
+	#if($type.toLowerCase().endsWith("sweep"))
+		<script type="text/javascript" src="/js/score-popovers.js"></script>
+	#end
+	#if($type.endsWith("visualizations") || $type.contains("school"))
+		<script type="text/javascript" src="/js/highcharts/highcharts.js"></script>
+		<script type="text/javascript" src="/js/highcharts/highcharts-more.js"></script>
+		<script type="text/javascript" src="/js/highcharts/exporting.js"></script>
+		<script type="text/javascript" src="/js/highcharts/theme.js"></script>
+	#end
+
+	#include("noscript.html")
+</body>
+</html>

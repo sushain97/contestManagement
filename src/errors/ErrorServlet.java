@@ -17,25 +17,33 @@
 
 package errors;
 
-import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.runtime.RuntimeConstants;
+
+import util.BaseHttpServlet;
+import util.Pair;
+import util.RequestPrinter;
+import util.UserCookie;
+
+import com.google.appengine.api.datastore.Entity;
 
 @SuppressWarnings("serial")
-public class Prohibited_403 extends ErrorServlet
+public class ErrorServlet extends BaseHttpServlet
 {
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException
+	public Pair<Entity, UserCookie> init(VelocityContext context, HttpServletRequest req) throws UnsupportedEncodingException
 	{
-		VelocityEngine ve = new VelocityEngine();
-		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/errors, html/snippets");
-		ve.init();
-		VelocityContext context = new VelocityContext();
-		init(context, req);
-		close(context, ve.getTemplate("error403.html"), resp);
+		Pair<Entity, UserCookie> infoAndCookie = super.init(context, req);
+		
+		context.put("error", req.getAttribute("javax.servlet.error.message"));
+		context.put("uri", req.getAttribute("javax.servlet.error.request_uri"));
+		context.put("servlet", req.getAttribute("javax.servlet.error.servlet_name"));
+		context.put("diaginfo", RequestPrinter.debugString(req, true).replaceAll("\n", "<br>"));
+		context.put("date", new Date().toString());
+		
+		return infoAndCookie;
 	}
 }

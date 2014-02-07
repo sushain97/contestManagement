@@ -21,7 +21,6 @@ import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Properties;
 
@@ -35,12 +34,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import net.tanesha.recaptcha.ReCaptchaImpl;
+import net.tanesha.recaptcha.ReCaptchaResponse;
+
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
-import util.Captcha;
+import util.BaseHttpServlet;
 import util.Pair;
 import util.UserCookie;
 
@@ -66,53 +68,31 @@ public class ContactUs extends BaseHttpServlet
 		UserCookie userCookie = infoAndCookie.y;
 		boolean loggedIn = (boolean) context.get("loggedIn");
 		Entity user = userCookie != null ? userCookie.authenticateUser() : null;
+		
+		HttpSession sess = req.getSession(true);
+		sess.setAttribute("nocaptcha", loggedIn && !userCookie.isAdmin());
 
-		if(loggedIn)
+		if(loggedIn && !userCookie.isAdmin())
 		{
-			context.put("admin", userCookie.isAdmin());
-			if(!userCookie.isAdmin())
-			{
-				context.put("user", user.getProperty("user-id"));
-				context.put("name", user.getProperty("name"));
-				context.put("email", user.getProperty("user-id"));
-				context.put("school", user.getProperty("school"));
-			}
+			context.put("user", user.getProperty("user-id"));
+			context.put("name", user.getProperty("name"));
+			context.put("email", user.getProperty("user-id"));
+			context.put("school", user.getProperty("school"));
 		}
 		else
 		{
-			context.put("email", null);
-			context.put("name", null);
-			context.put("school", null);
+			context.put("email", sess.getAttribute("email"));
+			context.put("name", sess.getAttribute("name"));
+			context.put("school", sess.getAttribute("school"));
+			context.put("comment", sess.getAttribute("comment"));
 		}
-
-		HttpSession sess = req.getSession(true);
-		try
-		{
-			if(!loggedIn || userCookie.isAdmin())
-			{
-				Captcha captcha = new Captcha();
-				sess.setAttribute("hash", captcha.getHashedAnswer());
-				sess.setAttribute("salt", captcha.getSalt());
-				sess.setAttribute("nocaptcha", false);
-				context.put("captcha", captcha.getQuestion());
-				context.put("hash", captcha.getHashedAnswer());
-				context.put("salt", captcha.getSalt());
-				context.put("nocaptcha", false);
-			}
-			else {
-				context.put("nocaptcha", true);
-				sess.setAttribute("nocaptcha", true);
-			}
+		
+		context.put("captchaError", req.getParameter("captchaError"));
+		context.put("nocaptcha", loggedIn && !userCookie.isAdmin());
+		context.put("updated", req.getParameter("updated"));
+		context.put("publicKey", (String) infoAndCookie.x.getProperty("publicKey"));
 			
-			context.put("updated", req.getParameter("updated"));
-			
-			close(context, ve.getTemplate("contactUs.html"), resp);
-		}
-		catch (NoSuchAlgorithmException e)
-		{
-			e.printStackTrace();
-			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
-		}
+		close(context, ve.getTemplate("contactUs.html"), resp);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -124,30 +104,37 @@ public class ContactUs extends BaseHttpServlet
 		Entity feedback = new Entity("feedback");
 		if(users.size() != 0)
 			feedback.setProperty("user-id", users.get(0).getProperty("user-id"));
-
-		HttpSession sess = req.getSession(false);
-		if(!(Boolean) sess.getAttribute("nocaptcha"))
-		{
-			try
-			{
-				if(!Captcha.authCaptcha((String) sess.getAttribute("salt"), req.getParameter("captcha"), (String) sess.getAttribute("hash")))
-				{
-					resp.sendError(HttpServletResponse.SC_PRECONDITION_FAILED, "Invalid Captcha hash provided");
-					return;
-				}
-			}
-			catch(NoSuchAlgorithmException e)
-			{
-				e.printStackTrace();
-				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
-				return;
-			}
-		}
 		
 		String name = escapeHtml4(req.getParameter("name"));
 		String school = escapeHtml4(req.getParameter("school"));
 		String comment = escapeHtml4(req.getParameter("text"));
 		String email = escapeHtml4(req.getParameter("email"));
+
+		HttpSession sess = req.getSession(true);
+		sess.setAttribute("name", name);
+		sess.setAttribute("school", school);
+		sess.setAttribute("email", email);
+		sess.setAttribute("comment", comment);
+		
+		query = new Query("contestInfo");
+		Entity contestInfo = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+		if(!(Boolean) sess.getAttribute("nocaptcha"))
+		{
+			String remoteAddr = req.getRemoteAddr();
+			ReCaptchaImpl reCaptcha = new ReCaptchaImpl();
+			reCaptcha.setPrivateKey((String) contestInfo.getProperty("privateKey"));
+
+			String challenge = req.getParameter("recaptcha_challenge_field");
+			String userResponse = req.getParameter("recaptcha_response_field");
+			ReCaptchaResponse reCaptchaResponse = reCaptcha.checkAnswer(remoteAddr, challenge, userResponse);
+			
+			if(!reCaptchaResponse.isValid())
+			{
+				resp.sendRedirect("/contactUs?captchaError=1");
+				return;
+			}
+		}
+		
 		feedback.setProperty("name", name);
 		feedback.setProperty("school", school);
 		feedback.setProperty("email", email);
@@ -163,17 +150,13 @@ public class ContactUs extends BaseHttpServlet
 			resp.sendRedirect("/contactUs?updated=1");
 
 			Session session = Session.getDefaultInstance(new Properties(), null);
-			query = new Query("contestInfo");
-			List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-			String appEngineEmail = "";
-			if(info.size() != 0)
-				appEngineEmail = (String) info.get(0).getProperty("account");
+			String appEngineEmail = (String) contestInfo.getProperty("account");
 
 			try
 			{
 				Message msg = new MimeMessage(session);
 				msg.setFrom(new InternetAddress(appEngineEmail, "Tournament Website Admin"));
-				msg.addRecipient(Message.RecipientType.TO, new InternetAddress((String) info.get(0).getProperty("email"), "Contest Administrator"));
+				msg.addRecipient(Message.RecipientType.TO, new InternetAddress((String) contestInfo.getProperty("email"), "Contest Administrator"));
 				msg.setSubject("Question about Tournament from " + name);
 				
 				VelocityEngine ve = new VelocityEngine();

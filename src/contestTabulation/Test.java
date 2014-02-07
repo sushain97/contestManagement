@@ -44,4 +44,16 @@ public enum Test
 	public static int[] grades(String level) { return level.equals("middle") ? new int[] {6, 7, 8} : new int[] {9, 10, 11, 12}; }
 	public static Test[] middleTests() { return new Test[] {N6, C6, M6, S6, N7, C7, M7, S7, N8, C8, M8, S8}; }
 	public static Test[] highTests() { return new Test[] {N9, C9, M9, S9, N10, C10, M10, S10, N11, C11, M11, S11, N12, C12, M12, S12}; }
+	
+	public static String letterToName(String test)
+	{
+		switch(test)
+		{
+			case "N": return "Number Sense";
+			case "C": return "Calculator";
+			case "M": return "Math";
+			case "S": return "Science";
+		}
+		return "";
+	}
 }

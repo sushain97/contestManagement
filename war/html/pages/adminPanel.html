@@ -2,8 +2,8 @@
 
 <html lang="en-US">
 <head>
-	<title>Administration Panel | Dulles TMSCA Tournament</title>
-	<meta name="description" content="Dulles High School TMSCA Tournament Administration Panel">
+	<title>Administration Panel | $title</title>
+	<meta name="description" content="$title Administration Panel">
 	<meta name="robots" content="noindex, nofollow">
 	<meta name="tab" content="ControlPanel">
 	#include("head.html")
@@ -33,13 +33,14 @@
 				<div class="form-group">
 					<label class="col-sm-2 control-label" for="title">Contest Title</label>
 					<div class="col-sm-6">
-						<input type="text" value="$title" name="title" class="form-control" required>
+						<input type="text" value='#if($contestInfo.getProperty("title"))$contestInfo.getProperty("title")#end' name="title" class="form-control" required>
 					</div>
 				</div>
 				
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-5 control-label" for="levels">School Levels</label>
 					<div class="input-group col-sm-5 col-xs-7">
+						#set($levels = $contestInfo.getProperty("levels"))
 						<label class="radio-inline">
 							<input type="radio" name="levels" value="middle" #if($levels == "middle") checked #end> Middle
 						</label> 
@@ -54,10 +55,12 @@
 				
 				<div class="form-group">
 					<label class="col-sm-2 control-label" for="datepicker">Registration Dates</label>
-					<div class="input-daterange input-group" id="datepicker" data-date-format="mm/dd/yyyy" data-date-start-date="$startDate">
-					    <input type="text" class="col-sm-3 form-control" name="startDate" value="$startDate">
+					<div class="input-daterange input-group" id="datepicker" data-date-format="mm/dd/yyyy">
+					    <input type="text" class="col-sm-3 form-control" name="startDate" 
+					    	value='#if($contestInfo.getProperty("startDate"))$contestInfo.getProperty("startDate")#end' required>
 					    <span class="input-group-addon"><strong>to</strong></span>
-					    <input type="text" class="col-sm-3 form-control" name="endDate" value="$endDate">
+					    <input type="text" class="col-sm-3 form-control" name="endDate" 
+					    	value='#if($contestInfo.getProperty("endDate"))$contestInfo.getProperty("endDate")#end' required>
 					</div>
 				</div>	
 				
@@ -66,7 +69,8 @@
 					<div class="input-prepend col-sm-6">
 	      				<div class="input-group">
 	      					<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
-							<input type="email" value="$email" name="email" id="email" class="form-control" required>
+							<input type="email" name="email" id="email" class="form-control"
+								value='#if($contestInfo.getProperty("email"))$contestInfo.getProperty("email")#end' required>
 						</div>
 						<span class="help-block">Where should questions submitted through the <a href="\contactUs">contact us</a> page be sent?</span>
 					</div>
@@ -77,15 +81,31 @@
 					<div class="input-prepend col-sm-6">
 	      				<div class="input-group">
 	      					<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
-							<input type="email" value="$account" name="account" id="account" class="form-control" required>
+							<input type="email" name="account" id="account" class="form-control" 
+								value='#if($contestInfo.getProperty("account"))$contestInfo.getProperty("account")#end' required>
 						</div>
 						<span class="help-block">Whose Google App Engine Account is this website currently deployed on?</span>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label class="col-sm-2 control-label" for="recaptcha"><a href="https://www.google.com/recaptcha" target="_blank">ReCaptcha API Keys</a></label>
+					<div class="col-sm-1 control-label"><strong>Public</strong></div>
+					<div class="col-sm-4">
+						<input type="text" name="publicKey" class="form-control" placeholder="Public Key" 
+							value='#if($contestInfo.getProperty("publicKey"))$contestInfo.getProperty("publicKey")#end' required>
+					</div>
+					<div class="col-sm-1 control-label"><strong>Private</strong></div>
+					<div class="col-sm-4">
+						<input type="text" name="privateKey" class="form-control" placeholder="Private Key" 
+							value='#if($contestInfo.getProperty("privateKey"))$contestInfo.getProperty("privateKey")#end'  required>
 					</div>
 				</div>
 
 				<div class="form-group">
 					<label class="col-sm-2 control-label" for="price">Test Charges</label>
 					<div class="col-sm-5" style="padding-top: 5px;">
+						#set($price = $contestInfo.getProperty("price"))
 						#if(!$price)
 						#set($price = 5)
 						#end
@@ -110,7 +130,8 @@
 						<div class="input-prepend col-sm-6">
 	      					<div class="input-group">
 	      						<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
-								<input type="email" value="$docAccount" name="docAccount" class="form-control" id="docAccount">
+								<input type="email" id="docAccount" name="docAccount" class="form-control" 
+									value='#if($contestInfo.getProperty("docAccount"))$contestInfo.getProperty("docAccount")#end'>
 							</div>
 							<span class="help-block">Google Docs Account containing Score Spreadsheets in required format</span>
 						</div>
@@ -130,16 +151,18 @@
 					<div class="form-group">
 						<label class="col-sm-3 control-label" for="schoolName">Middle School Doc</label>
 						<div class="col-sm-5">
-							<input type="text" name="docMiddle" class="form-control" id="docMiddle" value="$docMiddle"> <span
-								class="help-block">Name of Google Spreadsheet with Middle School Scores</span>
+							<input type="text" name="docMiddle" class="form-control" id="docMiddle"
+								value='#if($contestInfo.getProperty("docMiddle"))$contestInfo.getProperty("docMiddle")#end'>
+							<span class="help-block">Name of Google Spreadsheet with Middle School Scores</span>
 						</div>
 					</div>
 
 					<div class="form-group">
 						<label class="col-sm-3 control-label" for="schoolName">High School Doc</label>
 						<div class="col-sm-5">
-							<input type="text" name="docHigh" class="form-control" id="docHigh" value="$docHigh"> <span
-								class="help-block">Name of Google Spreadsheet with High School Scores</span>
+							<input type="text" name="docHigh" class="form-control" id="docHigh" 
+								value='#if($contestInfo.getProperty("docHigh"))$contestInfo.getProperty("docHigh")#end'>
+							<span class="help-block">Name of Google Spreadsheet with High School Scores</span>
 						</div>
 					</div>
 				</div>
@@ -148,7 +171,7 @@
 					<label class="col-sm-3 col-xs-7 control-label" for="complete">Make results public</label>
 					<div class="input-group col-sm-5 col-xs-1">
 						<label class="checkbox-inline">
-							<input type="checkbox" name="complete" value="yes" id="complete" #if($complete) checked #end>
+							<input type="checkbox" name="complete" value="yes" id="complete" #if($contestInfo.getProperty("complete")) checked #end>
 						</label>
 					</div>
 				</div>
@@ -200,7 +223,7 @@
 					<label class="col-sm-3 control-label" for="testing">Enable Testing Mode?</label>
 					<div class="input-group col-sm-5 col-xs-offset-1">
 						<label class="checkbox-inline">
-							<input type="checkbox" name="testing" id="testing" value="yes" id="testing" #if($testingMode) checked #end>
+							<input type="checkbox" name="testing" id="testing" value="yes" id="testing" #if($contestInfo.getProperty("testingMode")) checked #end>
 							Testing mode force defaults the admin password to "password" and displays it on the login page.
 						</label>
 					</div>
@@ -210,7 +233,7 @@
 					<label class="col-sm-3 control-label" for="fullnames">Hide Full Names?</label>
 					<div class="input-group col-sm-5 col-xs-offset-1">
 						<label class="checkbox-inline">
-							<input type="checkbox" name="fullnames" id="fullnames" value="yes" id="fullnames" #if($hideFullNames) checked #end>
+							<input type="checkbox" name="fullnames" id="fullnames" value="yes" id="fullnames" #if($contestInfo.getProperty("hideFullNames")) checked #end>
 							Full names will be hidden in public results (e.g. John Doe will be displayed as John D.).
 						</label>
 					</div>

@@ -21,7 +21,6 @@ import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -32,6 +31,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
+import util.BaseHttpServlet;
 import util.Pair;
 import util.UserCookie;
 
@@ -44,6 +44,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
 
@@ -82,23 +83,6 @@ public class EditRegistration extends BaseHttpServlet
 				else
 					context.put("high", true);
 
-				String[] subjects = {"N", "C", "M", "S"};
-				String[] numbers = { "", "one", "two", "three", "four", "five", "six", "seven",
-						"eight", "nine", "ten", "eleven", "twelve" };
-
-				for(int i = 6; i <= 12; i++)
-					for(int j = 0; j < 4; j++)
-						context.put(numbers[i] + subjects[j], props.get(i + subjects[j].toLowerCase()));
-
-				if(schoolLevel.equals("middle"))
-					for(int i = 9; i <= 12; i++)
-						for(int j = 0; j < 4; j++)
-							context.put(numbers[i] + subjects[j], 0);
-				else
-					for(int i = 6; i <= 8; i++)
-						for(int j = 0; j < 4; j++)
-							context.put(numbers[i] + subjects[j], 0);
-
 				String account = (String) props.get("account");
 				if(account.equals("yes"))
 					context.put("account", true);
@@ -106,25 +90,16 @@ public class EditRegistration extends BaseHttpServlet
 					context.put("account", false);
 
 				context.put("schoolName", props.get("schoolName"));
-				context.put("aliases", props.get("aliases"));
 				context.put("name", props.get("name"));
 				context.put("email", props.get("email"));
 				context.put("paid", props.get("paid"));
+				context.put("division", props.get("division"));
+				context.put("studentData", ((Text) props.get("studentData")).getValue());
 
-				Query query = new Query("contestInfo");
-				List<Entity> infos = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-				if(infos.size() != 0)
-				{
-					Entity info = infos.get(0);
-					if(info.getProperty("price") != null)
-						context.put("price", (Long) info.getProperty("price"));
-					else
-						context.put("price", 5);
-				}
-				else
-					context.put("price", 5);
-
+				Entity contestInfo = infoAndCookie.x;
+				context.put("price", (Long) contestInfo.getProperty("price"));
 				context.put("key", key);
+				context.put("levels", (String) contestInfo.getProperty("levels"));
 				
 				close(context, ve.getTemplate("editRegistration.html"), resp);
 			}
@@ -179,38 +154,7 @@ public class EditRegistration extends BaseHttpServlet
 						registration.setProperty(modified, newValue);
 					}
 					else
-					{
-						if("true".equals(params.get("test")[0]))
-						{
-							registration.setProperty(modified, Integer.parseInt(newValue));
-							long cost = 0;
-							long price = 5;
-							
-							Query query = new Query("contestInfo");
-							List<Entity> infos = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-							if(infos.size() != 0 && infos.get(0).getProperty("price") != null)
-								price = (Long) infos.get(0).getProperty("price");
-
-							String[] subjects = {"n", "c", "m", "s"};
-							if(registration.getProperty("schoolLevel").equals("middle"))
-								for(int i = 6; i <= 8; i++)
-									for(int j = 0; j < 4; j++)
-									{
-										Object num = registration.getProperty(i + subjects[j]);
-										cost += (num instanceof Long ? (Long) num : (Integer) num) * price;
-									}
-							else
-								for(int i = 9; i <= 12; i++)
-									for(int j = 0; j < 4; j++)
-									{
-										Object num = registration.getProperty(i + subjects[j]);
-										cost += (num instanceof Long ? (Long) num : (Integer) num) * price;
-									}
-							registration.setProperty("cost", cost);
-						}
-						else
-							registration.setProperty(modified, newValue);
-					}
+						registration.setProperty(modified, newValue);
 					datastore.put(registration);
 					txn.commit();
 				}
@@ -261,19 +205,8 @@ public class EditRegistration extends BaseHttpServlet
 						registration.setProperty("email", email);
 						registration.setProperty("cost", Integer.parseInt(params.get("cost")[0]));
 						registration.setProperty("paid", params.get("paid")[0]);
-						if(!params.get("aliases")[0].equals("$aliases"))
-							registration.setProperty("aliases", params.get("aliases")[0]);
-
-						
-						String[] subjects = {"n", "c", "m", "s"};
-						if(schoolLevel.equals("middle"))
-							for(int i = 6; i <= 8; i++)
-								for(int j = 0; j < 4; j++)
-									registration.setProperty(i + subjects[j], new Integer(Integer.parseInt(params.get(i + subjects[j])[0])));
-						else
-							for(int i = 9; i <= 12; i++)
-								for(int j = 0; j < 4; j++)
-									registration.setProperty(i + subjects[j], new Integer(Integer.parseInt(params.get(i + subjects[j])[0])));
+						registration.setProperty("division", params.get("division")[0]);
+						registration.setProperty("studentData", new Text(params.get("studentData")[0]));
 
 						datastore.put(registration);
 						txn.commit();

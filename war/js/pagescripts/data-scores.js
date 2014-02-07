@@ -21,8 +21,10 @@ $(document).ready(function () {
 		window.print();
 	});
 	
-	if($('table tr').length > 1)
-		$("table").tablesorter({sortList: [[0,0]]});
+	$.each($('table'), function() {
+		if($('tr', this).length > 1)
+			$(this).tablesorter({sortList: [[0,0]]});
+	});
 
 	$('td').hover(function() {
 	    var t = parseInt($(this).index()) + 1;

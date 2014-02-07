@@ -16,10 +16,41 @@
  */
 
 $(document).ready(function() {
+	if($('input[name=studentData]').length) {
+		var studentData = JSON.parse($('input[name=studentData]').val());
+		var subjects = ['N', 'C', 'M', 'S'];
+		if(studentData.length > 0)
+			$('.student').remove();
+			
+		$.each(studentData, function() {
+			var tr = $('<tr class="student"></tr>');
+			tr.append($('<td class="text-center"><span class="btn btn-xs btn-default tableBtn deleteBtn"><i class="glyphicon glyphicon-remove"></i></span></td>'));
+			
+			var td = $('<td class="text-center"></td>');
+			td.append($('<input type="text" class="form-control input-sm" value required></td>').val(this["name"]));
+			tr.append(td);
+			
+			var td = $('<td class="text-center"></td>');
+			td.append($('<select class="midGrades"><option value="6">6</option><option value="7">7</option><option value="8">8</option></select>').val(this["grade"]));
+			td.append($('<select class="highGrades"><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select>').val(this["grade"]));
+			tr.append(td);
+			
+			for(var j = 0; j < 4; j++) {
+				var td = $('<td class="text-center"></td>');
+				td.append($('<input type="checkbox" class="testCheckbox">').prop('checked', this[subjects[j]]))
+				tr.append(td);
+			}
+				
+			$('tr#addOptions').before(tr);
+		});
+	}
+	
 	if($('form').length) {
 		EnableSubmit();
 		CalcCost();
 		CheckAccount();
+		adjustGradeSelect();
+		$('input[name=recaptcha_response_field]').prop('required', true);
 	}
 	
 	$('h1 button').on('click', function() {
@@ -27,21 +58,52 @@ $(document).ready(function() {
 	});
 	
 	$('input[type="number"]').change(CalcCost);
-	$('#captcha').on('keyup', AuthCaptcha);
-	$('#submit').on('click', AuthCaptcha);
-	$('#regType1,#regType2').change(function() {
-		$('#aliases').toggle('slow');
-	});
 	
-	$('#schoolType1,#schoolType2').change(function() {
-		$('#mid').toggle();
-		$('#hi').toggle();
+	$(document).on('change', 'table input[type=checkbox]', function() {
 		CalcCost();
 	});
 	
-	$('#account').change(function() {
-		$('#acc').toggle('slow');
-		CheckAccount();
+	$('#regType1,#regType2').change(CheckAccount);
+	$('#account').change(CheckAccount);
+	
+	$('#schoolType1,#schoolType2').change(adjustGradeSelect);
+	
+	$('.addStudentBtn').click(function() {
+		var numStudents = $(this).attr('data-numStudents');
+		for(var i = 0; i < numStudents; i++) {
+			var tr = $('<tr class="student"></tr>');
+			tr.append($('<td class="text-center"><span class="btn btn-xs btn-default tableBtn deleteBtn"><i class="glyphicon glyphicon-remove"></i></span></td>'));
+			tr.append($('<td><input type="text" class="form-control input-sm" required></td>'));
+			tr.append($('<td class="text-center"><select class="midGrades"><option value="6">6</option><option value="7">7</option><option value="8">8</option></select><select class="highGrades"><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select></td>'));
+			for(var j = 0; j < 4; j++)
+				tr.append($('<td class="text-center"><input type="checkbox" class="testCheckbox"></td>'));
+			$('tr#addOptions').before(tr);
+		}
+	});
+	
+	$(document).on('click', '.deleteBtn', function() {
+		var tr = $(this).parents('tr');
+		tr.hide('fast', function() { 
+			tr.remove();
+			CalcCost(); 
+		});
+	});
+	
+	$('form').submit(function(ev) {
+		var students = [];
+		$.each($('.student'), function() {
+			var td = $('td', this);
+			students.push({
+				"name": $(td[1]).find('input').val(), 
+				"grade": parseInt($(td[2]).find('select:visible').val()),
+				"N": $(td[3]).find('input').prop('checked'),
+				"C": $(td[4]).find('input').prop('checked'),
+				"M": $(td[5]).find('input').prop('checked'),
+				"S": $(td[6]).find('input').prop('checked')
+			});
+		});
+		$('input[name=studentData]').remove();
+		$(this).append($('<input>').attr('type', 'hidden').attr('name', 'studentData').val(JSON.stringify(students)));
 	});
 	
 	$('#passStrength').tooltip({placement: 'right', html: 'true'});
@@ -75,71 +137,41 @@ $(document).ready(function() {
 });
 
 function CheckAccount() {
-	var account = $('#account').prop('checked');
+	var account = $('#account').prop('checked') && $('#regType1').prop('checked');
 	$('#password').prop('required', account);
 	$('#confPassword').prop('required', account);
-	if(account)
-		$('#acc').show();
+	if(account) {
+		$('#accountCreds').show('fast');
+		$('#account').prop('checked', true);
+	}
+	else {
+		$('#accountCreds').hide('fast');
+		$('#account').prop('checked', false);
+	}
+	
+	if($('#regType2').prop('checked'))
+		$('#makeAccount').hide('fast');
+	else
+		$('#makeAccount').show('fast');
 }
 
-function AuthCaptcha() {
-	if (calcMD5($('#salt').val() + $('#captcha').val()) === $('#hash').val()) {
-		$('#submit').prop('disabled', false)
-		$('#answerCaptcha').hide();
-		$('#captcha').closest('.control-group').removeClass('error');
-	} else {
-		$('#captcha').closest('.control-group').addClass('error');
-		$('#submit').prop('disabled', true)
-		$('#answerCaptcha').show();
-		$('#answerCaptcha').html('Answer the captcha correctly to prove that you are not a robot.');
-	}
+function adjustGradeSelect() {
+	$('#gradeSelects').remove();
+	if($('#schoolType1').prop('checked'))
+		$('<style id="gradeSelects"> .midGrades { display: block; } .highGrades { display: none; }</style>').appendTo('head');
+	else
+		$('<style id="gradeSelects"> .midGrades { display: none; } .highGrades { display: block; }</style>').appendTo('head');
 }
 
 function EnableSubmit() {
 	if ($('#regError').val() === '') {
-		$('#submit').prop('disabled', false)
-		$('#reset').prop('disabled', false)
+		$('#submit').prop('disabled', false);
+		$('#reset').prop('disabled', false);
 	}
 	$('#answerCaptcha').html('');
 }
 
 function CalcCost() {
-	sum = 0;
-	var i;
-	var end;
 	var price = parseInt($('#price').val());
-
-	if ($('#schoolType1').is(':checked')) {
-		i = 6;
-		end = 8;
-	} else {
-		i = 9;
-		end = 12;
-	}
-
-	for (; i <= end; i++) {
-		var start = "[name=" + "'" + i;
-		if (parseInt($(start + "n']").get(0).value) < 0)
-			$(start + "n']").get(0).value = 0;
-		if (parseInt($(start + "c']").get(0).value) < 0)
-			$(start + "c']").get(0).value = 0;
-		if (parseInt($(start + "s']").get(0).value) < 0)
-			$(start + "s']").get(0).value = 0;
-		if (parseInt($(start + "m']").get(0).value) < 0)
-			$(start + "m']").get(0).value = 0;
-		sum += price * parseInt($(start + "n']").get(0).value);
-		sum += price * parseInt($(start + "c']").get(0).value);
-		sum += price * parseInt($(start + "s']").get(0).value);
-		sum += price * parseInt($(start + "m']").get(0).value);
-	}
-	if(isNaN(sum)) {
-		$('#cost').closest('.form-group').addClass('has-error');
-		if($('#cost').closest('.input-prepend').find('.help-block').length === 0)
-			$('#cost').closest('.input-prepend').append('<span class="help-block">Please enter only <b>numeric</b> values above</span>');
-	}
-	else {
-		$('#cost').val(sum);
-		$('#cost').closest('.form-group').removeClass('has-error');
-		$('#cost').closest('.input-prepend').children('.help-block').remove();
-	}
+	$('#cost').val($('table input[type=checkbox]:checked').length * price);
 }

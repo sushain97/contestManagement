@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 
-
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -47,7 +46,8 @@ public class BaseHttpServlet extends HttpServlet
 		Entity contestInfo = null;
 		if(info.size() > 0) {
 			contestInfo = info.get(0);
-			context.put("title", contestInfo.hasProperty("title") ? contestInfo.getProperty("title") : "");
+			context.put("enabledLevels", contestInfo.getProperty("levels"));
+			context.put("title", contestInfo.getProperty("title"));
 		}
 		
 		UserCookie userCookie = UserCookie.getCookie(req);

@@ -63,6 +63,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
@@ -310,7 +311,7 @@ public class Registration extends BaseHttpServlet
 				registration.setProperty("schoolLevel", schoolLevel);
 				registration.setProperty("name", name);
 				registration.setProperty("division", division);
-				registration.setProperty("studentData", studentData);
+				registration.setProperty("studentData", new Text(studentData));
 				registration.setProperty("email", email);
 				registration.setProperty("paid", "");
 				registration.setProperty("timestamp", new Date());

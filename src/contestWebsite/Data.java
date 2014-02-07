@@ -57,6 +57,7 @@ public class Data extends BaseHttpServlet
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
 		ve.init();
 		VelocityContext context = new VelocityContext();
+		String template = null;
 		
 		Pair<Entity, UserCookie> infoAndCookie = init(context, req);
 
@@ -71,11 +72,12 @@ public class Data extends BaseHttpServlet
 			if(choice == null)
 				resp.sendRedirect("/data?choice=overview");
 			else if(choice.equals("overview"))
-				context.put("overview", true);
+				template = "data.html";
 			else if(choice.equals("registrations"))
 			{
-				context.put("registration", true);
+				template = "dataRegistrations.html";
 				context.put("updated", req.getParameter("updated"));
+				context.put("price", infoAndCookie.x.getProperty("price"));
 				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 				Query query = new Query("registration").addFilter("schoolLevel", FilterOperator.EQUAL, "middle");
 				List<Entity> middleRegs = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
@@ -86,7 +88,7 @@ public class Data extends BaseHttpServlet
 			}
 			else if(choice.equals("questions"))
 			{
-				context.put("questions", true);
+				template = "dataQuestions.html";
 				context.put("updated", req.getParameter("updated"));
 				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 				Query query = new Query("feedback").addFilter("resolved", FilterOperator.EQUAL, true);
@@ -98,6 +100,8 @@ public class Data extends BaseHttpServlet
 			}
 			else if(choice.equals("scores"))
 			{
+				template = "dataScores.html";
+				
 				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 				Query query;
 
@@ -155,12 +159,8 @@ public class Data extends BaseHttpServlet
 				if(!highSchools.isEmpty())
 					context.put("highSchools", highSchools);
 
-				query = new Query("contestInfo");
-				Entity info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
-				context.put("date", info.getProperty("updated"));
-
+				context.put("date", infoAndCookie.x.getProperty("updated"));
 				context.put("esc", new EscapeTool());
-				context.put("scores", true);
 			}
 			else
 			{
@@ -168,7 +168,7 @@ public class Data extends BaseHttpServlet
 				return;
 			}
 
-			close(context, ve.getTemplate("data.html"), resp);
+			close(context, ve.getTemplate(template), resp);
 		}
 	}
 

@@ -35,7 +35,7 @@
 					<div class="input-prepend col-sm-5 col-xs-8">
 	      				<div class="input-group">
 							<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-							<input type="text" name="name" class="form-control" id="name" #if($name) value="$name" readonly #else required #end>
+							<input type="text" name="name" class="form-control" id="name" #if($name) value="$name" #end #if($loggedIn) readonly #else required #end>
 						</div>
 					</div>
 				</div>
@@ -45,7 +45,7 @@
 					<div class="input-prepend col-sm-5 col-xs-8">
 	      				<div class="input-group">
 							<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
-							<input type="email" name="email" class="form-control" id="email" #if($email) value="$email" readonly #else required #end>
+							<input type="email" name="email" class="form-control" id="email" #if($email) value="$email" #end #if($loggedIn) readonly #else required #end>
 						</div>
 					</div>
 				</div>
@@ -53,7 +53,7 @@
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-4 control-label" for="school">Official School Name</label>
 					<div class="input-group col-sm-5 col-xs-8">
-						<input type="text" name="school" class="form-control" id="school" #if($school) value="$school" readonly #else required #end>
+						<input type="text" name="school" class="form-control" id="school" #if($school) value="$school" #end #if($loggedIn) readonly #else required #end>
 						<p class="help-block">The school with which you are affiliated</p>
 					</div>
 				</div>
@@ -61,23 +61,24 @@
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-4 control-label" for="message">Your Message</label>
 					<div class="input-group col-sm-5 col-xs-8">
-						<textarea class="form-control" id="message" rows="5" name="text" required></textarea>
+						<textarea class="form-control" id="message" rows="5" name="text" required>#if($comment)$comment#end</textarea>
 					</div>
 				</div>
 
 				#if(!$nocaptcha)
-				<div class="form-group">
-					<label class="col-sm-2 col-xs-4 control-label" for="captcha">CAPTCHA</label>
-					<div class="input-group col-sm-5 col-xs-8">
-						<input type="text" name="captcha" class="input-small form-control" id="captcha" placeholder="Answer the question below in the box provided" required>
-						<span class="help-block"></span>
-						<p class="help-block">$captcha</p>
-					</div>
+				<div class="input-group col-md-offset-2">
+					<script type="text/javascript"> var RecaptchaOptions = { theme : 'clean' }; </script>
+					<script type="text/javascript" src="//www.google.com/recaptcha/api/challenge?k=$publicKey"></script>
+					<noscript>
+						<iframe src="http://www.google.com/recaptcha/api/noscript?k=$publicKey" height="300" width="500" frameborder="0"></iframe> <br>
+						<textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
+						<input type="hidden" name="recaptcha_response_field" value="manual_challenge">
+					</noscript>
+					#if($captchaError) <span class="help-block text-danger lead">Incorrect captcha, try again.</span> #end
 				</div>
 				#end 
 				
-				<input type="hidden" name="hash" id="hash" value="$hash" /> <input type="hidden" name="nocaptcha"
-					id="nocaptcha" value="$nocaptcha" /> <input type="hidden" name="salt" id="salt" value="$salt" />
+				<input type="hidden" name="nocaptcha" id="nocaptcha" value="$nocaptcha" />
 
 				<div class="form-group">
    					<div class="col-sm-offset-2 col-sm-10">
@@ -90,7 +91,6 @@
 		#end
 	</div>
 
-	<script type="text/javascript" src="/js/md5hash.js"></script>
 	<script type="text/javascript" src="/js/pagescripts/contactUs.js"></script>
 	#include("noscript.html")
 </body>

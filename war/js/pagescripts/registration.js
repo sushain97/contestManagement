@@ -50,6 +50,7 @@ $(document).ready(function() {
 		CalcCost();
 		CheckAccount();
 		adjustGradeSelect();
+		$('input[name=recaptcha_response_field]').prop('required', true);
 	}
 	
 	$('h1 button').on('click', function() {

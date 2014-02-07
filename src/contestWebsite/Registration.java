@@ -179,10 +179,8 @@ public class Registration extends BaseHttpServlet
 						if(!key.equals("account") && PropNames.names.get(key) != null)
 							regData.add("<dt>" + PropNames.names.get(key) + "</dt>\n<dd>" + prop.getValue() + "</dd>");
 					}
-					Collections.sort(regData);
 					
 					ArrayList<String> students = new ArrayList<String>();
-					
 					JSONArray studentData = null;
 					try
 					{
@@ -216,6 +214,8 @@ public class Registration extends BaseHttpServlet
 						}
 					}
 					
+					Collections.sort(regData);
+					Collections.sort(students);
 					context.put("regData", regData);
 					context.put("studentData", students);
 					sess.invalidate();

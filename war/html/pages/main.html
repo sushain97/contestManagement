@@ -55,9 +55,15 @@
 			href="/viewScores">Score Viewer</a>.
 		<h3>Your Registration Information</h3>
 		To make any changes to the following information, go to the <a href="/contactUs">Contact Us</a> page. <br />
+		
 		<dl class="dl-horizontal"> 
-		#foreach($str in $regData) $str #end 
+			#foreach($str in $regData) $str #end 
 		</dl>
+		
+		<dl class="dl-horizontal"> 
+			#foreach($str in $studentData) $str #end 
+		</dl>
+		
 		<h3>Change Password</h3>
 		Go to the <a href="/changePass">Change Password</a> page to modify your account login password.
 		#end

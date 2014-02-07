@@ -87,14 +87,14 @@
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-5 control-label" for="schoolLevel">School Level</label>
 					<div class="input-group col-sm-5 col-xs-7">
-						#if($levels.contains("middle"))
+						#if($enabledLevels.contains("middle"))
 						<label class="radio-inline">
-							<input type="radio" name="schoolLevel" id="schoolType1" value="middle" #if($middle || !$levels.contains("high")) checked #end> Middle
+							<input type="radio" name="schoolLevel" id="schoolType1" value="middle" #if($middle || !$enabledLevels.contains("high")) checked #end> Middle
 						</label>
 						#end
-						#if($levels.contains("high"))
+						#if($enabledLevels.contains("high"))
 						<label class="radio-inline">
-							<input type="radio" name="schoolLevel" id="schoolType2" value="high" #if($high || !$levels.contains("middle")) checked #end> High
+							<input type="radio" name="schoolLevel" id="schoolType2" value="high" #if($high || !$enabledLevels.contains("middle")) checked #end> High
 						</label>
 						#end
 					</div>
@@ -127,7 +127,6 @@
 						<input type="text" name="schoolName" class="form-control"  id="schoolName" value="$schoolName" required>
 						<span class="help-block">Omit "Middle School", "High School", "Junior High School", etc.</span>
 					</div>
-
 				</div>
 
 				<div class="form-group">

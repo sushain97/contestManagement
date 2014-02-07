@@ -82,7 +82,10 @@ $(document).ready(function() {
 	
 	$(document).on('click', '.deleteBtn', function() {
 		var tr = $(this).parents('tr');
-		tr.hide('fast', function() { tr.remove(); });
+		tr.hide('fast', function() { 
+			tr.remove();
+			CalcCost(); 
+		});
 	});
 	
 	$('form').submit(function(ev) {
@@ -161,8 +164,8 @@ function adjustGradeSelect() {
 
 function EnableSubmit() {
 	if ($('#regError').val() === '') {
-		$('#submit').prop('disabled', false)
-		$('#reset').prop('disabled', false)
+		$('#submit').prop('disabled', false);
+		$('#reset').prop('disabled', false);
 	}
 	$('#answerCaptcha').html('');
 }

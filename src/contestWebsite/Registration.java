@@ -115,12 +115,7 @@ public class Registration extends BaseHttpServlet
 			else
 				context.put("registrationError", "");
 
-			if(contestInfo.getProperty("price") != null)
-				context.put("price", (Long) contestInfo.getProperty("price"));
-			else
-				context.put("price", 5);
-			
-			context.put("levels", (String) contestInfo.getProperty("levels"));
+			context.put("price", (Long) contestInfo.getProperty("price"));
 			context.put("publicKey", (String) contestInfo.getProperty("publicKey"));
 		}
 		else

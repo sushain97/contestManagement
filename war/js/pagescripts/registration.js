@@ -18,30 +18,11 @@
 $(document).ready(function() {
 	if($('input[name=studentData]').length) {
 		var studentData = JSON.parse($('input[name=studentData]').val());
-		var subjects = ['N', 'C', 'M', 'S'];
 		if(studentData.length > 0)
 			$('.student').remove();
 			
 		$.each(studentData, function() {
-			var tr = $('<tr class="student"></tr>');
-			tr.append($('<td class="text-center"><span class="btn btn-xs btn-default tableBtn deleteBtn"><i class="glyphicon glyphicon-remove"></i></span></td>'));
-			
-			var td = $('<td class="text-center"></td>');
-			td.append($('<input type="text" class="form-control input-sm" value required></td>').val(this["name"]));
-			tr.append(td);
-			
-			var td = $('<td class="text-center"></td>');
-			td.append($('<select class="midGrades"><option value="6">6</option><option value="7">7</option><option value="8">8</option></select>').val(this["grade"]));
-			td.append($('<select class="highGrades"><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select>').val(this["grade"]));
-			tr.append(td);
-			
-			for(var j = 0; j < 4; j++) {
-				var td = $('<td class="text-center"></td>');
-				td.append($('<input type="checkbox" class="testCheckbox">').prop('checked', this[subjects[j]]))
-				tr.append(td);
-			}
-				
-			$('tr#addOptions').before(tr);
+			addStudent(this["name"], this["grade"], [this['N'], this['C'], this['M'], this['S']]);
 		});
 	}
 	
@@ -53,14 +34,8 @@ $(document).ready(function() {
 		$('input[name=recaptcha_response_field]').prop('required', true);
 	}
 	
-	$('h1 button').on('click', function() {
+	$('#printButton').on('click', function() {
 		window.print();
-	});
-	
-	$('input[type="number"]').change(CalcCost);
-	
-	$(document).on('change', 'table input[type=checkbox]', function() {
-		CalcCost();
 	});
 	
 	$('#regType1,#regType2').change(CheckAccount);
@@ -68,19 +43,16 @@ $(document).ready(function() {
 	
 	$('#schoolType1,#schoolType2').change(adjustGradeSelect);
 	
-	$('.addStudentBtn').click(function() {
-		var numStudents = $(this).attr('data-numStudents');
-		for(var i = 0; i < numStudents; i++) {
-			var tr = $('<tr class="student"></tr>');
-			tr.append($('<td class="text-center"><span class="btn btn-xs btn-default tableBtn deleteBtn"><i class="glyphicon glyphicon-remove"></i></span></td>'));
-			tr.append($('<td><input type="text" class="form-control input-sm" required></td>'));
-			tr.append($('<td class="text-center"><select class="midGrades"><option value="6">6</option><option value="7">7</option><option value="8">8</option></select><select class="highGrades"><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select></td>'));
-			for(var j = 0; j < 4; j++)
-				tr.append($('<td class="text-center"><input type="checkbox" class="testCheckbox"></td>'));
-			$('tr#addOptions').before(tr);
-		}
+	$('input[type="number"]').change(CalcCost);
+	$(document).on('change', 'table input[type=checkbox]', function() {
+		CalcCost();
 	});
 	
+	$('.addStudentBtn').click(function() {
+		var numStudents = $(this).attr('data-numStudents');
+		for(var i = 0; i < numStudents; i++)
+			addStudent('', 6, [false, false, false, false]);
+	});
 	$(document).on('click', '.deleteBtn', function() {
 		var tr = $(this).parents('tr');
 		tr.hide('fast', function() { 
@@ -88,6 +60,48 @@ $(document).ready(function() {
 			CalcCost(); 
 		});
 	});
+	
+	$('button#import').click(function() {
+		var students = $('textarea#importData').val().split('\n');
+		var seperator = $('input#seperator').val();
+		
+		$.each(students, function() {
+			var fields = this.split(seperator);
+			if(fields.length == 6 && parseInt(fields[1].trim()))
+				addStudent(fields[0].trim(), fields[1].trim(), [!!fields[2].trim().length, !!fields[3].trim().length, !!fields[4].trim().length, !!fields[5].trim().length]);
+		});
+	});
+	
+	var refreshTable = function() {
+		var students = $('textarea#importData').val().split('\n');
+		var seperator = $('input#seperator').val();
+		
+		var tableBody = $('table#importTable tbody');
+		tableBody.empty();
+		
+		$.each(students, function() {
+			var fields = this.split(seperator);
+			var tr = $('<tr></tr>');
+
+			if(fields.length < 6 || !parseInt(fields[1].trim())) {
+				tr.addClass("danger");
+				tr.append($('<td></td>').text('Failed'));
+			}
+			else {
+				tr.append($('<td></td>').text(fields[0].trim()));
+				tr.append($('<td></td>').text(fields[1].trim()));
+				tr.append($('<td></td>').text(fields[2].trim().length ? "T" : "F").addClass(fields[2].trim().length ? "success" : "danger"));
+				tr.append($('<td></td>').text(fields[3].trim().length ? "T" : "F").addClass(fields[3].trim().length ? "success" : "danger"));
+				tr.append($('<td></td>').text(fields[4].trim().length ? "T" : "F").addClass(fields[4].trim().length ? "success" : "danger"));
+				tr.append($('<td></td>').text(fields[5].trim().length ? "T" : "F").addClass(fields[5].trim().length ? "success" : "danger"));
+			}
+
+			tableBody.append(tr);
+		});
+	};
+	
+	$('textarea#importData').on('propertychange keyup input paste', refreshTable);
+	$('input#seperator').on('input', refreshTable);
 	
 	$('form').submit(function(ev) {
 		var students = [];
@@ -110,7 +124,7 @@ $(document).ready(function() {
 	
 	var passwordElem = $('#password');
 	passwordElem.data('oldVal', passwordElem);
-	passwordElem.bind("propertychange keyup input paste", function(event) {
+	passwordElem.bind('propertychange keyup input paste', function(event) {
 		$('#passHelp').show();
 		var passwordElem = $('#password');
 		if (passwordElem.data('oldVal') != passwordElem.val()) {
@@ -135,6 +149,28 @@ $(document).ready(function() {
 		$('#passStrength').tooltip('hide');
 	});
 });
+
+function addStudent(name, grade, subjects) {
+	var tr = $('<tr class="student"></tr>');
+	tr.append($('<td class="text-center"><span class="btn btn-xs btn-default tableBtn deleteBtn"><i class="glyphicon glyphicon-remove"></i></span></td>'));
+	
+	var td = $('<td class="text-center"></td>');
+	td.append($('<input type="text" class="form-control input-sm" value required></td>').val(name));
+	tr.append(td);
+	
+	var td = $('<td class="text-center"></td>');
+	td.append($('<select class="midGrades"><option value="6">6</option><option value="7">7</option><option value="8">8</option></select>').val(grade));
+	td.append($('<select class="highGrades"><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select>').val(grade));
+	tr.append(td);
+
+	for(var j = 0; j < 4; j++) {
+		var td = $('<td class="text-center"></td>');
+		td.append($('<input type="checkbox" class="testCheckbox">').prop('checked', subjects[j]));
+		tr.append(td);
+	}
+		
+	$('tr#addOptions').before(tr);
+}
 
 function CheckAccount() {
 	var account = $('#account').prop('checked') && $('#regType1').prop('checked');

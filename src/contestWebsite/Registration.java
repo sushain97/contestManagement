@@ -389,6 +389,7 @@ public class Registration extends BaseHttpServlet
 						context.put("name", name);
 						context.put("url", url);
 						context.put("cost", cost);
+						context.put("title", contestInfo.getProperty("title"));
 						context.put("account", account.equals("yes"));
 						
 						StringWriter sw = new StringWriter();

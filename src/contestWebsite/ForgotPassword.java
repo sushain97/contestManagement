@@ -127,10 +127,8 @@ public class ForgotPassword extends BaseHttpServlet
 
 				Session session = Session.getDefaultInstance(new Properties(), null);
 				query = new Query("contestInfo");
-				List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-				String appEngineEmail = "";
-				if(info.size() != 0)
-					appEngineEmail = (String) info.get(0).getProperty("account");
+				Entity contestInfo = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+				String appEngineEmail = (String) contestInfo.getProperty("account");
 				
 				String url = req.getRequestURL().toString();
 				url = url.substring(0, url.indexOf("/", 7));
@@ -150,6 +148,7 @@ public class ForgotPassword extends BaseHttpServlet
 					VelocityContext context = new VelocityContext();
 					
 					context.put("user", user.getProperty("user-id"));
+					context.put("title", contestInfo.getProperty("title"));
 					context.put("url", url);
 					
 					StringWriter sw = new StringWriter();

@@ -56,11 +56,11 @@
 		<h3>Your Registration Information</h3>
 		To make any changes to the following information, go to the <a href="/contactUs">Contact Us</a> page. <br />
 		
-		<dl class="dl-horizontal"> 
+		<dl class="dl-horizontal">
 			#foreach($str in $regData) $str #end 
 		</dl>
 		
-		<dl class="dl-horizontal"> 
+		<dl class="dl-horizontal">
 			#foreach($str in $studentData) $str #end 
 		</dl>
 		
@@ -70,8 +70,7 @@
 		#else
 		
 		<h1>About our Tournament</h1>
-		#include("aboutText.html")
-		<br/><br/>
+		<p>$aboutText</p>
 		
 		<img class="loading-gif" src="/img/ajax-loader.gif" title="Loading..." alt="Loading...">
 		

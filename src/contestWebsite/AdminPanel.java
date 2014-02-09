@@ -43,6 +43,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
 import com.google.appengine.api.taskqueue.Queue;
@@ -97,18 +98,14 @@ public class AdminPanel extends BaseHttpServlet
 				List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 				Entity contestInfo = info.size() != 0 ? info.get(0) : new Entity("contestInfo");
 
-				contestInfo.setProperty("endDate", params.get("endDate")[0]);
-				contestInfo.setProperty("startDate", params.get("startDate")[0]);
-				contestInfo.setProperty("email", params.get("email")[0]);
-				contestInfo.setProperty("account", params.get("account")[0]);
+				String[] propNames = {"endDate", "startDate", "email", "account", "levels", "title", "publicKey", "privateKey"};
+				for(String propName: propNames)
+					contestInfo.setProperty(propName, params.get(propName)[0]);
+				contestInfo.setProperty("testingMode", testingMode);
+				contestInfo.setProperty("aboutText", new Text(params.get("aboutText")[0]));
 				contestInfo.setProperty("price", Integer.parseInt(params.get("price")[0]));
 				contestInfo.setProperty("complete", params.get("complete") != null);
-				contestInfo.setProperty("testingMode", testingMode);
 				contestInfo.setProperty("hideFullNames", params.get("fullnames") != null);
-				contestInfo.setProperty("levels", params.get("levels")[0]);
-				contestInfo.setProperty("title", params.get("title")[0]);
-				contestInfo.setProperty("publicKey", params.get("publicKey")[0]);
-				contestInfo.setProperty("privateKey", params.get("privateKey")[0]);
 
 				if(params.containsKey("update"))
 				{

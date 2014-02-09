@@ -182,6 +182,7 @@ public class MainPage extends BaseHttpServlet
 		context.put("titles", titles);
 		context.put("captions", captions);
 		context.put("esc", new EscapeTool());
+		context.put("aboutText", ((Text) infoAndCookie.x.getProperty("aboutText")).getValue());
 
 		close(context, ve.getTemplate("main.html"), resp);
 	}

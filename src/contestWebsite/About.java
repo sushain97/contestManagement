@@ -27,18 +27,25 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Text;
+
 import util.BaseHttpServlet;
+import util.Pair;
+import util.UserCookie;
 
 @SuppressWarnings("serial")
 public class About extends BaseHttpServlet
 {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException, ServletException
-	{		
+	{
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
 		ve.init();
 		VelocityContext context = new VelocityContext();
-		init(context, req);
+		
+		Pair<Entity, UserCookie> infoAndCookie = init(context, req);
+		context.put("aboutText", ((Text) infoAndCookie.x.getProperty("aboutText")).getValue());
 		close(context, ve.getTemplate("about.html"), resp);
 	}
 }

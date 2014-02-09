@@ -139,7 +139,7 @@ public class ForgotPassword extends BaseHttpServlet
 					Message msg = new MimeMessage(session);
 					msg.setFrom(new InternetAddress(appEngineEmail, "Tournament Website Admin"));
 					msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email, (String) user.getProperty("name")));
-					msg.setSubject("Password Reset for Dulles Tournament Website");
+					msg.setSubject("Password Reset for the" + contestInfo.getProperty("title") +  " Website");
 					
 					VelocityEngine ve = new VelocityEngine();
 					ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/email");

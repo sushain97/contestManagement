@@ -30,10 +30,10 @@ $(window).load(function() {
 function initialize() {
 	google.maps.visualRefresh = true;
 	var directionsDisplay = new google.maps.DirectionsRenderer();
-	var dulles = new google.maps.LatLng($('#location_lat').val(),$('#location_long').val());
+	var school = new google.maps.LatLng($('#location_lat').val(),$('#location_long').val());
 	var mapOptions = {
 	    zoom: 13,
-	    center: dulles,
+	    center: school,
 	    mapTypeId: google.maps.MapTypeId.ROADMAP,
 	    zoomControl: true,
 	    zoomControlOptions: { style: google.maps.ZoomControlStyle.SMALL }
@@ -44,12 +44,12 @@ function initialize() {
 	var name = $('#name').val(), address = $('#address').val();
 	
 	var marker = new google.maps.Marker({
-		position: dulles,
+		position: school,
 		map: map,
 		animation: google.maps.Animation.DROP
 	});
 	var infoWindow = new google.maps.InfoWindow({
-		content: "<div id=\"information\"><h2 class=\"infoWindow\" style=\"font-size: xx-large;\">Dulles High School</h2>" +
+		content: "<div id=\"information\"><h2 class=\"infoWindow\" style=\"font-size: xx-large;\">" + name + "</h2>" +
 				"<div class=\"infoWindow\" style=\"font-size: large;\">" + address + "</div><br/>" +
 				"<a class=\"infoWindow\" style=\"font-size: small;\" target=\"_newtab\" href=\"https://maps.google.com/maps?f=d&hl=en&q=" + name + "+" + address + "&daddr=" + name + "+" + address +"\">Directions</a></div>"
 	});

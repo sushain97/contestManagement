@@ -90,10 +90,13 @@ $(document).ready(function() {
 			else {
 				tr.append($('<td></td>').text(fields[0].trim()));
 				tr.append($('<td></td>').text(fields[1].trim()));
-				tr.append($('<td></td>').text(fields[2].trim().length ? "T" : "F").addClass(fields[2].trim().length ? "success" : "danger"));
-				tr.append($('<td></td>').text(fields[3].trim().length ? "T" : "F").addClass(fields[3].trim().length ? "success" : "danger"));
-				tr.append($('<td></td>').text(fields[4].trim().length ? "T" : "F").addClass(fields[4].trim().length ? "success" : "danger"));
-				tr.append($('<td></td>').text(fields[5].trim().length ? "T" : "F").addClass(fields[5].trim().length ? "success" : "danger"));
+				
+				
+				var checked = '<i class="glyphicon glyphicon-ok"></i>', unchecked = '<i class="glyphicon glyphicon-remove"></i>';
+				tr.append($('<td></td>').html(fields[2].trim().length ? checked : unchecked).addClass(fields[2].trim().length ? "success" : "danger"));
+				tr.append($('<td></td>').html(fields[3].trim().length ? checked : unchecked).addClass(fields[3].trim().length ? "success" : "danger"));
+				tr.append($('<td></td>').html(fields[4].trim().length ? checked : unchecked).addClass(fields[4].trim().length ? "success" : "danger"));
+				tr.append($('<td></td>').html(fields[5].trim().length ? checked : unchecked).addClass(fields[5].trim().length ? "success" : "danger"));
 			}
 
 			tableBody.append(tr);
@@ -130,7 +133,7 @@ $(document).ready(function() {
 		if (passwordElem.data('oldVal') != passwordElem.val()) {
 			passwordElem.data('oldVal', passwordElem.val());
 			
-			var userInputs = ['tmsca', 'dulles'];
+			var userInputs = ['tmsca'];
 			userInputs = userInputs.concat(userInputs, $("#schoolName").val().split(' '));
 			userInputs = userInputs.concat(userInputs, $("#name").val().split(' '));
 			userInputs.push($("#email").val().split('@')[0]);

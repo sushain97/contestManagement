@@ -18,6 +18,7 @@
 package contestWebsite;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.yaml.snakeyaml.Yaml;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Text;
@@ -37,6 +39,7 @@ import util.UserCookie;
 @SuppressWarnings("serial")
 public class About extends BaseHttpServlet
 {
+	@SuppressWarnings("unchecked")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException, ServletException
 	{
 		VelocityEngine ve = new VelocityEngine();
@@ -45,7 +48,12 @@ public class About extends BaseHttpServlet
 		VelocityContext context = new VelocityContext();
 		
 		Pair<Entity, UserCookie> infoAndCookie = init(context, req);
+		
+		Yaml yaml = new Yaml();
+		HashMap<String,String> schedule = (HashMap<String, String>) yaml.load(((Text) infoAndCookie.x.getProperty("schedule")).getValue());
+		context.put("schedule", schedule);
 		context.put("aboutText", ((Text) infoAndCookie.x.getProperty("aboutText")).getValue());
+		
 		close(context, ve.getTemplate("about.html"), resp);
 	}
 }

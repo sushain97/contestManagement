@@ -30,7 +30,7 @@ $(window).load(function() {
 function initialize() {
 	google.maps.visualRefresh = true;
 	var directionsDisplay = new google.maps.DirectionsRenderer();
-	var dulles = new google.maps.LatLng(29.621109,-95.584023);
+	var dulles = new google.maps.LatLng($('#location_lat').val(),$('#location_long').val());
 	var mapOptions = {
 	    zoom: 13,
 	    center: dulles,
@@ -41,6 +41,8 @@ function initialize() {
 	var map = new google.maps.Map($('#map')[0], mapOptions);
 	directionsDisplay.setMap(map);
 	
+	var name = $('#name').val(), address = $('#address').val();
+	
 	var marker = new google.maps.Marker({
 		position: dulles,
 		map: map,
@@ -48,8 +50,8 @@ function initialize() {
 	});
 	var infoWindow = new google.maps.InfoWindow({
 		content: "<div id=\"information\"><h2 class=\"infoWindow\" style=\"font-size: xx-large;\">Dulles High School</h2>" +
-				"<div class=\"infoWindow\" style=\"font-size: large;\">550 Dulles Ave, Sugar Land, TX 77478</div><br/>" +
-				"<a class=\"infoWindow\" style=\"font-size: small;\" target=\"_newtab\" href=\"https://maps.google.com/maps?f=d&hl=en&q=John+Foster+Dulles+High+School,+550+Dulles+Ave,+Sugar+Land,+Fort+Bend,+Texas+77478-3746&aq=&sll=31.168934,-100.076842&sspn=13.309797,23.269043&t=m&ie=UTF8&split=0&daddr=John+Foster+Dulles+High+School,+550+Dulles+Ave,+Sugar+Land,+TX+77478\">Directions</a></div>"
+				"<div class=\"infoWindow\" style=\"font-size: large;\">" + address + "</div><br/>" +
+				"<a class=\"infoWindow\" style=\"font-size: small;\" target=\"_newtab\" href=\"https://maps.google.com/maps?f=d&hl=en&q=" + name + "+" + address + "&daddr=" + name + "+" + address +"\">Directions</a></div>"
 	});
 	infoWindow.open(map, marker);
 	

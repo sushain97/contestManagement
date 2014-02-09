@@ -21,6 +21,7 @@ import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.yaml.snakeyaml.Yaml;
 
 import util.BaseHttpServlet;
 import util.Pair;
@@ -41,6 +43,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Text;
@@ -98,14 +101,34 @@ public class AdminPanel extends BaseHttpServlet
 				List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 				Entity contestInfo = info.size() != 0 ? info.get(0) : new Entity("contestInfo");
 
-				String[] propNames = {"endDate", "startDate", "email", "account", "levels", "title", "publicKey", "privateKey"};
-				for(String propName: propNames)
+				String[] stringPropNames = {"endDate", "startDate", "email", "account", "levels", "title", "publicKey", "privateKey", "school", "address"};
+				for(String propName: stringPropNames)
 					contestInfo.setProperty(propName, params.get(propName)[0]);
 				contestInfo.setProperty("testingMode", testingMode);
 				contestInfo.setProperty("aboutText", new Text(params.get("aboutText")[0]));
+				contestInfo.setProperty("location", new GeoPt(Float.parseFloat(params.get("location_lat")[0]), Float.parseFloat(params.get("location_long")[0])));
 				contestInfo.setProperty("price", Integer.parseInt(params.get("price")[0]));
 				contestInfo.setProperty("complete", params.get("complete") != null);
 				contestInfo.setProperty("hideFullNames", params.get("fullnames") != null);
+				
+				String[] mapPropNames = {"schedule", "directions"};
+				for(String propName: mapPropNames)
+				{
+					String text = params.get(propName)[0];
+					Yaml yaml = new Yaml();
+					try 
+					{
+						@SuppressWarnings("unused")
+						HashMap<String,String> map = (HashMap<String, String>) yaml.load(text);
+						contestInfo.setProperty(propName, new Text(text));
+					}
+					catch(ClassCastException e)
+					{
+						e.printStackTrace();
+						resp.sendError(HttpServletResponse.SC_BAD_REQUEST, e.toString());
+						return;
+					}
+				}
 
 				if(params.containsKey("update"))
 				{

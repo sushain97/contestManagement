@@ -18,6 +18,7 @@
 package contestWebsite;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,19 +26,36 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.yaml.snakeyaml.Yaml;
+
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Text;
 
 import util.BaseHttpServlet;
+import util.Pair;
+import util.UserCookie;
 
 @SuppressWarnings("serial")
 public class Directions extends BaseHttpServlet
 {
+	@SuppressWarnings("unchecked")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
 		ve.init();
 		VelocityContext context = new VelocityContext();
+		
 		init(context, req);
+		Pair<Entity, UserCookie> infoAndCookie = init(context, req);
+		
+		Yaml yaml = new Yaml();
+		HashMap<String,String> directions = (HashMap<String, String>) yaml.load(((Text) infoAndCookie.x.getProperty("directions")).getValue());
+		context.put("directions", directions);
+		context.put("school", infoAndCookie.x.getProperty("school"));
+		context.put("location", infoAndCookie.x.getProperty("location"));
+		context.put("address", infoAndCookie.x.getProperty("address"));
+		
 		close(context, ve.getTemplate("directions.html"), resp);
 	}
 }

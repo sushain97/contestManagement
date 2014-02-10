@@ -33,6 +33,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.tools.generic.EscapeTool;
+import org.yaml.snakeyaml.Yaml;
 
 import util.BaseHttpServlet;
 import util.Pair;
@@ -54,47 +55,7 @@ import contestTabulation.Test;
 @SuppressWarnings("serial")
 public class MainPage extends BaseHttpServlet
 {
-	private final static String[] captions = { "",
-		"Bobby S. awarded first place in Math by Larry White",
-		"First place: Bobby S., Daniel F., Rik N., Ms. Sarah Cleveland",
-		"",
-		"",
-		"First place: Bobby S., Daniel F., Rik N., Mr. Feng Li",
-		"First place: Bobby S., Greg C., Daniel F., Kevin L., Dr. Drew Poche",
-		"",
-		"",
-		"",
-		"Graduating Seniors with Ms. Sarah Cleveland",
-		"Graduating Seniors with Dr. Drew Poche",
-		"Graduating Seniors",
-		"Siddarth G., Kevin L., Bobby S., Daniel F., Keerthana K., Rik N., Saiesh K., Sushain C.",
-		"Bobby S., Arjun G., Saiesh K., Sushain C., Daniel F., Mitchell H., Siddarth G., Kevin L., Keerthana K., Rik N.",
-		"Keerthana K., Kevin L.",
-		"Siddarth G., Kevin L., Bobby S.",
-		"Roy H., Emily W., Daniel H., Prashant R., Mitchell H., Kaelan Y., Arjun G., Chung H."
-	};
-	private final static String[] titles = { "TMSCA State Awards: 2013",
-		"UIL State Math Individual Awards: 2013",
-		"UIL State Math Team Awards: 2013",
-		"Texas A&M University Math Competition: 2013",
-		"University of Houston Math Competition: 2012",
-		"TMSCA State Math Team Awards: 2012",
-		"TMSCA State Science Team Awards: 2012",
-		"TMSCA State Awards: 2012",
-		"Math & Science Club Banquet: 2013",
-		"Math & Science Club Banquet: 2013",
-		"Math & Science Club Banquet: 2013",
-		"Math & Science Club Banquet: 2013",
-		"Math & Science Club Banquet: 2013",
-		"UIL State Team: 2013",
-		"UIL State Team: 2013",
-		"Math & Science Club Co-Presidents: 2014",
-		"UIL State Team: 2013",
-		"UIL State Science Team: 2013",
-		"Math & Science Club Officers: 2013"
-	};
-
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "deprecation", "unchecked" })
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
 		VelocityEngine ve = new VelocityEngine();
@@ -177,10 +138,13 @@ public class MainPage extends BaseHttpServlet
 				context.put("admin", true);
 			}
 		}
+		else
+		{
+			Yaml yaml = new Yaml();
+			ArrayList<ArrayList<String>> slideshow = (ArrayList<ArrayList<String>>) yaml.load(((Text) infoAndCookie.x.getProperty("slideshow")).getValue());
+			context.put("slideshow", slideshow);
+		}
 		
-		context.put("num", Math.min(titles.length, captions.length)-2);
-		context.put("titles", titles);
-		context.put("captions", captions);
 		context.put("esc", new EscapeTool());
 		context.put("aboutText", ((Text) infoAndCookie.x.getProperty("aboutText")).getValue());
 

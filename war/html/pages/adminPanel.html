@@ -63,22 +63,29 @@
 				
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-5 control-label" for="aboutText">About Text</label>
-					<div class="col-sm-6 col-xs-7">
+					<div class="col-xs-7">
 						<textarea class="form-control" name="aboutText" rows="6">#if($contestInfo.getProperty("aboutText").getValue())$contestInfo.getProperty("aboutText").getValue()#end</textarea>
 					</div>
 				</div>
 				
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-5 control-label" for="schedule">Schedule (<a href="https://en.wikipedia.org/wiki/YAML#Associative_arrays" target="_blank">YAML Associative Array</a>)</label>
-					<div class="col-sm-6 col-xs-7">
+					<div class="col-xs-7">
 						<textarea class="form-control" name="schedule" rows="6">#if($contestInfo.getProperty("schedule").getValue())$contestInfo.getProperty("schedule").getValue()#end</textarea>
 					</div>
 				</div>
 				
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-5 control-label" for="directions">Directions (<a href="https://en.wikipedia.org/wiki/YAML#Associative_arrays" target="_blank">YAML Associative Array</a>)</label>
-					<div class="col-sm-6 col-xs-7">
+					<div class="col-xs-7">
 						<textarea class="form-control" name="directions" rows="6">#if($contestInfo.getProperty("directions").getValue())$contestInfo.getProperty("directions").getValue()#end</textarea>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label class="col-sm-2 col-xs-5 control-label" for="slideshow">Slideshow (<a href="https://en.wikipedia.org/wiki/YAML#Lists" target="_blank">YAML List of Inline Lists</a>) <code>[URL, Title, Caption]</code></label>
+					<div class="col-xs-7">
+						<textarea class="form-control" name="slideshow" rows="6">#if($contestInfo.getProperty("slideshow").getValue())$contestInfo.getProperty("slideshow").getValue()#end</textarea>
 					</div>
 				</div>
 				

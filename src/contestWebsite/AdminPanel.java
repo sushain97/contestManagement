@@ -21,6 +21,7 @@ import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,23 +112,38 @@ public class AdminPanel extends BaseHttpServlet
 				contestInfo.setProperty("complete", params.get("complete") != null);
 				contestInfo.setProperty("hideFullNames", params.get("fullnames") != null);
 				
+				Yaml yaml = new Yaml();
 				String[] mapPropNames = {"schedule", "directions"};
 				for(String propName: mapPropNames)
 				{
 					String text = params.get(propName)[0];
-					Yaml yaml = new Yaml();
+					
 					try 
 					{
 						@SuppressWarnings("unused")
 						HashMap<String,String> map = (HashMap<String, String>) yaml.load(text);
 						contestInfo.setProperty(propName, new Text(text));
 					}
-					catch(ClassCastException e)
+					catch(Exception e)
 					{
 						e.printStackTrace();
 						resp.sendError(HttpServletResponse.SC_BAD_REQUEST, e.toString());
 						return;
 					}
+				}
+				
+				String slideshowText = params.get("slideshow")[0];
+				try 
+				{
+					@SuppressWarnings("unused")
+					ArrayList<ArrayList<String>> map = (ArrayList<ArrayList<String>>) yaml.load(slideshowText);
+					contestInfo.setProperty("slideshow", new Text(slideshowText));
+				}
+				catch(Exception e)
+				{
+					e.printStackTrace();
+					resp.sendError(HttpServletResponse.SC_BAD_REQUEST, e.toString());
+					return;
 				}
 
 				if(params.containsKey("update"))

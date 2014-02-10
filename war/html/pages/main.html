@@ -10,7 +10,7 @@
 	<style type="text/css">
 		body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */
 		.carousel {
-		    width: 720px;
+		    width: 700px;
 		    height: auto;
 		    margin: 0 auto;
 		}
@@ -29,10 +29,6 @@
 		    margin-left: auto;
 		    margin-right: auto;
 		    margin-top: 250px;
-		}
-		.carousel-pic {
-			vertical-align: middle;
-			height: 540px;
 		}
 		.carousel-caption {
 			background-color:rgba(0, 0, 0, 0.6);
@@ -73,32 +69,23 @@
 		<p>$aboutText</p>
 		
 		<img class="loading-gif" src="/img/ajax-loader.gif" title="Loading..." alt="Loading...">
-		
         <div id="myCarousel" class="carousel slide">
 	       	<ol class="carousel-indicators">
-	       		#foreach($i in [0..$num])
+	       		#foreach($i in [1..$slideshow.size()])
 	       		<li data-target="#myCarousel" data-slide-to="$i"></li>
 	       		#end
 	       	</ol>
 	
 	        <div class="carousel-inner">
-		        <div class="item">
-		        	<div class="carousel-pic">
-		    			<img src="/img/carousel/Pic0.jpg" alt="$captions[0]" width="710px" class="img-polaroid">
-		    		</div>
-		    		<div class="carousel-caption">
-		    			<h4>$esc.html($titles[0])</h4>
-		    			<p>$esc.html($captions[0])</p>
-		    		</div>
-		        </div>
-				#foreach($i in [1..$num])
+
+				#foreach($slide in $slideshow)
 					<div class="item">
 						<div class="carousel-pic">
-		        			<img src="/img/carousel/Pic${i}.jpg" alt="captions[$i]" width="710px" class="img-polaroid">
+		        			<img src="$slide.get(0)" width="710px" class="img-thumbnail">
 		        		</div>
 		        		<div class="carousel-caption">
-		        			<h4>$esc.html($titles[$i])</h4>
-		        			<p>$esc.html($captions[$i])</p>
+		        			<h4>$esc.html($slide.get(1))</h4>
+		        			<p>$esc.html($slide.get(2))</p>
 		        		</div>
 		        	</div>
 				#end

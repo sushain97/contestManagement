@@ -53,36 +53,41 @@
 				<div class="col-md-3 col-xs-5 hidden-print">
 					<ul class="nav nav-pills nav-stacked" >
 						<li id="avail"><a href="/contestResults">Availability</a></li>
-						<li class="nav-header"><h4>Middle School</h4></li>
-						<li id="middle_sweep"><a href="/contestResults?type=middle_sweep">Sweepstakes</a></li>
-						<li id="middle_categorySweep"><a href="/contestResults?type=middle_categorySweep">Category Sweekstakes</a></li>
-						<li id="middle_visualizations"><a href="/contestResults?type=middle_visualizations">Visualizations</a></li>
-						<li class="divider"></li>
-						#foreach($num in [6..8])
-						<li id="$num" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">${num}th Grade<b class="caret"></b></a>
-							<ul class="dropdown-menu">
-								<li id="middle_category_${num}C"><a href="/contestResults?type=middle_category_${num}C">Calculator</a></li>
-								<li id="middle_category_${num}N"><a href="/contestResults?type=middle_category_${num}N">Number Sense</a></li>
-								<li id="middle_category_${num}M"><a href="/contestResults?type=middle_category_${num}M">Math</a></li>
-								<li id="middle_category_${num}S"><a href="/contestResults?type=middle_category_${num}S">Science</a></li>
-							</ul>
-						</li> 
-						#end
-	
-						<li class="nav-header"><h4>High School</h4></li>
-						<li id="high_sweep"><a href="/contestResults?type=high_sweep">Sweepstakes</a></li>
-						<li id="high_categorySweep"><a href="/contestResults?type=high_categorySweep">Category Sweekstakes</a></li>
-						<li id="high_visualizations"><a href="/contestResults?type=high_visualizations">Visualizations</a></li>
-						<li class="divider"></li> 
-						#foreach($num in [9..12])
+						
+						#if($enabledLevels.contains("middle"))
+							<li class="nav-header"><h4>Middle School</h4></li>
+							<li id="middle_sweep"><a href="/contestResults?type=middle_sweep">Sweepstakes</a></li>
+							<li id="middle_categorySweep"><a href="/contestResults?type=middle_categorySweep">Category Sweekstakes</a></li>
+							<li id="middle_visualizations"><a href="/contestResults?type=middle_visualizations">Visualizations</a></li>
+							<li class="divider"></li>
+							#foreach($num in [6..8])
 							<li id="$num" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">${num}th Grade<b class="caret"></b></a>
 								<ul class="dropdown-menu">
-									<li id="high_category_${num}C"><a href="/contestResults?type=high_category_${num}C">Calculator</a></li>
-									<li id="high_category_${num}N"><a href="/contestResults?type=high_category_${num}N">Number Sense</a></li>
-									<li id="high_category_${num}M"><a href="/contestResults?type=high_category_${num}M">Math</a></li>
-									<li id="high_category_${num}S"><a href="/contestResults?type=high_category_${num}S">Science</a></li>
+									<li id="middle_category_${num}C"><a href="/contestResults?type=middle_category_${num}C">Calculator</a></li>
+									<li id="middle_category_${num}N"><a href="/contestResults?type=middle_category_${num}N">Number Sense</a></li>
+									<li id="middle_category_${num}M"><a href="/contestResults?type=middle_category_${num}M">Math</a></li>
+									<li id="middle_category_${num}S"><a href="/contestResults?type=middle_category_${num}S">Science</a></li>
 								</ul>
 							</li> 
+							#end
+						#end
+	
+						#if($enabledLevels.contains("high"))
+							<li class="nav-header"><h4>High School</h4></li>
+							<li id="high_sweep"><a href="/contestResults?type=high_sweep">Sweepstakes</a></li>
+							<li id="high_categorySweep"><a href="/contestResults?type=high_categorySweep">Category Sweekstakes</a></li>
+							<li id="high_visualizations"><a href="/contestResults?type=high_visualizations">Visualizations</a></li>
+							<li class="divider"></li> 
+							#foreach($num in [9..12])
+								<li id="$num" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">${num}th Grade<b class="caret"></b></a>
+									<ul class="dropdown-menu">
+										<li id="high_category_${num}C"><a href="/contestResults?type=high_category_${num}C">Calculator</a></li>
+										<li id="high_category_${num}N"><a href="/contestResults?type=high_category_${num}N">Number Sense</a></li>
+										<li id="high_category_${num}M"><a href="/contestResults?type=high_category_${num}M">Math</a></li>
+										<li id="high_category_${num}S"><a href="/contestResults?type=high_category_${num}S">Science</a></li>
+									</ul>
+								</li> 
+							#end
 						#end
 					</ul>
 					<div id="push"></div>
@@ -121,46 +126,52 @@
 							</tr>
 						</thead>
 						<tbody>
-							#foreach($grade in [6..8])
-							<tr>
-								<td class="row-header">${grade}th</td>
-								#foreach($subject in ["N", "C", "M", "S"])
-									#set($subjectString = $grade + $subject)
-									#if($testsGraded.contains($subjectString))
-									<td class="success">
-										<i class="glyphicon glyphicon-check"></i>
-									</td>
-									#else
-									<td class="warning">
-										<i class="glyphicon glyphicon-remove"></i>
-									</td>
+							#if($enabledLevels.contains("middle"))
+								#foreach($grade in [6..8])
+								<tr>
+									<td class="row-header">${grade}th</td>
+									#foreach($subject in ["N", "C", "M", "S"])
+										#set($subjectString = $grade + $subject)
+										#if($testsGraded.contains($subjectString))
+										<td class="success">
+											<i class="glyphicon glyphicon-check"></i>
+										</td>
+										#else
+										<td class="warning">
+											<i class="glyphicon glyphicon-remove"></i>
+										</td>
+										#end
 									#end
+								</tr>
+								#end
+							#end
+							
+							#if($enabledLevels.contains("middle") && $enabledLevels.contains("high"))
+							<tr>
+								#foreach($i in [1..5])
+								<td></td>
 								#end
 							</tr>
 							#end
-							<tr>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-							</tr>
-							#foreach($grade in [9..12])
-							<tr>
-								<td class="row-header">${grade}th</td>
-								#foreach($subject in ["N", "C", "M", "S"])
-									#set($subjectString = $grade + $subject)
-									#if($testsGraded.contains($subjectString))
-									<td class="success">
-										<i class="glyphicon glyphicon-check"></i>
-									</td>
-									#else
-									<td class="warning">
-										<i class="glyphicon glyphicon-remove"></i>
-									</td>
+							
+							#if($enabledLevels.contains("high"))
+								#foreach($grade in [9..12])
+								<tr>
+									<td class="row-header">${grade}th</td>
+									#foreach($subject in ["N", "C", "M", "S"])
+										#set($subjectString = $grade + $subject)
+										#if($testsGraded.contains($subjectString))
+										<td class="success">
+											<i class="glyphicon glyphicon-check"></i>
+										</td>
+										#else
+										<td class="warning">
+											<i class="glyphicon glyphicon-remove"></i>
+										</td>
+										#end
 									#end
+								</tr>
 								#end
-							</tr>
 							#end
 						</tbody>
 					</table>

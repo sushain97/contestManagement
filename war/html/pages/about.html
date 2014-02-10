@@ -22,38 +22,13 @@
 			#include("printButton.html")
 		</h1>
 		
-		<p>#include("aboutText.html")</p>
+		<p>$aboutText</p>
 	
 		<dl class="dl-horizontal"> <!-- TODO: Add FullCalendar JS Calendar -->
-			<dt>Contest Date</dt>
-			<dd>November 23rd, 2013</dd>
-			
-			<dt>Registration Open</dt>
-			<dd>October 1st - November 23rd 8:15 AM in Commons Area</dd>
-			
-			<dt>Assembly and Instructions</dt>
-			<dd>8:15 AM - 8:30 AM (Cafeteria)</dd>
-			
-			<dt>Number Sense Test</dt>
-			<dd>8:40 AM - 8:50 AM</dd>
-			
-			<dt>Calculator Test</dt>
-			<dd>8:55 AM - 9:30 AM</dd>
-			
-			<dt>General Math Test</dt>
-			<dd>9:50 AM - 10:40 AM</dd>
-			
-			<dt>Science Test</dt>
-			<dd>10:50 AM - 12:00 PM (Middle School) / 12:50 PM (High School)<dd>
-			
-			<dt>Lunch</dt>
-			<dd>12:40 PM - 1:30 PM</dd>
-			
-			<dt>Middle School Awards</dt>
-			<dd>2:30 PM</dd>
-			
-			<dt>High School Awards</dt>
-			<dd>3:15 PM</dd>
+			#foreach ($entry in $schedule.entrySet())
+				<dt>$entry.key</dt>
+				<dd>$entry.value</dd>
+			#end
 		</dl>
 		
 		<br><br><a href="#about" role="button" class="btn btn-default" data-toggle="modal">About the Website</a>

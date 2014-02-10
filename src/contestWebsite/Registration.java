@@ -1,4 +1,4 @@
-/* Component of GAE Project for Dulles TMSCA Contest Automation
+/* Component of GAE Project for TMSCA Contest Automation
  * Copyright (C) 2013 Sushain Cherivirala
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -85,7 +85,7 @@ public class Registration extends BaseHttpServlet
 		Pair<Entity, UserCookie> infoAndCookie = init(context, req);
 		boolean loggedIn = (boolean) context.get("loggedIn");
 
-		if(loggedIn)
+		if(loggedIn && !infoAndCookie.y.isAdmin())
 			context.put("registrationError", "You are already registered.");
 
 		String endDateStr = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
@@ -110,7 +110,9 @@ public class Registration extends BaseHttpServlet
 				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Incorrect date format");
 			}
 
-			if(new Date().after(endDate) || new Date().before(startDate) || new Date().equals(endDate) || new Date().equals(startDate))
+			if(loggedIn && infoAndCookie.y.isAdmin())
+				context.put("registrationError", "");
+			else if(new Date().after(endDate) || new Date().before(startDate))
 				context.put("registrationError", "Registration is closed, please try again next year.");
 			else
 				context.put("registrationError", "");
@@ -146,13 +148,10 @@ public class Registration extends BaseHttpServlet
 				context.put("account", true);
 			else
 				context.put("account", false);
-
-			context.put("schoolName", (String) sess.getAttribute("schoolName"));
-			context.put("name", (String) sess.getAttribute("name"));
-			context.put("email", (String) sess.getAttribute("email"));
-			context.put("updated", (String) sess.getAttribute("updated"));
-			context.put("division", (String) sess.getAttribute("division"));
-			context.put("studentData", (String) sess.getAttribute("studentData"));
+			
+			String[] propNames = {"schoolName", "name", "updated", "division", "studentData"};
+			for(String propName: propNames)
+				context.put(propName, (String) sess.getAttribute(propName));
 		}
 		else
 		{
@@ -389,6 +388,7 @@ public class Registration extends BaseHttpServlet
 						context.put("name", name);
 						context.put("url", url);
 						context.put("cost", cost);
+						context.put("title", contestInfo.getProperty("title"));
 						context.put("account", account.equals("yes"));
 						
 						StringWriter sw = new StringWriter();

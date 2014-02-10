@@ -1,4 +1,4 @@
-/* Component of GAE Project for Dulles TMSCA Contest Automation
+/* Component of GAE Project for TMSCA Contest Automation
  * Copyright (C) 2013 Sushain Cherivirala
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -21,6 +21,8 @@ import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.yaml.snakeyaml.Yaml;
 
 import util.BaseHttpServlet;
 import util.Pair;
@@ -41,8 +44,10 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
 import com.google.appengine.api.taskqueue.Queue;
@@ -97,18 +102,49 @@ public class AdminPanel extends BaseHttpServlet
 				List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 				Entity contestInfo = info.size() != 0 ? info.get(0) : new Entity("contestInfo");
 
-				contestInfo.setProperty("endDate", params.get("endDate")[0]);
-				contestInfo.setProperty("startDate", params.get("startDate")[0]);
-				contestInfo.setProperty("email", params.get("email")[0]);
-				contestInfo.setProperty("account", params.get("account")[0]);
+				String[] stringPropNames = {"endDate", "startDate", "email", "account", "levels", "title", "publicKey", "privateKey", "school", "address"};
+				for(String propName: stringPropNames)
+					contestInfo.setProperty(propName, params.get(propName)[0]);
+				contestInfo.setProperty("testingMode", testingMode);
+				contestInfo.setProperty("aboutText", new Text(params.get("aboutText")[0]));
+				contestInfo.setProperty("location", new GeoPt(Float.parseFloat(params.get("location_lat")[0]), Float.parseFloat(params.get("location_long")[0])));
 				contestInfo.setProperty("price", Integer.parseInt(params.get("price")[0]));
 				contestInfo.setProperty("complete", params.get("complete") != null);
-				contestInfo.setProperty("testingMode", testingMode);
 				contestInfo.setProperty("hideFullNames", params.get("fullnames") != null);
-				contestInfo.setProperty("levels", params.get("levels")[0]);
-				contestInfo.setProperty("title", params.get("title")[0]);
-				contestInfo.setProperty("publicKey", params.get("publicKey")[0]);
-				contestInfo.setProperty("privateKey", params.get("privateKey")[0]);
+				
+				Yaml yaml = new Yaml();
+				String[] mapPropNames = {"schedule", "directions"};
+				for(String propName: mapPropNames)
+				{
+					String text = params.get(propName)[0];
+					
+					try 
+					{
+						@SuppressWarnings("unused")
+						HashMap<String,String> map = (HashMap<String, String>) yaml.load(text);
+						contestInfo.setProperty(propName, new Text(text));
+					}
+					catch(Exception e)
+					{
+						e.printStackTrace();
+						resp.sendError(HttpServletResponse.SC_BAD_REQUEST, e.toString());
+						return;
+					}
+				}
+				
+				String slideshowText = params.get("slideshow")[0];
+				try 
+				{
+					@SuppressWarnings("unused")
+					ArrayList<ArrayList<String>> map = (ArrayList<ArrayList<String>>) yaml.load(slideshowText);
+					contestInfo.setProperty("slideshow", new Text(slideshowText));
+				}
+				catch(Exception e)
+				{
+					e.printStackTrace();
+					resp.sendError(HttpServletResponse.SC_BAD_REQUEST, e.toString());
+					return;
+				}
 
 				if(params.containsKey("update"))
 				{

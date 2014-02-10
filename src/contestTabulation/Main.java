@@ -1,4 +1,4 @@
-/* Component of GAE Project for Dulles TMSCA Contest Automation
+/* Component of GAE Project for TMSCA Contest Automation
  * Copyright (C) 2013 Sushain Cherivirala
  * 
  * This program is free software: you can redistribute it and/or modify

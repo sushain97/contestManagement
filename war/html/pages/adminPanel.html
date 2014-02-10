@@ -31,9 +31,61 @@
 		<form method="post" class="form-horizontal">
 			<fieldset>
 				<div class="form-group">
-					<label class="col-sm-2 control-label" for="title">Contest Title</label>
-					<div class="col-sm-6">
+					<label class="col-sm-2 col-xs-5 control-label" for="title">Contest Title</label>
+					<div class="col-sm-6 col-xs-7">
 						<input type="text" value='#if($contestInfo.getProperty("title"))$contestInfo.getProperty("title")#end' name="title" class="form-control" required>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label class="col-sm-2 col-xs-5 control-label" for="school">School Name</label>
+					<div class="col-sm-6 col-xs-7">
+						<input type="text" value='#if($contestInfo.getProperty("school"))$contestInfo.getProperty("school")#end' name="school" class="form-control" required>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label class="col-sm-2 col-xs-5 control-label" for="address">Address</label>
+					<div class="col-sm-6 col-xs-7">
+						<input type="text" value='#if($contestInfo.getProperty("address"))$contestInfo.getProperty("address")#end' name="address" class="form-control" required>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label class="col-sm-2 col-xs-5 control-label" for="location">Absolute Location</label>
+					<div class="col-xs-3">
+						<input type="text" value='#if($contestInfo.getProperty("location"))$contestInfo.getProperty("location").getLatitude()#end' name="location_lat" class="form-control" required>
+					</div>
+					<div class="col-xs-3">
+						<input type="text" value='#if($contestInfo.getProperty("location"))$contestInfo.getProperty("location").getLongitude()#end' name="location_long" class="form-control" required>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label class="col-sm-2 col-xs-5 control-label" for="aboutText">About Text</label>
+					<div class="col-xs-7">
+						<textarea class="form-control" name="aboutText" rows="6">#if($contestInfo.getProperty("aboutText").getValue())$contestInfo.getProperty("aboutText").getValue()#end</textarea>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label class="col-sm-2 col-xs-5 control-label" for="schedule">Schedule (<a href="https://en.wikipedia.org/wiki/YAML#Associative_arrays" target="_blank">YAML Associative Array</a>)</label>
+					<div class="col-xs-7">
+						<textarea class="form-control" name="schedule" rows="6">#if($contestInfo.getProperty("schedule").getValue())$contestInfo.getProperty("schedule").getValue()#end</textarea>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label class="col-sm-2 col-xs-5 control-label" for="directions">Directions (<a href="https://en.wikipedia.org/wiki/YAML#Associative_arrays" target="_blank">YAML Associative Array</a>)</label>
+					<div class="col-xs-7">
+						<textarea class="form-control" name="directions" rows="6">#if($contestInfo.getProperty("directions").getValue())$contestInfo.getProperty("directions").getValue()#end</textarea>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label class="col-sm-2 col-xs-5 control-label" for="slideshow">Slideshow (<a href="https://en.wikipedia.org/wiki/YAML#Lists" target="_blank">YAML List of Inline Lists</a>) <code>[URL, Title, Caption]</code></label>
+					<div class="col-xs-7">
+						<textarea class="form-control" name="slideshow" rows="6">#if($contestInfo.getProperty("slideshow").getValue())$contestInfo.getProperty("slideshow").getValue()#end</textarea>
 					</div>
 				</div>
 				
@@ -239,9 +291,11 @@
 					</div>
 				</div>
 
-				<div class="form-actions">
-					<button type="submit" class="btn btn-primary"><i class="icon-pencil"></i> Apply Changes</button>
-					<button type="reset" class="btn btn-danger"><i class="icon-backward"></i> Reset to Last Settings</button>
+				<div class="form-group">
+   					<div class="col-sm-offset-2 col-sm-10">
+						<button type="submit" class="btn btn-primary"><i class="icon-pencil"></i> Apply Changes</button>
+						<button type="reset" class="btn btn-danger"><i class="icon-backward"></i> Reset to Last Settings</button>
+					</div>
 				</div>
 			</fieldset>
 		</form>

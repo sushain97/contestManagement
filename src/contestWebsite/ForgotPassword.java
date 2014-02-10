@@ -1,4 +1,4 @@
-/* Component of GAE Project for Dulles TMSCA Contest Automation
+/* Component of GAE Project for TMSCA Contest Automation
  * Copyright (C) 2013 Sushain Cherivirala
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -127,10 +127,8 @@ public class ForgotPassword extends BaseHttpServlet
 
 				Session session = Session.getDefaultInstance(new Properties(), null);
 				query = new Query("contestInfo");
-				List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-				String appEngineEmail = "";
-				if(info.size() != 0)
-					appEngineEmail = (String) info.get(0).getProperty("account");
+				Entity contestInfo = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+				String appEngineEmail = (String) contestInfo.getProperty("account");
 				
 				String url = req.getRequestURL().toString();
 				url = url.substring(0, url.indexOf("/", 7));
@@ -141,7 +139,7 @@ public class ForgotPassword extends BaseHttpServlet
 					Message msg = new MimeMessage(session);
 					msg.setFrom(new InternetAddress(appEngineEmail, "Tournament Website Admin"));
 					msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email, (String) user.getProperty("name")));
-					msg.setSubject("Password Reset for Dulles Tournament Website");
+					msg.setSubject("Password Reset for the" + contestInfo.getProperty("title") +  " Website");
 					
 					VelocityEngine ve = new VelocityEngine();
 					ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/email");
@@ -150,6 +148,7 @@ public class ForgotPassword extends BaseHttpServlet
 					VelocityContext context = new VelocityContext();
 					
 					context.put("user", user.getProperty("user-id"));
+					context.put("title", contestInfo.getProperty("title"));
 					context.put("url", url);
 					
 					StringWriter sw = new StringWriter();

@@ -2,7 +2,7 @@
 
 <html lang="en-US">
 	<head>
-	<title>Directions to Dulles | $title</title>
+	<title>Directions to $school | $title</title>
 	<meta name="description" content="Get directions to the $title to attend our annual TMSCA tournament">
 	<meta name="robots" content="index, follow">
 	<meta name="tab" content="Directions">
@@ -24,7 +24,7 @@
 	#parse("navbar.html")
 
 	<div class="container">
-		<h1>Directions to Dulles High School
+		<h1>Directions to $school
 			#include("printButton.html")
 		</h1>
 		
@@ -32,63 +32,31 @@
 		<div class="row">
 			<div class="col-md-4">
 				<div class="panel-group" id="accordion">
+					#foreach($entry in $directions.entrySet())
 					<div class="panel panel-default">
 						<div class="panel-heading">
 							<h4 class="panel-title">
-								<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">From US 59 North</a>
+								<a data-toggle="collapse" data-parent="#accordion" href="#collapse$foreach.index">$entry.key</a>
 							</h4>
 						</div>
-						<div id="collapseOne" class="panel-collapse collapse">
+						<div id="collapse$foreach.index" class="panel-collapse collapse">
 							<div class="panel-body">
-								Exit onto US Alt. 90, turn left onto 90 East and take the first exit to Dulles Ave. Turn right on Dulles Ave. to arrive in front parking lot
+								$entry.value
 							</div>
 						</div>
 					</div>
-					
-					<div class="panel panel-default">
-						<div class="panel-heading">
-							<h4 class="panel-title">
-								<a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">From US 59 South</a>
-							</h4>
-						</div>
-						<div id="collapseTwo" class="panel-collapse collapse">
-							<div class="panel-body">
-								Exit onto US Alt. 90, turn right onto 90 East and take the first exit to Dulles Ave. Turn right on Dulles Ave. to arrive in front parking lot
-							</div>
-						</div>
-					</div>
-					
-					<div class="panel panel-default">
-						<div class="panel-heading">
-							<h4 class="panel-title">
-								<a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">From US Alt. 90 West</a>
-							</h4>
-						</div>
-						<div id="collapseThree" class="panel-collapse collapse">
-							<div class="panel-body">
-								Continue east and take the exit to Dulles Ave. and Kirkwood Rd. Turn right on Dulles Ave. to arrive in front parking lot
-							</div>
-						</div>
-					</div>
-					
-					<div class="panel panel-default">
-						<div class="panel-heading">
-							<h4 class="panel-title">
-								<a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">From US Alt. 90 East</a>
-							</h4>
-						</div>
-						<div id="collapseFour" class="panel-collapse collapse">
-							<div class="panel-body">
-								Continue west and take the exit to Dulles Ave. and Kirkwood Rd. Turn left on Dulles Ave. to arrive in front parking lot
-							</div>
-						</div>
-					</div>
+					#end
 				</div>
 			</div>
 			<div class="col-md-8" id="map" style="height:500px">
 			</div>
 		</div>
 	</div>
+	
+	<input type="hidden" value="$location.getLatitude()" id="location_lat">
+	<input type="hidden" value="$location.getLongitude()" id="location_long">
+	<input type="hidden" value="$address" id="address">
+	<input type="hidden" value="$school" id="name">
 
 	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false&amp;key=AIzaSyDTHsvGAIvfvTuafbKYIpFpXSEClsMmkl8"></script>
 	<script type="text/javascript" src="/js/pagescripts/directions.js"></script>

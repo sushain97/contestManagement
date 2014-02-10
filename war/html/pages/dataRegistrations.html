@@ -65,29 +65,31 @@
 					</thead>
 					<tbody>
 						#foreach($reg in $middleRegs)
-							<tr data-eid="$reg.getKey().getId()">
-								<td style="display: none;" class="registrationInfo">$reg.getProperty("studentData").getValue()</td>
-								<td class="uneditable text-center" title='$reg.getProperty("timestamp")'><input type="radio" name="key" value="$reg.getKey().getId()"></td>
-								<td data-type="name">$reg.getProperty("name")</td>
-								<td data-type="email" class="email" style="padding-right: 0px;">$reg.getProperty("email")</td>
-								<td class="uneditable" style="padding-left: 0px;">
-									<a href='mailto:$reg.getProperty("name")<$reg.getProperty("email")>' target="_blank"><i class="glyphicon glyphicon-envelope"></i></a>
-								</td>
-								<td data-type="registrationType" class="regType uneditable">$reg.getProperty("registrationType")</td>
-								<td data-type="schoolName">$reg.getProperty("schoolName")</td>
-								<td data-type="division" class="division uneditable">$reg.getProperty("division")</td>
-								<td data-type="paid" class="paidComments">$reg.getProperty("paid")</td> 
-								<td class="account uneditable">$reg.getProperty("account")</td>
-								
-								#foreach($test in $middleTests)
-									<td class="test uneditable" data-type="$test">
-										<a class="popovers" href="#" data-toggle="popover" data-html="true" data-placement="bottom">0</a>
+							#if($reg.hasProperty("studentData"))
+								<tr data-eid="$reg.getKey().getId()">
+									<td style="display: none;" class="registrationInfo">$reg.getProperty("studentData").getValue()</td>
+									<td class="uneditable text-center" title='$reg.getProperty("timestamp")'><input type="radio" name="key" value="$reg.getKey().getId()"></td>
+									<td data-type="name">$reg.getProperty("name")</td>
+									<td data-type="email" class="email" style="padding-right: 0px;">$reg.getProperty("email")</td>
+									<td class="uneditable" style="padding-left: 0px;">
+										<a href='mailto:$reg.getProperty("name")<$reg.getProperty("email")>' target="_blank"><i class="glyphicon glyphicon-envelope"></i></a>
 									</td>
-									<td class="uneditable">#if($reg.getProperty($test.toUpperCase()))$reg.getProperty($test.toUpperCase())#else 0#end</td>
-								#end
-								
-								<td class="uneditable">&#36;$reg.getProperty("cost")</td>
-							</tr>
+									<td data-type="registrationType" class="regType uneditable">$reg.getProperty("registrationType")</td>
+									<td data-type="schoolName">$reg.getProperty("schoolName")</td>
+									<td data-type="division" class="division uneditable">$reg.getProperty("division")</td>
+									<td data-type="paid" class="paidComments">$reg.getProperty("paid")</td> 
+									<td class="account uneditable">$reg.getProperty("account")</td>
+									
+									#foreach($test in $middleTests)
+										<td class="test uneditable" data-type="$test">
+											<a class="popovers" href="#" data-toggle="popover" data-html="true" data-placement="bottom">0</a>
+										</td>
+										<td class="uneditable">#if($reg.getProperty($test.toUpperCase()))$reg.getProperty($test.toUpperCase())#else 0#end</td>
+									#end
+									
+									<td class="uneditable">&#36;$reg.getProperty("cost")</td>
+								</tr>
+							#end
 						#end 
 					</tbody>
 					<tfoot> 
@@ -124,29 +126,31 @@
 					</thead>
 					<tbody>
 						#foreach($reg in $highRegs)
-							<tr data-eid="$reg.getKey().getId()">
-								<td style="display: none;" class="registrationInfo">$reg.getProperty("studentData").getValue()</td>
-								<td class="uneditable text-center" title='$reg.getProperty("timestamp")'><input type="radio" name="key" value="$reg.getKey().getId()"></td>
-								<td data-type="name">$reg.getProperty("name")</td>
-								<td data-type="email" class="email" style="padding-right: 0px;">$reg.getProperty("email")</td>
-								<td class="uneditable" style="padding-left: 0px;">
-									<a href='mailto:$reg.getProperty("name")<$reg.getProperty("email")>' target="_blank"><i class="glyphicon glyphicon-envelope"></i></a>
-								</td>
-								<td data-type="registrationType" class="regType uneditable">$reg.getProperty("registrationType")</td>
-								<td data-type="schoolName">$reg.getProperty("schoolName")</td>
-								<td data-type="division" class="division uneditable">$reg.getProperty("division")</td>
-								<td data-type="paid" class="paidComments">$reg.getProperty("paid")</td> 
-								<td class="account uneditable">$reg.getProperty("account")</td>
-								
-								#foreach($test in $highTests)
-									<td class="test uneditable" data-type="$test">
-										<a class="popovers" href="#" data-toggle="popover" data-html="true" data-placement="bottom">0</a>
+							#if($reg.hasProperty("studentData"))
+								<tr data-eid="$reg.getKey().getId()">
+									<td style="display: none;" class="registrationInfo">$reg.getProperty("studentData").getValue()</td>
+									<td class="uneditable text-center" title='$reg.getProperty("timestamp")'><input type="radio" name="key" value="$reg.getKey().getId()"></td>
+									<td data-type="name">$reg.getProperty("name")</td>
+									<td data-type="email" class="email" style="padding-right: 0px;">$reg.getProperty("email")</td>
+									<td class="uneditable" style="padding-left: 0px;">
+										<a href='mailto:$reg.getProperty("name")<$reg.getProperty("email")>' target="_blank"><i class="glyphicon glyphicon-envelope"></i></a>
 									</td>
-									<td class="uneditable">#if($reg.getProperty($test.toUpperCase()))$reg.getProperty($test.toUpperCase())#else 0#end</td>
-								#end
-								
-								<td class="uneditable">&#36;$reg.getProperty("cost")</td>
-							</tr>
+									<td data-type="registrationType" class="regType uneditable">$reg.getProperty("registrationType")</td>
+									<td data-type="schoolName">$reg.getProperty("schoolName")</td>
+									<td data-type="division" class="division uneditable">$reg.getProperty("division")</td>
+									<td data-type="paid" class="paidComments">$reg.getProperty("paid")</td> 
+									<td class="account uneditable">$reg.getProperty("account")</td>
+									
+									#foreach($test in $highTests)
+										<td class="test uneditable" data-type="$test">
+											<a class="popovers" href="#" data-toggle="popover" data-html="true" data-placement="bottom">0</a>
+										</td>
+										<td class="uneditable">#if($reg.getProperty($test.toUpperCase()))$reg.getProperty($test.toUpperCase())#else 0#end</td>
+									#end
+									
+									<td class="uneditable">&#36;$reg.getProperty("cost")</td>
+								</tr>
+							#end
 						#end
 					</tbody>
 					<tfoot>

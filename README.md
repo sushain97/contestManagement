@@ -31,6 +31,7 @@ In addition to access to all public pages, an administrator has access to a few 
     * **About text**: Set the tournament description text used on the About page and the main page
     * **Schedule**: Set the tournament schedule in the form of a YAML Associative Array displayed on the About page
     * **Directions**: Set human-readable directions to the host school in the form of a YAML Associative Array displayed on the Directions page
+    * **Slideshow**: Set the image, title, and captions of the slideshow in the form of a YAML List of Lists displayed on the Main page
     * **School Levels**: Set the school levels the tournament will host (a nonempty subset of ``{middle, high}``)
     * **Registration Dates**: Set the dates within which online registration is open
     * **E-Mail Address**: Specify the email address to which questions submitted through the Contact Us page are sent to
@@ -65,3 +66,16 @@ In addition to access to all public pages, a logged-in user has access to a few 
 * The title in the navigation bar is customizable through the Admin Panel
 * Pages often contain a print button
 * Custom error pages with detailed diagnostic information are provided for HTTP errors 401, 403, 404, 405, and 500
+
+Tabulation
+----------
+
+### `Class Main extends HttpServlet` ###
+
+### `Class School` ###
+
+### `Class Score` ###
+
+### `Class Student` ###
+
+### `enum Test` ###

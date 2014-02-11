@@ -8,32 +8,13 @@
 	#include("head.html")
 	<meta name="google-site-verification" content="F0SHVOq7MI7MOs13HytsvaPFV7qGuLBv5WrNd1faHaY">
 	<style type="text/css">
-		body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */
-		.carousel {
-		    width: 700px;
-		    height: auto;
-		    margin: 0 auto;
-		}
-		.carousel-inner { text-align: center; }
-		.carousel .item > img { display: inline-block; }
-		.dl-horizontal dt {
-			white-space: normal;
-			width: 280px;
-			margin-right: 8px;
-		}
-		.carousel-indicators, .carousel-control, .carousel-inner {
-			display: none;
-		}
-		.loading-gif {
-			display: block;
-		    margin-left: auto;
-		    margin-right: auto;
-		    margin-top: 250px;
-		}
-		.carousel-caption {
-			background-color:rgba(0, 0, 0, 0.6);
-		}
+		.carousel { max-width: 700px; }
+		.carousel-indicators, .carousel-control, .carousel-inner { display: none; }
+		.carousel-caption { background-color:rgba(0, 0, 0, 0.75); }
+		.dl-horizontal dt { white-space: normal; }
+		.loading { margin-top: 25%; }
 	</style>
+	<link type="text/css" href="/css/font-awesome.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -68,16 +49,15 @@
 		<h1>About our Tournament</h1>
 		<p>$aboutText</p>
 		
-		<img class="loading-gif" src="/img/ajax-loader.gif" title="Loading..." alt="Loading...">
-        <div id="myCarousel" class="carousel slide">
+		<div class="loading center-block text-center"><i class="fa fa-spinner fa-spin fa-4x text-center" title="Loading..." alt="Loading..."></i></div>
+        <div id="myCarousel" class="carousel slide center-block">
 	       	<ol class="carousel-indicators">
 	       		#foreach($i in [1..$slideshow.size()])
 	       		<li data-target="#myCarousel" data-slide-to="$i"></li>
 	       		#end
 	       	</ol>
 	
-	        <div class="carousel-inner">
-
+	        <div class="carousel-inner text-center">
 				#foreach($slide in $slideshow)
 					<div class="item">
 						<div class="carousel-pic">

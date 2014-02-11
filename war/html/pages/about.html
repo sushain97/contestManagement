@@ -8,9 +8,7 @@
     <meta name="tab" content="About">
     #include("head.html")
     <style type="text/css">
-	    body { padding-top: 60px; }
-	    .dl-horizontal dt { width: 250px; }
-	    .dl-horizontal dd { margin-left: 270px; }
+	    .dl-horizontal dt { white-space: normal; }
     </style>
 </head>
 
@@ -31,7 +29,12 @@
 			#end
 		</dl>
 		
-		<br><br><a href="#about" role="button" class="btn btn-default" data-toggle="modal">About the Website</a>
+		<br>
+		<div class="form-group">
+			<div class="col-sm-12">
+  				<a href="#about" role="button" class="btn btn-default" data-toggle="modal">About the Website</a>
+ 			</div>
+		</div>
 	</div>
 	
 	<div id="about" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="aboutModal" aria-hidden="true">

@@ -22,8 +22,8 @@ $(document).ready(function() {
 });
 
 $(window).load(function() {
-	$('.loading-gif').hide();
-	$('.carousel-indicators, .carousel-control, .carousel-inner').show();
+	$('.loading').hide();
+	$('.carousel-indicators, .carousel-control, .carousel-inner').fadeIn();
 	$('.carousel').carousel({interval: 3000});
 	$('.carousel').carousel('cycle');
 });

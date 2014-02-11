@@ -1,5 +1,5 @@
-application: sushain97
-version: 40
+application: tmscacontest
+version: 1
 runtime: java
 threadsafe: false
 sessions_enabled: true

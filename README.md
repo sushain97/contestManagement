@@ -7,7 +7,7 @@ Pages
 -----
 
 ### Public Pages ###
-* **Main page**: `/` Read a short description of the tournament (customizable through the Admin Panel) and carousel of pictures.
+* **Main page**: `/` Read a short description of the tournament and carousel of pictures (everything customizable through the Admin Panel).
 * **About page**: `/about` Read a short description of the tournament (customizable through the Admin Panel), a tournament schedule (customizable through the Admin Panel), and an "About the Website" modal that provides attribution to the external frameworks utilized
 * **Directions page**: `/directions` View an accordion with a set of directions to the host campus and a Google Maps view of the campus with an info window that provides the address and a directions link (everything customizable through the Admin Panel)
 * **Contest Results pages**: `/contestResults` View the current grading progress; results are hidden by default and viewing is enabled through the admin panel. Functionality includes sorting of the tables based on any criteria.

@@ -6,7 +6,7 @@
 	<meta name="description" content="$title Administration Panel">
 	<meta name="robots" content="noindex, nofollow">
 	<meta name="tab" content="ControlPanel">
-	#include("head.html")
+	#parse("head.html")
 	<link type="text/css" href="/css/datepicker3.min.css" rel="stylesheet">
 	<link type="text/css" href="/css/slider.css" rel="stylesheet">
 	<style type="text/css">
@@ -154,9 +154,16 @@
 				</div>
 				
 				<div class="form-group">
-					<label class="col-sm-3 col-xs-5 control-label" for="siteVerification"><a href="https://support.google.com/webmasters/answer/35659">Google Site Verification</a></label>
+					<label class="col-sm-3 col-xs-5 control-label" for="siteVerification"><a href="https://support.google.com/webmasters/answer/35659" target="_blank">Google Site Verification</a></label>
 					<div class="col-sm-6 col-xs-7">
 						<input type="text" value='#if($contestInfo.getProperty("siteVerification"))$contestInfo.getProperty("siteVerification")#end' name="siteVerification" class="form-control" required>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label class="col-sm-2 col-xs-5 control-label" for="googleAnalytics"><a href="https://support.google.com/webmasters/answer/185871" target="_blank">Google Analytics Tracking JS</a></label>
+					<div class="col-xs-7">
+						<textarea class="form-control" name="googleAnalytics" rows="6">#if($contestInfo.getProperty("googleAnalytics").getValue())$contestInfo.getProperty("googleAnalytics").getValue()#end</textarea>
 					</div>
 				</div>
 

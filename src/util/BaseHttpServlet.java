@@ -34,6 +34,7 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Text;
 
 @SuppressWarnings("serial")
 public class BaseHttpServlet extends HttpServlet
@@ -48,6 +49,9 @@ public class BaseHttpServlet extends HttpServlet
 			contestInfo = info.get(0);
 			context.put("enabledLevels", contestInfo.getProperty("levels"));
 			context.put("title", contestInfo.getProperty("title"));
+			
+			if(contestInfo.hasProperty("googleAnalytics"))
+				context.put("googleAnalytics", ((Text) contestInfo.getProperty("googleAnalytics")).getValue());
 		}
 		
 		UserCookie userCookie = UserCookie.getCookie(req);

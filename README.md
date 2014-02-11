@@ -37,6 +37,8 @@ In addition to access to all public pages, an administrator has access to a few 
     * **E-Mail Address**: Specify the email address to which questions submitted through the Contact Us page are sent to
     * **Google E-Mail**: Specify the email address from which emails to users are sent to (the Google App Engine user that hosts the project)
     * **ReCAPTCHA API Keys**: Set the private and public reCAPTCHA keys used on the Contact Us and Registration pages
+    * **Google Site Verification**: Set the Google Site Verification code used as the content attribute in `<meta name="google-site-verification">` on the Main page
+    * **Google Analytics Tracking JS**: Set the Google Analytics Tracking Code (only the JS part, without the HTML `script` tag) used on all pages
     * **Test Charges**: Set the dollar cost for each test used on the registration page
     * **Update online scores**: Add a tabulation request to the task queue
     * **Make results public**: Make results public on the Contest Results page

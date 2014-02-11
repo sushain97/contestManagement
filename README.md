@@ -59,7 +59,7 @@ In addition to access to all public pages, an administrator has access to a few 
 In addition to access to all public pages, a logged-in user has access to a few others and modifications to some.
 * **Main page**: `/` Rather than displaying the carousel and a contest description, this page provides all available information about the user's registration and access to the change password link.
 * **Change Account Password page**: `/changePass` Allows modification of the logged-in users password after confirming their current password.
-* **Contact Us page**: The logged-in user can submit questions that are associated with their account automatically.
+* **Contact Us page**: `/contactUs` The logged-in user can submit questions that are associated with their account automatically.
 * **View Scores page**: `/viewScores` View the logged-in school's "top 20 scorers", anonymous scores, school specific visualizations, and a breakdown of current sweepstakes scores.
 
 ### Extras ###

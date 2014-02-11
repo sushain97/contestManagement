@@ -152,6 +152,13 @@
 							value='#if($contestInfo.getProperty("privateKey"))$contestInfo.getProperty("privateKey")#end'  required>
 					</div>
 				</div>
+				
+				<div class="form-group">
+					<label class="col-sm-3 col-xs-5 control-label" for="siteVerification"><a href="https://support.google.com/webmasters/answer/35659">Google Site Verification</a></label>
+					<div class="col-sm-6 col-xs-7">
+						<input type="text" value='#if($contestInfo.getProperty("siteVerification"))$contestInfo.getProperty("siteVerification")#end' name="siteVerification" class="form-control" required>
+					</div>
+				</div>
 
 				<div class="form-group">
 					<label class="col-sm-2 control-label" for="price">Test Charges</label>
@@ -292,8 +299,8 @@
 
 				<div class="form-group">
    					<div class="col-sm-offset-2 col-sm-10">
-						<button type="submit" class="btn btn-primary"><i class="icon-pencil"></i> Apply Changes</button>
-						<button type="reset" class="btn btn-danger"><i class="icon-backward"></i> Reset to Last Settings</button>
+						<button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i> Apply Changes</button>
+						<button type="reset" class="btn btn-danger"><i class="glyphicon glyphicon-backward"></i> Reset to Last Settings</button>
 					</div>
 				</div>
 			</fieldset>

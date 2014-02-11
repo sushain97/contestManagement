@@ -102,7 +102,7 @@ public class AdminPanel extends BaseHttpServlet
 				List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 				Entity contestInfo = info.size() != 0 ? info.get(0) : new Entity("contestInfo");
 
-				String[] stringPropNames = {"endDate", "startDate", "email", "account", "levels", "title", "publicKey", "privateKey", "school", "address"};
+				String[] stringPropNames = {"endDate", "startDate", "email", "account", "levels", "title", "publicKey", "privateKey", "school", "address", "siteVerification"};
 				for(String propName: stringPropNames)
 					contestInfo.setProperty(propName, params.get(propName)[0]);
 				contestInfo.setProperty("testingMode", testingMode);

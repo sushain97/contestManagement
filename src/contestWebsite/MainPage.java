@@ -147,6 +147,7 @@ public class MainPage extends BaseHttpServlet
 		
 		context.put("esc", new EscapeTool());
 		context.put("aboutText", ((Text) infoAndCookie.x.getProperty("aboutText")).getValue());
+		context.put("siteVerification", (String) infoAndCookie.x.getProperty("siteVerification"));
 
 		close(context, ve.getTemplate("main.html"), resp);
 	}

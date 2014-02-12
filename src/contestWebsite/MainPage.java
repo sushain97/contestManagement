@@ -28,7 +28,6 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
@@ -47,11 +46,6 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Text;
-import com.google.appengine.labs.repackaged.org.json.JSONArray;
-import com.google.appengine.labs.repackaged.org.json.JSONException;
-import com.google.appengine.labs.repackaged.org.json.JSONObject;
-
-import contestTabulation.Test;
 @SuppressWarnings("serial")
 public class MainPage extends BaseHttpServlet
 {
@@ -90,44 +84,10 @@ public class MainPage extends BaseHttpServlet
 					if(!key.equals("account") && PropNames.names.get(key) != null && !prop.getValue().equals(""))
 						regData.add("<dt>" + PropNames.names.get(key) + "</dt>\n<dd>" + prop.getValue() + "</dd>");
 				}
-				ArrayList<String> students = new ArrayList<String>();
-				JSONArray studentData = null;
-				try
-				{
-					studentData = new JSONArray(unescapeHtml4(((Text) props.get("studentData")).getValue()));
-				}
-				catch(JSONException e)
-				{	
-					e.printStackTrace();
-					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
-					return;
-				}
-				
-				for(int i = 0; i < studentData.length(); i++)
-				{
-					try
-					{
-						JSONObject studentRegData = studentData.getJSONObject(i);
-						
-						ArrayList<String> tests = new ArrayList<String>();
-						for(String subject: Test.tests())
-							if(studentRegData.getBoolean(subject))
-								tests.add(Test.letterToName(subject));
-						
-						students.add("<dt>" + studentRegData.getString("name") + " (" + studentRegData.getInt("grade") + "th)</dt>\n<dd>" + StringUtils.join(tests.toArray(), ", ") + "</dd>");
-					}
-					catch(JSONException e)
-					{
-						e.printStackTrace();
-						resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
-						return;
-					}
-				}
-				
+
 				Collections.sort(regData);
-				Collections.sort(students);
 				context.put("regData", regData);
-				context.put("studentData", students);
+				context.put("studentData", unescapeHtml4(((Text) props.get("studentData")).getValue()));
 				context.put("name", name);
 				context.put("user", user.getProperty("user-id"));
 			}

@@ -19,6 +19,15 @@ $(document).ready(function() {
 	var activeNum = Math.floor((Math.random() * $('.item').length));
 	$('.item').eq(activeNum).addClass('active');
 	$('.carousel-indicators li').eq(activeNum).addClass('active');
+	
+	if($('#studentData').val()) {
+		var studentData = JSON.parse($('#studentData').val());
+		$.each(studentData, function() {
+			addStudent(this["name"], this["grade"], [this['N'], this['C'], this['M'], this['S']]);
+		});
+		
+		$('#registrations').tablesorter();
+	}
 });
 
 $(window).load(function() {
@@ -27,3 +36,25 @@ $(window).load(function() {
 	$('.carousel').carousel({interval: 3000});
 	$('.carousel').carousel('cycle');
 });
+
+function addStudent(name, grade, subjects) {
+	var tr = $('<tr class="student"></tr>');
+	
+	tr.append($('<td class="text-center"></td>').text(name));
+	tr.append($('<td class="text-center"></td>').text(grade));
+
+	for(var j = 0; j < 4; j++) {
+		var td = $('<td class="text-center"></td>');
+		if(subjects[j]) {
+			td.html('<span class="hide">1</span><i class="glyphicon glyphicon-ok"></i>');
+			td.addClass('success');
+		}
+		else {
+			td.html('<span class="hide">0</span><i class="glyphicon glyphicon-remove"></i>');
+			td.addClass('danger');
+		}
+		tr.append(td);
+	}
+		
+	$('#registrations tbody').append(tr);
+}

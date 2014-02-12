@@ -34,6 +34,18 @@ $(document).ready(function() {
 		$('input[name=recaptcha_response_field]').prop('required', true);
 	}
 	
+	$('#registrations').tablesorter({
+		headers: {
+			0: {sorter: 'false'},
+			1: {sorter: 'input'},
+			2: {sorter: 'select'},
+			3: {sorter: 'checkbox'},
+			4: {sorter: 'checkbox'},
+			5: {sorter: 'checkbox'},
+			6: {sorter: 'checkbox'}
+		}
+	});
+	
 	$('#printButton').on('click', function() {
 		window.print();
 	});
@@ -172,7 +184,7 @@ function addStudent(name, grade, subjects) {
 		tr.append(td);
 	}
 		
-	$('tr#addOptions').before(tr);
+	$('#registrations tbody').append(tr);
 }
 
 function CheckAccount() {

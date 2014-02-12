@@ -16,35 +16,45 @@
  */
 
 $(document).ready(function() {
-	if($('input[name=studentData]').length) {
-		var studentData = JSON.parse($('input[name=studentData]').val());
-		if(studentData.length > 0)
-			$('.student').remove();
-			
-		$.each(studentData, function() {
-			addStudent(this["name"], this["grade"], [this['N'], this['C'], this['M'], this['S']]);
-		});
-	}
-	
 	if($('form').length) {
 		EnableSubmit();
 		CalcCost();
 		CheckAccount();
 		adjustGradeSelect();
 		$('input[name=recaptcha_response_field]').prop('required', true);
-	}
-	
-	$('#registrations').tablesorter({
-		headers: {
-			0: {sorter: 'false'},
-			1: {sorter: 'input'},
-			2: {sorter: 'select'},
-			3: {sorter: 'checkbox'},
-			4: {sorter: 'checkbox'},
-			5: {sorter: 'checkbox'},
-			6: {sorter: 'checkbox'}
+		
+		if($('input[name=studentData]').length) {
+			var studentData = JSON.parse($('input[name=studentData]').val());
+			if(studentData.length > 0)
+				$('.student').remove();
+				
+			$.each(studentData, function() {
+				addStudent(this["name"], this["grade"], [this['N'], this['C'], this['M'], this['S']]);
+			});
 		}
-	});
+		
+		$('#registrations').tablesorter({
+			headers: {
+				0: {sorter: 'false'},
+				1: {sorter: 'input'},
+				2: {sorter: 'select'},
+				3: {sorter: 'checkbox'},
+				4: {sorter: 'checkbox'},
+				5: {sorter: 'checkbox'},
+				6: {sorter: 'checkbox'}
+			}
+		});
+	}
+	else {
+		if($('#studentData').val()) {
+			var studentData = JSON.parse($('#studentData').val());
+			$.each(studentData, function() {
+				addStudentRow(this["name"], this["grade"], [this['N'], this['C'], this['M'], this['S']]);
+			});
+			
+			$('#registrations').tablesorter();
+		}
+	}
 	
 	$('#printButton').on('click', function() {
 		window.print();
@@ -69,7 +79,7 @@ $(document).ready(function() {
 		var tr = $(this).parents('tr');
 		tr.hide('fast', function() { 
 			tr.remove();
-			CalcCost(); 
+			CalcCost();
 		});
 	});
 	
@@ -181,6 +191,30 @@ function addStudent(name, grade, subjects) {
 	for(var j = 0; j < 4; j++) {
 		var td = $('<td class="text-center"></td>');
 		td.append($('<input type="checkbox" class="testCheckbox">').prop('checked', subjects[j]));
+		tr.append(td);
+	}
+		
+	$('#registrations tbody').append(tr);
+	$('#registrations').trigger('update');
+	CalcCost();
+}
+
+function addStudentRow(name, grade, subjects) {
+	var tr = $('<tr class="student"></tr>');
+	
+	tr.append($('<td class="text-center"></td>').text(name));
+	tr.append($('<td class="text-center"></td>').text(grade));
+
+	for(var j = 0; j < 4; j++) {
+		var td = $('<td class="text-center"></td>');
+		if(subjects[j]) {
+			td.html('<span class="hide">1</span><i class="glyphicon glyphicon-ok"></i>');
+			td.addClass('success');
+		}
+		else {
+			td.html('<span class="hide">0</span><i class="glyphicon glyphicon-remove"></i>');
+			td.addClass('danger');
+		}
 		tr.append(td);
 	}
 		

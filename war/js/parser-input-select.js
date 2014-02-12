@@ -4,7 +4,7 @@
 /*jshint browser: true, jquery:true, unused:false */
 ;(function($){
 "use strict";
-
+	/*
 	var resort = true, // resort table after update
 		updateServer = function(event, $table, $input){
 			// do something here to update your server, if needed
@@ -12,6 +12,7 @@
 			// $table = jQuery object of the table that was just updated
 			// $input = jQuery object of the input or select that was modified
 		};
+	*/
 
 	// Custom parser for parsing input values
 	// updated dynamically using the "change" function below
@@ -59,11 +60,12 @@
 	// This method only works with jQuery 1.7+
 	// you can change it to use delegate (v1.4.3+) or live (v1.3+) as desired
 	// if this code interferes somehow, target the specific table $('#mytable'), instead of $('table')
-	$(window).load(function(){
+	/*
+	 $(window).load(function(){
 		// this flag prevents the updateCell event from being spammed
 		// it happens when you modify input text and hit enter
 		var alreadyUpdating = false;
-		$('table').find('tbody').on('change', 'select, input', function(e){
+		$('#registrations').find('tbody').on('change', 'select, input', function(e){
 			if (!alreadyUpdating) {
 				var $tar = $(e.target),
 					$table = $tar.closest('table');
@@ -74,5 +76,6 @@
 			}
 		});
 	});
+	*/
 
 })(jQuery);

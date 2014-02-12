@@ -36,11 +36,13 @@
 		            <li><a href="/about" id="About-tab">About</a></li>
 		            <li><a href="/directions" id="Directions-tab">Directions</a></li>
 		            <li><a href="/contestResults" id="ContestResults-tab">Contest Results</a></li>
-		            <li><a href="/contactUs" id="ContactUs-tab">Contact Us</a></li>
 		            #if(!$loggedIn)
 			            <li><a href="/registration" id="Registration-tab">Registration</a></li>
-			            <li><a href="/login" id="Login-tab">Login</a></li>#else
+			            <li><a href="/contactUs" id="ContactUs-tab">Contact Us</a></li>
+			            <li><a href="/login" id="Login-tab">Login</a></li>
+			        #else
 			            <li><a href="/viewScores" id="ViewScores-tab">View Scores</a></li>
+			            <li><a href="/contactUs" id="ContactUs-tab">Contact Us</a></li>
 			            <li><a href="/signout" id="Logout-tab">Logout</a></li>
 		            #end
 	            #end

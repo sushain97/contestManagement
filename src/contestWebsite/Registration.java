@@ -45,7 +45,6 @@ import javax.servlet.http.HttpSession;
 import net.tanesha.recaptcha.ReCaptchaImpl;
 import net.tanesha.recaptcha.ReCaptchaResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -144,12 +143,9 @@ public class Registration extends BaseHttpServlet
 			else
 				context.put("high", true);
 
-			if(((String) sess.getAttribute("account")).equals("yes"))
-				context.put("account", true);
-			else
-				context.put("account", false);
+			context.put("account", ((String) sess.getAttribute("account")).equals("yes"));
 			
-			String[] propNames = {"schoolName", "name", "updated", "division", "studentData"};
+			String[] propNames = {"schoolName", "name", "email", "updated", "division", "studentData"};
 			for(String propName: propNames)
 				context.put(propName, (String) sess.getAttribute(propName));
 		}
@@ -179,44 +175,10 @@ public class Registration extends BaseHttpServlet
 							regData.add("<dt>" + PropNames.names.get(key) + "</dt>\n<dd>" + prop.getValue() + "</dd>");
 					}
 					
-					ArrayList<String> students = new ArrayList<String>();
-					JSONArray studentData = null;
-					try
-					{
-						studentData = new JSONArray((String) sess.getAttribute("studentData"));
-					}
-					catch(JSONException e)
-					{	
-						e.printStackTrace();
-						resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
-						return;
-					}
-					
-					for(int i = 0; i < studentData.length(); i++)
-					{
-						try
-						{
-							JSONObject studentRegData = studentData.getJSONObject(i);
-							
-							ArrayList<String> tests = new ArrayList<String>();
-							for(String subject: Test.tests())
-								if(studentRegData.getBoolean(subject))
-									tests.add(Test.letterToName(subject));
-							
-							students.add("<dt>" + studentRegData.getString("name") + " (" + studentRegData.getInt("grade") + "th)</dt>\n<dd>" + StringUtils.join(tests.toArray(), ", ") + "</dd>");
-						}
-						catch(JSONException e)
-						{
-							e.printStackTrace();
-							resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
-							return;
-						}
-					}
-					
 					Collections.sort(regData);
-					Collections.sort(students);
 					context.put("regData", regData);
-					context.put("studentData", students);
+					context.put("studentData", (String) sess.getAttribute("studentData"));
+					
 					sess.invalidate();
 				}
 			}

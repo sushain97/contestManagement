@@ -37,36 +37,48 @@
 
 	<div class="container">
 		<h1>Contest Registration #if($updated) #include("printButton.html") #end</h1>
+		
+		<input type="hidden" name="studentData" id="studentData" value='$studentData'>
 
 		#if($updated)
-		<div class="alert alert-success">
-			<a class="close" data-dismiss="alert">&times;</a> <strong>Success! </strong>Your registration has been
-			recorded. You will receive a confirmation e-mail soon.
-		</div>
-		
-		<h3>Your Registration Information</h3>
-		To make any changes to the following information, go to the <a href="/contactUs">Contact Us</a> page. <br />
-		<dl class="dl-horizontal"> 
-			#foreach($str in $regData) $str #end 
-		</dl>
-		
-		<dl class="dl-horizontal"> 
-			#foreach($str in $studentData) $str #end 
-		</dl>
-		
+			<div class="alert alert-success">
+				<a class="close" data-dismiss="alert">&times;</a> <strong>Success! </strong>Your registration has been
+				recorded. You will receive a confirmation e-mail soon.
+			</div>
+			
+			<h3>Your Registration Information</h3>
+			To make any changes to the following information, go to the <a href="/contactUs">Contact Us</a> page. <br />
+			<dl class="dl-horizontal"> 
+				#foreach($str in $regData) $str #end 
+			</dl>
+			
+			<table class="table table-striped table-condensed table-hover table-responsive" id="registrations">
+				<thead>
+					<tr>
+						<th class="col-xs-3 text-center">Student Name</th>
+						<th class="col-xs-1 text-center" style="border-right: 2px solid #ddd;">Grade</th>
+						<th class="col-xs-2 text-center">Number Sense</th>
+						<th class="col-xs-2 text-center">Calculator</th>
+						<th class="col-xs-2 text-center">Math</th>
+						<th class="col-xs-2 text-center">Science</th>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+			</table>
 		#elseif(!$registrationError.equals(''))
-		<div class="alert alert-danger">
-			<a class="close" data-dismiss="alert">&times;</a> <strong>Oh no!</strong> $registrationError
-		</div>
+			<div class="alert alert-danger">
+				<a class="close" data-dismiss="alert">&times;</a> <strong>Oh no!</strong> $registrationError
+			</div>
 		#elseif($error)
-		<div class="alert alert-danger">
-			<strong>Oh no!</strong> There has been a problem with your registration, look below.
-		</div>
+			<div class="alert alert-danger">
+				<strong>Oh no!</strong> There has been a problem with your registration, look below.
+			</div>
 		#else
-		<div class="alert alert-info">
-			<a class="close" data-dismiss="alert">&times;</a> <strong>Remember! </strong>Do not register multiple
-			times, <a class="alert-link" href="/contactUs">contact us</a> to make changes to your registration.
-		</div>
+			<div class="alert alert-info">
+				<a class="close" data-dismiss="alert">&times;</a> <strong>Remember! </strong>Do not register multiple
+				times, <a class="alert-link" href="/contactUs">contact us</a> to make changes to your registration.
+			</div>
 		#end
 		
 		#if(!$updated)
@@ -278,7 +290,6 @@
 				</div>
 				
 				<input type="hidden" name="regError" id="regError" value="$registrationError">
-				<input type="hidden" name="studentData" id="studentData" value='$studentData'>
 
 				<div class="form-group">
    					<div class="col-sm-offset-2 col-sm-10">
@@ -290,8 +301,7 @@
 			</fieldset>
 		</form>
 	</div>
-	#end
-	
+
 	<div class="modal fade" id="importDataModal">
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
@@ -352,6 +362,7 @@ Bobby Doe	8&#9;x&#9;&#9;x&#9;x</pre>
 			</div>
 			</div>
 		</div>
+		#end
 	
 	<input type="hidden" name="price" id="price" value="$price" />
 

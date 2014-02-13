@@ -9,9 +9,12 @@
 	#parse("head.html")
 	<link type="text/css" href="/css/datepicker3.min.css" rel="stylesheet">
 	<link type="text/css" href="/css/slider.css" rel="stylesheet">
+	<link type="text/css" href="/css/fontello.css" rel="stylesheet">
+	<link type="text/css" href="/css/font-awesome.min.css" rel="stylesheet">
 	<style type="text/css">
 		#updateScores { display: none; }
 		#changePassword { display: none; }
+		.col-sm-1 { padding-right: 10px; padding-left: 10px; }
 	</style>
 </head>
 
@@ -105,6 +108,54 @@
 				</div>
 				
 				<div class="form-group">
+					<label class="col-sm-2 control-label" for="category">Category Winners</label>
+					
+					<div class="col-sm-1 control-label">Middle <i class="icon-medal"></i></div>
+					<div class="col-sm-1">
+						<input type="number" class="form-control" name="counts_category_middle_medal" value="#if($awardCriteria.category_middle_medal)$awardCriteria.category_middle_medal#end" required>
+					</div>
+					<div class="col-sm-1 control-label">High <i class="icon-medal"></i></div>
+					<div class="col-sm-1">
+						<input type="number" class="form-control" name="counts_category_high_medal" value="#if($awardCriteria.category_high_medal)$awardCriteria.category_high_medal#end" required>
+					</div>
+					
+					<div class="col-sm-1 control-label">Middle <i class="fa fa-trophy"></i></div>
+					<div class="col-sm-1">
+						<input type="number" class="form-control" name="counts_category_middle_trophy" value="#if($awardCriteria.category_middle_trophy)$awardCriteria.category_middle_trophy#end"  required>
+					</div>
+					<div class="col-sm-1 control-label">High <i class="fa fa-trophy"></i></div>
+					<div class="col-sm-1">
+						<input type="number" class="form-control" name="counts_category_high_trophy" value="#if($awardCriteria.category_high_trophy)$awardCriteria.category_high_trophy#end" required>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label class="col-sm-3 control-label" for="categorySweep">Category Sweepstakes Winners</label>
+					
+					<div class="col-sm-1 control-label">Middle <i class="fa fa-trophy"></i></div>
+					<div class="col-sm-1">
+						<input type="number" class="form-control" name="counts_categorySweep_middle" value="#if($awardCriteria.categorySweep_middle)$awardCriteria.categorySweep_middle#end" required>
+					</div>
+					<div class="col-sm-1 control-label">High <i class="fa fa-trophy"></i></div>
+					<div class="col-sm-1">
+						<input type="number" class="form-control" name ="counts_categorySweep_high" value="#if($awardCriteria.categorySweep_high)$awardCriteria.categorySweep_high#end" required>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label class="col-sm-3 control-label" for="sweepstakes">Sweepstakes Winners</label>
+					
+					<div class="col-sm-1 control-label">Middle <i class="fa fa-trophy"></i></div>
+					<div class="col-sm-1">
+						<input type="number" class="form-control" name="counts_sweepstakes_middle" value="#if($awardCriteria.sweepstakes_middle)$awardCriteria.sweepstakes_middle#end" required>
+					</div>
+					<div class="col-sm-1 control-label">High <i class="fa fa-trophy"></i></div>
+					<div class="col-sm-1">
+						<input type="number" class="form-control" name="counts_sweepstakes_high" value="#if($awardCriteria.sweepstakes_high)$awardCriteria.sweepstakes_high#end" required>
+					</div>
+				</div>
+				
+				<div class="form-group">
 					<label class="col-sm-2 control-label" for="datepicker">Registration Dates</label>
 					<div class="input-daterange input-group" id="datepicker" data-date-format="mm/dd/yyyy">
 					    <input type="text" class="col-sm-3 form-control" name="startDate" 
@@ -169,11 +220,9 @@
 
 				<div class="form-group">
 					<label class="col-sm-2 control-label" for="price">Test Charges</label>
-					<div class="col-sm-5" style="padding-top: 5px;">
+					<div class="col-sm-5" style="padding-top: 10px;">
 						#set($price = $contestInfo.getProperty("price"))
-						#if(!$price)
-						#set($price = 5)
-						#end
+						#if(!$price) #set($price = 5) #end
 						<b id="priceText">$$price</b>
 						<input type="text" class="span2 price" id="price" name="price" data-slider-min="0" data-slider-max="15" data-slider-step="1" data-slider-value="$price" value="$price" required>
 					<p class="help-block">How much should each test registration cost in dollars?</p>

@@ -55,6 +55,8 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.labs.repackaged.org.json.JSONException;
+import com.google.appengine.labs.repackaged.org.json.JSONObject;
 import com.google.gdata.client.Service;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.CellEntry;
@@ -81,6 +83,8 @@ public class Main extends HttpServlet
 		//TODO: Add Logging
 		List<Test> testsGraded = new ArrayList<Test>();
 		final SpreadsheetEntry middle, high;
+		
+		final Map<String, Integer> awardCriteria = new HashMap<String, Integer>();
 		
 		final List<Student> middleStudents = new ArrayList<Student>();
 		final Map<String, School> middleSchools = new HashMap<String, School>(); //School Name, School
@@ -124,10 +128,13 @@ public class Main extends HttpServlet
 			tabulateCategorySweepstakesWinners(highSchools, highCategorySweepstakesWinners);
 			tabulateSweepstakesWinners(middleSchools, middleSweepstakesWinners);
 			tabulateSweepstakesWinners(highSchools, highSweepstakesWinners);
+			
+			//Get award criteria from Datastore
+			getAwardCriteria(awardCriteria);
 
 			//Generate and store HTML in Datastore
-			storeHTML("middle", middleStudents, middleSchools, middleCategoryWinners, middleCategorySweepstakesWinners, middleSweepstakesWinners, middleAnonScores);
-			storeHTML("high", highStudents, highSchools, highCategoryWinners, highCategorySweepstakesWinners, highSweepstakesWinners, highAnonScores);
+			storeHTML("middle", middleStudents, middleSchools, middleCategoryWinners, middleCategorySweepstakesWinners, middleSweepstakesWinners, middleAnonScores, awardCriteria);
+			storeHTML("high", highStudents, highSchools, highCategoryWinners, highCategorySweepstakesWinners, highSweepstakesWinners, highAnonScores, awardCriteria);
 
 			//Update Datastore by modifying registrations to include actual number of tests taken
 			updateRegistrations("middle", middleSchools);
@@ -138,7 +145,7 @@ public class Main extends HttpServlet
 		}
 		catch(Exception e) { e.printStackTrace(); }
 	}
-	
+
 	private static SpreadsheetEntry getSpreadSheet(String docString, Service service) throws AuthenticationException, MalformedURLException, IOException, ServiceException
 	{
 		SpreadsheetFeed feed = service.getFeed(new URL("https://spreadsheets.google.com/feeds/spreadsheets/private/full"), SpreadsheetFeed.class);
@@ -272,8 +279,33 @@ public class Main extends HttpServlet
 		for(School school : schoolList)
 			sweepstakeWinners.add(school);
 	}
+	
+	@SuppressWarnings("unchecked")
+	private static void getAwardCriteria(Map<String, Integer> awardCriteria)
+	{
+		Query query = new Query("contestInfo");
+		Entity contestInfo = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+		
+		JSONObject awardCriteriaJSON = null;
+		try
+		{
+			awardCriteriaJSON = new JSONObject(((Text) contestInfo.getProperty("awardCriteria")).getValue());
+		}
+		catch(JSONException e) { e.printStackTrace(); }
+		
+		Iterator<String> awardCountKeyIter = awardCriteriaJSON.keys();
+		while(awardCountKeyIter.hasNext())
+		{
+			String awardCountType = awardCountKeyIter.next();
+			try
+			{
+				awardCriteria.put(awardCountType, (Integer) awardCriteriaJSON.get(awardCountType));
+			}
+			catch(JSONException e) { e.printStackTrace(); }
+		}
+	}
 
-	private static void storeHTML(String level, List<Student> students, Map<String, School> schools, Map<Test, List<Student>> categoryWinners, Map<Character, List<School>> categorySweepstakesWinners, List<School> sweepstakesWinners, Map<Test, List<Score>> anonScores) throws IOException
+	private static void storeHTML(String level, List<Student> students, Map<String, School> schools, Map<Test, List<Student>> categoryWinners, Map<Character, List<School>> categorySweepstakesWinners, List<School> sweepstakesWinners, Map<Test, List<Score>> anonScores, Map<String, Integer> awardCriteria) throws IOException
 	{
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/templates, html/snippets");
@@ -342,6 +374,8 @@ public class Main extends HttpServlet
 			context = new VelocityContext();
 			context.put("winners", categoryWinners.get(test));
 			context.put("subject", test);
+			context.put("trophy", awardCriteria.get("category_" + level + "_trophy"));
+			context.put("medal", awardCriteria.get("category_" + level + "_medal"));
 			sw = new StringWriter();
 			t = ve.getTemplate("categoryWinners.html");
 			t.merge(context, sw);
@@ -356,6 +390,7 @@ public class Main extends HttpServlet
 
 		context = new VelocityContext();
 		context.put("winners", categorySweepstakesWinners);
+		context.put("trophy", awardCriteria.get("categorySweep_" + level));
 		sw = new StringWriter();
 		t = ve.getTemplate("categorySweepstakes.html");
 		t.merge(context, sw);
@@ -368,6 +403,7 @@ public class Main extends HttpServlet
 
 		context = new VelocityContext();
 		context.put("winners", sweepstakesWinners);
+		context.put("trophy", awardCriteria.get("sweepstakes_" + level));
 		sw = new StringWriter();
 		t = ve.getTemplate("sweepstakesWinners.html");
 		t.merge(context, sw);

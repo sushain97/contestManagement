@@ -13,10 +13,9 @@
 	        <th title="Click to sort">Overall Score</th>
 	    </tr>
     </thead>
-    #set($i = 1)
     #foreach($school in $winners)
     	<tr>
-        	<td> $i #if($i <= 3) #include("trophyImage.html") #end</td>
+        	<td> $foreach.count #if($foreach.count <= $trophy) <i class="fa fa-trophy"></i> #end</td>
         	<td> $school.getName() </td>
         	<td class="num"> $school.getNumStudents() </td>
         	<td> 
@@ -57,6 +56,5 @@
 			</td>
         	<td> $school.getTotalScore() </td>
     	</tr>
-    	#set($i = $i + 1)
     #end
 </table>

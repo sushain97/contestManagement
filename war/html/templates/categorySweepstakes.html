@@ -21,10 +21,9 @@
 		    	<th title="Click to sort">Score</th>
 	    	</tr>
 	    </thead>
-	    	#set($i = 1)
 	    	#foreach($school in $winners.get($test))
 	    		<tr>
-	        		<td> $i #if($i <= 3) #include("trophyImage.html") #end</td>
+	        		<td> $foreach.count #if($foreach.count <= $trophy) <i class="fa fa-trophy"></i> #end</td>
 	        		<td> $school.getName() </td>
 	        		<td>
 		        		<a class="popovers" href="#" data-toggle="popover" 
@@ -36,7 +35,6 @@
 						</a>
 	        		</td>
 	    		</tr>
-	    		#set($i = $i + 1)
 	    	#end
 	</table>
 #end

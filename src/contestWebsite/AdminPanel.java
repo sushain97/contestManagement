@@ -23,8 +23,10 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -52,10 +54,13 @@ import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.labs.repackaged.org.json.JSONException;
+import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 @SuppressWarnings("serial")
 public class AdminPanel extends BaseHttpServlet
 {
+	@SuppressWarnings("unchecked")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
 	{
 		VelocityEngine ve = new VelocityEngine();
@@ -77,6 +82,36 @@ public class AdminPanel extends BaseHttpServlet
 			context.put("contestInfo", infoAndCookie.x);
 			context.put("confPassError", req.getParameter("confPassError") != null && req.getParameter("confPassError").equals("1") ? "Those passwords didn't match, try again." : null);
 			context.put("passError", req.getParameter("passError") != null && req.getParameter("passError").equals("1") ? "That password is incorrect, try again." : null);
+			
+			JSONObject awardCriteriaJSON;
+			try
+			{
+				awardCriteriaJSON = new JSONObject(infoAndCookie.x.hasProperty("awardCriteria") ? ((Text) infoAndCookie.x.getProperty("awardCriteria")).getValue() : "{}");
+			}
+			catch(JSONException e)
+			{
+				e.printStackTrace();
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+				return;
+			}
+			
+			HashMap<String, Integer> awardCriteria = new HashMap<String, Integer>();
+			Iterator<String> awardCountKeyIter = awardCriteriaJSON.keys();
+			while(awardCountKeyIter.hasNext())
+			{
+				String awardCountType = awardCountKeyIter.next();
+				try
+				{
+					awardCriteria.put(awardCountType, (Integer) awardCriteriaJSON.get(awardCountType));
+				}
+				catch(JSONException e)
+				{
+					e.printStackTrace();
+					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+					return;
+				}
+			}
+			context.put("awardCriteria", awardCriteria);
 			
 			close(context, ve.getTemplate("adminPanel.html"), resp);
 		}
@@ -112,6 +147,12 @@ public class AdminPanel extends BaseHttpServlet
 				contestInfo.setProperty("price", Integer.parseInt(params.get("price")[0]));
 				contestInfo.setProperty("complete", params.get("complete") != null);
 				contestInfo.setProperty("hideFullNames", params.get("fullnames") != null);
+				
+				JSONObject awardCriteria = new JSONObject();
+				for(Entry<String, String[]> entry: params.entrySet())
+					if(entry.getKey().startsWith("counts_"))
+						awardCriteria.put(entry.getKey().replace("counts_",  ""), Integer.parseInt(entry.getValue()[0]));
+				contestInfo.setProperty("awardCriteria", new Text(awardCriteria.toString()));
 				
 				Yaml yaml = new Yaml();
 				String[] mapPropNames = {"schedule", "directions"};

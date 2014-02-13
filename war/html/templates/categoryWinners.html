@@ -21,17 +21,18 @@
 	        <th title="Click to sort">Score</th>
         </tr>
     </thead>
-    #set($i = 1)
     #foreach($student in $winners)
     	#if($student.getScore($subject.test()).getScoreNum() < 0)
     		#break
     	#end
     	<tr>
-        	<td> $i #if(($i <= 10 && $subject.grade() <= 8) || ($i <= 5 && $subject.grade() >= 9)) #include("trophyImage.html") #end</td>
+        	<td> $foreach.count 
+        		#if($foreach.count <= $trophy) <i class="fa fa-trophy"></i> #end
+        		#if($foreach.count > $trophy && $foreach.count <= ($medal + $trophy)) <i class="icon-medal"></i> #end	
+       		</td>
         	<td> #[[#if($hideFullNames)]]# $student.getPublicName() #[[#else]]# $student.getName() #[[#end]]# </td>
         	<td> $student.getSchool().getName() </td>
         	<td> $student.getScore($subject.test()).getScore() </td>
     	</tr>
-    	#set($i = $i + 1)
     #end
 </table>

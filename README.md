@@ -33,6 +33,7 @@ In addition to access to all public pages, an administrator has access to a few 
     * **Directions**: Set human-readable directions to the host school in the form of a YAML Associative Array displayed on the Directions page
     * **Slideshow**: Set the image, title, and captions of the slideshow in the form of a YAML List of Lists displayed on the Main page
     * **School Levels**: Set the school levels the tournament will host (a nonempty subset of ``{middle, high}``)
+    * **Award Critera**: Set the placings which entitle students of each level (middle, high) to each type of award (medal, trophy), used on the category winners pages, category sweepstakes winners pages, and the sweepstakes winners pages
     * **Registration Dates**: Set the dates within which online registration is open
     * **E-Mail Address**: Specify the email address to which questions submitted through the Contact Us page are sent to
     * **Google E-Mail**: Specify the email address from which emails to users are sent to (the Google App Engine user that hosts the project)

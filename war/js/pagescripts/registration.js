@@ -35,8 +35,8 @@ $(document).ready(function() {
 		
 		$('#registrations').tablesorter({
 			headers: {
-				0: {sorter: 'false'},
-				1: {sorter: 'input'},
+				0: {sorter: false},
+				1: {sorter: 'inputs'},
 				2: {sorter: 'select'},
 				3: {sorter: 'checkbox'},
 				4: {sorter: 'checkbox'},
@@ -79,6 +79,7 @@ $(document).ready(function() {
 		var tr = $(this).parents('tr');
 		tr.hide('fast', function() { 
 			tr.remove();
+			$('#registrations').trigger('update');
 			CalcCost();
 		});
 	});

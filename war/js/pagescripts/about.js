@@ -21,4 +21,8 @@ $(document).ready(function() {
 		window.print();
 		$('.accordion-body').removeClass('in');
 	});
+	
+	$.each($('img[data-src]'), function() {
+		$(this).attr('src', $(this).attr('data-src'));
+	});
 });

@@ -8,7 +8,6 @@
 	<meta name="tab" content="Registration">
 	#parse("head.html")
 	<style type="text/css">
-		#acc { display: none; }
 		.dl-horizontal dt {
 			white-space: normal;
 			width: 300px;
@@ -86,13 +85,15 @@
 			<fieldset>
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-5 control-label" for="registration">Registration Type</label>
-					<div class="input-group col-sm-5 col-xs-7">
+					<div class="input-group col-sm-7 col-xs-7">
 						<label class="radio-inline"> 
 							<input type="radio" name="registrationType" id="regType1" value="coach" #if($coach) checked #end> Coach
 						</label>
 						<label class="radio-inline">
 							<input type="radio" name="registrationType" id="regType2" value="student" #if($student) checked #end> Student
 						</label>
+						<span class="text-danger help-block hide" id="registerWarning">Do <strong>not</strong> register here if your coach will register for the school. Only register as a student
+							here if you do <strong>not</strong> have a coach or will be paying us directly.</span>
 					</div>
 				</div>
 

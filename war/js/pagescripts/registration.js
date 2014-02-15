@@ -235,10 +235,14 @@ function CheckAccount() {
 		$('#account').prop('checked', false);
 	}
 	
-	if($('#regType2').prop('checked'))
+	if($('#regType2').prop('checked')) {
 		$('#makeAccount').hide('fast');
-	else
+		$('#registerWarning').show('fast');
+	}
+	else {
 		$('#makeAccount').show('fast');
+		$('#registerWarning').hide('fast');
+	}
 }
 
 function adjustGradeSelect() {

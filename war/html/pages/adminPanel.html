@@ -75,6 +75,19 @@
 				</div>
 				
 				<div class="form-group">
+					<label class="col-sm-2 control-label" for="datepicker">Registration Dates</label>
+					<div class="col-sm-6 col-xs-9">
+						<div class="input-daterange input-group" id="datepicker" data-date-format="mm/dd/yyyy">
+						    <input type="text" class="col-sm-3 form-control" name="startDate" 
+						    	value='#if($contestInfo.getProperty("startDate"))$contestInfo.getProperty("startDate")#end' required>
+						    <span class="input-group-addon"><strong>to</strong></span>
+						    <input type="text" class="col-sm-3 form-control" name="endDate" 
+						    	value='#if($contestInfo.getProperty("endDate"))$contestInfo.getProperty("endDate")#end' required>
+						</div>
+					</div>
+				</div>
+				
+				<div class="form-group">
 					<label class="col-sm-2 col-xs-5 control-label" for="aboutText">About Text</label>
 					<div class="col-xs-7">
 						<textarea class="form-control" name="aboutText" rows="6">#if($contestInfo.getProperty("aboutText").getValue())$contestInfo.getProperty("aboutText").getValue()#end</textarea>
@@ -167,15 +180,15 @@
 				</div>
 				
 				<div class="form-group">
-					<label class="col-sm-2 control-label" for="datepicker">Registration Dates</label>
-					<div class="input-daterange input-group" id="datepicker" data-date-format="mm/dd/yyyy">
-					    <input type="text" class="col-sm-3 form-control" name="startDate" 
-					    	value='#if($contestInfo.getProperty("startDate"))$contestInfo.getProperty("startDate")#end' required>
-					    <span class="input-group-addon"><strong>to</strong></span>
-					    <input type="text" class="col-sm-3 form-control" name="endDate" 
-					    	value='#if($contestInfo.getProperty("endDate"))$contestInfo.getProperty("endDate")#end' required>
+					<label class="col-sm-2 control-label" for="price">Test Charges</label>
+					<div class="col-sm-5" style="padding-top: 10px;">
+						#set($price = $contestInfo.getProperty("price"))
+						#if(!$price) #set($price = 5) #end
+						<b id="priceText">$$price</b>
+						<input type="text" class="span2 price" id="price" name="price" data-slider-min="0" data-slider-max="15" data-slider-step="1" data-slider-value="$price" value="$price" required>
+					<p class="help-block">How much should each test registration cost in dollars?</p>
 					</div>
-				</div>	
+				</div>
 				
 				<div class="form-group">
 					<label class="col-sm-2 control-label" for="email">E-Mail Address</label>
@@ -244,21 +257,14 @@
 				</div>
 
 				<div class="form-group">
-					<label class="col-sm-2 control-label" for="price">Test Charges</label>
-					<div class="col-sm-5" style="padding-top: 10px;">
-						#set($price = $contestInfo.getProperty("price"))
-						#if(!$price) #set($price = 5) #end
-						<b id="priceText">$$price</b>
-						<input type="text" class="span2 price" id="price" name="price" data-slider-min="0" data-slider-max="15" data-slider-step="1" data-slider-value="$price" value="$price" required>
-					<p class="help-block">How much should each test registration cost in dollars?</p>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-3 col-xs-7 control-label" for="update">Update Online Scores?</label>
-					<div class="input-group col-sm-5 col-xs-1">
+					<label class="col-sm-3 col-xs-6 control-label" for="update">
+						Update Online Scores? 
+						
+					</label>
+					<div class="input-group col-sm-7 col-xs-6">
 						<label class="checkbox-inline">
 							<input type="checkbox" name="update" id="update">
+							<strong>Last generated#if($contestInfo.getProperty("updated")) $contestInfo.getProperty("updated")#else never#end</strong>
 						</label>
 					</div>
 				</div>

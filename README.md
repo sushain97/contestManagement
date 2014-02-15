@@ -1,7 +1,7 @@
 TMSCA Contest Management
 =================
 
-Google App Engine Project to manage TMSCA Tournaments at the Middle School and High School level with support for automatic tabulation, user accounts contest result visualization, and much more.
+Google App Engine Project to manage TMSCA Tournaments at the Middle School and High School level with support for automatic tabulation, user accounts, contest result visualization, and much more.
 
 Pages
 -----
@@ -28,21 +28,20 @@ In addition to access to all public pages, an administrator has access to a few 
     * **School Name**: Set the name of the host school used throughout the website and in emails
     * **Address**: Set the address of the host school used on the Directions page
     * **Absolute Location**: Set the absolute location (longitude and latitude) of the host school used on the Directions page
-    * **About text**: Set the tournament description text used on the About page and the main page
+    * **Registration Dates**: Set the dates within which online registration is open
+    * **About Text**: Set the tournament description text used on the About page and the main page
     * **Schedule**: Set the tournament schedule in the form of a YAML Associative Array displayed on the About page
     * **Directions**: Set human-readable directions to the host school in the form of a YAML Associative Array displayed on the Directions page
     * **Slideshow**: Set the image, title, and captions of the slideshow in the form of a YAML List of Lists displayed on the Main page
     * **School Levels**: Set the school levels the tournament will host (a nonempty subset of ``{middle, high}``)
     * **Award Critera**: Set the placings which entitle students of each level (middle, high) to each type of award (medal, trophy), used on the category winners pages, category sweepstakes winners pages, and the sweepstakes winners pages
-    * **Registration Dates**: Set the dates within which online registration is open
+    * **Test Charges**: Set the dollar cost for each test used on the registration page
     * **E-Mail Address**: Specify the email address to which questions submitted through the Contact Us page are sent to
     * **Google E-Mail**: Specify the email address from which emails to users are sent to (the Google App Engine user that hosts the project)
     * **ReCAPTCHA API Keys**: Set the private and public reCAPTCHA keys used on the Contact Us and Registration pages
-    * **Google OAuth 2.0 Credentials**: Set the Client Id and Client Secret to authenticate to the Spreadsheet API for the Tabulation driver
     * **Google Site Verification**: Set the Google Site Verification code used as the content attribute in `<meta name="google-site-verification">` on the Main page
     * **Google Analytics Tracking JS**: Set the Google Analytics Tracking Code (only the JS part, without the HTML `script` tag) used on all pages
-    * **Test Charges**: Set the dollar cost for each test used on the registration page
-    * **Update online scores**: Add a tabulation request to the task queue
+    * **Update online scores**: Add a tabulation request to the task queue and see the time that scores were last auto-generated successfully
     * **Make results public**: Make results public on the Contest Results page
     * **Change Admin Password**: Allows changing of the administrator password
     * **Enable Testing Mode**: Enables testing mode which resets the administrator credentials to `admin` and `password` and displays a popout on the Login page describing this
@@ -70,6 +69,7 @@ In addition to access to all public pages, a logged-in user has access to a few 
 * The title in the navigation bar is customizable through the Admin Panel
 * Pages often contain a print button
 * Custom error pages with detailed diagnostic information are provided for HTTP errors 401, 403, 404, 405, and 500
+* Access to the Google Spreadsheets API is conducted through OAuth 2.0 with Google+ Sign In
 
 Tabulation
 ----------
@@ -83,3 +83,10 @@ Tabulation
 ### `Class Student` ###
 
 ### `enum Test` ###
+
+License
+-------
+
+Content of TMSCA Tournament Management System (HTML, CSS, Static Assets, etc.) by Sushain Cherivirala is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
+
+Codebase of TMSCA Tournament Management System (Java, JS, etc.) is licensed under the GNU General Public License Version 3.

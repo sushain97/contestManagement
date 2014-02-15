@@ -113,6 +113,8 @@ public class AdminPanel extends BaseHttpServlet
 			}
 			context.put("awardCriteria", awardCriteria);
 			
+			context.put("clientId", (String) infoAndCookie.x.getProperty("OAuth2ClientId"));
+			
 			close(context, ve.getTemplate("adminPanel.html"), resp);
 		}
 		else
@@ -137,7 +139,8 @@ public class AdminPanel extends BaseHttpServlet
 				List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 				Entity contestInfo = info.size() != 0 ? info.get(0) : new Entity("contestInfo");
 
-				String[] stringPropNames = {"endDate", "startDate", "email", "account", "levels", "title", "publicKey", "privateKey", "school", "address", "siteVerification"};
+				String[] stringPropNames = {"endDate", "startDate", "email", "account", "levels", "title", "publicKey",
+											"privateKey", "school", "address", "siteVerification", "OAuth2ClientSecret", "OAuth2ClientId"};
 				for(String propName: stringPropNames)
 					contestInfo.setProperty(propName, params.get(propName)[0]);
 				contestInfo.setProperty("testingMode", testingMode);
@@ -192,15 +195,12 @@ public class AdminPanel extends BaseHttpServlet
 				{
 					String docHigh = params.get("docHigh")[0];
 					String docMiddle = params.get("docMiddle")[0];
-					String docAccount = params.get("docAccount")[0];
-					String docPassword = params.get("docPassword")[0];
 
-					contestInfo.setProperty("docAccount", docAccount);
 					contestInfo.setProperty("docHigh", docHigh);
 					contestInfo.setProperty("docMiddle", docMiddle);
 
-					Queue queue = QueueFactory.getDefaultQueue(); //TODO: Use OAuth2
-					queue.add(withUrl("/tabulate").param("docPassword", docPassword).param("docAccount", docAccount).param("docMiddle", docMiddle).param("docHigh", docHigh));
+					Queue queue = QueueFactory.getDefaultQueue();
+					queue.add(withUrl("/tabulate").param("docMiddle", docMiddle).param("docHigh", docHigh));
 				}
 
 				datastore.put(contestInfo);

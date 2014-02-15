@@ -61,3 +61,24 @@ function CheckPassChange() {
 	if(change)
 		$('#changePassword').show();
 }
+
+function signInCallback(authResult) {
+	if(authResult['code']) {
+		$('#signinButton').hide();
+
+		$.ajax({
+			type: 'POST',
+			url: '/authToken',
+			data: authResult['code'],
+			processData: false,
+			contentType: 'application/octet-stream; charset=utf-8',
+			success: function() {
+				$('#oAuthResult').html('<strong class="text-success">You are signed in, submit the form to update online scores.</strong>');
+			}
+		});
+	}
+	else if(authResult['error']) {
+		console.log('There was an error: ' + authResult['error']);
+		$('#oAuthResult').html('<strong class="text-danger">Failed to sign you in, try again.</strong>');
+	}
+}

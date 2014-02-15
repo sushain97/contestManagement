@@ -54,6 +54,9 @@ handlers:
 - url: /tabulate
   servlet: contestTabulation.Main
   
+- url: /authToken
+  servlet: contestWebsite.OAuth
+  
 - url: /403
   servlet: errors.Prohibited_403
 

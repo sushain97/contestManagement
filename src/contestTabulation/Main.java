@@ -48,6 +48,10 @@ import org.apache.velocity.runtime.RuntimeConstants;
 
 import util.Pair;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -102,13 +106,11 @@ public class Main extends HttpServlet
 		
 		try
 		{
-			//Authenticate to Google Documents Service using account details from Administration Panel
+			//Authenticate to Google Documents Service using OAuth 2.0 Authentication Token from Datastore
 			Map<String, String[]> params = req.getParameterMap();
-			String user = params.get("docAccount")[0];
-			String password = params.get("docPassword")[0];
 			SpreadsheetService service = new SpreadsheetService("contestTabulation");
-			service.setUserCredentials(user, password);
-
+			authService(service);
+			
 			//Populate base data structures by traversing Google Documents Spreadsheets
 			middle = getSpreadSheet(params.get("docMiddle")[0], service);
 			high = getSpreadSheet(params.get("docHigh")[0], service);
@@ -144,6 +146,21 @@ public class Main extends HttpServlet
 			updateContestInfo(testsGraded);
 		}
 		catch(Exception e) { e.printStackTrace(); }
+	}
+	
+	private static void authService(SpreadsheetService service) throws IOException 
+	{
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Query query = new Query("contestInfo");
+		Entity contestInfo = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+		
+		GoogleCredential credential = new GoogleCredential.Builder()
+			.setJsonFactory(new JacksonFactory())
+			.setTransport(new NetHttpTransport())
+			.setClientSecrets((String) contestInfo.getProperty("OAuth2ClientId"), (String) contestInfo.getProperty("OAuth2ClientSecret")).build()
+			.setFromTokenResponse(new JacksonFactory().fromString(((Text) contestInfo.getProperty("OAuth2Token")).getValue(), GoogleTokenResponse.class));
+		
+		service.setOAuth2Credentials(credential);
 	}
 
 	private static SpreadsheetEntry getSpreadSheet(String docString, Service service) throws AuthenticationException, MalformedURLException, IOException, ServiceException

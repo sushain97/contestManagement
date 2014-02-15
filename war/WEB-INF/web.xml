@@ -65,6 +65,10 @@
     <servlet-class>contestTabulation.Main</servlet-class>
   </servlet>
   <servlet>
+    <servlet-name>contestWebsite.OAuth</servlet-name>
+    <servlet-class>contestWebsite.OAuth</servlet-class>
+  </servlet>
+  <servlet>
     <servlet-name>errors.Prohibited_403</servlet-name>
     <servlet-class>errors.Prohibited_403</servlet-class>
   </servlet>
@@ -152,6 +156,10 @@
   <servlet-mapping>
     <servlet-name>contestTabulation.Main</servlet-name>
     <url-pattern>/tabulate</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>contestWebsite.OAuth</servlet-name>
+    <url-pattern>/authToken</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>errors.Prohibited_403</servlet-name>

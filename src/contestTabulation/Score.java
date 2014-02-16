@@ -47,7 +47,7 @@ public class Score implements Comparable<Score> {
 		return isInteger(str) || str.length() > 1 && isInteger(str.substring(0, str.length() - 1));
 	}
 
-	final private String score;
+	private final String score;
 
 	Score(String score) {
 		if (isScore(score)) {

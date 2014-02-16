@@ -26,15 +26,32 @@ import java.util.HashMap;
 import util.Pair;
 
 public class School {
-	final private String name;
-	final private Level level;
-	final private int lowGrade, highGrade;
-	private final ArrayList<Student> students = new ArrayList<Student>();
+	public static Comparator<School> getScoreComparator(final Subject subject) {
+		return new Comparator<School>() {
+			@Override
+			public int compare(School s1, School s2) {
+				return s1.getScore(subject) - s2.getScore(subject);
+			}
+		};
+	}
 
-	private final HashMap<Test, Integer> numTests = new HashMap<Test, Integer>();
+	public static Comparator<School> getTotalScoreComparator() {
+		return new Comparator<School>() {
+			@Override
+			public int compare(School s1, School s2) {
+				return s1.getTotalScore() - s2.getTotalScore();
+			}
+		};
+	}
 
-	private final HashMap<Subject, Pair<Student[], Integer>> topScores = new HashMap<Subject, Pair<Student[], Integer>>();
 	private final HashMap<Test, ArrayList<Score>> anonScores = new HashMap<Test, ArrayList<Score>>();
+	private final Level level;
+	private final int lowGrade, highGrade;
+	private final String name;
+	private final HashMap<Test, Integer> numTests = new HashMap<Test, Integer>();
+	private final ArrayList<Student> students = new ArrayList<Student>();
+	private final HashMap<Subject, Pair<Student[], Integer>> topScores = new HashMap<Subject, Pair<Student[], Integer>>();
+
 	private int totalScore;
 
 	School(String name, Level level) {
@@ -42,50 +59,6 @@ public class School {
 		this.level = level;
 		this.lowGrade = level.getLowGrade();
 		this.highGrade = level.getHighGrade();
-	}
-
-	public ArrayList<Student> getStudents() {
-		return students;
-	}
-
-	public HashMap<Test, ArrayList<Score>> getAnonScores() {
-		return anonScores;
-	}
-
-	public ArrayList<Score> getAnonScores(Test test) {
-		return anonScores.get(test);
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public int getNumStudents() {
-		return students.size();
-	}
-
-	public HashMap<Test, Integer> getNumTests() {
-		return numTests;
-	}
-
-	public Level getLevel() {
-		return level;
-	}
-
-	public Student[] getScoreStudents(Subject subject) {
-		return topScores.get(subject).x;
-	}
-
-	public int getScore(Subject subject) {
-		return topScores.get(subject).y;
-	}
-
-	public int getTotalScore() {
-		return totalScore;
-	}
-
-	protected void addStudent(Student student) {
-		students.add(student);
 	}
 
 	protected void addAnonScores(Test test, ArrayList<Score> scores) {
@@ -98,20 +71,8 @@ public class School {
 		}
 	}
 
-	public void calculateTestNums() {
-		for (Student student : students) {
-			int grade = student.getGrade();
-			for (Subject s : student.getScores().keySet()) {
-				Test test = Test.fromSubjectAndGrade(grade, s);
-				if (!numTests.containsKey(test)) {
-					numTests.put(test, 1);
-				}
-				else {
-					numTests.put(test, numTests.get(test) + 1);
-				}
-			}
-
-		}
+	protected void addStudent(Student student) {
+		students.add(student);
 	}
 
 	private HashMap<Student, Score> calculateScore(final Subject subject) {
@@ -181,12 +142,20 @@ public class School {
 		}
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (name == null ? 0 : name.hashCode());
-		return result;
+	public void calculateTestNums() {
+		for (Student student : students) {
+			int grade = student.getGrade();
+			for (Subject s : student.getScores().keySet()) {
+				Test test = Test.fromSubjectAndGrade(grade, s);
+				if (!numTests.containsKey(test)) {
+					numTests.put(test, 1);
+				}
+				else {
+					numTests.put(test, numTests.get(test) + 1);
+				}
+			}
+
+		}
 	}
 
 	@Override
@@ -210,6 +179,54 @@ public class School {
 			}
 		}
 		return true;
+	}
+
+	public HashMap<Test, ArrayList<Score>> getAnonScores() {
+		return anonScores;
+	}
+
+	public ArrayList<Score> getAnonScores(Test test) {
+		return anonScores.get(test);
+	}
+
+	public Level getLevel() {
+		return level;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public int getNumStudents() {
+		return students.size();
+	}
+
+	public HashMap<Test, Integer> getNumTests() {
+		return numTests;
+	}
+
+	public int getScore(Subject subject) {
+		return topScores.get(subject).y;
+	}
+
+	public Student[] getScoreStudents(Subject subject) {
+		return topScores.get(subject).x;
+	}
+
+	public ArrayList<Student> getStudents() {
+		return students;
+	}
+
+	public int getTotalScore() {
+		return totalScore;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (name == null ? 0 : name.hashCode());
+		return result;
 	}
 
 	@Override

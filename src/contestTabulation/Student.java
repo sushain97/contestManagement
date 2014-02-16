@@ -18,73 +18,44 @@
 
 package contestTabulation;
 
+import java.util.Comparator;
 import java.util.HashMap;
 
 public class Student {
-	final private String name;
-	final private School school;
-	final private int grade;
-	private final HashMap<Subject, Score> scores = new HashMap<Subject, Score>();
-
 	private static int anonCounter = 0;
 
-	Student(String name, School school, int grade) {
-		this.name = name;
-		this.grade = grade;
-		this.school = school;
+	public static Comparator<Student> getNameComparator() {
+		return new Comparator<Student>() {
+			@Override
+			public int compare(Student s1, Student s2) {
+				return s1.getName().compareTo(s2.getName());
+			}
+		};
 	}
+
+	public static Comparator<Student> getScoreComparator(final Subject subject) {
+		return new Comparator<Student>() {
+			@Override
+			public int compare(Student s1, Student s2) {
+				return s1.getScore(subject).compareTo(s2.getScore(subject));
+			}
+		};
+	}
+
+	private final int grade;
+	private final String name;
+	private final School school;
+	private final HashMap<Subject, Score> scores = new HashMap<Subject, Score>();
 
 	Student(int grade, School school) {
 		this("Anonymous" + anonCounter, school, grade);
 		anonCounter++;
 	}
 
-	public void setScore(Subject subject, Score score) {
-		scores.put(subject, score);
-	}
-
-	public Score getScore(Subject subject) {
-		return scores.get(subject);
-	}
-
-	public boolean hasScore(Subject subject) {
-		return scores.get(subject) != null;
-	}
-
-	public HashMap<Subject, Score> getScores() {
-		return scores;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public School getSchool() {
-		return school;
-	}
-
-	public int getGrade() {
-		return grade;
-	}
-
-	public String getPublicName() {
-		if (name.indexOf(" ") != -1) {
-			return name.substring(0, name.indexOf(" ") + 2) + ".";
-		}
-		else {
-			return name;
-		}
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + grade;
-		result = prime * result + (name == null ? 0 : name.hashCode());
-		result = prime * result + (school == null ? 0 : school.hashCode());
-		result = prime * result + (scores == null ? 0 : scores.hashCode());
-		return result;
+	Student(String name, School school, int grade) {
+		this.name = name;
+		this.grade = grade;
+		this.school = school;
 	}
 
 	@Override
@@ -127,6 +98,54 @@ public class Student {
 			return false;
 		}
 		return true;
+	}
+
+	public int getGrade() {
+		return grade;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getPublicName() {
+		if (name.indexOf(" ") != -1) {
+			return name.substring(0, name.indexOf(" ") + 2) + ".";
+		}
+		else {
+			return name;
+		}
+	}
+
+	public School getSchool() {
+		return school;
+	}
+
+	public Score getScore(Subject subject) {
+		return scores.get(subject);
+	}
+
+	public HashMap<Subject, Score> getScores() {
+		return scores;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + grade;
+		result = prime * result + (name == null ? 0 : name.hashCode());
+		result = prime * result + (school == null ? 0 : school.hashCode());
+		result = prime * result + (scores == null ? 0 : scores.hashCode());
+		return result;
+	}
+
+	public boolean hasScore(Subject subject) {
+		return scores.get(subject) != null;
+	}
+
+	public void setScore(Subject subject, Score score) {
+		scores.put(subject, score);
 	}
 
 	@Override

@@ -26,7 +26,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -235,12 +234,7 @@ public class Main extends HttpServlet {
 				}
 			}
 
-			Collections.sort(winners, new Comparator<Student>() {
-				@Override
-				public int compare(Student s1, Student s2) {
-					return s1.getScore(subject).compareTo(s2.getScore(subject));
-				}
-			});
+			Collections.sort(winners, Student.getScoreComparator(subject));
 			Collections.reverse(winners);
 			winners = new ArrayList<Student>(winners.subList(0, winners.size() >= 20 ? 20 : winners.size()));
 			if (level == Level.MIDDLE && grade <= level.getHighGrade() || level == Level.HIGH && grade >= level.getLowGrade()) {
@@ -252,12 +246,7 @@ public class Main extends HttpServlet {
 	static void tabulateCategorySweepstakesWinners(Map<String, School> schools, Map<Subject, List<School>> highCategorySweepstakesWinners) {
 		for (final Subject subject : Subject.getSubjects()) {
 			ArrayList<School> schoolList = new ArrayList<School>(schools.values());
-			Collections.sort(schoolList, new Comparator<School>() {
-				@Override
-				public int compare(School s1, School s2) {
-					return s1.getScore(subject) - s2.getScore(subject);
-				}
-			});
+			Collections.sort(schoolList, School.getScoreComparator(subject));
 			Collections.reverse(schoolList);
 			highCategorySweepstakesWinners.put(subject, schoolList);
 		}
@@ -265,12 +254,7 @@ public class Main extends HttpServlet {
 
 	private static void tabulateSweepstakesWinners(Map<String, School> schools, List<School> sweepstakeWinners) {
 		ArrayList<School> schoolList = new ArrayList<School>(schools.values());
-		Collections.sort(schoolList, new Comparator<School>() {
-			@Override
-			public int compare(School s1, School s2) {
-				return s1.getTotalScore() - s2.getTotalScore();
-			}
-		});
+		Collections.sort(schoolList, School.getTotalScoreComparator());
 		Collections.reverse(schoolList);
 		for (School school : schoolList) {
 			sweepstakeWinners.add(school);
@@ -319,12 +303,7 @@ public class Main extends HttpServlet {
 				context = new VelocityContext();
 				context.put("schoolLevel", Character.toString(school.getLevel().toString().charAt(0)).toUpperCase() + school.getLevel().toString().substring(1));
 				ArrayList<Student> schoolStudents = school.getStudents();
-				Collections.sort(schoolStudents, new Comparator<Student>() {
-					@Override
-					public int compare(Student s1, Student s2) {
-						return s1.getName().compareTo(s2.getName());
-					}
-				});
+				Collections.sort(schoolStudents, Student.getNameComparator());
 
 				Test[] tests = level == Level.MIDDLE ? Test.middleTests() : Test.highTests();
 				HashMap<Test, List<Integer>> scores = new HashMap<Test, List<Integer>>();
@@ -418,12 +397,7 @@ public class Main extends HttpServlet {
 		sw.close();
 
 		context = new VelocityContext();
-		Collections.sort(students, new Comparator<Student>() {
-			@Override
-			public int compare(Student s1, Student s2) {
-				return s1.getName().compareTo(s2.getName());
-			}
-		});
+		Collections.sort(students, Student.getNameComparator());
 		context.put("students", students);
 		context.put("subjects", Subject.getSubjects());
 		sw = new StringWriter();

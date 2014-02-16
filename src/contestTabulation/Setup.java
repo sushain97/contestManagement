@@ -17,6 +17,7 @@
 
 package contestTabulation;
 
+import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
 import static org.apache.commons.lang3.StringEscapeUtils.unescapeHtml4;
 
 import java.io.IOException;
@@ -43,6 +44,8 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
@@ -58,6 +61,21 @@ import com.google.gdata.util.ServiceException;
 @SuppressWarnings("serial")
 public class Setup extends BaseHttpServlet
 {
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException
+	{
+		Queue queue = QueueFactory.getDefaultQueue();
+
+		if(req.getParameterMap().containsKey("docMiddle"))
+			queue.add(withUrl("/createSpreadsheet").param("docMiddle", req.getParameter("docMiddle")));
+		else if(req.getParameterMap().containsKey("docHigh"))
+			queue.add(withUrl("/createSpreadsheet").param("docHigh", req.getParameter("docHigh")));
+		else
+		{
+			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
+	}
+
 	@SuppressWarnings("deprecation")
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{

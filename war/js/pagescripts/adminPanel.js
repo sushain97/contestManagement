@@ -42,7 +42,7 @@ $(document).ready(function() {
 	
 	$('#middleDocButton').click(function() {
 		$('#middleDocButton').addClass('blurred');
-		$.post('/createSpreadsheet', {
+		$.get('/createSpreadsheet', {
 			'docMiddle': $('input[name=docMiddle]').val()
 		}).done(function() {
 			$('#middleDocButton').removeClass('blurred');
@@ -51,7 +51,7 @@ $(document).ready(function() {
 	
 	$('#highDocButton').click(function() {
 		$('#highDocButton').addClass('blurred');
-		$.post('/createSpreadsheet', {
+		$.get('/createSpreadsheet', {
 			'docHigh': $('input[name=docHigh]').val()
 		}).done(function() {
 			$('#middleDocButton').removeClass('blurred');

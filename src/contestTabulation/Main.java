@@ -192,26 +192,30 @@ public class Main extends HttpServlet
 
 			for(ListEntry r : listFeed.getEntries())
 			{
-				CustomElementCollection row = r.getCustomElements();
-
-				String name = row.getValue("name").trim();
-				int grade = Integer.parseInt(row.getValue("grade").trim());
-
-				Student student = new Student(name, school, grade);
-				students.add(student);
-
-				String[] subjects = Test.tests();
-				for(String subject : subjects)
+				try
 				{
-					String score = row.getValue(subject);
-					if(score != null && Score.isScore(score.trim()))
-					{
-						student.setScore(subject.charAt(0), new Score(score));
-						testsGraded.add(Test.valueOf(subject + grade));
-					}
-				}
+					CustomElementCollection row = r.getCustomElements();
 
-				school.addStudent(student);
+					String name = row.getValue("name").trim();
+					int grade = Integer.parseInt(row.getValue("grade").trim());
+
+					Student student = new Student(name, school, grade);
+					students.add(student);
+
+					String[] subjects = Test.tests();
+					for(String subject : subjects)
+					{
+						String score = row.getValue(subject);
+						if(score != null && Score.isScore(score.trim()))
+						{
+							student.setScore(subject.charAt(0), new Score(score));
+							testsGraded.add(Test.valueOf(subject + grade));
+						}
+					}
+
+					school.addStudent(student);
+				}
+				catch(Exception e) { e.printStackTrace(); }
 			}
 		}
 

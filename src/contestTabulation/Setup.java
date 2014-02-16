@@ -96,12 +96,12 @@ public class Setup extends BaseHttpServlet
 		if(req.getParameterMap().containsKey("docMiddle"))
 		{
 			docName = req.getParameter("docMiddle");
-			level = "middle";
+			level = Level.MIDDLE.toString();
 		}
 		else if(req.getParameterMap().containsKey("docHigh"))
 		{
 			docName = req.getParameter("docHigh");
-			level = "high";
+			level = Level.HIGH.toString();
 		}
 		else
 		{

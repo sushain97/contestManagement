@@ -27,23 +27,22 @@ import util.Pair;
 public class School
 {
 	final private String name;
-	final private String level;
-	final private int lowGrade;
-	final private int highGrade;
+	final private Level level;
+	final private int lowGrade, highGrade;
 	private ArrayList<Student> students = new ArrayList<Student>();
-	
+
 	private HashMap<Test,Integer> numTests = new HashMap<Test,Integer>();
 
 	private HashMap<Character,Pair<Student[],Integer>> topScores = new HashMap<Character,Pair<Student[],Integer>>();
 	private HashMap<Test,ArrayList<Score>> anonScores = new HashMap<Test,ArrayList<Score>>();
 	private int totalScore;
 
-	School(String name, String level)
+	School(String name, Level level)
 	{
 		this.name = name;
 		this.level = level;
-		this.lowGrade = level.equals("middle") ? 6 : 9;
-		this.highGrade = level.equals("middle") ? 8 : 12;
+		this.lowGrade = level.getLowGrade();
+		this.highGrade = level.getHighGrade();
 	}
 	public ArrayList<Student> getStudents() { return students; }
 	public HashMap<Test, ArrayList<Score>> getAnonScores() { return anonScores; }
@@ -51,14 +50,14 @@ public class School
 	public String getName() { return name; }
 	public int getNumStudents() { return students.size(); }
 	public HashMap<Test,Integer> getNumTests() { return numTests; }
-	public String getLevel() { return level; }
-	
+	public Level getLevel() { return level; }
+
 	public Student[] getScoreStudents(char subject) { return topScores.get(subject).x; }
 	public Student[] getScoreStudents(String subject) { return topScores.get(subject.charAt(0)).x; }
 	public int getScore(char subject) { return topScores.get(subject).y; }
 	public int getScore(String subject) { return topScores.get(subject.charAt(0)).y; }
 	public int getTotalScore() { return totalScore; }
-	
+
 	protected void addStudent(Student student) { students.add(student);	}
 	protected void addAnonScores(Test test, ArrayList<Score> scores) 
 	{
@@ -68,7 +67,7 @@ public class School
 		else
 			numTests.put(test, numTests.get(test) + scores.size());
 	}
-	
+
 	public void calculateTestNums()
 	{
 		for(Student student : students)
@@ -82,7 +81,7 @@ public class School
 				else
 					numTests.put(test, numTests.get(test) + 1);
 			}
-			
+
 		}
 	}
 
@@ -93,7 +92,7 @@ public class School
 		for(Student student : students)
 			if(student.hasScore(subject) && student.getScore(subject).getScoreNum() >= 0)
 				subjectStudents.add(student);
-		
+
 		for(int grade = lowGrade; grade <= highGrade; grade++)
 		{
 			ArrayList<Score> scores = anonScores.get(Test.valueOf(subject + Integer.toString(grade)));
@@ -106,7 +105,7 @@ public class School
 						subjectStudents.add(tempStudent);
 					}
 		}
-		
+
 		Collections.sort(subjectStudents, Collections.reverseOrder(new Comparator<Student>() 
 			{ public int compare(Student s1, Student s2) { return s1.getScore(subject).compareTo(s2.getScore(subject)); } }
 		));
@@ -131,7 +130,7 @@ public class School
 			if(score != null)
 				totalScore += score.getScoreNum();
 		topScores.put(subject, new Pair<Student[],Integer>(top4.keySet().toArray(new Student[top4.keySet().size()]), totalScore));
-		
+
 		return top4;
 	}
 
@@ -141,7 +140,7 @@ public class School
 		calculateScore('S');
 		calculateScore('C');
 		calculateScore('M');
-		if(level.equals("middle"))
+		if(level == Level.MIDDLE)
 			totalScore = topScores.get('N').y + topScores.get('C').y + (int) Math.round((topScores.get('M').y * 8.0/5.0) +(topScores.get('S').y * 8.0/5.0));
 		else
 			totalScore = topScores.get('N').y + (int) Math.round((topScores.get('M').y * 10.0/9.0) + (topScores.get('S').y * 10.0/9.0) + (topScores.get('C').y * 8.0/7.0));
@@ -167,8 +166,8 @@ public class School
 		if (name == null)
 			if (other.name != null)
 				return false;
-		else if (!name.equals(other.name))
-			return false;
+			else if (!name.equals(other.name))
+				return false;
 		return true;
 	}
 

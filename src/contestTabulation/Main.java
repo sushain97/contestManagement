@@ -80,15 +80,15 @@ import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
 @SuppressWarnings("serial")
 public class Main extends HttpServlet
 {
-	static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-	static final HttpTransport httpTransport = new NetHttpTransport();
-	static final JacksonFactory jsonFactory = new JacksonFactory();
+	private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	private static final HttpTransport httpTransport = new NetHttpTransport();
+	private static final JacksonFactory jsonFactory = new JacksonFactory();
 
 	@SuppressWarnings("unchecked")
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
 		//TODO: Add Logging
-		Set<Test> testsGraded = new HashSet<Test>();
+		final Set<Test> testsGraded = new HashSet<Test>();
 		final SpreadsheetEntry middle, high;
 
 		final Map<String, Integer> awardCriteria = new HashMap<String, Integer>();
@@ -117,12 +117,12 @@ public class Main extends HttpServlet
 			//Populate base data structures by traversing Google Documents Spreadsheets
 			middle = getSpreadSheet(params.get("docMiddle")[0], service);
 			high = getSpreadSheet(params.get("docHigh")[0], service);
-			updateDatabase("middle", middle, middleStudents, middleSchools, middleAnonScores, testsGraded, service);
-			updateDatabase("high", high, highStudents, highSchools, highAnonScores, testsGraded, service);
+			updateDatabase(Level.MIDDLE, middle, middleStudents, middleSchools, middleAnonScores, testsGraded, service);
+			updateDatabase(Level.HIGH, high, highStudents, highSchools, highAnonScores, testsGraded, service);
 
-			//Populate categoryWinners maps with top 20 scorers 
-			tabulateCategoryWinners("middle", middleStudents, middleCategoryWinners, testsGraded);
-			tabulateCategoryWinners("high", highStudents, highCategoryWinners, testsGraded);
+			//Populate categoryWinners maps with top 20 scorers
+			tabulateCategoryWinners(Level.MIDDLE, middleStudents, middleCategoryWinners, testsGraded);
+			tabulateCategoryWinners(Level.HIGH, highStudents, highCategoryWinners, testsGraded);
 
 			//Calculate school fields with sweepstakes scores and populate sorted sweekstakes maps & arrays with all schools
 			for(School school : middleSchools.values())
@@ -138,12 +138,12 @@ public class Main extends HttpServlet
 			getAwardCriteria(awardCriteria);
 
 			//Generate and store HTML in Datastore
-			storeHTML("middle", middleStudents, middleSchools, middleCategoryWinners, middleCategorySweepstakesWinners, middleSweepstakesWinners, middleAnonScores, awardCriteria);
-			storeHTML("high", highStudents, highSchools, highCategoryWinners, highCategorySweepstakesWinners, highSweepstakesWinners, highAnonScores, awardCriteria);
+			storeHTML(Level.MIDDLE, middleStudents, middleSchools, middleCategoryWinners, middleCategorySweepstakesWinners, middleSweepstakesWinners, middleAnonScores, awardCriteria);
+			storeHTML(Level.HIGH, highStudents, highSchools, highCategoryWinners, highCategorySweepstakesWinners, highSweepstakesWinners, highAnonScores, awardCriteria);
 
 			//Update Datastore by modifying registrations to include actual number of tests taken
-			updateRegistrations("middle", middleSchools);
-			updateRegistrations("high", highSchools);
+			updateRegistrations(Level.MIDDLE, middleSchools);
+			updateRegistrations(Level.HIGH, highSchools);
 
 			//Update Datastore by modifying contest information entity to include tests graded
 			updateContestInfo(testsGraded);
@@ -151,7 +151,7 @@ public class Main extends HttpServlet
 		catch(Exception e) { e.printStackTrace(); }
 	}
 
-	private static void authService(SpreadsheetService service) throws IOException 
+	private static void authService(SpreadsheetService service) throws IOException
 	{
 		Query query = new Query("contestInfo");
 		Entity contestInfo = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
@@ -176,7 +176,7 @@ public class Main extends HttpServlet
 		return null;
 	}
 
-	private static void updateDatabase(String level, SpreadsheetEntry spreadsheet, List<Student> students, Map<String, School> schools, Map<Test, List<Score>> anonScores, Set<Test> testsGraded, Service service) throws IOException, ServiceException
+	private static void updateDatabase(Level level, SpreadsheetEntry spreadsheet, List<Student> students, Map<String, School> schools, Map<Test, List<Score>> anonScores, Set<Test> testsGraded, Service service) throws IOException, ServiceException
 	{
 		WorksheetFeed worksheetFeed = service.getFeed(spreadsheet.getWorksheetFeedUrl(), WorksheetFeed.class);
 		List<WorksheetEntry> worksheets = worksheetFeed.getEntries();
@@ -221,7 +221,7 @@ public class Main extends HttpServlet
 
 	}
 
-	private static void tabulateCategoryWinners(String level, List<Student> students, Map<Test, List<Student>> categoryWinners, Set<Test> testsGraded)
+	private static void tabulateCategoryWinners(Level level, List<Student> students, Map<Test, List<Student>> categoryWinners, Set<Test> testsGraded)
 	{
 		for(Test test : testsGraded)
 		{
@@ -233,10 +233,11 @@ public class Main extends HttpServlet
 				if(student.getGrade() == grade && student.getScore(subject) != null)
 					winners.add(student);
 
-			Collections.sort(winners, new Comparator<Student>() { public int compare(Student s1, Student s2) { return s1.getScore(subject).compareTo(s2.getScore(subject)); }});
+			Collections.sort(winners, new Comparator<Student>() { @Override
+			public int compare(Student s1, Student s2) { return s1.getScore(subject).compareTo(s2.getScore(subject)); }});
 			Collections.reverse(winners);
 			winners = new ArrayList<Student>(winners.subList(0, (winners.size() >= 20 ? 20 : winners.size())));
-			if((level.equals("middle") && grade <= 8) || (level.equals("high") && grade >= 9))
+			if((level == Level.MIDDLE && grade <= level.getHighGrade()) || (level == Level.HIGH && grade >= level.getLowGrade()))
 				categoryWinners.put(test, winners);
 		}
 	}
@@ -247,7 +248,8 @@ public class Main extends HttpServlet
 		for(final char topic : topics)
 		{
 			ArrayList<School> schoolList = new ArrayList<School>(schools.values());
-			Collections.sort(schoolList, new Comparator<School>() { public int compare(School s1, School s2) { return s1.getScore(topic) - s2.getScore(topic); }});
+			Collections.sort(schoolList, new Comparator<School>() { @Override
+			public int compare(School s1, School s2) { return s1.getScore(topic) - s2.getScore(topic); }});
 			Collections.reverse(schoolList);
 			sweepstakeCategoryWinners.put(topic, schoolList);
 		}
@@ -256,7 +258,8 @@ public class Main extends HttpServlet
 	private static void tabulateSweepstakesWinners(Map<String, School> schools, List<School> sweepstakeWinners)
 	{
 		ArrayList<School> schoolList = new ArrayList<School>(schools.values());
-		Collections.sort(schoolList, new Comparator<School>() { public int compare(School s1, School s2) { return s1.getTotalScore() - s2.getTotalScore(); }});
+		Collections.sort(schoolList, new Comparator<School>() { @Override
+		public int compare(School s1, School s2) { return s1.getTotalScore() - s2.getTotalScore(); }});
 		Collections.reverse(schoolList);
 		for(School school : schoolList)
 			sweepstakeWinners.add(school);
@@ -287,7 +290,7 @@ public class Main extends HttpServlet
 		}
 	}
 
-	private static void storeHTML(String level, List<Student> students, Map<String, School> schools, Map<Test, List<Student>> categoryWinners, Map<Character, List<School>> categorySweepstakesWinners, List<School> sweepstakesWinners, Map<Test, List<Score>> anonScores, Map<String, Integer> awardCriteria) throws IOException
+	private static void storeHTML(Level level, List<Student> students, Map<String, School> schools, Map<Test, List<Student>> categoryWinners, Map<Character, List<School>> categorySweepstakesWinners, List<School> sweepstakesWinners, Map<Test, List<Score>> anonScores, Map<String, Integer> awardCriteria) throws IOException
 	{
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/templates, html/snippets");
@@ -305,11 +308,12 @@ public class Main extends HttpServlet
 			{
 				School school = schoolEntry.getValue();
 				context = new VelocityContext();
-				context.put("schoolLevel", Character.toString(school.getLevel().charAt(0)).toUpperCase() + school.getLevel().substring(1));
+				context.put("schoolLevel", Character.toString(school.getLevel().toString().charAt(0)).toUpperCase() + school.getLevel().toString().substring(1));
 				ArrayList<Student> schoolStudents = school.getStudents();
-				Collections.sort(schoolStudents, new Comparator<Student>() { public int compare(Student s1,Student s2) { return s1.getName().compareTo(s2.getName()); }});
+				Collections.sort(schoolStudents, new Comparator<Student>() { @Override
+				public int compare(Student s1,Student s2) { return s1.getName().compareTo(s2.getName()); }});
 
-				Test[] tests = level.equals("middle") ? Test.middleTests() : Test.highTests();
+				Test[] tests = level == Level.MIDDLE ? Test.middleTests() : Test.highTests();
 				HashMap<Test,List<Integer>> scores = new HashMap<Test,List<Integer>>();
 				for(Test test : tests)
 					scores.put(test, new ArrayList<Integer>());
@@ -336,13 +340,13 @@ public class Main extends HttpServlet
 				context.put("tests", tests);
 				context.put("subjects", Test.tests());
 				context.put("school", school);
-				context.put("level", level);
+				context.put("level", level.toString());
 
 				sw = new StringWriter();
 				t = ve.getTemplate("schoolOverview.html");
 				t.merge(context, sw);
 				html = new Entity("html", "school_" + level + "_" + school.getName());
-				html.setProperty("level", level);
+				html.setProperty("level", level.toString());
 				html.setProperty("type", "school");
 				html.setProperty("school", school.getName());
 				html.setProperty("html", new Text(compressor.compress(sw.toString())));
@@ -363,7 +367,7 @@ public class Main extends HttpServlet
 			t.merge(context, sw);
 			html = new Entity("html", "category_" + level + "_" + test);
 			html.setProperty("type", "category");
-			html.setProperty("level", level);
+			html.setProperty("level", level.toString());
 			html.setProperty("test", test.toString());
 			html.setProperty("html", new Text(compressor.compress(sw.toString())));
 			htmlEntries.add(html);
@@ -378,7 +382,7 @@ public class Main extends HttpServlet
 		t.merge(context, sw);
 		html = new Entity("html", "categorySweep_" + level);
 		html.setProperty("type", "categorySweep");
-		html.setProperty("level", level);
+		html.setProperty("level", level.toString());
 		html.setProperty("html", new Text(compressor.compress(sw.toString())));
 		htmlEntries.add(html);
 		sw.close();
@@ -391,26 +395,27 @@ public class Main extends HttpServlet
 		t.merge(context, sw);
 		html = new Entity("html", "sweep_" + level);
 		html.setProperty("type", "sweep");
-		html.setProperty("level", level);
+		html.setProperty("level", level.toString());
 		html.setProperty("html", new Text(compressor.compress(sw.toString())));
 		htmlEntries.add(html);
 		sw.close();
 
 		context = new VelocityContext();
-		Collections.sort(students, new Comparator<Student>() { public int compare(Student s1,Student s2) { return s1.getName().compareTo(s2.getName()); }});
+		Collections.sort(students, new Comparator<Student>() { @Override
+		public int compare(Student s1,Student s2) { return s1.getName().compareTo(s2.getName()); }});
 		context.put("students", students);
 		sw = new StringWriter();
 		t = ve.getTemplate("studentsOverview.html");
 		t.merge(context, sw);
 		html = new Entity("html", "students_" + level);
 		html.setProperty("type", "students");
-		html.setProperty("level", level);
+		html.setProperty("level", level.toString());
 		html.setProperty("html", new Text(compressor.compress(sw.toString())));
 		htmlEntries.add(html);
 		sw.close();
 
 		HashMap<Test,List<Integer>> scores = new HashMap<Test,List<Integer>>();
-		Test[] tests = level.equals("middle") ? Test.middleTests() : Test.highTests();
+		Test[] tests = level == Level.MIDDLE ? Test.middleTests() : Test.highTests();
 		for(Test test : tests)
 			scores.put(test, new ArrayList<Integer>());
 
@@ -449,7 +454,7 @@ public class Main extends HttpServlet
 		t.merge(context, sw);
 		html = new Entity("html", "visualizations_" + level);
 		html.setProperty("type", "visualizations");
-		html.setProperty("level", level);
+		html.setProperty("level", level.toString());
 		html.setProperty("html", new Text(compressor.compress(sw.toString())));
 		htmlEntries.add(html);
 		sw.close();
@@ -506,13 +511,16 @@ public class Main extends HttpServlet
 	}
 
 	@SuppressWarnings("deprecation")
-	private static void updateRegistrations(String level, Map<String, School> schools)
+	private static void updateRegistrations(Level level, Map<String, School> schools)
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 		for(School school : schools.values())
 		{
-			Query query = new Query("registration").addFilter("schoolName", FilterOperator.EQUAL, school.getName()).addFilter("schoolLevel", FilterOperator.EQUAL, level);
+			Query query = new Query("registration")
+				.addFilter("schoolName", FilterOperator.EQUAL, school.getName())
+				.addFilter("schoolLevel", FilterOperator.EQUAL, level.toString())
+				.addFilter("registrationType", FilterOperator.EQUAL, "coach");
 			List<Entity> registrations = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
 
 			if(registrations.size() > 0)

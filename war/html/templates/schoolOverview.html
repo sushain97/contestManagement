@@ -1,7 +1,5 @@
-<h2><a class="anchor" id="top20"></a>"Top 20" Scores</h2>
-<em>Note: </em>
-only scores that fall in the top 20 are displayed below
-<br />
+<h2><a class="anchor" id="scores"></a>Scores</h2>
+
 <table class="table table-striped table-condensed table-hover">
 	<thead>
 		<tr>
@@ -14,41 +12,25 @@ only scores that fall in the top 20 are displayed below
 		</tr>
 	</thead>
 	#foreach($student in $school.getStudents())
-	<tr>
-		<td>$student.getName()</td>
-		<td>$student.getGrade()</td> #set($mScore = false) #set($cScore =
-		false) #set($nScore = false) #set($sScore = false) #set($mScore =
-		$student.getScore("M").getScore()) #set($cScore =
-		$student.getScore("C").getScore()) #set($nScore =
-		$student.getScore("N").getScore()) #set($sScore =
-		$student.getScore("S").getScore())
-
-		<td>#if( $mScore ) $mScore #else - #end</td>
-
-		<td>#if( $cScore ) $cScore #else - #end</td>
-
-		<td>#if( $nScore ) $nScore #else - #end</td>
-
-		<td>#if( $sScore ) $sScore #else - #end</td>
-	</tr>
+		<tr>
+			<td>$student.getName()</td>
+			<td>$student.getGrade()</td> 
+			#set($mScore = false)
+			#set($cScore = false)
+			#set($nScore = false) 
+			#set($sScore = false) 
+			#set($mScore = $student.getScore("M").getScore()) 
+			#set($cScore = $student.getScore("C").getScore()) 
+			#set($nScore = $student.getScore("N").getScore()) 
+			#set($sScore = $student.getScore("S").getScore())
+	
+			<td>#if( $mScore ) $mScore #else - #end</td>
+			<td>#if( $cScore ) $cScore #else - #end</td>
+			<td>#if( $nScore ) $nScore #else - #end</td>
+			<td>#if( $sScore ) $sScore #else - #end</td>
+		</tr>
 	#end
 </table>
-
-<h2><a class="anchor" id="anonScores"></a>"Anonymous" Scores</h2>
-<em>Note: </em>
-all scores that did not fall in the top 20 are displayed below
-<br />
-#foreach($test in $tests) #if($school.getAnonScores($test))
-
-<b>$test.grade()th Grade</b>
-<b> #if($test.test().equals("M")) Math:
-	#elseif($test.test().equals("C")) Calculator:
-	#elseif($test.test().equals("N")) Number Sense: 
-	#else Science:
-	#end </b>
-#foreach($score in $school.getAnonScores($test)) $score.getScore() #end
-<br />
-#end #end
 
 #parse("visualizations.html")
 

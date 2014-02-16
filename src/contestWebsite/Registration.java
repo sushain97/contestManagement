@@ -1,4 +1,5 @@
-/* Component of GAE Project for TMSCA Contest Automation
+/*
+ * Component of GAE Project for TMSCA Contest Automation
  * Copyright (C) 2013 Sushain Cherivirala
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8,11 +9,11 @@
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see [http://www.gnu.org/licenses/]. 
+ * along with this program. If not, see [http://www.gnu.org/licenses/].
  */
 
 package contestWebsite;
@@ -72,11 +73,10 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
 import contestTabulation.Test;
 
 @SuppressWarnings("serial")
-public class Registration extends BaseHttpServlet
-{
+public class Registration extends BaseHttpServlet {
+	@Override
 	@SuppressWarnings("unchecked")
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
-	{
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
 		ve.init();
@@ -84,43 +84,43 @@ public class Registration extends BaseHttpServlet
 		Pair<Entity, UserCookie> infoAndCookie = init(context, req);
 		boolean loggedIn = (boolean) context.get("loggedIn");
 
-		if(loggedIn && !infoAndCookie.y.isAdmin())
+		if (loggedIn && !infoAndCookie.y.isAdmin()) {
 			context.put("registrationError", "You are already registered.");
+		}
 
 		String endDateStr = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
 		String startDateStr = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
 
 		Entity contestInfo = infoAndCookie.x;
-		if(contestInfo != null)
-		{
+		if (contestInfo != null) {
 			endDateStr = (String) contestInfo.getProperty("endDate");
 			startDateStr = (String) contestInfo.getProperty("startDate");
 
 			Date endDate = new Date();
 			Date startDate = new Date();
-			try
-			{
+			try {
 				endDate = new SimpleDateFormat("MM/dd/yyyy").parse(endDateStr);
 				startDate = new SimpleDateFormat("MM/dd/yyyy").parse(startDateStr);
 			}
-			catch(ParseException e)
-			{
+			catch (ParseException e) {
 				e.printStackTrace();
 				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Incorrect date format");
 			}
 
-			if(loggedIn && infoAndCookie.y.isAdmin())
+			if (loggedIn && infoAndCookie.y.isAdmin()) {
 				context.put("registrationError", "");
-			else if(new Date().after(endDate) || new Date().before(startDate))
+			}
+			else if (new Date().after(endDate) || new Date().before(startDate)) {
 				context.put("registrationError", "Registration is closed, please try again next year.");
-			else
+			}
+			else {
 				context.put("registrationError", "");
+			}
 
-			context.put("price", (Long) contestInfo.getProperty("price"));
-			context.put("publicKey", (String) contestInfo.getProperty("publicKey"));
+			context.put("price", contestInfo.getProperty("price"));
+			context.put("publicKey", contestInfo.getProperty("publicKey"));
 		}
-		else
-		{
+		else {
 			context.put("registrationError", "Registration is closed, please try again next year.");
 			context.put("price", 5);
 		}
@@ -130,27 +130,30 @@ public class Registration extends BaseHttpServlet
 		String userError = req.getParameter("userError");
 		String passwordError = req.getParameter("passwordError");
 		String captchaError = req.getParameter("captchaError");
-		
-		if(sess != null && (userError + passwordError + captchaError).contains("1"))
-		{
-			if(((String) sess.getAttribute("registrationType")).equals("coach"))
-				context.put("coach", true);
-			else
-				context.put("student", true);
 
-			if(((String) sess.getAttribute("schoolLevel")).equals("middle"))
+		if (sess != null && (userError + passwordError + captchaError).contains("1")) {
+			if (((String) sess.getAttribute("registrationType")).equals("coach")) {
+				context.put("coach", true);
+			}
+			else {
+				context.put("student", true);
+			}
+
+			if (((String) sess.getAttribute("schoolLevel")).equals("middle")) {
 				context.put("middle", true);
-			else
+			}
+			else {
 				context.put("high", true);
+			}
 
 			context.put("account", ((String) sess.getAttribute("account")).equals("yes"));
-			
+
 			String[] propNames = {"schoolName", "name", "email", "updated", "division", "studentData"};
-			for(String propName: propNames)
-				context.put(propName, (String) sess.getAttribute(propName));
+			for (String propName : propNames) {
+				context.put(propName, sess.getAttribute(propName));
+			}
 		}
-		else
-		{
+		else {
 			context.put("coach", true);
 			context.put("middle", true);
 			context.put("account", true);
@@ -159,26 +162,23 @@ public class Registration extends BaseHttpServlet
 			context.put("email", "");
 			context.put("studentData", "[]");
 		}
-		if("1".equals(req.getParameter("updated")))
-		{
+		if ("1".equals(req.getParameter("updated"))) {
 			context.put("updated", true);
-			if (sess != null)
-			{
+			if (sess != null) {
 				Map<String, Object> props = (Map<String, Object>) sess.getAttribute("props");
-				if(props != null)
-				{
+				if (props != null) {
 					ArrayList<String> regData = new ArrayList<String>();
-					for(Entry<String, Object> prop : props.entrySet())
-					{
+					for (Entry<String, Object> prop : props.entrySet()) {
 						String key = prop.getKey();
-						if(!key.equals("account") && PropNames.names.get(key) != null)
+						if (!key.equals("account") && PropNames.names.get(key) != null) {
 							regData.add("<dt>" + PropNames.names.get(key) + "</dt>\n<dd>" + prop.getValue() + "</dd>");
+						}
 					}
-					
+
 					Collections.sort(regData);
 					context.put("regData", regData);
-					context.put("studentData", (String) sess.getAttribute("studentData"));
-					
+					context.put("studentData", sess.getAttribute("studentData"));
+
 					sess.invalidate();
 				}
 			}
@@ -186,28 +186,31 @@ public class Registration extends BaseHttpServlet
 		context.put("userError", userError);
 		context.put("passwordError", passwordError);
 		context.put("captchaError", captchaError);
-		if(userError != null || passwordError != null || captchaError != null)
+		if (userError != null || passwordError != null || captchaError != null) {
 			context.put("error", true);
+		}
 
 		close(context, ve.getTemplate("registration.html"), resp);
 	}
 
-	@SuppressWarnings({ "deprecation", "unchecked" })
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
-	{
+	@Override
+	@SuppressWarnings({"deprecation", "unchecked"})
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		
+
 		Query query = new Query("contestInfo");
 		Entity contestInfo = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 
 		Map<String, String[]> params = new HashMap<String, String[]>(req.getParameterMap());
-		for(Entry<String, String[]> param : params.entrySet())
-			params.put(param.getKey(), new String[] { escapeHtml4(param.getValue()[0]) });
-		
+		for (Entry<String, String[]> param : params.entrySet()) {
+			params.put(param.getKey(), new String[] {escapeHtml4(param.getValue()[0])});
+		}
+
 		String registrationType = params.get("registrationType")[0];
 		String account = "no";
-		if(params.containsKey("account"))
+		if (params.containsKey("account")) {
 			account = "yes";
+		}
 		String email = params.get("email")[0].toLowerCase();
 		String schoolLevel = params.get("schoolLevel")[0];
 		String schoolName = params.get("schoolName")[0];
@@ -216,7 +219,7 @@ public class Registration extends BaseHttpServlet
 		String studentData = req.getParameter("studentData");
 		String password = null;
 		String confPassword = null;
-		
+
 		HttpSession sess = req.getSession(true);
 		sess.setAttribute("registrationType", registrationType);
 		sess.setAttribute("account", account);
@@ -235,13 +238,12 @@ public class Registration extends BaseHttpServlet
 		String challenge = req.getParameter("recaptcha_challenge_field");
 		String userResponse = req.getParameter("recaptcha_response_field");
 		ReCaptchaResponse reCaptchaResponse = reCaptcha.checkAnswer(remoteAddr, challenge, userResponse);
-		
-		if(!reCaptchaResponse.isValid())
+
+		if (!reCaptchaResponse.isValid()) {
 			resp.sendRedirect("/registration?captchaError=1");
-		else
-		{
-			if(account.equals("yes"))
-			{
+		}
+		else {
+			if (account.equals("yes")) {
 				password = params.get("password")[0];
 				confPassword = params.get("confPassword")[0];
 			}
@@ -249,17 +251,18 @@ public class Registration extends BaseHttpServlet
 			query = new Query("registration").addFilter("email", FilterOperator.EQUAL, email);
 			List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 
-			if(users.size() != 0 || (account.equals("yes") && !confPassword.equals(password)))
-			{
-				if(users.size() != 0)
+			if (users.size() != 0 || account.equals("yes") && !confPassword.equals(password)) {
+				if (users.size() != 0) {
 					resp.sendRedirect("/registration?userError=1");
-				else if(!params.get("confPassword")[0].equals(params.get("password")[0]))
+				}
+				else if (!params.get("confPassword")[0].equals(params.get("password")[0])) {
 					resp.sendRedirect("/registration?passwordError=1");
-				else
+				}
+				else {
 					resp.sendRedirect("/registration?updated=1");
+				}
 			}
-			else
-			{
+			else {
 				Entity registration = new Entity("registration");
 				registration.setProperty("registrationType", registrationType);
 				registration.setProperty("account", account);
@@ -271,47 +274,41 @@ public class Registration extends BaseHttpServlet
 				registration.setProperty("email", email);
 				registration.setProperty("paid", "");
 				registration.setProperty("timestamp", new Date());
-				
+
 				JSONArray regData = null;
-				try
-				{
+				try {
 					regData = new JSONArray(studentData);
 				}
-				catch(JSONException e)
-				{	
+				catch (JSONException e) {
 					e.printStackTrace();
 					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 					return;
 				}
-				
+
 				long price = (Long) contestInfo.getProperty("price");
 				int cost = (int) (0 * price);
-				
-				for(int i = 0; i < regData.length(); i++)
-				{
-					try
-					{
+
+				for (int i = 0; i < regData.length(); i++) {
+					try {
 						JSONObject studentRegData = regData.getJSONObject(i);
-						for(String subject: Test.tests())
+						for (String subject : Test.tests()) {
 							cost += price * (studentRegData.getBoolean(subject) ? 1 : 0);
+						}
 					}
-					catch(JSONException e)
-					{
+					catch (JSONException e) {
 						e.printStackTrace();
 						resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 						return;
 					}
 				}
-				
+
 				registration.setProperty("cost", cost);
 
 				Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
-				try
-				{
+				try {
 					datastore.put(registration);
 
-					if(account.equals("yes") && password != null && password.length() > 0)
-					{
+					if (account.equals("yes") && password != null && password.length() > 0) {
 						Entity user = new Entity("user");
 						String hash = Password.getSaltedHash(password);
 						user.setProperty("name", name);
@@ -334,8 +331,7 @@ public class Registration extends BaseHttpServlet
 					String url = req.getRequestURL().toString();
 					url = url.substring(0, url.indexOf("/", 7));
 
-					try
-					{
+					try {
 						Message msg = new MimeMessage(session);
 						msg.setFrom(new InternetAddress(appEngineEmail, "Tournament Website Admin"));
 						msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email, name));
@@ -346,33 +342,31 @@ public class Registration extends BaseHttpServlet
 						ve.init();
 						Template t = ve.getTemplate("registration.html");
 						VelocityContext context = new VelocityContext();
-						
+
 						context.put("name", name);
 						context.put("url", url);
 						context.put("cost", cost);
 						context.put("title", contestInfo.getProperty("title"));
 						context.put("account", account.equals("yes"));
-						
+
 						StringWriter sw = new StringWriter();
 						t.merge(context, sw);
 						msg.setContent(sw.toString(), "text/html");
 						Transport.send(msg);
 					}
-					catch (MessagingException e)
-					{
+					catch (MessagingException e) {
 						e.printStackTrace();
 						resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 					}
 				}
-				catch (Exception e)
-				{
+				catch (Exception e) {
 					e.printStackTrace();
 					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 				}
-				finally
-				{
-					if(txn.isActive())
+				finally {
+					if (txn.isActive()) {
 						txn.rollback();
+					}
 				}
 			}
 		}

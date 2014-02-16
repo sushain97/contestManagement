@@ -1,4 +1,5 @@
-/* Component of GAE Project for TMSCA Contest Automation
+/*
+ * Component of GAE Project for TMSCA Contest Automation
  * Copyright (C) 2013 Sushain Cherivirala
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8,11 +9,11 @@
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see [http://www.gnu.org/licenses/]. 
+ * along with this program. If not, see [http://www.gnu.org/licenses/].
  */
 
 package contestWebsite;
@@ -46,12 +47,12 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Text;
+
 @SuppressWarnings("serial")
-public class MainPage extends BaseHttpServlet
-{
-	@SuppressWarnings({ "deprecation", "unchecked" })
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
-	{
+public class MainPage extends BaseHttpServlet {
+	@Override
+	@SuppressWarnings({"deprecation", "unchecked"})
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
 		ve.init();
@@ -61,28 +62,27 @@ public class MainPage extends BaseHttpServlet
 		UserCookie userCookie = infoAndCookie.y;
 		Entity user = userCookie != null ? userCookie.authenticateUser() : null;
 		boolean loggedIn = (boolean) context.get("loggedIn");
-		
-		if(!loggedIn && req.getParameter("refresh") != null && req.getParameter("refresh").equals("1"))
+
+		if (!loggedIn && req.getParameter("refresh") != null && req.getParameter("refresh").equals("1")) {
 			resp.sendRedirect("/?refresh=1");
-		
-		if(loggedIn)
-		{
-			if(!userCookie.isAdmin())
-			{
+		}
+
+		if (loggedIn) {
+			if (!userCookie.isAdmin()) {
 				String username = (String) user.getProperty("user-id");
 				String name = (String) user.getProperty("name");
-				
+
 				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 				Query query = new Query("registration").addFilter("email", FilterOperator.EQUAL, username);
 				Entity reg = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 				ArrayList<String> regData = new ArrayList<String>();
 				Map<String, Object> props = reg.getProperties();
 
-				for(Entry<String, Object> prop : props.entrySet())
-				{
+				for (Entry<String, Object> prop : props.entrySet()) {
 					String key = prop.getKey();
-					if(!key.equals("account") && PropNames.names.get(key) != null && !prop.getValue().equals(""))
+					if (!key.equals("account") && PropNames.names.get(key) != null && !prop.getValue().equals("")) {
 						regData.add("<dt>" + PropNames.names.get(key) + "</dt>\n<dd>" + prop.getValue() + "</dd>");
+					}
 				}
 
 				Collections.sort(regData);
@@ -91,23 +91,21 @@ public class MainPage extends BaseHttpServlet
 				context.put("name", name);
 				context.put("user", user.getProperty("user-id"));
 			}
-			else
-			{
+			else {
 				context.put("user", user.getProperty("user-id"));
 				context.put("name", "Contest Administrator");
 				context.put("admin", true);
 			}
 		}
-		else
-		{
+		else {
 			Yaml yaml = new Yaml();
 			ArrayList<ArrayList<String>> slideshow = (ArrayList<ArrayList<String>>) yaml.load(((Text) infoAndCookie.x.getProperty("slideshow")).getValue());
 			context.put("slideshow", slideshow);
 		}
-		
+
 		context.put("esc", new EscapeTool());
 		context.put("aboutText", ((Text) infoAndCookie.x.getProperty("aboutText")).getValue());
-		context.put("siteVerification", (String) infoAndCookie.x.getProperty("siteVerification"));
+		context.put("siteVerification", infoAndCookie.x.getProperty("siteVerification"));
 
 		close(context, ve.getTemplate("main.html"), resp);
 	}

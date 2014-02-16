@@ -1,4 +1,5 @@
-/* Component of GAE Project for TMSCA Contest Automation
+/*
+ * Component of GAE Project for TMSCA Contest Automation
  * Copyright (C) 2013 Sushain Cherivirala
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8,11 +9,11 @@
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see [http://www.gnu.org/licenses/]. 
+ * along with this program. If not, see [http://www.gnu.org/licenses/].
  */
 
 package contestWebsite;
@@ -55,10 +56,9 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Transaction;
 
 @SuppressWarnings("serial")
-public class ContactUs extends BaseHttpServlet
-{
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
-	{
+public class ContactUs extends BaseHttpServlet {
+	@Override
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
 		ve.init();
@@ -68,43 +68,42 @@ public class ContactUs extends BaseHttpServlet
 		UserCookie userCookie = infoAndCookie.y;
 		boolean loggedIn = (boolean) context.get("loggedIn");
 		Entity user = userCookie != null ? userCookie.authenticateUser() : null;
-		
+
 		HttpSession sess = req.getSession(true);
 		sess.setAttribute("nocaptcha", loggedIn && !userCookie.isAdmin());
 
-		if(loggedIn && !userCookie.isAdmin())
-		{
+		if (loggedIn && !userCookie.isAdmin()) {
 			context.put("user", user.getProperty("user-id"));
 			context.put("name", user.getProperty("name"));
 			context.put("email", user.getProperty("user-id"));
 			context.put("school", user.getProperty("school"));
 		}
-		else
-		{
+		else {
 			context.put("email", sess.getAttribute("email"));
 			context.put("name", sess.getAttribute("name"));
 			context.put("school", sess.getAttribute("school"));
 			context.put("comment", sess.getAttribute("comment"));
 		}
-		
+
 		context.put("captchaError", req.getParameter("captchaError"));
 		context.put("nocaptcha", loggedIn && !userCookie.isAdmin());
 		context.put("updated", req.getParameter("updated"));
-		context.put("publicKey", (String) infoAndCookie.x.getProperty("publicKey"));
-			
+		context.put("publicKey", infoAndCookie.x.getProperty("publicKey"));
+
 		close(context, ve.getTemplate("contactUs.html"), resp);
 	}
 
+	@Override
 	@SuppressWarnings("deprecation")
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
-	{
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Query query = new Query("user").addFilter("name", FilterOperator.EQUAL, req.getParameter("name"));
 		List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(3));
 		Entity feedback = new Entity("feedback");
-		if(users.size() != 0)
+		if (users.size() != 0) {
 			feedback.setProperty("user-id", users.get(0).getProperty("user-id"));
-		
+		}
+
 		String name = escapeHtml4(req.getParameter("name"));
 		String school = escapeHtml4(req.getParameter("school"));
 		String comment = escapeHtml4(req.getParameter("text"));
@@ -115,11 +114,10 @@ public class ContactUs extends BaseHttpServlet
 		sess.setAttribute("school", school);
 		sess.setAttribute("email", email);
 		sess.setAttribute("comment", comment);
-		
+
 		query = new Query("contestInfo");
 		Entity contestInfo = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
-		if(!(Boolean) sess.getAttribute("nocaptcha"))
-		{
+		if (!(Boolean) sess.getAttribute("nocaptcha")) {
 			String remoteAddr = req.getRemoteAddr();
 			ReCaptchaImpl reCaptcha = new ReCaptchaImpl();
 			reCaptcha.setPrivateKey((String) contestInfo.getProperty("privateKey"));
@@ -127,14 +125,13 @@ public class ContactUs extends BaseHttpServlet
 			String challenge = req.getParameter("recaptcha_challenge_field");
 			String userResponse = req.getParameter("recaptcha_response_field");
 			ReCaptchaResponse reCaptchaResponse = reCaptcha.checkAnswer(remoteAddr, challenge, userResponse);
-			
-			if(!reCaptchaResponse.isValid())
-			{
+
+			if (!reCaptchaResponse.isValid()) {
 				resp.sendRedirect("/contactUs?captchaError=1");
 				return;
 			}
 		}
-		
+
 		feedback.setProperty("name", name);
 		feedback.setProperty("school", school);
 		feedback.setProperty("email", email);
@@ -142,53 +139,49 @@ public class ContactUs extends BaseHttpServlet
 		feedback.setProperty("resolved", false);
 
 		Transaction txn = datastore.beginTransaction();
-		try
-		{
+		try {
 			datastore.put(feedback);
 			txn.commit();
-			
+
 			resp.sendRedirect("/contactUs?updated=1");
 
 			Session session = Session.getDefaultInstance(new Properties(), null);
 			String appEngineEmail = (String) contestInfo.getProperty("account");
 
-			try
-			{
+			try {
 				Message msg = new MimeMessage(session);
 				msg.setFrom(new InternetAddress(appEngineEmail, "Tournament Website Admin"));
 				msg.addRecipient(Message.RecipientType.TO, new InternetAddress((String) contestInfo.getProperty("email"), "Contest Administrator"));
 				msg.setSubject("Question about Tournament from " + name);
-				
+
 				VelocityEngine ve = new VelocityEngine();
 				ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/email");
 				ve.init();
 				Template t = ve.getTemplate("question.html");
 				VelocityContext context = new VelocityContext();
-				
+
 				context.put("name", name);
 				context.put("email", email);
 				context.put("message", comment);
-				
+
 				StringWriter sw = new StringWriter();
 				t.merge(context, sw);
 				msg.setContent(sw.toString(), "text/html");
 				Transport.send(msg);
 			}
-			catch (MessagingException e)
-			{ 
+			catch (MessagingException e) {
 				e.printStackTrace();
 				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 			}
 		}
-		catch(Exception e)
-		{ 
+		catch (Exception e) {
 			e.printStackTrace();
 			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 		}
-		finally
-		{
-			if(txn.isActive())
+		finally {
+			if (txn.isActive()) {
 				txn.rollback();
+			}
 		}
 	}
 }

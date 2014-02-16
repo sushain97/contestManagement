@@ -1,4 +1,5 @@
-/* Component of GAE Project for TMSCA Contest Automation
+/*
+ * Component of GAE Project for TMSCA Contest Automation
  * Copyright (C) 2013 Sushain Cherivirala
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8,11 +9,11 @@
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see [http://www.gnu.org/licenses/]. 
+ * along with this program. If not, see [http://www.gnu.org/licenses/].
  */
 
 package contestWebsite;
@@ -58,11 +59,10 @@ import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 @SuppressWarnings("serial")
-public class AdminPanel extends BaseHttpServlet
-{
+public class AdminPanel extends BaseHttpServlet {
+	@Override
 	@SuppressWarnings("unchecked")
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
-	{
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
 		ve.init();
@@ -73,76 +73,74 @@ public class AdminPanel extends BaseHttpServlet
 		boolean loggedIn = (boolean) context.get("loggedIn");
 
 		String updated = req.getParameter("updated");
-		if(updated != null && updated.equals("1") && !loggedIn)
+		if (updated != null && updated.equals("1") && !loggedIn) {
 			resp.sendRedirect("/adminPanel?updated=1");
+		}
 		context.put("updated", req.getParameter("updated"));
 
-		if(loggedIn && userCookie.isAdmin())
-		{
+		if (loggedIn && userCookie.isAdmin()) {
 			context.put("contestInfo", infoAndCookie.x);
-			context.put("confPassError", req.getParameter("confPassError") != null && req.getParameter("confPassError").equals("1") ? "Those passwords didn't match, try again." : null);
-			context.put("passError", req.getParameter("passError") != null && req.getParameter("passError").equals("1") ? "That password is incorrect, try again." : null);
-			
+			context.put("confPassError", req.getParameter("confPassError") != null && req.getParameter("confPassError").equals("1") ? "Those passwords didn't match, try again."
+					: null);
+			context.put("passError", req.getParameter("passError") != null && req.getParameter("passError").equals("1") ? "That password is incorrect, try again."
+					: null);
+
 			JSONObject awardCriteriaJSON;
-			try
-			{
-				awardCriteriaJSON = new JSONObject(infoAndCookie.x.hasProperty("awardCriteria") ? ((Text) infoAndCookie.x.getProperty("awardCriteria")).getValue() : "{}");
+			try {
+				awardCriteriaJSON = new JSONObject(
+						infoAndCookie.x.hasProperty("awardCriteria") ? ((Text) infoAndCookie.x.getProperty("awardCriteria")).getValue() : "{}");
 			}
-			catch(JSONException e)
-			{
+			catch (JSONException e) {
 				e.printStackTrace();
 				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 				return;
 			}
-			
+
 			HashMap<String, Integer> awardCriteria = new HashMap<String, Integer>();
 			Iterator<String> awardCountKeyIter = awardCriteriaJSON.keys();
-			while(awardCountKeyIter.hasNext())
-			{
+			while (awardCountKeyIter.hasNext()) {
 				String awardCountType = awardCountKeyIter.next();
-				try
-				{
+				try {
 					awardCriteria.put(awardCountType, (Integer) awardCriteriaJSON.get(awardCountType));
 				}
-				catch(JSONException e)
-				{
+				catch (JSONException e) {
 					e.printStackTrace();
 					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 					return;
 				}
 			}
 			context.put("awardCriteria", awardCriteria);
-			
-			context.put("clientId", (String) infoAndCookie.x.getProperty("OAuth2ClientId"));
-			
+
+			context.put("clientId", infoAndCookie.x.getProperty("OAuth2ClientId"));
+
 			close(context, ve.getTemplate("adminPanel.html"), resp);
 		}
-		else
+		else {
 			resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Contest Administrator privileges required for that operation");
+		}
 	}
 
-	@SuppressWarnings({ "deprecation", "unchecked" })
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
-	{
+	@Override
+	@SuppressWarnings({"deprecation", "unchecked"})
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		UserCookie userCookie = UserCookie.getCookie(req);
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
-		if(loggedIn && userCookie.isAdmin())
-		{
+		if (loggedIn && userCookie.isAdmin()) {
 			Map<String, String[]> params = req.getParameterMap();
 			boolean testingMode = params.get("testing") != null && !params.containsKey("changePass");
 
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 			Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
-			try
-			{
+			try {
 				Query query = new Query("contestInfo");
 				List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 				Entity contestInfo = info.size() != 0 ? info.get(0) : new Entity("contestInfo");
 
-				String[] stringPropNames = {"endDate", "startDate", "email", "account", "levels", "title", "publicKey",
-											"privateKey", "school", "address", "siteVerification", "OAuth2ClientSecret", "OAuth2ClientId"};
-				for(String propName: stringPropNames)
+				String[] stringPropNames = {"endDate", "startDate", "email", "account", "levels", "title", "publicKey", "privateKey", "school", "address",
+						"siteVerification", "OAuth2ClientSecret", "OAuth2ClientId"};
+				for (String propName : stringPropNames) {
 					contestInfo.setProperty(propName, params.get(propName)[0]);
+				}
 				contestInfo.setProperty("testingMode", testingMode);
 				contestInfo.setProperty("aboutText", new Text(params.get("aboutText")[0]));
 				contestInfo.setProperty("googleAnalytics", new Text(params.get("googleAnalytics")[0]));
@@ -150,49 +148,45 @@ public class AdminPanel extends BaseHttpServlet
 				contestInfo.setProperty("price", Integer.parseInt(params.get("price")[0]));
 				contestInfo.setProperty("complete", params.get("complete") != null);
 				contestInfo.setProperty("hideFullNames", params.get("fullnames") != null);
-				
+
 				JSONObject awardCriteria = new JSONObject();
-				for(Entry<String, String[]> entry: params.entrySet())
-					if(entry.getKey().startsWith("counts_"))
-						awardCriteria.put(entry.getKey().replace("counts_",  ""), Integer.parseInt(entry.getValue()[0]));
+				for (Entry<String, String[]> entry : params.entrySet()) {
+					if (entry.getKey().startsWith("counts_")) {
+						awardCriteria.put(entry.getKey().replace("counts_", ""), Integer.parseInt(entry.getValue()[0]));
+					}
+				}
 				contestInfo.setProperty("awardCriteria", new Text(awardCriteria.toString()));
-				
+
 				Yaml yaml = new Yaml();
 				String[] mapPropNames = {"schedule", "directions"};
-				for(String propName: mapPropNames)
-				{
+				for (String propName : mapPropNames) {
 					String text = params.get(propName)[0];
-					
-					try 
-					{
+
+					try {
 						@SuppressWarnings("unused")
-						HashMap<String,String> map = (HashMap<String, String>) yaml.load(text);
+						HashMap<String, String> map = (HashMap<String, String>) yaml.load(text);
 						contestInfo.setProperty(propName, new Text(text));
 					}
-					catch(Exception e)
-					{
+					catch (Exception e) {
 						e.printStackTrace();
 						resp.sendError(HttpServletResponse.SC_BAD_REQUEST, e.toString());
 						return;
 					}
 				}
-				
+
 				String slideshowText = params.get("slideshow")[0];
-				try 
-				{
+				try {
 					@SuppressWarnings("unused")
 					ArrayList<ArrayList<String>> map = (ArrayList<ArrayList<String>>) yaml.load(slideshowText);
 					contestInfo.setProperty("slideshow", new Text(slideshowText));
 				}
-				catch(Exception e)
-				{
+				catch (Exception e) {
 					e.printStackTrace();
 					resp.sendError(HttpServletResponse.SC_BAD_REQUEST, e.toString());
 					return;
 				}
 
-				if(params.containsKey("update"))
-				{
+				if (params.containsKey("update")) {
 					String docHigh = params.get("docHigh")[0];
 					String docMiddle = params.get("docMiddle")[0];
 
@@ -209,9 +203,8 @@ public class AdminPanel extends BaseHttpServlet
 				Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 				String hash = (String) user.getProperty("hash");
 				String salt = (String) user.getProperty("salt");
-				
-				if(testingMode)
-				{
+
+				if (testingMode) {
 					String newHash = Password.getSaltedHash("password");
 					resp.addCookie(new Cookie("user-id", URLEncoder.encode("admin" + "$" + newHash.split("\\$")[1], "UTF-8")));
 
@@ -220,16 +213,13 @@ public class AdminPanel extends BaseHttpServlet
 					datastore.put(user);
 					resp.sendRedirect("/adminPanel?updated=1");
 				}
-				else if(params.containsKey("changePass"))
-				{
+				else if (params.containsKey("changePass")) {
 					String curPassword = params.get("curPassword")[0];
 					String confPassword = params.get("confPassword")[0];
 					String newPassword = params.get("newPassword")[0];
 
-					if(Password.check(curPassword, salt + "$" + hash))
-					{
-						if(confPassword.equals(newPassword))
-						{
+					if (Password.check(curPassword, salt + "$" + hash)) {
+						if (confPassword.equals(newPassword)) {
 							String newHash = Password.getSaltedHash(newPassword);
 							resp.addCookie(new Cookie("user-id", URLEncoder.encode("admin" + "$" + newHash.split("\\$")[1], "UTF-8")));
 
@@ -238,28 +228,31 @@ public class AdminPanel extends BaseHttpServlet
 							datastore.put(user);
 							resp.sendRedirect("/adminPanel?updated=1");
 						}
-						else
+						else {
 							resp.sendRedirect("/adminPanel?confPassError=1");
+						}
 					}
-					else
+					else {
 						resp.sendRedirect("/adminPanel?passError=1");
+					}
 				}
-				else
+				else {
 					resp.sendRedirect("/adminPanel?updated=1");
+				}
 				txn.commit();
 			}
-			catch(Exception e) 
-			{ 
+			catch (Exception e) {
 				e.printStackTrace();
 				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 			}
-			finally
-			{
-				if(txn.isActive())
+			finally {
+				if (txn.isActive()) {
 					txn.rollback();
+				}
 			}
 		}
-		else
+		else {
 			resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Contest Administrator privileges required for that operation");
+		}
 	}
 }

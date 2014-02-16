@@ -1,4 +1,5 @@
-/* Component of GAE Project for TMSCA Contest Automation
+/*
+ * Component of GAE Project for TMSCA Contest Automation
  * Copyright (C) 2013 Sushain Cherivirala
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8,11 +9,11 @@
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see [http://www.gnu.org/licenses/]. 
+ * along with this program. If not, see [http://www.gnu.org/licenses/].
  */
 
 package util;
@@ -44,8 +45,10 @@ public class PropNames
 		subjectNames.put("c", "Calculator");
 		subjectNames.put("m", "Math");
 		subjectNames.put("s", "Science");
-		for(int i = 6; i <= 12; i++)
-			for(int j = 0; j < 4; j++)
+		for (int i = 6; i <= 12; i++) {
+			for (int j = 0; j < 4; j++) {
 				names.put(String.valueOf(i) + subjects[j], i + "th Grade " + subjectNames.get(subjects[j]) + " Registrations");
+			}
+		}
 	}
 }

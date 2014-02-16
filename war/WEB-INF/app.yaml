@@ -52,7 +52,11 @@ handlers:
   servlet: contestWebsite.ChangePassword
 
 - url: /tabulate
+  login: admin
   servlet: contestTabulation.Main
+  
+- url: /createSpreadsheet
+  servlet: contestTabulation.Setup
   
 - url: /authToken
   servlet: contestWebsite.OAuth

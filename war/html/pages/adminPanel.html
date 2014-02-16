@@ -15,6 +15,13 @@
 		#updateScores { display: none; }
 		#changePassword { display: none; }
 		.col-sm-1 { padding-right: 10px; padding-left: 10px; }
+		.blurred {
+			opacity: .5;
+			-webkit-transition: all 1s ease;
+			-moz-transition: all 1s ease;
+			-o-transition: all 1s ease;
+			transition: all 1s ease;
+		}
 	</style>
 
 	<script type="text/javascript">
@@ -271,7 +278,7 @@
 
 				<div id="updateScores">
 					<div class="form-group">
-						<div class="col-sm-1 col-sm-offset-2">
+						<div class="col-sm-2 col-sm-offset-2">
 							<div id="signinButton">
 								<span class="g-signin"
 									data-scope="https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/drive https://spreadsheets.google.com/feeds https://docs.google.com/feeds"
@@ -295,6 +302,9 @@
 								value='#if($contestInfo.getProperty("docMiddle"))$contestInfo.getProperty("docMiddle")#end'>
 							<span class="help-block">Name of Google Spreadsheet with Middle School Scores</span>
 						</div>
+						<div class="col-sm-3" class="docButton" id="middleDocButton">
+							<button type="button" class="btn btn-default">Create Empty Spreadsheet</button>
+						</div>
 					</div>
 
 					<div class="form-group">
@@ -303,6 +313,9 @@
 							<input type="text" name="docHigh" class="form-control" id="docHigh" 
 								value='#if($contestInfo.getProperty("docHigh"))$contestInfo.getProperty("docHigh")#end'>
 							<span class="help-block">Name of Google Spreadsheet with High School Scores</span>
+						</div>
+						<div class="col-sm-3" class="docButton" id="highDocButton">
+							<button type="button" class="btn btn-default">Create Empty Spreadsheet</button>
 						</div>
 					</div>
 				</div>

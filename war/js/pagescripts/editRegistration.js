@@ -41,7 +41,7 @@ $(document).ready(function () {
 				tr.append(td);
 			}
 				
-			$('tr#addOptions').before(tr);
+			$('#registrations tbody').append(tr);
 		});
 	}
 	
@@ -49,6 +49,18 @@ $(document).ready(function () {
 	CalcCost();
 	CheckAccount();
 	adjustGradeSelect();
+	
+	$('#registrations').tablesorter({
+		headers: {
+			0: {sorter: false},
+			1: {sorter: 'inputs'},
+			2: {sorter: 'select'},
+			3: {sorter: 'checkbox'},
+			4: {sorter: 'checkbox'},
+			5: {sorter: 'checkbox'},
+			6: {sorter: 'checkbox'}
+		}
+	});
 	
 	$('input[type="number"]').change(CalcCost);
 	
@@ -70,14 +82,16 @@ $(document).ready(function () {
 			tr.append($('<td class="text-center"><select class="midGrades"><option value="6">6</option><option value="7">7</option><option value="8">8</option></select><select class="highGrades"><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select></td>'));
 			for(var j = 0; j < 4; j++)
 				tr.append($('<td class="text-center"><input type="checkbox" class="testCheckbox"></td>'));
-			$('tr#addOptions').before(tr);
+			$('#registrations tbody').append(tr);
 		}
+		$('#registrations').trigger('update');
 	});
 	
 	$(document).on('click', '.deleteBtn', function() {
 		var tr = $(this).parents('tr');
 		tr.hide('fast', function() { 
 			tr.remove();
+			$('#registrations').trigger('update');
 			CalcCost(); 
 		});
 	});

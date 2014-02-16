@@ -33,7 +33,7 @@ public class School {
 
 	private final HashMap<Test, Integer> numTests = new HashMap<Test, Integer>();
 
-	private final HashMap<Character, Pair<Student[], Integer>> topScores = new HashMap<Character, Pair<Student[], Integer>>();
+	private final HashMap<Subject, Pair<Student[], Integer>> topScores = new HashMap<Subject, Pair<Student[], Integer>>();
 	private final HashMap<Test, ArrayList<Score>> anonScores = new HashMap<Test, ArrayList<Score>>();
 	private int totalScore;
 
@@ -72,20 +72,12 @@ public class School {
 		return level;
 	}
 
-	public Student[] getScoreStudents(char subject) {
+	public Student[] getScoreStudents(Subject subject) {
 		return topScores.get(subject).x;
 	}
 
-	public Student[] getScoreStudents(String subject) {
-		return topScores.get(subject.charAt(0)).x;
-	}
-
-	public int getScore(char subject) {
+	public int getScore(Subject subject) {
 		return topScores.get(subject).y;
-	}
-
-	public int getScore(String subject) {
-		return topScores.get(subject.charAt(0)).y;
 	}
 
 	public int getTotalScore() {
@@ -108,9 +100,9 @@ public class School {
 
 	public void calculateTestNums() {
 		for (Student student : students) {
-			String grade = Integer.toString(student.getGrade());
-			for (Character t : student.getScores().keySet()) {
-				Test test = Test.valueOf(Character.toUpperCase(t) + grade);
+			int grade = student.getGrade();
+			for (Subject s : student.getScores().keySet()) {
+				Test test = Test.fromSubjectAndGrade(grade, s);
 				if (!numTests.containsKey(test)) {
 					numTests.put(test, 1);
 				}
@@ -122,7 +114,7 @@ public class School {
 		}
 	}
 
-	private HashMap<Student, Score> calculateScore(final char subject) {
+	private HashMap<Student, Score> calculateScore(final Subject subject) {
 		ArrayList<Student> subjectStudents = new ArrayList<Student>();
 
 		for (Student student : students) {
@@ -178,16 +170,14 @@ public class School {
 	}
 
 	public void calculateScores() {
-		calculateScore('N');
-		calculateScore('S');
-		calculateScore('C');
-		calculateScore('M');
+		for (Subject subject : Subject.getSubjects()) {
+			calculateScore(subject);
+		}
 		if (level == Level.MIDDLE) {
-			totalScore = topScores.get('N').y + topScores.get('C').y + (int) Math.round(topScores.get('M').y * 8.0 / 5.0 + topScores.get('S').y * 8.0 / 5.0);
+			totalScore = topScores.get(Subject.N).y + topScores.get(Subject.C).y + (int) Math.round(topScores.get(Subject.M).y * 8.0 / 5.0 + topScores.get(Subject.S).y * 8.0 / 5.0);
 		}
 		else {
-			totalScore = topScores.get('N').y
-					+ (int) Math.round(topScores.get('M').y * 10.0 / 9.0 + topScores.get('S').y * 10.0 / 9.0 + topScores.get('C').y * 8.0 / 7.0);
+			totalScore = topScores.get(Subject.N).y + (int) Math.round(topScores.get(Subject.M).y * 10.0 / 9.0 + topScores.get(Subject.S).y * 10.0 / 9.0 + topScores.get(Subject.C).y * 8.0 / 7.0);
 		}
 	}
 

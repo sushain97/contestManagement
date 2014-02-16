@@ -70,7 +70,7 @@ import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
-import contestTabulation.Test;
+import contestTabulation.Subject;
 
 @SuppressWarnings("serial")
 public class Registration extends BaseHttpServlet {
@@ -291,8 +291,8 @@ public class Registration extends BaseHttpServlet {
 				for (int i = 0; i < regData.length(); i++) {
 					try {
 						JSONObject studentRegData = regData.getJSONObject(i);
-						for (String subject : Test.tests()) {
-							cost += price * (studentRegData.getBoolean(subject) ? 1 : 0);
+						for (Subject subject : Subject.getSubjects()) {
+							cost += price * (studentRegData.getBoolean(subject.toString()) ? 1 : 0);
 						}
 					}
 					catch (JSONException e) {

@@ -2,15 +2,7 @@
 
 <div class="panel-group" id="accordion">
 	#foreach($subject in $subjects)
-		#if($subject == 'M')
-   			#set($title = "Math Grade Comparison")
-       	#elseif($subject == 'C')
-       		#set($title = "Calculator Grade Comparison")
-       	#elseif($subject == 'N')
-       		#set($title = "Number Sense Grade Comparison")
-       	#else
-       		#set($title = "Science Grade Comparison")
-       	#end
+   		#set($title = $subject.getName().concat(" Comparison"))
         	
 		<div class="panel panel-default">
 			<div class="panel-heading">
@@ -42,16 +34,8 @@
 <script type="text/javascript">
 	$(document).ready(function () {
 		#foreach($subject in $subjects)
-			#if($subject == 'M')
-    			#set($title = "Math Scores")
-        	#elseif($subject == 'C')
-        		#set($title = "Calculator Scores")
-        	#elseif($subject == 'N')
-        		#set($title = "Number Sense Scores")
-        	#else
-        		#set($title = "Science Scores")
-        	#end
-        	
+			#set($title = $subject.getName().concat(" Scores"))
+
         	#set($outlierList = [])
         	#foreach($test in $tests)
         		#if($test.test() == $subject)

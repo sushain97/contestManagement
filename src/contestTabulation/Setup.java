@@ -169,8 +169,8 @@ public class Setup extends BaseHttpServlet {
 						row.getCustomElements().setValueLocal("name", student.getString("name"));
 						row.getCustomElements().setValueLocal("grade", Integer.toString(student.getInt("grade")));
 
-						for (String subject : Test.tests()) {
-							row.getCustomElements().setValueLocal(subject, student.getBoolean(subject) ? "" : "X");
+						for (Subject subject : Subject.getSubjects()) {
+							row.getCustomElements().setValueLocal(subject.toString(), student.getBoolean(subject.toString()) ? "" : "X");
 						}
 
 						row = service.insert(listFeedUrl, row);

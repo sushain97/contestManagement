@@ -24,8 +24,9 @@ public class Student {
 	final private String name;
 	final private School school;
 	final private int grade;
+	private final HashMap<Subject, Score> scores = new HashMap<Subject, Score>();
+
 	private static int anonCounter = 0;
-	private final HashMap<Character, Score> scores = new HashMap<Character, Score>();
 
 	Student(String name, School school, int grade) {
 		this.name = name;
@@ -38,27 +39,19 @@ public class Student {
 		anonCounter++;
 	}
 
-	public void setScore(char subject, Score score) {
+	public void setScore(Subject subject, Score score) {
 		scores.put(subject, score);
 	}
 
-	public Score getScore(char subject) {
+	public Score getScore(Subject subject) {
 		return scores.get(subject);
 	}
 
-	public Score getScore(String subject) {
-		return scores.get(subject.charAt(0));
-	}
-
-	public boolean hasScore(char subject) {
+	public boolean hasScore(Subject subject) {
 		return scores.get(subject) != null;
 	}
 
-	public boolean hasScore(String subject) {
-		return scores.get(subject.charAt(0)) != null;
-	}
-
-	public HashMap<Character, Score> getScores() {
+	public HashMap<Subject, Score> getScores() {
 		return scores;
 	}
 
@@ -77,7 +70,8 @@ public class Student {
 	public String getPublicName() {
 		if (name.indexOf(" ") != -1) {
 			return name.substring(0, name.indexOf(" ") + 2) + ".";
-		} else {
+		}
+		else {
 			return name;
 		}
 	}
@@ -112,21 +106,24 @@ public class Student {
 			if (other.name != null) {
 				return false;
 			}
-		} else if (!name.equals(other.name)) {
+		}
+		else if (!name.equals(other.name)) {
 			return false;
 		}
 		if (school == null) {
 			if (other.school != null) {
 				return false;
 			}
-		} else if (!school.equals(other.school)) {
+		}
+		else if (!school.equals(other.school)) {
 			return false;
 		}
 		if (scores == null) {
 			if (other.scores != null) {
 				return false;
 			}
-		} else if (!scores.equals(other.scores)) {
+		}
+		else if (!scores.equals(other.scores)) {
 			return false;
 		}
 		return true;

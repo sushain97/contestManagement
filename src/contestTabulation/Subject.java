@@ -18,32 +18,29 @@
 
 package contestTabulation;
 
-public enum Level {
-	MIDDLE("middle", 6, 8), HIGH("high", 9, 12);
+public enum Subject {
+	C("Calculator"), M("Math"), N("Number Sense"), S("Science");
 
-	private final int lowGrade, highGrade;
-	private final String stringLevel;
-
-	private Level(String stringLevel, int lowGrade, int highGrade) {
-		this.stringLevel = stringLevel;
-		this.lowGrade = lowGrade;
-		this.highGrade = highGrade;
+	public static String[] getSubjectNames() {
+		return new String[] {N.getName(), C.getName(), M.getName(), S.getName()};
 	}
 
-	public Level fromString(String level) {
-		return level.toLowerCase().equals("middle") ? Level.MIDDLE : Level.HIGH;
+	public static Subject[] getSubjects() {
+		return new Subject[] {N, C, M, S};
 	}
 
-	public int getHighGrade() {
-		return highGrade;
+	private final String subjectName;
+
+	private Subject(String subjectName) {
+		this.subjectName = subjectName;
 	}
 
-	public int getLowGrade() {
-		return lowGrade;
+	public String getName() {
+		return subjectName;
 	}
 
 	@Override
 	public String toString() {
-		return stringLevel;
+		return this.name();
 	}
 }

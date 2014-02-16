@@ -96,14 +96,14 @@ public class Main extends HttpServlet {
 		final List<Student> middleStudents = new ArrayList<Student>();
 		final Map<String, School> middleSchools = new HashMap<String, School>();
 		final Map<Test, List<Student>> middleCategoryWinners = new HashMap<Test, List<Student>>();
-		final Map<Character, List<School>> middleCategorySweepstakesWinners = new HashMap<Character, List<School>>();
+		final Map<Subject, List<School>> middleCategorySweepstakesWinners = new HashMap<Subject, List<School>>();
 		final List<School> middleSweepstakesWinners = new ArrayList<School>();
 		final Map<Test, List<Score>> middleAnonScores = new HashMap<Test, List<Score>>();
 
 		final List<Student> highStudents = new ArrayList<Student>();
 		final Map<String, School> highSchools = new HashMap<String, School>();
 		final Map<Test, List<Student>> highCategoryWinners = new HashMap<Test, List<Student>>();
-		final Map<Character, List<School>> highCategorySweepstakesWinners = new HashMap<Character, List<School>>();
+		final Map<Subject, List<School>> highCategorySweepstakesWinners = new HashMap<Subject, List<School>>();
 		final List<School> highSweepstakesWinners = new ArrayList<School>();
 		final Map<Test, List<Score>> highAnonScores = new HashMap<Test, List<Score>>();
 
@@ -206,12 +206,11 @@ public class Main extends HttpServlet {
 					Student student = new Student(name, school, grade);
 					students.add(student);
 
-					String[] subjects = Test.tests();
-					for (String subject : subjects) {
-						String score = row.getValue(subject);
+					for (Subject subject : Subject.getSubjects()) {
+						String score = row.getValue(subject.toString());
 						if (score != null && Score.isScore(score.trim())) {
-							student.setScore(subject.charAt(0), new Score(score));
-							testsGraded.add(Test.valueOf(subject + grade));
+							student.setScore(subject, new Score(score));
+							testsGraded.add(Test.fromSubjectAndGrade(grade, subject));
 						}
 					}
 
@@ -227,8 +226,8 @@ public class Main extends HttpServlet {
 	private static void tabulateCategoryWinners(Level level, List<Student> students, Map<Test, List<Student>> categoryWinners, Set<Test> testsGraded) {
 		for (Test test : testsGraded) {
 			ArrayList<Student> winners = new ArrayList<Student>();
-			int grade = test.grade();
-			final String subject = test.test();
+			int grade = test.getGrade();
+			final Subject subject = test.getSubject();
 
 			for (Student student : students) {
 				if (student.getGrade() == grade && student.getScore(subject) != null) {
@@ -250,9 +249,8 @@ public class Main extends HttpServlet {
 		}
 	}
 
-	static void tabulateCategorySweepstakesWinners(Map<String, School> schools, Map<Character, List<School>> sweepstakeCategoryWinners) {
-		String[] subjects = Test.tests();
-		for (final String subject : subjects) {
+	static void tabulateCategorySweepstakesWinners(Map<String, School> schools, Map<Subject, List<School>> highCategorySweepstakesWinners) {
+		for (final Subject subject : Subject.getSubjects()) {
 			ArrayList<School> schoolList = new ArrayList<School>(schools.values());
 			Collections.sort(schoolList, new Comparator<School>() {
 				@Override
@@ -261,7 +259,7 @@ public class Main extends HttpServlet {
 				}
 			});
 			Collections.reverse(schoolList);
-			sweepstakeCategoryWinners.put(subject.charAt(0), schoolList);
+			highCategorySweepstakesWinners.put(subject, schoolList);
 		}
 	}
 
@@ -304,7 +302,7 @@ public class Main extends HttpServlet {
 		}
 	}
 
-	private static void storeHTML(Level level, List<Student> students, Map<String, School> schools, Map<Test, List<Student>> categoryWinners, Map<Character, List<School>> categorySweepstakesWinners, List<School> sweepstakesWinners, Map<Test, List<Score>> anonScores, Map<String, Integer> awardCriteria) throws IOException {
+	private static void storeHTML(Level level, List<Student> students, Map<String, School> schools, Map<Test, List<Student>> categoryWinners, Map<Subject, List<School>> middleCategorySweepstakesWinners, List<School> sweepstakesWinners, Map<Test, List<Score>> anonScores, Map<String, Integer> awardCriteria) throws IOException {
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/templates, html/snippets");
 		ve.init();
@@ -335,8 +333,8 @@ public class Main extends HttpServlet {
 				}
 
 				for (Student student : school.getStudents()) {
-					for (Entry<Character, Score> scoreEntry : student.getScores().entrySet()) {
-						scores.get(Test.valueOf(scoreEntry.getKey().toString() + student.getGrade())).add(scoreEntry.getValue().getScoreNum());
+					for (Entry<Subject, Score> scoreEntry : student.getScores().entrySet()) {
+						scores.get(Test.fromSubjectAndGrade(student.getGrade(), scoreEntry.getKey())).add(scoreEntry.getValue().getScoreNum());
 					}
 				}
 
@@ -357,7 +355,7 @@ public class Main extends HttpServlet {
 				context.put("summaryStats", summaryStats);
 				context.put("outliers", outliers);
 				context.put("tests", tests);
-				context.put("subjects", Test.tests());
+				context.put("subjects", Subject.getSubjects());
 				context.put("school", school);
 				context.put("level", level.toString());
 
@@ -377,7 +375,7 @@ public class Main extends HttpServlet {
 		for (Test test : categoryWinners.keySet()) {
 			context = new VelocityContext();
 			context.put("winners", categoryWinners.get(test));
-			context.put("subject", test);
+			context.put("test", test);
 			context.put("trophy", awardCriteria.get("category_" + level + "_trophy"));
 			context.put("medal", awardCriteria.get("category_" + level + "_medal"));
 			sw = new StringWriter();
@@ -393,7 +391,7 @@ public class Main extends HttpServlet {
 		}
 
 		context = new VelocityContext();
-		context.put("winners", categorySweepstakesWinners);
+		context.put("winners", middleCategorySweepstakesWinners);
 		context.put("trophy", awardCriteria.get("categorySweep_" + level));
 		sw = new StringWriter();
 		t = ve.getTemplate("categorySweepstakes.html");
@@ -408,6 +406,7 @@ public class Main extends HttpServlet {
 		context = new VelocityContext();
 		context.put("winners", sweepstakesWinners);
 		context.put("trophy", awardCriteria.get("sweepstakes_" + level));
+		context.put("subjects", Subject.getSubjects());
 		sw = new StringWriter();
 		t = ve.getTemplate("sweepstakesWinners.html");
 		t.merge(context, sw);
@@ -426,6 +425,7 @@ public class Main extends HttpServlet {
 			}
 		});
 		context.put("students", students);
+		context.put("subjects", Subject.getSubjects());
 		sw = new StringWriter();
 		t = ve.getTemplate("studentsOverview.html");
 		t.merge(context, sw);
@@ -444,8 +444,8 @@ public class Main extends HttpServlet {
 
 		for (School school : schools.values()) {
 			for (Student student : school.getStudents()) {
-				for (Entry<Character, Score> scoreEntry : student.getScores().entrySet()) {
-					scores.get(Test.valueOf(scoreEntry.getKey().toString() + student.getGrade())).add(scoreEntry.getValue().getScoreNum());
+				for (Entry<Subject, Score> scoreEntry : student.getScores().entrySet()) {
+					scores.get(Test.fromSubjectAndGrade(student.getGrade(), scoreEntry.getKey())).add(scoreEntry.getValue().getScoreNum());
 				}
 			}
 
@@ -474,7 +474,7 @@ public class Main extends HttpServlet {
 		context.put("summaryStats", summaryStats);
 		context.put("outliers", outliers);
 		context.put("tests", tests);
-		context.put("subjects", Test.tests());
+		context.put("subjects", Subject.getSubjects());
 		context.put("level", level);
 		sw = new StringWriter();
 		t = ve.getTemplate("visualizations.html");

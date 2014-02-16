@@ -1,15 +1,7 @@
 <h2>Category Sweepstakes Winners</h2>
 #foreach($test in $winners.keySet())
 	<h2>
-    	#if($test == 'M')
-    		Math 
-    	#elseif($test == 'C')
-    		Calculator 
-    	#elseif($test == 'N')
-    		Number Sense 
-    	#else
-    		Science 
-    	#end
+    	$test.getName()
     	Winners
 	</h2>
 	

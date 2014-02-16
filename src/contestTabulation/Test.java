@@ -18,6 +18,8 @@
 
 package contestTabulation;
 
+import java.util.Objects;
+
 public enum Test {
 	N6(6, Subject.N), C6(6, Subject.C), M6(6, Subject.M), S6(6, Subject.S),
 	N7(7, Subject.N), C7(7, Subject.C), M7(7, Subject.M), S7(7, Subject.S),
@@ -28,7 +30,7 @@ public enum Test {
 	N12(12, Subject.N), C12(12, Subject.C), M12(12, Subject.M), S12(12, Subject.S);
 
 	public static Test fromSubjectAndGrade(int grade, Subject subject) {
-		return Test.valueOf(subject.toString() + grade);
+		return Test.valueOf(Objects.requireNonNull(subject).toString() + grade);
 	}
 
 	public static Test[] highTests() {

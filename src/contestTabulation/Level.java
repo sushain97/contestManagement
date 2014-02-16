@@ -31,7 +31,15 @@ public enum Level {
 	}
 
 	public Level fromString(String level) {
-		return level.toLowerCase().equals("middle") ? Level.MIDDLE : Level.HIGH;
+		if ("middle".compareToIgnoreCase(level) == 0) {
+			return Level.MIDDLE;
+		}
+		else if ("high".compareToIgnoreCase(level) == 0) {
+			return Level.HIGH;
+		}
+		else {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	public int getHighGrade() {

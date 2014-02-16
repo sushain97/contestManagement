@@ -20,6 +20,7 @@ package contestTabulation;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class Student {
 	private static int anonCounter = 0;
@@ -53,9 +54,9 @@ public class Student {
 	}
 
 	Student(String name, School school, int grade) {
-		this.name = name;
-		this.grade = grade;
-		this.school = school;
+		this.name = Objects.requireNonNull(name);
+		this.grade = Objects.requireNonNull(grade);
+		this.school = Objects.requireNonNull(school);
 	}
 
 	@Override
@@ -122,7 +123,7 @@ public class Student {
 	}
 
 	public Score getScore(Subject subject) {
-		return scores.get(subject);
+		return scores.get(Objects.requireNonNull(subject));
 	}
 
 	public HashMap<Subject, Score> getScores() {
@@ -141,16 +142,15 @@ public class Student {
 	}
 
 	public boolean hasScore(Subject subject) {
-		return scores.get(subject) != null;
+		return scores.get(Objects.requireNonNull(subject)) != null;
 	}
 
 	public void setScore(Subject subject, Score score) {
-		scores.put(subject, score);
+		scores.put(Objects.requireNonNull(subject), Objects.requireNonNull(score));
 	}
 
 	@Override
 	public String toString() {
-		return "Student [name=" + name + ", school=" + school + ", grade=" + grade + ", mScore=" + scores.get('M') + ", cScore=" + scores.get('C')
-				+ ", nScore=" + scores.get('N') + ", sScore=" + scores.get('S') + "]";
+		return "Student [grade=" + grade + ", name=" + name + ", school=" + school + ", scores=" + scores + "]";
 	}
 }

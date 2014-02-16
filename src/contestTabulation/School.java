@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Objects;
 
 import util.Pair;
 
@@ -55,8 +56,8 @@ public class School {
 	private int totalScore;
 
 	School(String name, Level level) {
-		this.name = name;
-		this.level = level;
+		this.name = Objects.requireNonNull(name);
+		this.level = Objects.requireNonNull(level);
 		this.lowGrade = level.getLowGrade();
 		this.highGrade = level.getHighGrade();
 	}
@@ -72,7 +73,7 @@ public class School {
 	}
 
 	protected void addStudent(Student student) {
-		students.add(student);
+		students.add(Objects.requireNonNull(student));
 	}
 
 	private HashMap<Student, Score> calculateScore(final Subject subject) {
@@ -186,7 +187,7 @@ public class School {
 	}
 
 	public ArrayList<Score> getAnonScores(Test test) {
-		return anonScores.get(test);
+		return anonScores.get(Objects.requireNonNull(test));
 	}
 
 	public Level getLevel() {
@@ -206,11 +207,11 @@ public class School {
 	}
 
 	public int getScore(Subject subject) {
-		return topScores.get(subject).y;
+		return topScores.get(Objects.requireNonNull(subject)).y;
 	}
 
 	public Student[] getScoreStudents(Subject subject) {
-		return topScores.get(subject).x;
+		return topScores.get(Objects.requireNonNull(subject)).x;
 	}
 
 	public ArrayList<Student> getStudents() {

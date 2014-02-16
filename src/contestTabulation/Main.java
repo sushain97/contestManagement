@@ -20,19 +20,21 @@ package contestTabulation;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServlet;
@@ -64,8 +66,6 @@ import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 import com.google.gdata.client.Service;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
-import com.google.gdata.data.spreadsheet.CellEntry;
-import com.google.gdata.data.spreadsheet.CellFeed;
 import com.google.gdata.data.spreadsheet.CustomElementCollection;
 import com.google.gdata.data.spreadsheet.ListEntry;
 import com.google.gdata.data.spreadsheet.ListFeed;
@@ -88,7 +88,7 @@ public class Main extends HttpServlet
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
 		//TODO: Add Logging
-		List<Test> testsGraded = new ArrayList<Test>();
+		Set<Test> testsGraded = new HashSet<Test>();
 		final SpreadsheetEntry middle, high;
 
 		final Map<String, Integer> awardCriteria = new HashMap<String, Integer>();
@@ -117,8 +117,8 @@ public class Main extends HttpServlet
 			//Populate base data structures by traversing Google Documents Spreadsheets
 			middle = getSpreadSheet(params.get("docMiddle")[0], service);
 			high = getSpreadSheet(params.get("docHigh")[0], service);
-			updateDatabase(middle, middleStudents, middleSchools, middleAnonScores, testsGraded, service);
-			updateDatabase(high, highStudents, highSchools, highAnonScores, testsGraded, service);
+			updateDatabase("middle", middle, middleStudents, middleSchools, middleAnonScores, testsGraded, service);
+			updateDatabase("high", high, highStudents, highSchools, highAnonScores, testsGraded, service);
 
 			//Populate categoryWinners maps with top 20 scorers 
 			tabulateCategoryWinners("middle", middleStudents, middleCategoryWinners, testsGraded);
@@ -176,89 +176,48 @@ public class Main extends HttpServlet
 		return null;
 	}
 
-	private static void updateDatabase(SpreadsheetEntry spreadsheet, List<Student> students, Map<String, School> schools, Map<Test, List<Score>> anonScores, List<Test> testsGraded, Service service) throws IOException, ServiceException
+	private static void updateDatabase(String level, SpreadsheetEntry spreadsheet, List<Student> students, Map<String, School> schools, Map<Test, List<Score>> anonScores, Set<Test> testsGraded, Service service) throws IOException, ServiceException
 	{
 		WorksheetFeed worksheetFeed = service.getFeed(spreadsheet.getWorksheetFeedUrl(), WorksheetFeed.class);
 		List<WorksheetEntry> worksheets = worksheetFeed.getEntries();
 
 		for(WorksheetEntry worksheet : worksheets)
 		{
-			int grade = Integer.parseInt(worksheet.getTitle().getPlainText().split(" ")[0]);
-			char subject = worksheet.getTitle().getPlainText().split(" ")[1].charAt(0);
-			Test test = Test.valueOf(Character.toString(subject) + grade);
+			String schoolName = worksheet.getTitle().getPlainText();
+			School school = new School(schoolName, level);
+			schools.put(schoolName, school);
 
 			URL listFeedUrl = worksheet.getListFeedUrl();
 			ListFeed listFeed = service.getFeed(listFeedUrl, ListFeed.class);
-			if(listFeed.getEntries().size() > 0)
-				testsGraded.add(Test.valueOf(Character.toString(subject) + grade));
 
-			for (ListEntry r : listFeed.getEntries())
+			for(ListEntry r : listFeed.getEntries())
 			{
 				CustomElementCollection row = r.getCustomElements();
-				String name = row.getValue("nameofstudent");
-				if(name == null)
+
+				String name = row.getValue("name").trim();
+				int grade = Integer.parseInt(row.getValue("grade").trim());
+
+				Student student = new Student(name, school, grade);
+				students.add(student);
+
+				String[] subjects = Test.tests();
+				for(String subject : subjects)
 				{
-					if(anonScores.containsKey(test) && row.getValue("score") != null)
-						anonScores.get(test).add(new Score(row.getValue("score").trim()));
-					else if(row.getValue("score") != null)
+					String score = row.getValue(subject);
+					if(score != null && Score.isScore(score.trim()))
 					{
-						ArrayList<Score> scoreList = new ArrayList<Score>();
-						scoreList.add(new Score(row.getValue("score").trim()));
-						anonScores.put(test, scoreList);
+						student.setScore(subject.charAt(0), new Score(score));
+						testsGraded.add(Test.valueOf(subject + grade));
 					}
-					break;
 				}
-				else
-					name = name.trim();
 
-				String schoolName = row.getValue("school").trim();
-				String score = row.getValue("score").trim();
-
-				if(!schools.containsKey(schoolName))
-					schools.put(schoolName, new School(schoolName, (grade > 8 ? "high" : "middle")));
-				School school = schools.get(schoolName);
-
-				Student temp = new Student(name, school, grade);
-				if(!students.contains(temp))
-				{
-					school.addStudent(temp);
-					students.add(temp);
-				}
-				else
-					temp = students.get(students.indexOf(temp));
-
-				temp.setScore(subject, new Score(score));
+				school.addStudent(student);
 			}
-
-			try
-			{
-				URL cellFeedUrl = new URI(worksheet.getCellFeedUrl().toString() + "?min-row=23&min-col=2&max-col=3").toURL();
-				CellFeed cellFeed = service.getFeed(cellFeedUrl, CellFeed.class);
-
-				for(int i = 0; i < cellFeed.getEntries().size(); i+=2)
-				{
-					List<CellEntry> entries = cellFeed.getEntries();
-
-					String schoolName = entries.get(i).getCell().getInputValue().trim();
-					if(!schools.containsKey(schoolName))
-						schools.put(schoolName, new School(schoolName, (grade > 8 ? "high" : "middle")));
-					School school = schools.get(schoolName);
-
-					String[] scores = entries.get(i+1).getCell().getInputValue().split(" ");
-					ArrayList<Score> scoresArr = new ArrayList<Score>();
-					for(String score : scores)
-						if(score != null && score.length() != 0)
-							scoresArr.add(new Score(score));
-					Collections.sort(scoresArr, Collections.reverseOrder());
-					school.addAnonScores(Test.valueOf(Character.toString(subject) + grade), scoresArr);
-				}
-			}
-			catch(Exception e) { e.printStackTrace(); }
 		}
 
 	}
 
-	private static void tabulateCategoryWinners(String level, List<Student> students, Map<Test, List<Student>> categoryWinners, List<Test> testsGraded)
+	private static void tabulateCategoryWinners(String level, List<Student> students, Map<Test, List<Student>> categoryWinners, Set<Test> testsGraded)
 	{
 		for(Test test : testsGraded)
 		{
@@ -437,7 +396,7 @@ public class Main extends HttpServlet
 		Collections.sort(students, new Comparator<Student>() { public int compare(Student s1,Student s2) { return s1.getName().compareTo(s2.getName()); }});
 		context.put("students", students);
 		sw = new StringWriter();
-		t = ve.getTemplate("studentsOverview.html"); //TODO: Display Anonymous Scores here
+		t = ve.getTemplate("studentsOverview.html");
 		t.merge(context, sw);
 		html = new Entity("html", "students_" + level);
 		html.setProperty("type", "students");
@@ -563,14 +522,14 @@ public class Main extends HttpServlet
 		}
 	}
 
-	private static void updateContestInfo(List<Test> testsGraded)
+	private static void updateContestInfo(Set<Test> testsGraded)
 	{
 		Query query = new Query("contestInfo");
 		Entity info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 		SimpleDateFormat isoFormat = new SimpleDateFormat("hh:mm:ss a EEEE MMMM d, yyyy zzzz");
 		isoFormat.setTimeZone(TimeZone.getTimeZone("America/Chicago"));
 		info.setProperty("updated", isoFormat.format(new Date()).toString());
-		info.setProperty("testsGraded", testsGraded.toString());
+		info.setProperty("testsGraded", Arrays.asList(testsGraded.toArray()).toString());
 		datastore.put(info);
 	}
 }

@@ -20,7 +20,15 @@ package contestTabulation;
 public class Score implements Comparable<Score>
 {
 	final private String score;
-	Score(String score) { this.score = score; }
+	
+	Score(String score) 
+	{
+		if(isScore(score))
+			this.score = score;
+		else
+			throw new IllegalArgumentException();
+	}
+	
 	public String getScore() { return score; }
 
 	public int getScoreNum()
@@ -28,6 +36,8 @@ public class Score implements Comparable<Score>
 		try { return Integer.parseInt(score); }
 		catch(NumberFormatException e) { return Integer.parseInt(score.substring(0,score.length()-1)); }
 	}
+
+	public String toString() { return "Score [score=" + score + "]"; }
 
 	public int hashCode()
 	{
@@ -98,8 +108,11 @@ public class Score implements Comparable<Score>
 				return thisScore - otherScore;
 		}
 	}
-
-	public String toString() { return "Score [score=" + score + "]"; }
+	
+	public static boolean isScore(String str)
+	{
+		return isInteger(str) || (str.length() > 1 && isInteger(str.substring(0, str.length()-1)));
+	}
 
 	private static boolean isInteger(String str)
 	{

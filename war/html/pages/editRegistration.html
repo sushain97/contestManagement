@@ -22,6 +22,7 @@
 		}
 		.tooltip { width: 300px !important; }
 	</style>
+	<link type="text/css" href="/css/sortedtable.css" rel="stylesheet">
 </head>
 
 <body>
@@ -129,7 +130,7 @@
 	
 					<div class="lead">Registrations</div>
 					<div class="col-md-offset-1 col-md-10">
-						<table class="table table-striped table-condensed table-hover table-responsive">
+						<table class="table table-striped table-condensed table-hover table-responsive" id="registrations">
 							<thead>
 								<tr>
 									<th></th>
@@ -165,6 +166,8 @@
 									<td class="text-center"><input type="checkbox" class="testCheckbox"></td>
 									<td class="text-center"><input type="checkbox" class="testCheckbox"></td>
 								</tr>
+							</tbody>
+							<tfoot>
 								<tr id="addOptions">
 									<td class="text-center" colspan=2>
 										<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="1">
@@ -185,7 +188,7 @@
 										</span>
 									</td>
 								</tr>
-							</tbody>
+							</tfoot>
 						</table>
 					</div>
 	
@@ -236,6 +239,8 @@
 	<input type="hidden" name="price" id="price" value="$price" />
 
 	<script type="text/javascript" src="/js/pagescripts/editRegistration.js"></script>
+	<script type="text/javascript" src="/js/jquery/jquery.tablesorter.min.js"></script>
+	<script type="text/javascript" src="/js/parser-input-select.js"></script>
 	#include("noscript.html")
 </body>
 </html>

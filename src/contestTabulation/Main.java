@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see [http://www.gnu.org/licenses/]. 
  */
-	
+
 package contestTabulation;
 
 import java.io.IOException;
@@ -50,6 +50,7 @@ import util.Pair;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.appengine.api.datastore.DatastoreService;
@@ -80,6 +81,8 @@ import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
 public class Main extends HttpServlet
 {
 	static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	static final HttpTransport httpTransport = new NetHttpTransport();
+	static final JacksonFactory jsonFactory = new JacksonFactory();
 
 	@SuppressWarnings("unchecked")
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
@@ -87,9 +90,9 @@ public class Main extends HttpServlet
 		//TODO: Add Logging
 		List<Test> testsGraded = new ArrayList<Test>();
 		final SpreadsheetEntry middle, high;
-		
+
 		final Map<String, Integer> awardCriteria = new HashMap<String, Integer>();
-		
+
 		final List<Student> middleStudents = new ArrayList<Student>();
 		final Map<String, School> middleSchools = new HashMap<String, School>(); //School Name, School
 		final Map<Test, List<Student>> middleCategoryWinners = new HashMap<Test, List<Student>>();
@@ -103,14 +106,14 @@ public class Main extends HttpServlet
 		final Map<Character, List<School>> highCategorySweepstakesWinners = new HashMap<Character, List<School>>(); //Test topic {N, M, S, C}, School array
 		final List<School> highSweepstakesWinners = new ArrayList<School>();
 		final Map<Test, List<Score>> highAnonScores = new HashMap<Test, List<Score>>();
-		
+
 		try
 		{
 			//Authenticate to Google Documents Service using OAuth 2.0 Authentication Token from Datastore
 			Map<String, String[]> params = req.getParameterMap();
 			SpreadsheetService service = new SpreadsheetService("contestTabulation");
 			authService(service);
-			
+
 			//Populate base data structures by traversing Google Documents Spreadsheets
 			middle = getSpreadSheet(params.get("docMiddle")[0], service);
 			high = getSpreadSheet(params.get("docHigh")[0], service);
@@ -130,7 +133,7 @@ public class Main extends HttpServlet
 			tabulateCategorySweepstakesWinners(highSchools, highCategorySweepstakesWinners);
 			tabulateSweepstakesWinners(middleSchools, middleSweepstakesWinners);
 			tabulateSweepstakesWinners(highSchools, highSweepstakesWinners);
-			
+
 			//Get award criteria from Datastore
 			getAwardCriteria(awardCriteria);
 
@@ -141,25 +144,24 @@ public class Main extends HttpServlet
 			//Update Datastore by modifying registrations to include actual number of tests taken
 			updateRegistrations("middle", middleSchools);
 			updateRegistrations("high", highSchools);
-			
+
 			//Update Datastore by modifying contest information entity to include tests graded
 			updateContestInfo(testsGraded);
 		}
 		catch(Exception e) { e.printStackTrace(); }
 	}
-	
+
 	private static void authService(SpreadsheetService service) throws IOException 
 	{
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Query query = new Query("contestInfo");
 		Entity contestInfo = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
-		
+
 		GoogleCredential credential = new GoogleCredential.Builder()
-			.setJsonFactory(new JacksonFactory())
-			.setTransport(new NetHttpTransport())
+			.setJsonFactory(jsonFactory)
+			.setTransport(httpTransport)
 			.setClientSecrets((String) contestInfo.getProperty("OAuth2ClientId"), (String) contestInfo.getProperty("OAuth2ClientSecret")).build()
 			.setFromTokenResponse(new JacksonFactory().fromString(((Text) contestInfo.getProperty("OAuth2Token")).getValue(), GoogleTokenResponse.class));
-		
+
 		service.setOAuth2Credentials(credential);
 	}
 
@@ -236,12 +238,12 @@ public class Main extends HttpServlet
 				for(int i = 0; i < cellFeed.getEntries().size(); i+=2)
 				{
 					List<CellEntry> entries = cellFeed.getEntries();
-					
+
 					String schoolName = entries.get(i).getCell().getInputValue().trim();
 					if(!schools.containsKey(schoolName))
 						schools.put(schoolName, new School(schoolName, (grade > 8 ? "high" : "middle")));
 					School school = schools.get(schoolName);
-					
+
 					String[] scores = entries.get(i+1).getCell().getInputValue().split(" ");
 					ArrayList<Score> scoresArr = new ArrayList<Score>();
 					for(String score : scores)
@@ -263,7 +265,7 @@ public class Main extends HttpServlet
 			ArrayList<Student> winners = new ArrayList<Student>();
 			int grade = test.grade();
 			final String subject = test.test();
-			
+
 			for(Student student : students)
 				if(student.getGrade() == grade && student.getScore(subject) != null)
 					winners.add(student);
@@ -296,20 +298,20 @@ public class Main extends HttpServlet
 		for(School school : schoolList)
 			sweepstakeWinners.add(school);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private static void getAwardCriteria(Map<String, Integer> awardCriteria)
 	{
 		Query query = new Query("contestInfo");
 		Entity contestInfo = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
-		
+
 		JSONObject awardCriteriaJSON = null;
 		try
 		{
 			awardCriteriaJSON = new JSONObject(((Text) contestInfo.getProperty("awardCriteria")).getValue());
 		}
 		catch(JSONException e) { e.printStackTrace(); }
-		
+
 		Iterator<String> awardCountKeyIter = awardCriteriaJSON.keys();
 		while(awardCountKeyIter.hasNext())
 		{
@@ -333,7 +335,7 @@ public class Main extends HttpServlet
 		HtmlCompressor compressor = new HtmlCompressor();
 		Entity html;
 		LinkedList<Entity> htmlEntries = new LinkedList<Entity>();
-		
+
 		for(Entry<String, School> schoolEntry : schools.entrySet())
 		{
 			if(!schoolEntry.getKey().equals("?"))
@@ -343,20 +345,20 @@ public class Main extends HttpServlet
 				context.put("schoolLevel", Character.toString(school.getLevel().charAt(0)).toUpperCase() + school.getLevel().substring(1));
 				ArrayList<Student> schoolStudents = school.getStudents();
 				Collections.sort(schoolStudents, new Comparator<Student>() { public int compare(Student s1,Student s2) { return s1.getName().compareTo(s2.getName()); }});
-				
+
 				Test[] tests = level.equals("middle") ? Test.middleTests() : Test.highTests();
 				HashMap<Test,List<Integer>> scores = new HashMap<Test,List<Integer>>();
 				for(Test test : tests)
 					scores.put(test, new ArrayList<Integer>());
-				
+
 				for(Student student : school.getStudents())
-						for(Entry<Character, Score> scoreEntry : student.getScores().entrySet())
-							scores.get(Test.valueOf(scoreEntry.getKey().toString() + student.getGrade())).add(scoreEntry.getValue().getScoreNum());
-				
+					for(Entry<Character, Score> scoreEntry : student.getScores().entrySet())
+						scores.get(Test.valueOf(scoreEntry.getKey().toString() + student.getGrade())).add(scoreEntry.getValue().getScoreNum());
+
 				for(Entry<Test, ArrayList<Score>> anonScoreEntry : school.getAnonScores().entrySet())
 					for(Score score : anonScoreEntry.getValue())
 						scores.get(anonScoreEntry.getKey()).add(score.getScoreNum());
-				
+
 				HashMap<Test,List<Integer>> summaryStats = new HashMap<Test,List<Integer>>();
 				HashMap<Test,List<Integer>> outliers = new HashMap<Test,List<Integer>>();
 				for(Entry<Test,List<Integer>> scoreEntry : scores.entrySet())
@@ -365,14 +367,14 @@ public class Main extends HttpServlet
 					summaryStats.put(scoreEntry.getKey(), stats.x);
 					outliers.put(scoreEntry.getKey(), stats.y);
 				}
-					
+
 				context.put("summaryStats", summaryStats);
 				context.put("outliers", outliers);
 				context.put("tests", tests);
 				context.put("subjects", Test.tests());
 				context.put("school", school);
 				context.put("level", level);
-				
+
 				sw = new StringWriter();
 				t = ve.getTemplate("schoolOverview.html");
 				t.merge(context, sw);
@@ -443,27 +445,27 @@ public class Main extends HttpServlet
 		html.setProperty("html", new Text(compressor.compress(sw.toString())));
 		htmlEntries.add(html);
 		sw.close();
-		
+
 		HashMap<Test,List<Integer>> scores = new HashMap<Test,List<Integer>>();
 		Test[] tests = level.equals("middle") ? Test.middleTests() : Test.highTests();
 		for(Test test : tests)
 			scores.put(test, new ArrayList<Integer>());
-		
+
 		for(School school : schools.values())
 		{
 			for(Student student : school.getStudents())
 				for(Entry<Character, Score> scoreEntry : student.getScores().entrySet())
 					scores.get(Test.valueOf(scoreEntry.getKey().toString() + student.getGrade())).add(scoreEntry.getValue().getScoreNum());
-			
+
 			for(Entry<Test, ArrayList<Score>> anonScoreEntry : school.getAnonScores().entrySet())
 				for(Score score : anonScoreEntry.getValue())
 					scores.get(anonScoreEntry.getKey()).add(score.getScoreNum());
 		}
-		
+
 		for(Entry<Test,List<Score>> scoreEntry : anonScores.entrySet())
 			for(Score score : scoreEntry.getValue())
 				scores.get(scoreEntry.getKey()).add(score.getScoreNum());
-		
+
 		HashMap<Test,List<Integer>> summaryStats = new HashMap<Test,List<Integer>>();
 		HashMap<Test,List<Integer>> outliers = new HashMap<Test,List<Integer>>();
 		for(Entry<Test,List<Integer>> scoreEntry : scores.entrySet())
@@ -472,7 +474,7 @@ public class Main extends HttpServlet
 			summaryStats.put(scoreEntry.getKey(), stats.x);
 			outliers.put(scoreEntry.getKey(), stats.y);
 		}
-			
+
 		context = new VelocityContext();
 		context.put("summaryStats", summaryStats);
 		context.put("outliers", outliers);
@@ -488,7 +490,7 @@ public class Main extends HttpServlet
 		html.setProperty("html", new Text(compressor.compress(sw.toString())));
 		htmlEntries.add(html);
 		sw.close();
-		
+
 		datastore.put(htmlEntries); //TODO: Convert to Transaction
 	}
 
@@ -498,21 +500,21 @@ public class Main extends HttpServlet
 		for(int i = 0; i < list.size(); i++)
 			data[i] = list.get(i);
 		DescriptiveStatistics dStats = new DescriptiveStatistics(data);
-		
+
 		List<Integer> summary = new ArrayList<Integer>(5);
 		summary.add((int) dStats.getMin()); //Minimum
 		summary.add((int) dStats.getPercentile(25)); //Lower Quartile (Q1)
 		summary.add((int) dStats.getPercentile(50)); //Middle Quartile (Median - Q2)
 		summary.add((int) dStats.getPercentile(75)); //High Quartile (Q3)
 		summary.add((int) dStats.getMax()); //Maxiumum
-		
+
 		List<Integer> outliers = new ArrayList<Integer>();
 		if(list.size() > 5 && dStats.getStandardDeviation() > 0) //Only remove outliers if relatively normal
 		{
 			double mean = dStats.getMean();
 			double stDev = dStats.getStandardDeviation();
 			NormalDistribution normalDistribution = new NormalDistribution(mean, stDev);
-			
+
 			Iterator<Integer> listIterator = list.iterator();
 			double significanceLevel = .50 / list.size(); //Chauvenet's Criterion for Outliers
 			while(listIterator.hasNext())
@@ -525,7 +527,7 @@ public class Main extends HttpServlet
 					listIterator.remove();
 				}
 			}
-			
+
 			if(list.size() != dStats.getN()) //If and only if outliers have been removed
 			{
 				double[] significantData = new double[list.size()];
@@ -536,7 +538,7 @@ public class Main extends HttpServlet
 				summary.set(4, (int) dStats.getMax());
 			}
 		}
-		
+
 		return new Pair<List<Integer>,List<Integer>>(summary, outliers);
 	}
 
@@ -547,9 +549,7 @@ public class Main extends HttpServlet
 
 		for(School school : schools.values())
 		{
-			Query query = new Query("registration")
-									.addFilter("schoolName", FilterOperator.EQUAL, school.getName())
-									.addFilter("schoolLevel", FilterOperator.EQUAL, level);
+			Query query = new Query("registration").addFilter("schoolName", FilterOperator.EQUAL, school.getName()).addFilter("schoolLevel", FilterOperator.EQUAL, level);
 			List<Entity> registrations = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
 
 			if(registrations.size() > 0)
@@ -562,7 +562,7 @@ public class Main extends HttpServlet
 			}
 		}
 	}
-	
+
 	private static void updateContestInfo(List<Test> testsGraded)
 	{
 		Query query = new Query("contestInfo");

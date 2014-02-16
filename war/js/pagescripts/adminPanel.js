@@ -39,6 +39,24 @@ $(document).ready(function() {
 		$('#changePassword').toggle('fast');
 		CheckPassChange();
 	});
+	
+	$('#middleDocButton').click(function() {
+		$('#middleDocButton').addClass('blurred');
+		$.post('/createSpreadsheet', {
+			'docMiddle': $('input[name=docMiddle]').val()
+		}).done(function() {
+			$('#middleDocButton').removeClass('blurred');
+		});
+	});
+	
+	$('#highDocButton').click(function() {
+		$('#highDocButton').addClass('blurred');
+		$.post('/createSpreadsheet', {
+			'docHigh': $('input[name=docHigh]').val()
+		}).done(function() {
+			$('#middleDocButton').removeClass('blurred');
+		});
+	});
 });
 
 function CheckUpdate() {
@@ -74,6 +92,7 @@ function signInCallback(authResult) {
 			contentType: 'application/octet-stream; charset=utf-8',
 			success: function() {
 				$('#oAuthResult').html('<strong class="text-success">You are signed in, submit the form to update online scores.</strong>');
+				$('.docButton').show();
 			}
 		});
 	}

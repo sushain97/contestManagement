@@ -50,7 +50,7 @@ public class OAuth extends HttpServlet
 		Entity contestInfo = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 		final String clientId = (String) contestInfo.getProperty("OAuth2ClientId");
 		final String clientSecret = (String) contestInfo.getProperty("OAuth2ClientSecret");
-		
+
 		UserCookie userCookie = UserCookie.getCookie(req);
 		if(userCookie.isAdmin())
 		{
@@ -62,7 +62,7 @@ public class OAuth extends HttpServlet
 				GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(new NetHttpTransport(), new JacksonFactory(), clientId, clientSecret, code, "postmessage").execute();
 				contestInfo.setProperty("OAuth2Token", new Text(tokenResponse.toString()));
 				datastore.put(contestInfo);
-				
+
 				resp.setStatus(HttpServletResponse.SC_OK);
 			}
 			catch(Exception e)
@@ -73,14 +73,13 @@ public class OAuth extends HttpServlet
 		else
 			resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Contest Administrator privileges required for that operation");
 	}
-	
+
 	private static void getContent(InputStream inputStream, ByteArrayOutputStream outputStream) throws IOException 
 	{
 		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 		int readChar;
-		while ((readChar = reader.read()) != -1) {
+		while ((readChar = reader.read()) != -1)
 			outputStream.write(readChar);
-		}
 		reader.close();
 	}
 }

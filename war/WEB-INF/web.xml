@@ -65,6 +65,10 @@
     <servlet-class>contestTabulation.Main</servlet-class>
   </servlet>
   <servlet>
+    <servlet-name>contestTabulation.Setup</servlet-name>
+    <servlet-class>contestTabulation.Setup</servlet-class>
+  </servlet>
+  <servlet>
     <servlet-name>contestWebsite.OAuth</servlet-name>
     <servlet-class>contestWebsite.OAuth</servlet-class>
   </servlet>
@@ -156,6 +160,19 @@
   <servlet-mapping>
     <servlet-name>contestTabulation.Main</servlet-name>
     <url-pattern>/tabulate</url-pattern>
+  </servlet-mapping>
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>aname</web-resource-name>
+      <url-pattern>/tabulate</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>admin</role-name>
+    </auth-constraint>
+  </security-constraint>
+  <servlet-mapping>
+    <servlet-name>contestTabulation.Setup</servlet-name>
+    <url-pattern>/createSpreadsheet</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>contestWebsite.OAuth</servlet-name>

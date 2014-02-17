@@ -18,8 +18,10 @@
 
 package contestTabulation;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -28,10 +30,12 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.datanucleus.annotations.Unowned;
 
 @PersistenceCapable
-public class Student {
+public class Student implements Serializable {
 	private static int anonCounter = 0;
+	private static final long serialVersionUID = 8963228643353855438L;
 
 	public static Comparator<Student> getNameComparator() {
 		return new Comparator<Student>() {
@@ -53,9 +57,8 @@ public class Student {
 
 	@Persistent private int grade;
 	@Persistent private String name;
-
 	@Persistent private School school;
-	@Persistent(serialized = "true") private HashMap<Subject, Score> scores = new HashMap<Subject, Score>();
+	@Persistent(serialized = "true") @Unowned private Map<Subject, Score> scores = new HashMap<Subject, Score>();
 
 	@PrimaryKey @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY) private Key key;
 
@@ -137,7 +140,7 @@ public class Student {
 		return scores.get(Objects.requireNonNull(subject));
 	}
 
-	public HashMap<Subject, Score> getScores() {
+	public Map<Subject, Score> getScores() {
 		return scores;
 	}
 

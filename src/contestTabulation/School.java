@@ -18,12 +18,16 @@
 
 package contestTabulation;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
@@ -32,9 +36,12 @@ import javax.jdo.annotations.PrimaryKey;
 import util.Pair;
 
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.datanucleus.annotations.Unowned;
 
 @PersistenceCapable
-public class School {
+public class School implements Serializable {
+	private static final long serialVersionUID = 2266690598440801464L;
+
 	public static Comparator<School> getScoreComparator(final Subject subject) {
 		return new Comparator<School>() {
 			@Override
@@ -53,23 +60,20 @@ public class School {
 		};
 	}
 
-	@Persistent private Level level;
-	@Persistent private int lowGrade, highGrade;
+	@Persistent @Unowned private Level level;
 	@Persistent private String name;
-	@Persistent private ArrayList<Student> students = new ArrayList<Student>();
 	@Persistent private int totalScore;
+	@Persistent(mappedBy = "school") @Element(dependent = "true") private List<Student> students = new ArrayList<Student>();
 
-	@Persistent(serialized = "true") private HashMap<Test, ArrayList<Score>> anonScores = new HashMap<Test, ArrayList<Score>>();
-	@Persistent(serialized = "true") private HashMap<Test, Integer> numTests = new HashMap<Test, Integer>();
-	@Persistent(serialized = "true") private HashMap<Subject, Pair<Student[], Integer>> topScores = new HashMap<Subject, Pair<Student[], Integer>>();
+	@Persistent(serialized = "true") private Map<Test, Integer> numTests = new HashMap<Test, Integer>();
+	@Persistent(serialized = "true") private Map<Test, ArrayList<Score>> anonScores = new HashMap<Test, ArrayList<Score>>();
+	@Persistent(serialized = "true") @Unowned private Map<Subject, Pair<Student[], Integer>> topScores = new HashMap<Subject, Pair<Student[], Integer>>();
 
 	@PrimaryKey @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY) private Key key;
 
 	School(String name, Level level) {
 		this.name = Objects.requireNonNull(name);
 		this.level = Objects.requireNonNull(level);
-		this.lowGrade = level.getLowGrade();
-		this.highGrade = level.getHighGrade();
 	}
 
 	protected void addAnonScores(Test test, ArrayList<Score> scores) {
@@ -95,7 +99,7 @@ public class School {
 			}
 		}
 
-		for (int grade = lowGrade; grade <= highGrade; grade++) {
+		for (int grade = level.getLowGrade(); grade <= level.getHighGrade(); grade++) {
 			ArrayList<Score> scores = anonScores.get(Test.valueOf(subject + Integer.toString(grade)));
 			if (scores != null) {
 				for (Score score : scores) {
@@ -120,11 +124,11 @@ public class School {
 		for (Student student : subjectStudents) {
 			if (top4.size() < 4) {
 				Score score = student.getScore(subject);
-				if (highGrade == student.getGrade() && inHighGrade < 3) {
+				if (level.getHighGrade() == student.getGrade() && inHighGrade < 3) {
 					top4.put(student, score);
 					inHighGrade++;
 				}
-				else if (highGrade != student.getGrade()) {
+				else if (level.getHighGrade() != student.getGrade()) {
 					top4.put(student, score);
 				}
 			}
@@ -192,7 +196,7 @@ public class School {
 		return true;
 	}
 
-	public HashMap<Test, ArrayList<Score>> getAnonScores() {
+	public Map<Test, ArrayList<Score>> getAnonScores() {
 		return anonScores;
 	}
 
@@ -212,7 +216,7 @@ public class School {
 		return students.size();
 	}
 
-	public HashMap<Test, Integer> getNumTests() {
+	public Map<Test, Integer> getNumTests() {
 		return numTests;
 	}
 
@@ -224,8 +228,12 @@ public class School {
 		return topScores.get(Objects.requireNonNull(subject)).x;
 	}
 
-	public ArrayList<Student> getStudents() {
+	public List<Student> getStudents() {
 		return students;
+	}
+
+	public Map<Subject, Pair<Student[], Integer>> getTopScores() {
+		return topScores;
 	}
 
 	public int getTotalScore() {

@@ -92,14 +92,14 @@ public class Main extends HttpServlet {
 
 		final Map<String, Integer> awardCriteria = new HashMap<String, Integer>();
 
-		final List<Student> middleStudents = new ArrayList<Student>();
+		final Set<Student> middleStudents = new HashSet<Student>();
 		final Map<String, School> middleSchools = new HashMap<String, School>();
 		final Map<Test, List<Student>> middleCategoryWinners = new HashMap<Test, List<Student>>();
 		final Map<Subject, List<School>> middleCategorySweepstakesWinners = new HashMap<Subject, List<School>>();
 		final List<School> middleSweepstakesWinners = new ArrayList<School>();
 		final Map<Test, List<Score>> middleAnonScores = new HashMap<Test, List<Score>>();
 
-		final List<Student> highStudents = new ArrayList<Student>();
+		final Set<Student> highStudents = new HashSet<Student>();
 		final Map<String, School> highSchools = new HashMap<String, School>();
 		final Map<Test, List<Student>> highCategoryWinners = new HashMap<Test, List<Student>>();
 		final Map<Subject, List<School>> highCategorySweepstakesWinners = new HashMap<Subject, List<School>>();
@@ -161,8 +161,7 @@ public class Main extends HttpServlet {
 		String clientId = (String) contestInfo.getProperty("OAuth2ClientId");
 		String authToken = ((Text) contestInfo.getProperty("OAuth2Token")).getValue();
 
-		GoogleCredential credential = new GoogleCredential.Builder()
-			.setJsonFactory(jsonFactory)
+		GoogleCredential credential = new GoogleCredential.Builder().setJsonFactory(jsonFactory)
 			.setTransport(httpTransport)
 			.setClientSecrets(clientId, clientSecret)
 			.build()
@@ -183,7 +182,7 @@ public class Main extends HttpServlet {
 		return null;
 	}
 
-	private static void updateDatabase(Level level, SpreadsheetEntry spreadsheet, List<Student> students, Map<String, School> schools, Map<Test, List<Score>> anonScores, Set<Test> testsGraded, Service service) throws IOException, ServiceException {
+	private static void updateDatabase(Level level, SpreadsheetEntry spreadsheet, Set<Student> students, Map<String, School> schools, Map<Test, List<Score>> anonScores, Set<Test> testsGraded, Service service) throws IOException, ServiceException {
 		WorksheetFeed worksheetFeed = service.getFeed(spreadsheet.getWorksheetFeedUrl(), WorksheetFeed.class);
 		List<WorksheetEntry> worksheets = worksheetFeed.getEntries();
 
@@ -222,7 +221,7 @@ public class Main extends HttpServlet {
 		}
 	}
 
-	private static void tabulateCategoryWinners(Level level, List<Student> students, Map<Test, List<Student>> categoryWinners, Set<Test> testsGraded) {
+	private static void tabulateCategoryWinners(Level level, Set<Student> students, Map<Test, List<Student>> categoryWinners, Set<Test> testsGraded) {
 		for (Test test : testsGraded) {
 			ArrayList<Student> winners = new ArrayList<Student>();
 			int grade = test.getGrade();
@@ -243,12 +242,12 @@ public class Main extends HttpServlet {
 		}
 	}
 
-	static void tabulateCategorySweepstakesWinners(Map<String, School> schools, Map<Subject, List<School>> highCategorySweepstakesWinners) {
+	static void tabulateCategorySweepstakesWinners(Map<String, School> schools, Map<Subject, List<School>> categorySweepstakesWinners) {
 		for (final Subject subject : Subject.getSubjects()) {
 			ArrayList<School> schoolList = new ArrayList<School>(schools.values());
 			Collections.sort(schoolList, School.getScoreComparator(subject));
 			Collections.reverse(schoolList);
-			highCategorySweepstakesWinners.put(subject, schoolList);
+			categorySweepstakesWinners.put(subject, schoolList);
 		}
 	}
 
@@ -286,7 +285,7 @@ public class Main extends HttpServlet {
 		}
 	}
 
-	private static void storeHTML(Level level, List<Student> students, Map<String, School> schools, Map<Test, List<Student>> categoryWinners, Map<Subject, List<School>> middleCategorySweepstakesWinners, List<School> sweepstakesWinners, Map<Test, List<Score>> anonScores, Map<String, Integer> awardCriteria) throws IOException {
+	private static void storeHTML(Level level, Set<Student> students, Map<String, School> schools, Map<Test, List<Student>> categoryWinners, Map<Subject, List<School>> categorySweepstakesWinners, List<School> sweepstakesWinners, Map<Test, List<Score>> anonScores, Map<String, Integer> awardCriteria) throws IOException {
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/templates, html/snippets");
 		ve.init();
@@ -302,7 +301,7 @@ public class Main extends HttpServlet {
 				School school = schoolEntry.getValue();
 				context = new VelocityContext();
 				context.put("schoolLevel", Character.toString(school.getLevel().toString().charAt(0)).toUpperCase() + school.getLevel().toString().substring(1));
-				ArrayList<Student> schoolStudents = school.getStudents();
+				List<Student> schoolStudents = new ArrayList<Student>(school.getStudents());
 				Collections.sort(schoolStudents, Student.getNameComparator());
 
 				Test[] tests = level == Level.MIDDLE ? Test.middleTests() : Test.highTests();
@@ -370,7 +369,7 @@ public class Main extends HttpServlet {
 		}
 
 		context = new VelocityContext();
-		context.put("winners", middleCategorySweepstakesWinners);
+		context.put("winners", categorySweepstakesWinners);
 		context.put("trophy", awardCriteria.get("categorySweep_" + level));
 		sw = new StringWriter();
 		t = ve.getTemplate("categorySweepstakes.html");
@@ -397,8 +396,9 @@ public class Main extends HttpServlet {
 		sw.close();
 
 		context = new VelocityContext();
-		Collections.sort(students, Student.getNameComparator());
-		context.put("students", students);
+		List<Student> studentsList = new ArrayList<Student>(students);
+		Collections.sort(studentsList, Student.getNameComparator());
+		context.put("students", studentsList);
 		context.put("subjects", Subject.getSubjects());
 		sw = new StringWriter();
 		t = ve.getTemplate("studentsOverview.html");
@@ -515,8 +515,7 @@ public class Main extends HttpServlet {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 		for (School school : schools.values()) {
-			Query query = new Query("registration")
-				.addFilter("schoolName", FilterOperator.EQUAL, school.getName())
+			Query query = new Query("registration").addFilter("schoolName", FilterOperator.EQUAL, school.getName())
 				.addFilter("schoolLevel", FilterOperator.EQUAL, level.toString())
 				.addFilter("registrationType", FilterOperator.EQUAL, "coach");
 			List<Entity> registrations = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());

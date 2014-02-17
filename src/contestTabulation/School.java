@@ -23,19 +23,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.jdo.annotations.Element;
-import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import util.Pair;
 
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.datanucleus.annotations.Unowned;
 
 @PersistenceCapable
@@ -63,17 +62,18 @@ public class School implements Serializable {
 	@Persistent @Unowned private Level level;
 	@Persistent private String name;
 	@Persistent private int totalScore;
-	@Persistent(mappedBy = "school") @Element(dependent = "true") private List<Student> students = new ArrayList<Student>();
+	@Persistent(mappedBy = "school") @Element(dependent = "true") private Set<Student> students = new HashSet<Student>();
 
 	@Persistent(serialized = "true") private Map<Test, Integer> numTests = new HashMap<Test, Integer>();
 	@Persistent(serialized = "true") private Map<Test, ArrayList<Score>> anonScores = new HashMap<Test, ArrayList<Score>>();
 	@Persistent(serialized = "true") @Unowned private Map<Subject, Pair<Student[], Integer>> topScores = new HashMap<Subject, Pair<Student[], Integer>>();
 
-	@PrimaryKey @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY) private Key key;
+	@PrimaryKey private String key;
 
 	School(String name, Level level) {
 		this.name = Objects.requireNonNull(name);
 		this.level = Objects.requireNonNull(level);
+		this.key = name + "_" + level;
 	}
 
 	protected void addAnonScores(Test test, ArrayList<Score> scores) {
@@ -228,7 +228,7 @@ public class School implements Serializable {
 		return topScores.get(Objects.requireNonNull(subject)).x;
 	}
 
-	public List<Student> getStudents() {
+	public Set<Student> getStudents() {
 		return students;
 	}
 

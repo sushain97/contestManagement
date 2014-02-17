@@ -12,5 +12,7 @@
         <property name="javax.jdo.option.RetainValues" value="true"/>
         <property name="datanucleus.appengine.autoCreateDatastoreTxns" value="true"/>
         <property name="datanucleus.appengine.singletonPMFForName" value="true"/>
+        <property name="datanucleus.appengine.datastoreEnableXGTransactions" value="true"/>
     </persistence-manager-factory>
+    <property name="datanucleus.appengine.datastoreEnableXGTransactions" value="true"/>
 </jdoconfig>

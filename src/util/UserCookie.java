@@ -1,4 +1,5 @@
-/* Component of GAE Project for TMSCA Contest Automation
+/*
+ * Component of GAE Project for TMSCA Contest Automation
  * Copyright (C) 2013 Sushain Cherivirala
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8,11 +9,11 @@
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see [http://www.gnu.org/licenses/]. 
+ * along with this program. If not, see [http://www.gnu.org/licenses/].
  */
 
 package util;
@@ -43,21 +44,25 @@ public class UserCookie extends Cookie
 		super(cookie.getName(), cookie.getValue());
 		setComment(cookie.getComment());
 		String domain = cookie.getDomain();
-		if(domain != null)
+		if (domain != null) {
 			setDomain(domain);
+		}
 		setPath(cookie.getPath());
 		setMaxAge(cookie.getMaxAge());
 		setSecure(cookie.getSecure());
 		setVersion(cookie.getVersion());
 	}
-	
+
 	public static UserCookie getCookie(HttpServletRequest req)
 	{
 		Cookie[] cookies = req.getCookies();
-		if(cookies != null)
-			for(Cookie cookie : cookies)
-				if(cookie.getName().equals("user-id"))
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if (cookie.getName().equals("user-id")) {
 					return new UserCookie(cookie);
+				}
+			}
+		}
 		return null;
 	}
 
@@ -66,20 +71,21 @@ public class UserCookie extends Cookie
 		String cookieContent = URLDecoder.decode(getValue(), "UTF-8");
 		return cookieContent.split("\\$")[0];
 	}
-	
+
 	public boolean isAdmin() throws UnsupportedEncodingException
 	{
 		String cookieContent = URLDecoder.decode(getValue(), "UTF-8");
 		return "admin".equals(cookieContent.split("\\$")[0]);
 	}
-	
+
 	public boolean authenticate()
 	{
 		try
 		{
 			String cookieContent = URLDecoder.decode(getValue(), "UTF-8");
-			if(cookieContent.split("\\$").length != 2)
+			if (cookieContent.split("\\$").length != 2) {
 				return false;
+			}
 			String user = cookieContent.split("\\$")[0];
 			String hash = cookieContent.split("\\$")[1];
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -88,7 +94,7 @@ public class UserCookie extends Cookie
 			List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(3));
 			return users.size() != 0 && users.get(0).getProperty("hash").equals(hash);
 		}
-		catch(UnsupportedEncodingException e)
+		catch (UnsupportedEncodingException e)
 		{
 			return false;
 		}
@@ -100,19 +106,22 @@ public class UserCookie extends Cookie
 		try
 		{
 			String cookieContent = URLDecoder.decode(getValue(), "UTF-8");
-			if(cookieContent.split("\\$").length != 2)
+			if (cookieContent.split("\\$").length != 2) {
 				return null;
+			}
 			String user = cookieContent.split("\\$")[0];
 			String hash = cookieContent.split("\\$")[1];
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 			Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, user);
 			List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-			if(users.size() != 0 && users.get(0).getProperty("hash").equals(hash))
+			if (users.size() != 0 && users.get(0).getProperty("hash").equals(hash)) {
 				return users.get(0);
-			else
+			}
+			else {
 				return null;
+			}
 		}
-		catch(UnsupportedEncodingException e)
+		catch (UnsupportedEncodingException e)
 		{
 			return null;
 		}

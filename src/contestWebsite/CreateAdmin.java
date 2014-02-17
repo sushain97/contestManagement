@@ -1,4 +1,5 @@
-/* Component of GAE Project for TMSCA Contest Automation
+/*
+ * Component of GAE Project for TMSCA Contest Automation
  * Copyright (C) 2013 Sushain Cherivirala
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8,11 +9,11 @@
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see [http://www.gnu.org/licenses/]. 
+ * along with this program. If not, see [http://www.gnu.org/licenses/].
  */
 
 package contestWebsite;
@@ -33,16 +34,14 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 
 @SuppressWarnings("serial")
-public class CreateAdmin extends HttpServlet
-{
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
-	{
+public class CreateAdmin extends HttpServlet {
+	@Override
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Entity admin = new Entity("user");
 		admin.setProperty("user-id", "admin");
 
-		try
-		{
+		try {
 			String salthash = Password.getSaltedHash("password");
 			admin.setProperty("hash", salthash.split("\\$")[1]);
 			admin.setProperty("salt", salthash.split("\\$")[0]);
@@ -50,10 +49,11 @@ public class CreateAdmin extends HttpServlet
 			admin.setProperty("email", "admin");
 			admin.setProperty("school", "Admin School");
 		}
-		catch(Exception e) { }
+		catch (Exception e) {
+		}
 
 		datastore.put(admin);
-		
+
 		Query query = new Query("contestInfo");
 		List<Entity> infos = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 		Entity info = infos.size() > 0 ? infos.get(0) : new Entity("contestInfo");

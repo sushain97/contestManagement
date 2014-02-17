@@ -16,27 +16,42 @@
  * along with this program. If not, see [http://www.gnu.org/licenses/].
  */
 
-package contestWebsite;
+package contestTabulation;
 
-import java.io.IOException;
+public enum Level {
+	MIDDLE("middle", 6, 8), HIGH("high", 9, 12);
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+	private final int lowGrade, highGrade;
+	private final String stringLevel;
 
-import util.UserCookie;
+	private Level(String stringLevel, int lowGrade, int highGrade) {
+		this.stringLevel = stringLevel;
+		this.lowGrade = lowGrade;
+		this.highGrade = highGrade;
+	}
 
-@SuppressWarnings("serial")
-public class Logout extends HttpServlet {
-	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		UserCookie userCookie = UserCookie.getCookie(req);
-		if (userCookie != null) {
-			userCookie.setMaxAge(0);
-			userCookie.setValue("");
-			resp.addCookie(userCookie);
+	public Level fromString(String level) {
+		if ("middle".compareToIgnoreCase(level) == 0) {
+			return Level.MIDDLE;
 		}
+		else if ("high".compareToIgnoreCase(level) == 0) {
+			return Level.HIGH;
+		}
+		else {
+			throw new IllegalArgumentException();
+		}
+	}
 
-		resp.sendRedirect("/");
+	public int getHighGrade() {
+		return highGrade;
+	}
+
+	public int getLowGrade() {
+		return lowGrade;
+	}
+
+	@Override
+	public String toString() {
+		return stringLevel;
 	}
 }

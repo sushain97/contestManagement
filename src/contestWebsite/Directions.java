@@ -1,4 +1,5 @@
-/* Component of GAE Project for TMSCA Contest Automation
+/*
+ * Component of GAE Project for TMSCA Contest Automation
  * Copyright (C) 2013 Sushain Cherivirala
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8,11 +9,11 @@
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see [http://www.gnu.org/licenses/]. 
+ * along with this program. If not, see [http://www.gnu.org/licenses/].
  */
 
 package contestWebsite;
@@ -28,34 +29,33 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.yaml.snakeyaml.Yaml;
 
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Text;
-
 import util.BaseHttpServlet;
 import util.Pair;
 import util.UserCookie;
 
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Text;
+
 @SuppressWarnings("serial")
-public class Directions extends BaseHttpServlet
-{
+public class Directions extends BaseHttpServlet {
+	@Override
 	@SuppressWarnings("unchecked")
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
-	{
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
 		ve.init();
 		VelocityContext context = new VelocityContext();
-		
+
 		init(context, req);
 		Pair<Entity, UserCookie> infoAndCookie = init(context, req);
-		
+
 		Yaml yaml = new Yaml();
-		HashMap<String,String> directions = (HashMap<String, String>) yaml.load(((Text) infoAndCookie.x.getProperty("directions")).getValue());
+		HashMap<String, String> directions = (HashMap<String, String>) yaml.load(((Text) infoAndCookie.x.getProperty("directions")).getValue());
 		context.put("directions", directions);
 		context.put("school", infoAndCookie.x.getProperty("school"));
 		context.put("location", infoAndCookie.x.getProperty("location"));
 		context.put("address", infoAndCookie.x.getProperty("address"));
-		
+
 		close(context, ve.getTemplate("directions.html"), resp);
 	}
 }

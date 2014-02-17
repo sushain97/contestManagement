@@ -1,4 +1,5 @@
-/* Component of GAE Project for TMSCA Contest Automation
+/*
+ * Component of GAE Project for TMSCA Contest Automation
  * Copyright (C) 2013 Sushain Cherivirala
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8,11 +9,11 @@
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see [http://www.gnu.org/licenses/]. 
+ * along with this program. If not, see [http://www.gnu.org/licenses/].
  */
 
 package contestTabulation;
@@ -59,26 +60,26 @@ import com.google.gdata.data.spreadsheet.WorksheetEntry;
 import com.google.gdata.util.ServiceException;
 
 @SuppressWarnings("serial")
-public class Setup extends BaseHttpServlet
-{
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException
-	{
+public class Setup extends BaseHttpServlet {
+	@Override
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		Queue queue = QueueFactory.getDefaultQueue();
 
-		if(req.getParameterMap().containsKey("docMiddle"))
+		if (req.getParameterMap().containsKey("docMiddle")) {
 			queue.add(withUrl("/createSpreadsheet").param("docMiddle", req.getParameter("docMiddle")));
-		else if(req.getParameterMap().containsKey("docHigh"))
+		}
+		else if (req.getParameterMap().containsKey("docHigh")) {
 			queue.add(withUrl("/createSpreadsheet").param("docHigh", req.getParameter("docHigh")));
-		else
-		{
+		}
+		else {
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
 	}
 
+	@Override
 	@SuppressWarnings("deprecation")
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
-	{
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		HttpTransport httpTransport = new NetHttpTransport();
 		JacksonFactory jsonFactory = new JacksonFactory();
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -86,25 +87,22 @@ public class Setup extends BaseHttpServlet
 		Query query = new Query("contestInfo");
 		Entity contestInfo = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 
-		GoogleCredential credential = new GoogleCredential.Builder()
-			.setJsonFactory(jsonFactory)
+		GoogleCredential credential = new GoogleCredential.Builder().setJsonFactory(jsonFactory)
 			.setTransport(httpTransport)
-			.setClientSecrets((String) contestInfo.getProperty("OAuth2ClientId"), (String) contestInfo.getProperty("OAuth2ClientSecret")).build()
+			.setClientSecrets((String) contestInfo.getProperty("OAuth2ClientId"), (String) contestInfo.getProperty("OAuth2ClientSecret"))
+			.build()
 			.setFromTokenResponse(new JacksonFactory().fromString(((Text) contestInfo.getProperty("OAuth2Token")).getValue(), GoogleTokenResponse.class));
 
 		String docName, level;
-		if(req.getParameterMap().containsKey("docMiddle"))
-		{
+		if (req.getParameterMap().containsKey("docMiddle")) {
 			docName = req.getParameter("docMiddle");
-			level = "middle";
+			level = Level.MIDDLE.toString();
 		}
-		else if(req.getParameterMap().containsKey("docHigh"))
-		{
+		else if (req.getParameterMap().containsKey("docHigh")) {
 			docName = req.getParameter("docHigh");
-			level = "high";
+			level = Level.HIGH.toString();
 		}
-		else
-		{
+		else {
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
@@ -113,7 +111,7 @@ public class Setup extends BaseHttpServlet
 
 		File body = new File();
 		body.setTitle(docName);
-		body.setMimeType("application/vnd.google-apps.spreadsheet");	    
+		body.setMimeType("application/vnd.google-apps.spreadsheet");
 		File file = drive.files().insert(body).execute();
 
 		query = new Query("registration").addFilter("schoolLevel", FilterOperator.EQUAL, level).addSort("schoolName", SortDirection.ASCENDING);
@@ -122,19 +120,16 @@ public class Setup extends BaseHttpServlet
 		SpreadsheetService service = new SpreadsheetService("contestTabulation");
 		service.setOAuth2Credentials(credential);
 		SpreadsheetEntry spreadsheet;
-		try
-		{
+		try {
 			spreadsheet = service.getEntry(new URL("https://spreadsheets.google.com/feeds/spreadsheets/" + file.getId()), SpreadsheetEntry.class);
 
 			String currentSchool = null;
 			WorksheetEntry worksheet = null;
 			URL listFeedUrl = null;
 
-			for(Entity registration: registrations)
-			{
+			for (Entity registration : registrations) {
 				String schoolName = (String) registration.getProperty("schoolName");
-				if(!schoolName.equals(currentSchool))
-				{
+				if (!schoolName.equals(currentSchool)) {
 					currentSchool = schoolName;
 					worksheet = new WorksheetEntry();
 					worksheet.setColCount(6);
@@ -147,8 +142,9 @@ public class Setup extends BaseHttpServlet
 					CellFeed cellFeed = service.getFeed(cellFeedUrl, CellFeed.class);
 
 					String[] columnNames = {"Name", "Grade", "N", "C", "M", "S"};
-					for(int i = 0; i < columnNames.length; i++)
+					for (int i = 0; i < columnNames.length; i++) {
 						cellFeed.insert(new CellEntry(1, i + 1, columnNames[i]));
+					}
 
 					listFeedUrl = worksheet.getListFeedUrl();
 				}
@@ -156,34 +152,30 @@ public class Setup extends BaseHttpServlet
 				String studentDataJSON = unescapeHtml4(((Text) registration.getProperty("studentData")).getValue());
 
 				JSONArray studentData = null;
-				try
-				{
+				try {
 					studentData = new JSONArray(studentDataJSON);
 				}
-				catch(JSONException e)
-				{	
+				catch (JSONException e) {
 					e.printStackTrace();
 					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 					return;
 				}
 
-				for(int i = 0; i < studentData.length(); i++)
-				{
-					try
-					{
+				for (int i = 0; i < studentData.length(); i++) {
+					try {
 						JSONObject student = studentData.getJSONObject(i);
 
 						ListEntry row = new ListEntry();
 						row.getCustomElements().setValueLocal("name", student.getString("name"));
 						row.getCustomElements().setValueLocal("grade", Integer.toString(student.getInt("grade")));
 
-						for(String subject: Test.tests())
-							row.getCustomElements().setValueLocal(subject, student.getBoolean(subject) ? "" : "X");
+						for (Subject subject : Subject.getSubjects()) {
+							row.getCustomElements().setValueLocal(subject.toString(), student.getBoolean(subject.toString()) ? "" : "X");
+						}
 
 						row = service.insert(listFeedUrl, row);
 					}
-					catch(JSONException e)
-					{
+					catch (JSONException e) {
 						e.printStackTrace();
 						resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 						return;
@@ -191,8 +183,7 @@ public class Setup extends BaseHttpServlet
 				}
 			}
 		}
-		catch(ServiceException e)
-		{
+		catch (ServiceException e) {
 			resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			e.printStackTrace();
 			return;

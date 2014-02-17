@@ -5,29 +5,20 @@
 		<tr>
 			<th title="Click to sort">Student Name</th>
 			<th title="Click to sort">Grade</th>
-			<th title="Click to sort">Math Score</th>
-			<th title="Click to sort">Calculator Score</th>
-			<th title="Click to sort">Number Sense Score</th>
-			<th title="Click to sort">Science Score</th>
+			#foreach($subject in $subjects)
+				<th title="Click to sort">$subject.getName() Score</th>
+			#end
 		</tr>
 	</thead>
 	#foreach($student in $school.getStudents())
 		<tr>
 			<td>$student.getName()</td>
 			<td>$student.getGrade()</td> 
-			#set($mScore = false)
-			#set($cScore = false)
-			#set($nScore = false) 
-			#set($sScore = false) 
-			#set($mScore = $student.getScore("M").getScore()) 
-			#set($cScore = $student.getScore("C").getScore()) 
-			#set($nScore = $student.getScore("N").getScore()) 
-			#set($sScore = $student.getScore("S").getScore())
-	
-			<td>#if( $mScore ) $mScore #else - #end</td>
-			<td>#if( $cScore ) $cScore #else - #end</td>
-			<td>#if( $nScore ) $nScore #else - #end</td>
-			<td>#if( $sScore ) $sScore #else - #end</td>
+			#foreach($subject in $subjects)
+				#set($score = false)
+				#set($score = $student.getScore($subject).getScore())
+				<td>#if($score) $score #else - #end</td>
+			#end
 		</tr>
 	#end
 </table>
@@ -36,37 +27,13 @@
 
 <h2><a class="anchor" id="sweepstakes"></a>Current Sweepstakes Scores: <strong>$school.getTotalScore()</strong></h2>
 
-<div>
-	<div class="lead">Math: <strong>$school.getScore("M")</strong></div>
-	#foreach($student in $school.getScoreStudents("M")) 
-		<strong>$student.getName() ($student.getGrade())</strong> - 
-		$student.getScore("M").getScoreNum() <br> 
-	#end
-	<br>
-</div>
-   		
-<div>	
-	<div class="lead">Calculator: <strong>$school.getScore("C")</strong></div>
-	#foreach($student in $school.getScoreStudents("C")) 
-		<strong>$student.getName() ($student.getGrade())</strong> - 
-		$student.getScore("C").getScoreNum() <br> 
-	#end
-	<br>
-</div>
-
-<div>
-	<div class="lead">Number Sense: <strong>$school.getScore("N")</strong></div>
-	#foreach($student in $school.getScoreStudents("N")) 
-		<strong>$student.getName() ($student.getGrade())</strong> - 
-		$student.getScore("N").getScoreNum() <br> 
-	#end
-	<br>
-</div>
-
-<div>
-	<div class="lead">Science: <strong>$school.getScore("S")</strong></div>
-	#foreach($student in $school.getScoreStudents("S")) 
-		<strong>$student.getName() ($student.getGrade())</strong> - 
-		$student.getScore("S").getScoreNum() <br> 
-	#end
-</div>
+#foreach($subject in $subjects)
+	<div>
+		<div class="lead">$subject.getName(): <strong>$school.getScore($subject)</strong></div>
+		#foreach($student in $school.getScoreStudents($subject)) 
+			<strong>$student.getName() ($student.getGrade())</strong> - 
+			$student.getScore($subject).getScoreNum() <br> 
+		#end
+		<br>
+	</div>
+#end

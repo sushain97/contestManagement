@@ -1,15 +1,8 @@
+#set($subject = $test.getSubject())
+
 <h2>
-    $subject.grade()th Grade
-    #if($subject.test().equals("M"))
-    	Math 
-    #elseif($subject.test().equals("C"))
-    	Calculator 
-    #elseif($subject.test().equals("N"))
-    	Number Sense 
-    #else
-    	Science 
-    #end
-    Winners
+    $test.getGrade()th Grade
+    $subject.getName() Winners
 </h2>
 
 <table class="table table-striped table-condensed table-hover">
@@ -22,7 +15,7 @@
         </tr>
     </thead>
     #foreach($student in $winners)
-    	#if($student.getScore($subject.test()).getScoreNum() < 0)
+    	#if($student.getScore($subject).getScoreNum() < 0)
     		#break
     	#end
     	<tr>
@@ -32,7 +25,7 @@
        		</td>
         	<td> #[[#if($hideFullNames)]]# $student.getPublicName() #[[#else]]# $student.getName() #[[#end]]# </td>
         	<td> $student.getSchool().getName() </td>
-        	<td> $student.getScore($subject.test()).getScore() </td>
+        	<td> $student.getScore($subject).getScore() </td>
     	</tr>
     #end
 </table>

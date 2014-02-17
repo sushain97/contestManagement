@@ -1,4 +1,5 @@
-/* Component of GAE Project for TMSCA Contest Automation
+/*
+ * Component of GAE Project for TMSCA Contest Automation
  * Copyright (C) 2013 Sushain Cherivirala
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8,11 +9,11 @@
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see [http://www.gnu.org/licenses/]. 
+ * along with this program. If not, see [http://www.gnu.org/licenses/].
  */
 
 package contestWebsite;
@@ -41,10 +42,9 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Text;
 
 @SuppressWarnings("serial")
-public class OAuth extends HttpServlet
-{
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
-	{
+public class OAuth extends HttpServlet {
+	@Override
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Query query = new Query("contestInfo");
 		Entity contestInfo = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
@@ -52,34 +52,33 @@ public class OAuth extends HttpServlet
 		final String clientSecret = (String) contestInfo.getProperty("OAuth2ClientSecret");
 
 		UserCookie userCookie = UserCookie.getCookie(req);
-		if(userCookie.isAdmin())
-		{
+		if (userCookie.isAdmin()) {
 			ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
 			getContent(req.getInputStream(), resultStream);
 			String code = new String(resultStream.toByteArray(), "UTF-8");
-			try
-			{
-				GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(new NetHttpTransport(), new JacksonFactory(), clientId, clientSecret, code, "postmessage").execute();
+			try {
+				GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(new NetHttpTransport(), new JacksonFactory(), clientId,
+						clientSecret, code, "postmessage").execute();
 				contestInfo.setProperty("OAuth2Token", new Text(tokenResponse.toString()));
 				datastore.put(contestInfo);
 
 				resp.setStatus(HttpServletResponse.SC_OK);
 			}
-			catch(Exception e)
-			{
+			catch (Exception e) {
 				resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			}
 		}
-		else
+		else {
 			resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Contest Administrator privileges required for that operation");
+		}
 	}
 
-	private static void getContent(InputStream inputStream, ByteArrayOutputStream outputStream) throws IOException 
-	{
+	private static void getContent(InputStream inputStream, ByteArrayOutputStream outputStream) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 		int readChar;
-		while ((readChar = reader.read()) != -1)
+		while ((readChar = reader.read()) != -1) {
 			outputStream.write(readChar);
+		}
 		reader.close();
 	}
 }

@@ -1,4 +1,5 @@
-/* Component of GAE Project for TMSCA Contest Automation
+/*
+ * Component of GAE Project for TMSCA Contest Automation
  * Copyright (C) 2013 Sushain Cherivirala
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8,11 +9,11 @@
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see [http://www.gnu.org/licenses/]. 
+ * along with this program. If not, see [http://www.gnu.org/licenses/].
  */
 
 package errors;
@@ -32,18 +33,17 @@ import util.UserCookie;
 import com.google.appengine.api.datastore.Entity;
 
 @SuppressWarnings("serial")
-public class ErrorServlet extends BaseHttpServlet
-{
-	public Pair<Entity, UserCookie> init(VelocityContext context, HttpServletRequest req) throws UnsupportedEncodingException
-	{
+public class ErrorServlet extends BaseHttpServlet {
+	@Override
+	public Pair<Entity, UserCookie> init(VelocityContext context, HttpServletRequest req) throws UnsupportedEncodingException {
 		Pair<Entity, UserCookie> infoAndCookie = super.init(context, req);
-		
+
 		context.put("error", req.getAttribute("javax.servlet.error.message"));
 		context.put("uri", req.getAttribute("javax.servlet.error.request_uri"));
 		context.put("servlet", req.getAttribute("javax.servlet.error.servlet_name"));
 		context.put("diaginfo", RequestPrinter.debugString(req, true).replaceAll("\n", "<br>"));
 		context.put("date", new Date().toString());
-		
+
 		return infoAndCookie;
 	}
 }

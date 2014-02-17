@@ -16,27 +16,31 @@
  * along with this program. If not, see [http://www.gnu.org/licenses/].
  */
 
-package contestWebsite;
+package contestTabulation;
 
-import java.io.IOException;
+public enum Subject {
+	C("Calculator"), M("Math"), N("Number Sense"), S("Science");
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+	public static String[] getSubjectNames() {
+		return new String[] {N.getName(), C.getName(), M.getName(), S.getName()};
+	}
 
-import util.UserCookie;
+	public static Subject[] getSubjects() {
+		return new Subject[] {N, C, M, S};
+	}
 
-@SuppressWarnings("serial")
-public class Logout extends HttpServlet {
+	private final String subjectName;
+
+	private Subject(String subjectName) {
+		this.subjectName = subjectName;
+	}
+
+	public String getName() {
+		return subjectName;
+	}
+
 	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		UserCookie userCookie = UserCookie.getCookie(req);
-		if (userCookie != null) {
-			userCookie.setMaxAge(0);
-			userCookie.setValue("");
-			resp.addCookie(userCookie);
-		}
-
-		resp.sendRedirect("/");
+	public String toString() {
+		return this.name();
 	}
 }

@@ -1,4 +1,5 @@
-/* Component of GAE Project for TMSCA Contest Automation
+/*
+ * Component of GAE Project for TMSCA Contest Automation
  * Copyright (C) 2013 Sushain Cherivirala
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8,52 +9,57 @@
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see [http://www.gnu.org/licenses/]. 
+ * along with this program. If not, see [http://www.gnu.org/licenses/].
  */
 
 package contestTabulation;
 
-public enum Test
-{
-	N6(6, "N"), C6(6, "C"), M6(6, "M"), S6(6, "S"),
-	N7(7, "N"), C7(7, "C"), M7(7, "M"), S7(7, "S"),
-	N8(8, "N"), C8(8, "C"), M8(8, "M"), S8(8, "S"),
-	N9(9, "N"), C9(9, "C"), M9(9, "M"), S9(9, "S"),
-	N10(10, "N"), C10(10, "C"), M10(10, "M"), S10(10, "S"),
-	N11(11, "N"), C11(11, "C"), M11(11, "M"), S11(11, "S"),
-	N12(12, "N"), C12(12, "C"), M12(12, "M"), S12(12, "S");
+import java.util.Objects;
+
+public enum Test {
+	N6(6, Subject.N), C6(6, Subject.C), M6(6, Subject.M), S6(6, Subject.S),
+	N7(7, Subject.N), C7(7, Subject.C), M7(7, Subject.M), S7(7, Subject.S),
+	N8(8, Subject.N), C8(8, Subject.C), M8(8, Subject.M), S8(8, Subject.S),
+	N9(9, Subject.N), C9(9, Subject.C), M9(9, Subject.M), S9(9, Subject.S),
+	N10(10, Subject.N), C10(10, Subject.C), M10(10, Subject.M), S10(10, Subject.S),
+	N11(11, Subject.N), C11(11, Subject.C), M11(11, Subject.M), S11(11, Subject.S),
+	N12(12, Subject.N), C12(12, Subject.C), M12(12, Subject.M), S12(12, Subject.S);
+
+	public static Test fromSubjectAndGrade(int grade, Subject subject) {
+		return Test.valueOf(Objects.requireNonNull(subject).toString() + grade);
+	}
+
+	public static Test[] highTests() {
+		return new Test[] {N9, C9, M9, S9, N10, C10, M10, S10, N11, C11, M11, S11, N12, C12, M12, S12};
+	}
+
+	public static Test[] middleTests() {
+		return new Test[] {N6, C6, M6, S6, N7, C7, M7, S7, N8, C8, M8, S8};
+	}
 
 	private final int grade;
-	private final String test;
-	
-	private Test(int grade, String test)
-	{
+
+	private final Subject subject;
+
+	private Test(int grade, Subject subject) {
 		this.grade = grade;
-		this.test = test;
+		this.subject = subject;
 	}
-	
-	public int grade() { return grade; }
-	public String test() { return test; }
-	public String toString() { return grade + "" + test; }
-	
-	public static String[] tests() { return new String[] {"N", "C", "M", "S"}; }
-	public static int[] grades(String level) { return level.equals("middle") ? new int[] {6, 7, 8} : new int[] {9, 10, 11, 12}; }
-	public static Test[] middleTests() { return new Test[] {N6, C6, M6, S6, N7, C7, M7, S7, N8, C8, M8, S8}; }
-	public static Test[] highTests() { return new Test[] {N9, C9, M9, S9, N10, C10, M10, S10, N11, C11, M11, S11, N12, C12, M12, S12}; }
-	
-	public static String letterToName(String test)
-	{
-		switch(test)
-		{
-			case "N": return "Number Sense";
-			case "C": return "Calculator";
-			case "M": return "Math";
-			case "S": return "Science";
-		}
-		return "";
+
+	public int getGrade() {
+		return grade;
+	}
+
+	public Subject getSubject() {
+		return subject;
+	}
+
+	@Override
+	public String toString() {
+		return grade + "" + subject;
 	}
 }

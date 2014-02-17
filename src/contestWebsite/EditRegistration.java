@@ -1,4 +1,5 @@
-/* Component of GAE Project for TMSCA Contest Automation
+/*
+ * Component of GAE Project for TMSCA Contest Automation
  * Copyright (C) 2013 Sushain Cherivirala
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8,11 +9,11 @@
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see [http://www.gnu.org/licenses/]. 
+ * along with this program. If not, see [http://www.gnu.org/licenses/].
  */
 
 package contestWebsite;
@@ -49,10 +50,9 @@ import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
 
 @SuppressWarnings("serial")
-public class EditRegistration extends BaseHttpServlet
-{
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException
-	{
+public class EditRegistration extends BaseHttpServlet {
+	@Override
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
 		ve.init();
@@ -62,32 +62,36 @@ public class EditRegistration extends BaseHttpServlet
 		UserCookie userCookie = infoAndCookie.y;
 		boolean loggedIn = (boolean) context.get("loggedIn");
 
-		if(loggedIn && userCookie.isAdmin())
-		{
+		if (loggedIn && userCookie.isAdmin()) {
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 			Key key = KeyFactory.createKey("registration", Long.parseLong(req.getParameter("key")));
-			try
-			{
+			try {
 				Entity registration = datastore.get(key);
 				Map<String, Object> props = registration.getProperties();
 
 				String registrationType = (String) props.get("registrationType");
-				if(registrationType.equals("coach"))
+				if (registrationType.equals("coach")) {
 					context.put("coach", true);
-				else
+				}
+				else {
 					context.put("student", true);
+				}
 
 				String schoolLevel = (String) props.get("schoolLevel");
-				if(schoolLevel.equals("middle"))
+				if (schoolLevel.equals("middle")) {
 					context.put("middle", true);
-				else
+				}
+				else {
 					context.put("high", true);
+				}
 
 				String account = (String) props.get("account");
-				if(account.equals("yes"))
+				if (account.equals("yes")) {
 					context.put("account", true);
-				else
+				}
+				else {
 					context.put("account", false);
+				}
 
 				context.put("schoolName", props.get("schoolName"));
 				context.put("name", props.get("name"));
@@ -97,49 +101,45 @@ public class EditRegistration extends BaseHttpServlet
 				context.put("studentData", ((Text) props.get("studentData")).getValue());
 
 				Entity contestInfo = infoAndCookie.x;
-				context.put("price", (Long) contestInfo.getProperty("price"));
+				context.put("price", contestInfo.getProperty("price"));
 				context.put("key", key);
-				context.put("levels", (String) contestInfo.getProperty("levels"));
-				
+				context.put("levels", contestInfo.getProperty("levels"));
+
 				close(context, ve.getTemplate("editRegistration.html"), resp);
 			}
-			catch(EntityNotFoundException e)
-			{ 
+			catch (EntityNotFoundException e) {
 				e.printStackTrace();
 				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 			}
 		}
-		else
+		else {
 			resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Contest Administrator privileges required for that operation");
+		}
 	}
 
-	@SuppressWarnings({ "unchecked", "deprecation" })
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
-	{
+	@Override
+	@SuppressWarnings({"unchecked", "deprecation"})
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		UserCookie userCookie = UserCookie.getCookie(req);
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
-		if(loggedIn && userCookie.isAdmin())
-		{
+		if (loggedIn && userCookie.isAdmin()) {
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 			Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
 			Key key = KeyFactory.createKey("registration", Long.parseLong(req.getParameter("key")));
-			try
-			{
+			try {
 				Entity registration = datastore.get(key);
 				Map<String, String[]> params = new HashMap<String, String[]>(req.getParameterMap());
-				for(Entry<String, String[]> param : params.entrySet())
-					param.setValue(new String[] { escapeHtml4(param.getValue()[0]) });
-				
-				if(params.get("ajax") != null && "1".equals(params.get("ajax")[0]))
-				{
+				for (Entry<String, String[]> param : params.entrySet()) {
+					param.setValue(new String[] {escapeHtml4(param.getValue()[0])});
+				}
+
+				if (params.get("ajax") != null && "1".equals(params.get("ajax")[0])) {
 					String newValue = params.get("newValue")[0];
 					String modified = params.get("modified")[0];
-					if("yes".equals(params.get("account")[0]) && ("email".equals(modified) || "schoolName".equals(modified) || "name".equals(modified)))
-					{
+					if ("yes".equals(params.get("account")[0]) && ("email".equals(modified) || "schoolName".equals(modified) || "name".equals(modified))) {
 						Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, registration.getProperty("email"));
 						Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
-						switch(modified)
-						{
+						switch (modified) {
 							case "email":
 								user.setProperty("user-id", newValue.toLowerCase());
 								break;
@@ -150,45 +150,40 @@ public class EditRegistration extends BaseHttpServlet
 								user.setProperty("name", newValue);
 						}
 						datastore.put(user);
-						
+
 						registration.setProperty(modified, newValue);
 					}
-					else
+					else {
 						registration.setProperty(modified, newValue);
+					}
 					datastore.put(registration);
 					txn.commit();
 				}
-				else
-				{
-					if(params.containsKey("delete"))
-					{
-						if(registration.getProperty("account").equals("yes"))
-						{
+				else {
+					if (params.containsKey("delete")) {
+						if (registration.getProperty("account").equals("yes")) {
 							Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, registration.getProperty("email"));
 							Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 							datastore.delete(user.getKey());
 						}
-						datastore.delete(registration.getKey()); //TODO: Do not completely delete
+						datastore.delete(registration.getKey()); // TODO: Do not completely delete
 						txn.commit();
 						resp.sendRedirect("/data?choice=registrations&updated=1");
 					}
-					else
-					{
+					else {
 						String schoolLevel = params.get("schoolLevel")[0];
 						String name = params.get("name")[0];
 						String schoolName = params.get("schoolName")[0];
 						String email = params.get("email")[0];
 
 						String account = params.get("account")[0];
-						if(registration.getProperty("account").equals("yes") && account.equals("no"))
-						{
+						if (registration.getProperty("account").equals("yes") && account.equals("no")) {
 							registration.setProperty("account", "no");
 							Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, registration.getProperty("email"));
 							Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 							datastore.delete(user.getKey());
 						}
-						else if(registration.getProperty("account").equals("yes"))
-						{
+						else if (registration.getProperty("account").equals("yes")) {
 							Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, registration.getProperty("email"));
 							Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 							user.setProperty("name", name);
@@ -215,18 +210,18 @@ public class EditRegistration extends BaseHttpServlet
 					resp.sendRedirect("/data?choice=registrations&updated=1");
 				}
 			}
-			catch(Exception e)
-			{ 
+			catch (Exception e) {
 				e.printStackTrace();
 				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 			}
-			finally
-			{
-				if(txn.isActive())
+			finally {
+				if (txn.isActive()) {
 					txn.rollback();
+				}
 			}
 		}
-		else
+		else {
 			resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Contest Administrator privileges required for that operation");
+		}
 	}
 }

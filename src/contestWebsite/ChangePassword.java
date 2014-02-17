@@ -1,4 +1,5 @@
-/* Component of GAE Project for TMSCA Contest Automation
+/*
+ * Component of GAE Project for TMSCA Contest Automation
  * Copyright (C) 2013 Sushain Cherivirala
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8,44 +9,29 @@
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see [http://www.gnu.org/licenses/]. 
+ * along with this program. If not, see [http://www.gnu.org/licenses/].
  */
 
 package contestWebsite;
 
 import java.io.IOException;
-import java.io.StringWriter;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Random;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
 import util.BaseHttpServlet;
-import util.HTMLCompressor;
 import util.Pair;
 import util.Password;
 import util.UserCookie;
@@ -55,17 +41,12 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
-import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.appengine.api.datastore.Transaction;
 
-@SuppressWarnings({ "serial", "unused" })
-public class ChangePassword extends BaseHttpServlet
-{
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)	throws IOException
-	{
+@SuppressWarnings({"serial", "unused"})
+public class ChangePassword extends BaseHttpServlet {
+	@Override
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
 		ve.init();
@@ -74,52 +55,49 @@ public class ChangePassword extends BaseHttpServlet
 
 		UserCookie userCookie = infoAndCookie.y;
 		boolean loggedIn = (boolean) context.get("loggedIn");
-		
+
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-		if(loggedIn && !userCookie.isAdmin())
-		{
+		if (loggedIn && !userCookie.isAdmin()) {
 			context.put("updated", req.getParameter("updated"));
 			context.put("passError", req.getParameter("passError"));
 			context.put("confPassError", req.getParameter("confPassError"));
-			
+
 			close(context, ve.getTemplate("changePassword.html"), resp);
 		}
-		else
+		else {
 			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User account required for that operation");
+		}
 	}
 
-	@SuppressWarnings({ "deprecation", "unchecked" })
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
-	{
+	@Override
+	@SuppressWarnings({"deprecation", "unchecked"})
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		UserCookie userCookie = UserCookie.getCookie(req);
 		Entity user = userCookie != null ? userCookie.authenticateUser() : null;
 		boolean loggedIn = userCookie != null && user != null;
-		
-		if(loggedIn)
-		{
+
+		if (loggedIn) {
 			Map<String, String[]> params = req.getParameterMap();
 			String currentPass = params.get("currentPass")[0];
 			String newPassword = params.get("newPass")[0];
 			String confPassword = params.get("confNewPass")[0];
-			if(!newPassword.equals(confPassword))
+			if (!newPassword.equals(confPassword)) {
 				resp.sendRedirect("/changePass?confPassError=1");
-			else
-			{
+			}
+			else {
 				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 				Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, userCookie.getUsername());
 				List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-				if(users.size() < 1)
+				if (users.size() < 1) {
 					resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User account required for that operation");
-				else
-				{
+				}
+				else {
 					Entity userEntity = users.get(0);
 					String hash = (String) userEntity.getProperty("hash");
 					String salt = (String) userEntity.getProperty("salt");
-					try 
-					{
-						if(Password.check(currentPass, salt + "$" + hash))
-						{
+					try {
+						if (Password.check(currentPass, salt + "$" + hash)) {
 							String newHash = Password.getSaltedHash(newPassword);
 							Cookie cookie = new Cookie("user-id", URLEncoder.encode(userCookie.getUsername() + "$" + newHash.split("\\$")[1], "UTF-8"));
 							resp.addCookie(cookie);
@@ -129,18 +107,19 @@ public class ChangePassword extends BaseHttpServlet
 							datastore.put(user);
 							resp.sendRedirect("/changePass?updated=1");
 						}
-						else
+						else {
 							resp.sendRedirect("/changePass?passError=1");
+						}
 					}
-					catch (Exception e) 
-					{
+					catch (Exception e) {
 						e.printStackTrace();
 						resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 					}
 				}
 			}
 		}
-		else
+		else {
 			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User account required for that operation");
+		}
 	}
 }

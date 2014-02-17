@@ -38,10 +38,8 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Text;
 
 @SuppressWarnings("serial")
-public class BaseHttpServlet extends HttpServlet
-{
-	public Pair<Entity, UserCookie> init(VelocityContext context, HttpServletRequest req) throws UnsupportedEncodingException
-	{
+public class BaseHttpServlet extends HttpServlet {
+	public Pair<Entity, UserCookie> init(VelocityContext context, HttpServletRequest req) throws UnsupportedEncodingException {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Query query = new Query("contestInfo");
 		List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
@@ -60,8 +58,7 @@ public class BaseHttpServlet extends HttpServlet
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
 
 		context.put("loggedIn", loggedIn);
-		if (loggedIn)
-		{
+		if (loggedIn) {
 			context.put("user", userCookie.getUsername());
 			context.put("admin", userCookie.isAdmin());
 		}

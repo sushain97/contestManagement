@@ -22,6 +22,14 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Objects;
 
+import javax.jdo.annotations.IdGeneratorStrategy;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.PrimaryKey;
+
+import com.google.appengine.api.datastore.Key;
+
+@PersistenceCapable
 public class Student {
 	private static int anonCounter = 0;
 
@@ -43,10 +51,13 @@ public class Student {
 		};
 	}
 
-	private final int grade;
-	private final String name;
-	private final School school;
-	private final HashMap<Subject, Score> scores = new HashMap<Subject, Score>();
+	@Persistent private int grade;
+	@Persistent private String name;
+
+	@Persistent private School school;
+	@Persistent(serialized = "true") private HashMap<Subject, Score> scores = new HashMap<Subject, Score>();
+
+	@PrimaryKey @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY) private Key key;
 
 	Student(int grade, School school) {
 		this("Anonymous" + anonCounter, school, grade);

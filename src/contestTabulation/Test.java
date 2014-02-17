@@ -42,7 +42,6 @@ public enum Test {
 	}
 
 	private final int grade;
-
 	private final Subject subject;
 
 	private Test(int grade, Subject subject) {

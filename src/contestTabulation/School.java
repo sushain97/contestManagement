@@ -24,8 +24,16 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Objects;
 
+import javax.jdo.annotations.IdGeneratorStrategy;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.PrimaryKey;
+
 import util.Pair;
 
+import com.google.appengine.api.datastore.Key;
+
+@PersistenceCapable
 public class School {
 	public static Comparator<School> getScoreComparator(final Subject subject) {
 		return new Comparator<School>() {
@@ -45,15 +53,17 @@ public class School {
 		};
 	}
 
-	private final HashMap<Test, ArrayList<Score>> anonScores = new HashMap<Test, ArrayList<Score>>();
-	private final Level level;
-	private final int lowGrade, highGrade;
-	private final String name;
-	private final HashMap<Test, Integer> numTests = new HashMap<Test, Integer>();
-	private final ArrayList<Student> students = new ArrayList<Student>();
-	private final HashMap<Subject, Pair<Student[], Integer>> topScores = new HashMap<Subject, Pair<Student[], Integer>>();
+	@Persistent private Level level;
+	@Persistent private int lowGrade, highGrade;
+	@Persistent private String name;
+	@Persistent private ArrayList<Student> students = new ArrayList<Student>();
+	@Persistent private int totalScore;
 
-	private int totalScore;
+	@Persistent(serialized = "true") private HashMap<Test, ArrayList<Score>> anonScores = new HashMap<Test, ArrayList<Score>>();
+	@Persistent(serialized = "true") private HashMap<Test, Integer> numTests = new HashMap<Test, Integer>();
+	@Persistent(serialized = "true") private HashMap<Subject, Pair<Student[], Integer>> topScores = new HashMap<Subject, Pair<Student[], Integer>>();
+
+	@PrimaryKey @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY) private Key key;
 
 	School(String name, Level level) {
 		this.name = Objects.requireNonNull(name);

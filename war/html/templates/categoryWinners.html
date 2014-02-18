@@ -23,7 +23,7 @@
         		#if($foreach.count <= $trophy) <i class="fa fa-trophy"></i> #end
         		#if($foreach.count > $trophy && $foreach.count <= ($medal + $trophy)) <i class="icon-medal"></i> #end	
        		</td>
-        	<td> #[[#if($hideFullNames)]]# $student.getPublicName() #[[#else]]# $student.getName() #[[#end]]# </td>
+        	<td> #if($hideFullNames) $student.getPublicName() #else $student.getName() #end </td>
         	<td> $student.getSchool().getName() </td>
         	<td> $student.getScore($subject).getScore() </td>
     	</tr>

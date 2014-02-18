@@ -6,7 +6,7 @@
 	<meta name="description" content="View the $title scores">
 	<meta name="robots" content="noindex, nofollow">
 	<meta name="tab" content="ContestData">
-	<meta name="type" content="$type">
+	<meta name="type" content="$type#if($level)$level.toUpperCase()#end">
 	#parse("head.html")
 	<style type="text/css">
 		.highlighted { background-color: #e8f8fd !important; }
@@ -35,7 +35,7 @@
 			margin: 9px 1px;
 		}
 		.nav-header { text-transform: uppercase; font-weight: bold; }
-		#if($type.contains("school"))
+		#if($type == "schoolOverview")
 			body { padding-top: 51px !important; }
 		#end
 	</style>
@@ -50,7 +50,7 @@
 	<div id="wrap">
 		#parse("navbar.html")
 		
-		#if($type.contains("school"))
+		#if($type == "schoolOverview")
 		<div class="navbar navbar-inverse hidden-xs" style="margin-bottom: 0px;">
 			<div class="container">
 				<div class="navbar-header">
@@ -76,75 +76,44 @@
 			<div class="row">
 				<div class="col-md-3 col-xs-5 hidden-print">
 					<ul class="nav nav-pills nav-stacked">
-						<li id="overview"><a href="/data?choice=scores">Overview</a></li>
+						<li data-type="overview"><a href="/data?choice=scores">Overview</a></li>
 						
-						#if($enabledLevels.contains("middle"))
-							<li class="nav-header"><h4>Middle School</h4></li>
-							<li id="middle_students"><a href="/data?choice=scores&type=middle_students">All Students</a></li>
-							<li id="middle_sweep"><a href="/data?choice=scores&type=middle_sweep">Sweepstakes</a></li>
-							<li id="middle_categorySweep"><a href="/data?choice=scores&type=middle_categorySweep">Category Sweekstakes</a></li>
-							<li id="middle_visualizations"><a href="/data?choice=scores&type=middle_visualizations">Visualizations</a></li>
-							<li class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-									Schools<b class="caret"></b>
-								</a>
-								<ul class="dropdown-menu">
-									#foreach($school in $middleSchools)
-									<li id='$school.getProperty("school").hashCode()'>
-										<a href='/data?choice=scores&type=middle_school_$esc.url($school.getProperty("school"))'>$school.getProperty("school")</a>
-									</li>
-									#end
-								</ul>
-							</li>
-							<li class="divider"></li>
-		
-							#foreach($num in [6..8])
-								<li id="${num}" class="dropdown">
+						#foreach($level in $levels)
+							#if($enabledLevels.contains($level.toString()))
+								#set($LEVEL = $level.toString().toUpperCase())
+								<li class="nav-header"><h4>$level.getName() School</h4></li>
+								<li data-type="students$LEVEL"><a href="/data?choice=scores&type=students&level=$level">All Students</a></li>
+								<li data-type="sweep$LEVEL"><a href="/data?choice=scores&type=sweep&level=$level">Sweepstakes</a></li>
+								<li data-type="categorySweep$LEVEL"><a href="/data?choice=scores&type=categorySweep&level=$level">Category Sweekstakes</a></li>
+								<li data-type="visualizations$LEVEL"><a href="/data?choice=scores&type=visualizations&level=$level">Visualizations</a></li>
+								<li class="dropdown">
 									<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-										${num}th Grade <b class="caret"></b>
+										Schools<b class="caret"></b>
 									</a>
 									<ul class="dropdown-menu">
-										<li id="middle_category_${num}C"><a href="/data?choice=scores&type=middle_category_${num}C">Calculator</a></li>
-										<li id="middle_category_${num}N"><a href="/data?choice=scores&type=middle_category_${num}N">Number Sense</a></li>
-										<li id="middle_category_${num}M"><a href="/data?choice=scores&type=middle_category_${num}M">Math</a></li>
-										<li id="middle_category_${num}S"><a href="/data?choice=scores&type=middle_category_${num}S">Science</a></li>
+										#if($level == "middle") #set($schools = $middleSchools) #else #set($schools = $highSchools) #end
+										
+										#foreach($schoolName in $schools)
+											<li data-type="school_$schoolName$LEVEL" id="$schoolName.hashCode()">
+												<a href='/data?choice=scores&type=school_$esc.url($schoolName)&level=$level'>$schoolName</a>
+											</li>
+										#end
 									</ul>
 								</li>
-							#end
-						#end
-	
-						#if($enabledLevels.contains("high"))
-							<li class="nav-header"><h4>High School</h4></li>
-							<li id="high_students"><a href="/data?choice=scores&type=high_students">All Students</a></li>
-							<li id="high_sweep"><a href="/data?choice=scores&type=high_sweep">Sweepstakes</a></li>
-							<li id="high_categorySweep"><a href="/data?choice=scores&type=high_categorySweep">Category Sweekstakes</a></li>
-							<li id="high_visualizations"><a href="/data?choice=scores&type=high_visualizations">Visualizations</a></li>
-							<li class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-									Schools <b class="caret"></b>
-								</a>
-								<ul class="dropdown-menu">
-									#foreach($school in $highSchools)
-									<li id='$school.getProperty("school").hashCode()'>
-										<a href='/data?choice=scores&type=high_school_$esc.url($school.getProperty("school"))'>$school.getProperty("school")</a>
-									</li>
-									#end
-								</ul>
-							</li>
-							<li class="divider"></li>
+								<li class="divider"></li>
 			
-							#foreach($num in [9..12])
-							<li id="${num}" class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-									${num}th Grade<b class="caret"></b>
-								</a>
-								<ul class="dropdown-menu">
-									<li id="high_category_${num}C"><a href="/data?choice=scores&type=high_category_${num}C">Calculator</a></li>
-									<li id="high_category_${num}N"><a href="/data?choice=scores&type=high_category_${num}N">Number Sense</a></li>
-									<li id="high_category_${num}M"><a href="/data?choice=scores&type=high_category_${num}M">Math</a></li>
-									<li id="high_category_${num}S"><a href="/data?choice=scores&type=high_category_${num}S">Science</a></li>
-								</ul>
-							</li>
+								#foreach($num in [$level.getLowGrade()..$level.getHighGrade()])
+									<li id="${num}" class="dropdown">
+										<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+											${num}th Grade <b class="caret"></b>
+										</a>
+										<ul class="dropdown-menu">
+											#foreach($subject in $subjects)
+												<li data-type="category_${num}${subject}$LEVEL"><a href="/data?choice=scores&type=category_${num}${subject}&level=$LEVEL">$subject.getName()</a></li>
+											#end
+										</ul>
+									</li>
+								#end
 							#end
 						#end
 					</ul>
@@ -155,8 +124,37 @@
 					<h1>Contest Results
 					#include("printButton.html")
 					</h1>
-					#if($overview) Choose an option at the left to view specific results. #elseif(!$html) Results for this
-					competition are not yet available #else #evaluate($html) #end
+					#if($type == "overview")
+						Choose an option at the left to view specific results.
+					#elseif($type.equals("students"))
+						#parse("studentsOverview.html")
+					#elseif($type.startsWith("school_"))
+						#if($school)
+							#parse("schoolOverview.html")
+						#else
+							Score information for this school is not yet available.
+						#end
+					#elseif($type.startsWith("category_"))
+						#if($winners)
+							#parse("categoryWinners.html")
+						#else
+							Score information for this category is not yet available.
+						#end
+					#elseif($type.equals("sweep"))
+						#parse("sweepstakesWinners.html")
+					#elseif($type.startsWith("categorySweep"))
+						#if($winners)
+							#parse("categorySweepstakes.html")
+						#else
+							Score information is not yet available.
+						#end
+					#elseif($type == "visualizations")
+						#if($summaryStats && $outliers)
+							#parse("visualizations.html")
+						#else
+							Visualizations not yet available.
+						#end
+					#end
 					
 					<div id="push"></div>
 				</div>

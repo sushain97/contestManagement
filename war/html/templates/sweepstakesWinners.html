@@ -19,10 +19,12 @@
         	<td class="num"> $school.getNumStudents() </td>
         	#foreach($subject in $subjects)
 	        	<td> 
-	        		<a class="popovers" href="#" data-toggle="popover" title="#foreach($student in $school.getScoreStudents($subject)) 
-	        			<strong>#[[#if($hideFullNames)]]#$student.getPublicName() ($student.getGrade())
-						#[[#else]]# $student.getName() ($student.getGrade())#[[#end]]#</strong> - 
-	        			$student.getScore($subject).getScoreNum() <br> #end">
+	        		<a class="popovers" href="#" data-toggle="popover" 
+	        			title="#foreach($student in $school.getScoreStudents($subject))
+			        			<strong>#if($hideFullNames) $student.getPublicName() ($student.getGrade()) 
+			        			#else $student.getName() ($student.getGrade()) #end</strong> 
+			        			- $student.getScore($subject).getScoreNum() <br> 
+		        			#end">
 	        			
 						$school.getScore($subject)
 					</a> 

@@ -37,17 +37,13 @@ $(document).ready(function () {
 	
 function ChangeActive() {
 	var type = $('meta[name="type"]').prop('content');
-	if (type === '$type')
-		$("#overview").addClass('active');
-	else {
-		$("#" + type).closest('.dropdown').addClass('active');
-		$('#' + type).addClass('active');
-		
-		if(type.indexOf('middle_school_') != -1 || type.indexOf('high_school_') != -1) {
-			var hash = hashCode(type.substring(type.indexOf('school_') + 7));
-			$("#" + hash).closest('.dropdown').addClass('active');
-			$('#' + hash).addClass('active');
-		}
+	$('li[data-type="' + type + '"]').closest('.dropdown').addClass('active');
+	$('li[data-type="' + type + '"]').addClass('active');
+	
+	if(type.indexOf("school_") !== -1) {
+		var hash = hashCode(type.substring(type.indexOf('school_') + 7));
+		$("#" + hash).closest('.dropdown').addClass('active');
+		$('#' + hash).addClass('active');
 	}
 }
 

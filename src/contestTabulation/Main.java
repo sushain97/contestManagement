@@ -24,7 +24,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -556,7 +555,13 @@ public class Main extends HttpServlet {
 		SimpleDateFormat isoFormat = new SimpleDateFormat("hh:mm:ss a EEEE MMMM d, yyyy zzzz");
 		isoFormat.setTimeZone(TimeZone.getTimeZone("America/Chicago"));
 		info.setProperty("updated", isoFormat.format(new Date()).toString());
-		info.setProperty("testsGraded", Arrays.asList(testsGraded.toArray()).toString());
+
+		List<String> testsGradedList = new ArrayList<String>();
+		for (Test test : testsGraded) {
+			testsGradedList.add(test.toString());
+		}
+		info.setProperty("testsGraded", testsGradedList);
+
 		datastore.put(info);
 	}
 }

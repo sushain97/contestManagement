@@ -18,6 +18,8 @@
 
 package contestTabulation;
 
+import java.util.Objects;
+
 public enum Level {
 	MIDDLE("middle", 6, 8), HIGH("high", 9, 12);
 
@@ -31,7 +33,7 @@ public enum Level {
 	}
 
 	public static Level fromString(String level) {
-		if ("middle".compareToIgnoreCase(level) == 0) {
+		if ("middle".compareToIgnoreCase(Objects.requireNonNull(level)) == 0) {
 			return Level.MIDDLE;
 		}
 		else if ("high".compareToIgnoreCase(level) == 0) {

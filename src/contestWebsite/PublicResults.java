@@ -19,7 +19,10 @@
 package contestWebsite;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,112 +30,110 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.tools.generic.EscapeTool;
 
 import util.BaseHttpServlet;
 import util.Pair;
 import util.UserCookie;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
-import com.google.appengine.api.datastore.Query.Filter;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Text;
+import com.google.appengine.labs.repackaged.org.json.JSONException;
+import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
+import contestTabulation.Level;
+import contestTabulation.Retrieve;
+import contestTabulation.Subject;
 import contestTabulation.Test;
 
 @SuppressWarnings("serial")
 public class PublicResults extends BaseHttpServlet {
+	@SuppressWarnings("unchecked")
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		VelocityEngine ve = new VelocityEngine();
-		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
+		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets, html/templates");
 		ve.init();
 		VelocityContext context = new VelocityContext();
 		Pair<Entity, UserCookie> infoAndCookie = init(context, req);
 
 		UserCookie userCookie = infoAndCookie.y;
-		Entity user = userCookie != null ? userCookie.authenticateUser() : null;
 		boolean loggedIn = (boolean) context.get("loggedIn");
 
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Map<String, Integer> awardCriteria = new HashMap<String, Integer>();
+		JSONObject awardCriteriaJSON = null;
+		try {
+			awardCriteriaJSON = new JSONObject(((Text) infoAndCookie.x.getProperty("awardCriteria")).getValue());
+			Iterator<String> awardCountKeyIter = awardCriteriaJSON.keys();
+			while (awardCountKeyIter.hasNext()) {
+				String awardCountType = awardCountKeyIter.next();
+				try {
+					awardCriteria.put(awardCountType, (Integer) awardCriteriaJSON.get(awardCountType));
+				}
+				catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		catch (JSONException e) {
+			e.printStackTrace();
+		}
 
 		if (!loggedIn && req.getParameter("refresh") != null && req.getParameter("refresh").equals("1")) {
 			resp.sendRedirect("/?refresh=1");
 		}
 
-		if (loggedIn) {
-			context.put("admin", userCookie.isAdmin());
-			if (!userCookie.isAdmin()) {
-				String name = (String) user.getProperty("name");
-				context.put("name", name);
-				context.put("user", user.getProperty("user-id"));
-			}
-			else {
-				context.put("user", user.getProperty("user-id"));
-				context.put("name", "Contest Administrator");
-			}
+		Entity contestInfo = infoAndCookie.x;
+		if (contestInfo.hasProperty("testsGraded")) {
+			context.put("testsGraded", contestInfo.getProperty("testsGraded"));
 		}
 
-		Entity contestInfo = infoAndCookie.x;
-		if (contestInfo != null) {
-			if (contestInfo.getProperty("testsGraded") != null) {
-				String testsGradedString = (String) contestInfo.getProperty("testsGraded");
-				String[] testsGraded = testsGradedString.substring(1, testsGradedString.length() - 1).split(",");
-				for (int i = 0; i < testsGraded.length; i++) {
-					testsGraded[i] = testsGraded[i].trim().toUpperCase();
-				}
-				context.put("testsGraded", testsGraded);
-				context.put("Test", Test.class);
-			}
+		Object complete = contestInfo.getProperty("complete");
+		if (complete != null && (Boolean) complete || loggedIn && userCookie.isAdmin()) {
+			context.put("complete", true);
 
-			Object complete = contestInfo.getProperty("complete");
-			if (complete != null && (Boolean) complete || loggedIn && userCookie.isAdmin()) {
-				context.put("complete", true);
-				String type = req.getParameter("type");
-				context.put("type", type);
+			String type = req.getParameter("type");
+			context.put("type", type);
 
-				if (type != null) {
-					String[] types = type.split("_");
-					Filter levelFilter = new FilterPredicate("level", FilterOperator.EQUAL, types[0]);
-					if (types.length == 2) {
-						Filter typeFilter = new FilterPredicate("type", FilterOperator.EQUAL, types[1]);
-						Filter filter = CompositeFilterOperator.and(typeFilter, levelFilter);
-						Query query = new Query("html").setFilter(filter);
-						List<Entity> html = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-						if (!html.isEmpty()) {
-							context.put("hideFullNames", contestInfo.getProperty("hideFullNames"));
-							context.put("html", ((com.google.appengine.api.datastore.Text) html.get(0).getProperty("html")).getValue());
-						}
-					}
-					else {
-						Filter typeFilter = new FilterPredicate("type", FilterOperator.EQUAL, types[1]);
-						Filter testFilter = new FilterPredicate("test", FilterOperator.EQUAL, types[2]);
-						Filter filter = CompositeFilterOperator.and(CompositeFilterOperator.and(typeFilter, levelFilter), testFilter);
-						Query query = new Query("html").setFilter(filter);
-						List<Entity> html = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-						if (!html.isEmpty()) {
-							context.put("hideFullNames", contestInfo.getProperty("hideFullNames"));
-							context.put("html", ((com.google.appengine.api.datastore.Text) html.get(0).getProperty("html")).getValue());
-						}
-					}
-				}
-				else {
-					context.put("overview", true);
-				}
+			if (type != null) {
+				String[] types = type.split("_");
+				Level level = Level.fromString(req.getParameter("level"));
+				context.put("tests", Test.getTests(level));
+				context.put("level", level);
 
-				context.put("date", contestInfo.getProperty("updated"));
+				if (type.startsWith("category_")) {
+					context.put("test", Test.fromString(types[1]));
+					context.put("trophy", awardCriteria.get("category_" + level + "_trophy"));
+					context.put("medal", awardCriteria.get("category_" + level + "_medal"));
+					context.put("winners", Retrieve.categoryWinners(types[1], level));
+				}
+				else if (type.startsWith("categorySweep")) {
+					context.put("trophy", awardCriteria.get("categorySweep_" + level));
+					context.put("winners", Retrieve.categorySweepstakesWinners(level));
+				}
+				else if (type.equals("sweep")) {
+					context.put("trophy", awardCriteria.get("sweepstakes_" + level));
+					context.put("winners", Retrieve.sweepstakesWinners(level));
+				}
+				else if (type.equals("visualizations")) {
+					Pair<Map<Test, List<Integer>>, Map<Test, List<Integer>>> statsAndOutliers = Retrieve.visualizations(level);
+					context.put("summaryStats", statsAndOutliers.x);
+					context.put("outliers", statsAndOutliers.y);
+				}
 			}
 			else {
-				context.put("complete", false);
+				context.put("type", "avail");
 			}
 		}
 		else {
 			context.put("complete", false);
 		}
+
+		context.put("hideFullNames", contestInfo.getProperty("hideFullNames"));
+		context.put("date", contestInfo.getProperty("updated"));
+		context.put("subjects", Subject.values());
+		context.put("levels", Level.values());
+		context.put("esc", new EscapeTool());
 
 		close(context, ve.getTemplate("publicResults.html"), resp);
 	}

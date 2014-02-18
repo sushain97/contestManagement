@@ -30,7 +30,7 @@ public enum Level {
 		this.highGrade = highGrade;
 	}
 
-	public Level fromString(String level) {
+	public static Level fromString(String level) {
 		if ("middle".compareToIgnoreCase(level) == 0) {
 			return Level.MIDDLE;
 		}
@@ -48,6 +48,10 @@ public enum Level {
 
 	public int getLowGrade() {
 		return lowGrade;
+	}
+
+	public String getName() {
+		return stringLevel.substring(0, 1).toUpperCase() + stringLevel.substring(1);
 	}
 
 	@Override

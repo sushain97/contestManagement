@@ -29,6 +29,15 @@ public enum Test {
 	N11(11, Subject.N), C11(11, Subject.C), M11(11, Subject.M), S11(11, Subject.S),
 	N12(12, Subject.N), C12(12, Subject.C), M12(12, Subject.M), S12(12, Subject.S);
 
+	public static Test fromString(String testString) {
+		if (Objects.requireNonNull(testString).length() == 2 || testString.length() == 3) {
+			return Test.valueOf(testString.substring(testString.length() - 1) + testString.substring(0, testString.length() - 1));
+		}
+		else {
+			throw new IllegalArgumentException();
+		}
+	}
+
 	public static Test fromSubjectAndGrade(int grade, Subject subject) {
 		return Test.valueOf(Objects.requireNonNull(subject).toString() + grade);
 	}
@@ -41,7 +50,12 @@ public enum Test {
 		return new Test[] {N6, C6, M6, S6, N7, C7, M7, S7, N8, C8, M8, S8};
 	}
 
+	public static Test[] getTests(Level level) {
+		return Objects.requireNonNull(level) == Level.MIDDLE ? middleTests() : highTests();
+	}
+
 	private final int grade;
+
 	private final Subject subject;
 
 	private Test(int grade, Subject subject) {

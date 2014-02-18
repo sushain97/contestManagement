@@ -291,7 +291,7 @@ public class Registration extends BaseHttpServlet {
 				for (int i = 0; i < regData.length(); i++) {
 					try {
 						JSONObject studentRegData = regData.getJSONObject(i);
-						for (Subject subject : Subject.getSubjects()) {
+						for (Subject subject : Subject.values()) {
 							cost += price * (studentRegData.getBoolean(subject.toString()) ? 1 : 0);
 						}
 					}

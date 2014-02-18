@@ -148,7 +148,7 @@ public class School implements Serializable {
 	}
 
 	public void calculateScores() {
-		for (Subject subject : Subject.getSubjects()) {
+		for (Subject subject : Subject.values()) {
 			calculateScore(subject);
 		}
 		if (level == Level.MIDDLE) {

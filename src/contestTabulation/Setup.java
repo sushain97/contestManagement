@@ -169,7 +169,7 @@ public class Setup extends BaseHttpServlet {
 						row.getCustomElements().setValueLocal("name", student.getString("name"));
 						row.getCustomElements().setValueLocal("grade", Integer.toString(student.getInt("grade")));
 
-						for (Subject subject : Subject.getSubjects()) {
+						for (Subject subject : Subject.values()) {
 							row.getCustomElements().setValueLocal(subject.toString(), student.getBoolean(subject.toString()) ? "" : "X");
 						}
 

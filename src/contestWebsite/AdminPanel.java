@@ -24,8 +24,6 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -41,6 +39,7 @@ import org.yaml.snakeyaml.Yaml;
 import util.BaseHttpServlet;
 import util.Pair;
 import util.Password;
+import util.Retrieve;
 import util.UserCookie;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -55,13 +54,11 @@ import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 @SuppressWarnings("serial")
 public class AdminPanel extends BaseHttpServlet {
 	@Override
-	@SuppressWarnings("unchecked")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
@@ -79,39 +76,16 @@ public class AdminPanel extends BaseHttpServlet {
 		context.put("updated", req.getParameter("updated"));
 
 		if (loggedIn && userCookie.isAdmin()) {
-			context.put("contestInfo", infoAndCookie.x);
-			context.put("confPassError", req.getParameter("confPassError") != null && req.getParameter("confPassError").equals("1") ? "Those passwords didn't match, try again."
-					: null);
-			context.put("passError", req.getParameter("passError") != null && req.getParameter("passError").equals("1") ? "That password is incorrect, try again."
-					: null);
+			Entity contestInfo = infoAndCookie.x;
+			context.put("contestInfo", contestInfo);
 
-			JSONObject awardCriteriaJSON;
-			try {
-				awardCriteriaJSON = new JSONObject(
-						infoAndCookie.x.hasProperty("awardCriteria") ? ((Text) infoAndCookie.x.getProperty("awardCriteria")).getValue() : "{}");
-			}
-			catch (JSONException e) {
-				e.printStackTrace();
-				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
-				return;
-			}
+			String confPassError = req.getParameter("confPassError");
+			context.put("confPassError", confPassError != null && confPassError.equals("1") ? "Those passwords didn't match, try again." : null);
+			String passError = req.getParameter("passError");
+			context.put("passError", passError != null && passError.equals("1") ? "That password is incorrect, try again." : null);
 
-			HashMap<String, Integer> awardCriteria = new HashMap<String, Integer>();
-			Iterator<String> awardCountKeyIter = awardCriteriaJSON.keys();
-			while (awardCountKeyIter.hasNext()) {
-				String awardCountType = awardCountKeyIter.next();
-				try {
-					awardCriteria.put(awardCountType, (Integer) awardCriteriaJSON.get(awardCountType));
-				}
-				catch (JSONException e) {
-					e.printStackTrace();
-					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
-					return;
-				}
-			}
-			context.put("awardCriteria", awardCriteria);
-
-			context.put("clientId", infoAndCookie.x.getProperty("OAuth2ClientId"));
+			context.put("awardCriteria", Retrieve.awardCriteria(contestInfo));
+			context.put("clientId", contestInfo.getProperty("OAuth2ClientId"));
 
 			close(context, ve.getTemplate("adminPanel.html"), resp);
 		}
@@ -132,9 +106,8 @@ public class AdminPanel extends BaseHttpServlet {
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 			Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
 			try {
-				Query query = new Query("contestInfo");
-				List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-				Entity contestInfo = info.size() != 0 ? info.get(0) : new Entity("contestInfo");
+				Entity info = Retrieve.contestInfo();
+				Entity contestInfo = info != null ? info : new Entity("contestInfo");
 
 				String[] stringPropNames = {"endDate", "startDate", "email", "account", "levels", "title", "publicKey", "privateKey", "school", "address",
 						"siteVerification", "OAuth2ClientSecret", "OAuth2ClientId"};
@@ -199,7 +172,7 @@ public class AdminPanel extends BaseHttpServlet {
 
 				datastore.put(contestInfo);
 
-				query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, "admin");
+				Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, "admin");
 				Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 				String hash = (String) user.getProperty("hash");
 				String salt = (String) user.getProperty("salt");

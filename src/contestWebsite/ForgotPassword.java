@@ -42,6 +42,7 @@ import org.apache.velocity.runtime.RuntimeConstants;
 import util.BaseHttpServlet;
 import util.Pair;
 import util.Password;
+import util.Retrieve;
 import util.UserCookie;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -116,8 +117,7 @@ public class ForgotPassword extends BaseHttpServlet {
 				}
 
 				Session session = Session.getDefaultInstance(new Properties(), null);
-				query = new Query("contestInfo");
-				Entity contestInfo = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+				Entity contestInfo = Retrieve.contestInfo();
 				String appEngineEmail = (String) contestInfo.getProperty("account");
 
 				String url = req.getRequestURL().toString();

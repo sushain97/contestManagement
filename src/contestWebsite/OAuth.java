@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import util.Retrieve;
 import util.UserCookie;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
@@ -37,8 +38,6 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Text;
 
 @SuppressWarnings("serial")
@@ -46,8 +45,7 @@ public class OAuth extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Query query = new Query("contestInfo");
-		Entity contestInfo = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+		Entity contestInfo = Retrieve.contestInfo();
 		final String clientId = (String) contestInfo.getProperty("OAuth2ClientId");
 		final String clientSecret = (String) contestInfo.getProperty("OAuth2ClientSecret");
 

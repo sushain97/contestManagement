@@ -29,7 +29,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +48,7 @@ import org.apache.velocity.runtime.RuntimeConstants;
 
 import util.PMF;
 import util.Pair;
+import util.Retrieve;
 import util.Statistics;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -64,8 +64,6 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Text;
-import com.google.appengine.labs.repackaged.org.json.JSONException;
-import com.google.appengine.labs.repackaged.org.json.JSONObject;
 import com.google.gdata.client.Service;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.CustomElementCollection;
@@ -92,7 +90,8 @@ public class Main extends HttpServlet {
 		final Set<Test> testsGraded = new HashSet<Test>();
 		final SpreadsheetEntry middle, high;
 
-		final Map<String, Integer> awardCriteria = new HashMap<String, Integer>();
+		final Entity contestInfo;
+		final Map<String, Integer> awardCriteria;
 
 		final Set<Student> middleStudents = new HashSet<Student>();
 		final Map<String, School> middleSchools = new HashMap<String, School>();
@@ -107,10 +106,13 @@ public class Main extends HttpServlet {
 		final List<School> highSweepstakesWinners = new ArrayList<School>();
 
 		try {
+			// Retrieve contest information from Datastore
+			contestInfo = Retrieve.contestInfo();
+
 			// Authenticate to Google Documents Service using OAuth 2.0 Authentication Token from Datastore
 			Map<String, String[]> params = req.getParameterMap();
 			SpreadsheetService service = new SpreadsheetService("contestTabulation");
-			authService(service);
+			authService(service, contestInfo);
 
 			// Populate base data structures by traversing Google Documents Spreadsheets
 			middle = getSpreadSheet(params.get("docMiddle")[0], service);
@@ -139,7 +141,7 @@ public class Main extends HttpServlet {
 			persistData(Level.HIGH, highSchools.values(), highCategoryWinners, highCategorySweepstakesWinners, highSweepstakesWinners);
 
 			// Get award criteria from Datastore
-			getAwardCriteria(awardCriteria);
+			awardCriteria = Retrieve.awardCriteria(contestInfo);
 
 			// Generate and store HTML in Datastore
 			storeHTML(Level.MIDDLE, middleStudents, middleSchools, middleCategoryWinners, middleCategorySweepstakesWinners, middleSweepstakesWinners, awardCriteria);
@@ -150,17 +152,14 @@ public class Main extends HttpServlet {
 			updateRegistrations(Level.HIGH, highSchools);
 
 			// Update Datastore by modifying contest information entity to include tests graded
-			updateContestInfo(testsGraded);
+			updateContestInfo(testsGraded, contestInfo);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static void authService(SpreadsheetService service) throws IOException {
-		Query query = new Query("contestInfo");
-		Entity contestInfo = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
-
+	private static void authService(SpreadsheetService service, Entity contestInfo) throws IOException {
 		String clientSecret = (String) contestInfo.getProperty("OAuth2ClientSecret");
 		String clientId = (String) contestInfo.getProperty("OAuth2ClientId");
 		String authToken = ((Text) contestInfo.getProperty("OAuth2Token")).getValue();
@@ -347,30 +346,6 @@ public class Main extends HttpServlet {
 		datastore.put(visualizationEntities);
 	}
 
-	@SuppressWarnings("unchecked")
-	private static void getAwardCriteria(Map<String, Integer> awardCriteria) {
-		Query query = new Query("contestInfo");
-		Entity contestInfo = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
-
-		JSONObject awardCriteriaJSON = null;
-		try {
-			awardCriteriaJSON = new JSONObject(((Text) contestInfo.getProperty("awardCriteria")).getValue());
-			Iterator<String> awardCountKeyIter = awardCriteriaJSON.keys();
-			while (awardCountKeyIter.hasNext()) {
-				String awardCountType = awardCountKeyIter.next();
-				try {
-					awardCriteria.put(awardCountType, (Integer) awardCriteriaJSON.get(awardCountType));
-				}
-				catch (JSONException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		catch (JSONException e) {
-			e.printStackTrace();
-		}
-	}
-
 	private static void storeHTML(Level level, Set<Student> students, Map<String, School> schools, Map<Test, List<Student>> categoryWinners, Map<Subject, List<School>> categorySweepstakesWinners, List<School> sweepstakesWinners, Map<String, Integer> awardCriteria) throws IOException {
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/templates, html/snippets");
@@ -549,19 +524,17 @@ public class Main extends HttpServlet {
 		}
 	}
 
-	private static void updateContestInfo(Set<Test> testsGraded) {
-		Query query = new Query("contestInfo");
-		Entity info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+	private static void updateContestInfo(Set<Test> testsGraded, Entity contestInfo) {
 		SimpleDateFormat isoFormat = new SimpleDateFormat("hh:mm:ss a EEEE MMMM d, yyyy zzzz");
 		isoFormat.setTimeZone(TimeZone.getTimeZone("America/Chicago"));
-		info.setProperty("updated", isoFormat.format(new Date()).toString());
+		contestInfo.setProperty("updated", isoFormat.format(new Date()).toString());
 
 		List<String> testsGradedList = new ArrayList<String>();
 		for (Test test : testsGraded) {
 			testsGradedList.add(test.toString());
 		}
-		info.setProperty("testsGraded", testsGradedList);
+		contestInfo.setProperty("testsGraded", testsGradedList);
 
-		datastore.put(info);
+		datastore.put(contestInfo);
 	}
 }

@@ -19,8 +19,6 @@
 package contestWebsite;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -34,21 +32,17 @@ import org.apache.velocity.tools.generic.EscapeTool;
 
 import util.BaseHttpServlet;
 import util.Pair;
+import util.Retrieve;
 import util.UserCookie;
 
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Text;
-import com.google.appengine.labs.repackaged.org.json.JSONException;
-import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 import contestTabulation.Level;
-import contestTabulation.Retrieve;
 import contestTabulation.Subject;
 import contestTabulation.Test;
 
 @SuppressWarnings("serial")
 public class PublicResults extends BaseHttpServlet {
-	@SuppressWarnings("unchecked")
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		VelocityEngine ve = new VelocityEngine();
@@ -60,24 +54,7 @@ public class PublicResults extends BaseHttpServlet {
 		UserCookie userCookie = infoAndCookie.y;
 		boolean loggedIn = (boolean) context.get("loggedIn");
 
-		Map<String, Integer> awardCriteria = new HashMap<String, Integer>();
-		JSONObject awardCriteriaJSON = null;
-		try {
-			awardCriteriaJSON = new JSONObject(((Text) infoAndCookie.x.getProperty("awardCriteria")).getValue());
-			Iterator<String> awardCountKeyIter = awardCriteriaJSON.keys();
-			while (awardCountKeyIter.hasNext()) {
-				String awardCountType = awardCountKeyIter.next();
-				try {
-					awardCriteria.put(awardCountType, (Integer) awardCriteriaJSON.get(awardCountType));
-				}
-				catch (JSONException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		catch (JSONException e) {
-			e.printStackTrace();
-		}
+		Map<String, Integer> awardCriteria = Retrieve.awardCriteria(infoAndCookie.x);
 
 		if (!loggedIn && req.getParameter("refresh") != null && req.getParameter("refresh").equals("1")) {
 			resp.sendRedirect("/?refresh=1");

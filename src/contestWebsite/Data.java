@@ -19,8 +19,6 @@
 package contestWebsite;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +34,7 @@ import org.apache.velocity.tools.generic.EscapeTool;
 import util.BaseHttpServlet;
 import util.PMF;
 import util.Pair;
+import util.Retrieve;
 import util.UserCookie;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -46,14 +45,10 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
-import com.google.appengine.labs.repackaged.org.json.JSONException;
-import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 import contestTabulation.Level;
-import contestTabulation.Retrieve;
 import contestTabulation.School;
 import contestTabulation.Subject;
 import contestTabulation.Test;
@@ -61,7 +56,7 @@ import contestTabulation.Test;
 @SuppressWarnings("serial")
 public class Data extends BaseHttpServlet {
 	@Override
-	@SuppressWarnings({"deprecation", "unchecked"})
+	@SuppressWarnings("deprecation")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets, html/templates");
@@ -111,24 +106,7 @@ public class Data extends BaseHttpServlet {
 			else if (choice.equals("scores")) {
 				template = "dataScores.html";
 
-				Map<String, Integer> awardCriteria = new HashMap<String, Integer>();
-				JSONObject awardCriteriaJSON = null;
-				try {
-					awardCriteriaJSON = new JSONObject(((Text) infoAndCookie.x.getProperty("awardCriteria")).getValue());
-					Iterator<String> awardCountKeyIter = awardCriteriaJSON.keys();
-					while (awardCountKeyIter.hasNext()) {
-						String awardCountType = awardCountKeyIter.next();
-						try {
-							awardCriteria.put(awardCountType, (Integer) awardCriteriaJSON.get(awardCountType));
-						}
-						catch (JSONException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-				catch (JSONException e) {
-					e.printStackTrace();
-				}
+				Map<String, Integer> awardCriteria = Retrieve.awardCriteria(infoAndCookie.x);
 
 				String type = req.getParameter("type");
 				if (type != null) {

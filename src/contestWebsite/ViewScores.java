@@ -31,6 +31,7 @@ import org.apache.velocity.runtime.RuntimeConstants;
 
 import util.BaseHttpServlet;
 import util.Pair;
+import util.Retrieve;
 import util.UserCookie;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -41,7 +42,6 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 
 import contestTabulation.Level;
-import contestTabulation.Retrieve;
 import contestTabulation.School;
 import contestTabulation.Subject;
 import contestTabulation.Test;

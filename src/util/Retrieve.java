@@ -16,14 +16,16 @@
  * along with this program. If not, see [http://www.gnu.org/licenses/].
  */
 
-package contestTabulation;
+package util;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import javax.jdo.PersistenceManager;
 
@@ -31,12 +33,20 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Text;
+import com.google.appengine.labs.repackaged.org.json.JSONException;
+import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
-import util.PMF;
-import util.Pair;
-import util.Statistics;
+import contestTabulation.Level;
+import contestTabulation.School;
+import contestTabulation.Score;
+import contestTabulation.Student;
+import contestTabulation.Subject;
+import contestTabulation.Test;
 
 public class Retrieve {
 	private static final PersistenceManager pm = PMF.get().getPersistenceManager();
@@ -96,7 +106,7 @@ public class Retrieve {
 			return null;
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static Map<Subject, List<School>> categorySweepstakesWinners(Level level) {
 		List<Key> categorySweepstakesWinnersEntityKeys = new ArrayList<Key>();
@@ -113,10 +123,10 @@ public class Retrieve {
 			javax.jdo.Query q = pm.newQuery("select from " + School.class.getName() + " where :keys.contains(key)");
 			categorySweepstakesWinners.put(category, (List<School>) q.execute(categorySweepstakesWinnersKeys));
 		}
-		
+
 		return categorySweepstakesWinners;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static List<School> sweepstakesWinners(Level level) {
 		javax.jdo.Query q = pm.newQuery(School.class);
@@ -124,7 +134,7 @@ public class Retrieve {
 		q.setFilter("level == :schoolLevel");
 		return (List<School>) q.execute(level);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static Pair<Map<Test, List<Integer>>, Map<Test, List<Integer>>> visualizations(Level level) {
 		List<Key> visualizationKeys = new ArrayList<Key>();
@@ -141,7 +151,36 @@ public class Retrieve {
 			summaryStats.put(test, (List<Integer>) visualizationEntry.getValue().getProperty("summaryStats"));
 			outliers.put(test, (List<Integer>) visualizationEntry.getValue().getProperty("outliers"));
 		}
-		
+
 		return new Pair<Map<Test, List<Integer>>, Map<Test, List<Integer>>>(summaryStats, outliers);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static Map<String, Integer> awardCriteria(Entity contestInfo) {
+		Map<String, Integer> awardCriteria = new HashMap<String, Integer>();
+		JSONObject awardCriteriaJSON = null;
+		try {
+			awardCriteriaJSON = new JSONObject(((Text) Objects.requireNonNull(contestInfo).getProperty("awardCriteria")).getValue());
+			Iterator<String> awardCountKeyIter = awardCriteriaJSON.keys();
+			while (awardCountKeyIter.hasNext()) {
+				String awardCountType = awardCountKeyIter.next();
+				try {
+					awardCriteria.put(awardCountType, (Integer) awardCriteriaJSON.get(awardCountType));
+				}
+				catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return awardCriteria;
+	}
+
+	public static Entity contestInfo() {
+		Query query = new Query("contestInfo");
+		List<Entity> contestInfos = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+		return !contestInfos.isEmpty() ? contestInfos.get(0) : null;
 	}
 }

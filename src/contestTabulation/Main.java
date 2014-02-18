@@ -25,6 +25,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,6 +38,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
 
+import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,6 +50,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
+import util.PMF;
 import util.Pair;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -59,6 +62,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Text;
@@ -97,14 +101,12 @@ public class Main extends HttpServlet {
 		final Map<Test, List<Student>> middleCategoryWinners = new HashMap<Test, List<Student>>();
 		final Map<Subject, List<School>> middleCategorySweepstakesWinners = new HashMap<Subject, List<School>>();
 		final List<School> middleSweepstakesWinners = new ArrayList<School>();
-		final Map<Test, List<Score>> middleAnonScores = new HashMap<Test, List<Score>>();
 
 		final Set<Student> highStudents = new HashSet<Student>();
 		final Map<String, School> highSchools = new HashMap<String, School>();
 		final Map<Test, List<Student>> highCategoryWinners = new HashMap<Test, List<Student>>();
 		final Map<Subject, List<School>> highCategorySweepstakesWinners = new HashMap<Subject, List<School>>();
 		final List<School> highSweepstakesWinners = new ArrayList<School>();
-		final Map<Test, List<Score>> highAnonScores = new HashMap<Test, List<Score>>();
 
 		try {
 			// Authenticate to Google Documents Service using OAuth 2.0 Authentication Token from Datastore
@@ -115,8 +117,8 @@ public class Main extends HttpServlet {
 			// Populate base data structures by traversing Google Documents Spreadsheets
 			middle = getSpreadSheet(params.get("docMiddle")[0], service);
 			high = getSpreadSheet(params.get("docHigh")[0], service);
-			updateDatabase(Level.MIDDLE, middle, middleStudents, middleSchools, middleAnonScores, testsGraded, service);
-			updateDatabase(Level.HIGH, high, highStudents, highSchools, highAnonScores, testsGraded, service);
+			updateDatabase(Level.MIDDLE, middle, middleStudents, middleSchools, testsGraded, service);
+			updateDatabase(Level.HIGH, high, highStudents, highSchools, testsGraded, service);
 
 			// Populate categoryWinners maps with top 20 scorers
 			tabulateCategoryWinners(Level.MIDDLE, middleStudents, middleCategoryWinners, testsGraded);
@@ -134,12 +136,16 @@ public class Main extends HttpServlet {
 			tabulateSweepstakesWinners(middleSchools, middleSweepstakesWinners);
 			tabulateSweepstakesWinners(highSchools, highSweepstakesWinners);
 
+			// Persist data in Datastore
+			persistData(Level.MIDDLE, middleSchools.values(), middleCategoryWinners, middleCategorySweepstakesWinners, middleSweepstakesWinners);
+			persistData(Level.HIGH, highSchools.values(), highCategoryWinners, highCategorySweepstakesWinners, highSweepstakesWinners);
+
 			// Get award criteria from Datastore
 			getAwardCriteria(awardCriteria);
 
 			// Generate and store HTML in Datastore
-			storeHTML(Level.MIDDLE, middleStudents, middleSchools, middleCategoryWinners, middleCategorySweepstakesWinners, middleSweepstakesWinners, middleAnonScores, awardCriteria);
-			storeHTML(Level.HIGH, highStudents, highSchools, highCategoryWinners, highCategorySweepstakesWinners, highSweepstakesWinners, highAnonScores, awardCriteria);
+			storeHTML(Level.MIDDLE, middleStudents, middleSchools, middleCategoryWinners, middleCategorySweepstakesWinners, middleSweepstakesWinners, awardCriteria);
+			storeHTML(Level.HIGH, highStudents, highSchools, highCategoryWinners, highCategorySweepstakesWinners, highSweepstakesWinners, awardCriteria);
 
 			// Update Datastore by modifying registrations to include actual number of tests taken
 			updateRegistrations(Level.MIDDLE, middleSchools);
@@ -161,7 +167,8 @@ public class Main extends HttpServlet {
 		String clientId = (String) contestInfo.getProperty("OAuth2ClientId");
 		String authToken = ((Text) contestInfo.getProperty("OAuth2Token")).getValue();
 
-		GoogleCredential credential = new GoogleCredential.Builder().setJsonFactory(jsonFactory)
+		GoogleCredential credential = new GoogleCredential.Builder()
+			.setJsonFactory(jsonFactory)
 			.setTransport(httpTransport)
 			.setClientSecrets(clientId, clientSecret)
 			.build()
@@ -182,7 +189,7 @@ public class Main extends HttpServlet {
 		return null;
 	}
 
-	private static void updateDatabase(Level level, SpreadsheetEntry spreadsheet, Set<Student> students, Map<String, School> schools, Map<Test, List<Score>> anonScores, Set<Test> testsGraded, Service service) throws IOException, ServiceException {
+	private static void updateDatabase(Level level, SpreadsheetEntry spreadsheet, Set<Student> students, Map<String, School> schools, Set<Test> testsGraded, Service service) throws IOException, ServiceException {
 		WorksheetFeed worksheetFeed = service.getFeed(spreadsheet.getWorksheetFeedUrl(), WorksheetFeed.class);
 		List<WorksheetEntry> worksheets = worksheetFeed.getEntries();
 
@@ -242,7 +249,7 @@ public class Main extends HttpServlet {
 		}
 	}
 
-	static void tabulateCategorySweepstakesWinners(Map<String, School> schools, Map<Subject, List<School>> categorySweepstakesWinners) {
+	private static void tabulateCategorySweepstakesWinners(Map<String, School> schools, Map<Subject, List<School>> categorySweepstakesWinners) {
 		for (final Subject subject : Subject.getSubjects()) {
 			ArrayList<School> schoolList = new ArrayList<School>(schools.values());
 			Collections.sort(schoolList, School.getScoreComparator(subject));
@@ -258,6 +265,56 @@ public class Main extends HttpServlet {
 		for (School school : schoolList) {
 			sweepstakeWinners.add(school);
 		}
+	}
+
+	private static void persistData(Level level, Collection<School> schools, Map<Test, List<Student>> categoryWinners, Map<Subject, List<School>> categorySweepstakesWinners, List<School> sweepstakesWinners) {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+
+		try {
+			pm.makePersistent(schools.toArray()[0]);
+			pm.makePersistentAll(schools);
+		}
+		finally {
+			pm.close();
+		}
+
+		List<Entity> categoryWinnersEntities = new ArrayList<Entity>();
+		for (Entry<Test, List<Student>> categoryWinnerEntry : categoryWinners.entrySet()) {
+			String entityKey = categoryWinnerEntry.getKey().toString() + "_" + level.toString();
+			Entity categoryWinnersEntity = new Entity("CategoryWinners", entityKey);
+
+			List<Key> studentKeys = new ArrayList<Key>();
+			for (Student student : categoryWinnerEntry.getValue()) {
+				studentKeys.add(student.getKey());
+			}
+			categoryWinnersEntity.setProperty("students", studentKeys);
+
+			categoryWinnersEntities.add(categoryWinnersEntity);
+		}
+		datastore.put(categoryWinnersEntities);
+
+		List<Entity> categorySweepstakesWinnersEntities = new ArrayList<Entity>();
+		for (Entry<Subject, List<School>> categorySweepstakesWinnerEntry : categorySweepstakesWinners.entrySet()) {
+			String entityKey = level.toString() + "_" + categorySweepstakesWinnerEntry.getKey().toString();
+			Entity categoryWinnersEntity = new Entity("CategorySweepstakesWinners", entityKey);
+
+			List<Key> studentKeys = new ArrayList<Key>();
+			for (School school : categorySweepstakesWinnerEntry.getValue()) {
+				studentKeys.add(school.getKey());
+			}
+			categoryWinnersEntity.setProperty("students", studentKeys);
+
+			categorySweepstakesWinnersEntities.add(categoryWinnersEntity);
+		}
+		datastore.put(categorySweepstakesWinnersEntities);
+
+		Entity sweepstakesWinnerEntity = new Entity("SweepstakesWinners", level.toString());
+		List<Key> schoolKeys = new ArrayList<Key>();
+		for (School school : sweepstakesWinners) {
+			schoolKeys.add(school.getKey());
+		}
+		sweepstakesWinnerEntity.setProperty("schools", schoolKeys);
+		datastore.put(sweepstakesWinnerEntity);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -285,7 +342,7 @@ public class Main extends HttpServlet {
 		}
 	}
 
-	private static void storeHTML(Level level, Set<Student> students, Map<String, School> schools, Map<Test, List<Student>> categoryWinners, Map<Subject, List<School>> categorySweepstakesWinners, List<School> sweepstakesWinners, Map<Test, List<Score>> anonScores, Map<String, Integer> awardCriteria) throws IOException {
+	private static void storeHTML(Level level, Set<Student> students, Map<String, School> schools, Map<Test, List<Student>> categoryWinners, Map<Subject, List<School>> categorySweepstakesWinners, List<School> sweepstakesWinners, Map<String, Integer> awardCriteria) throws IOException {
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/templates, html/snippets");
 		ve.init();
@@ -313,12 +370,6 @@ public class Main extends HttpServlet {
 				for (Student student : school.getStudents()) {
 					for (Entry<Subject, Score> scoreEntry : student.getScores().entrySet()) {
 						scores.get(Test.fromSubjectAndGrade(student.getGrade(), scoreEntry.getKey())).add(scoreEntry.getValue().getScoreNum());
-					}
-				}
-
-				for (Entry<Test, ArrayList<Score>> anonScoreEntry : school.getAnonScores().entrySet()) {
-					for (Score score : anonScoreEntry.getValue()) {
-						scores.get(anonScoreEntry.getKey()).add(score.getScoreNum());
 					}
 				}
 
@@ -421,18 +472,6 @@ public class Main extends HttpServlet {
 				for (Entry<Subject, Score> scoreEntry : student.getScores().entrySet()) {
 					scores.get(Test.fromSubjectAndGrade(student.getGrade(), scoreEntry.getKey())).add(scoreEntry.getValue().getScoreNum());
 				}
-			}
-
-			for (Entry<Test, ArrayList<Score>> anonScoreEntry : school.getAnonScores().entrySet()) {
-				for (Score score : anonScoreEntry.getValue()) {
-					scores.get(anonScoreEntry.getKey()).add(score.getScoreNum());
-				}
-			}
-		}
-
-		for (Entry<Test, List<Score>> scoreEntry : anonScores.entrySet()) {
-			for (Score score : scoreEntry.getValue()) {
-				scores.get(scoreEntry.getKey()).add(score.getScoreNum());
 			}
 		}
 

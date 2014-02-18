@@ -24,12 +24,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.datanucleus.annotations.Unowned;
 
 @PersistenceCapable
@@ -60,7 +60,7 @@ public class Student implements Serializable {
 	@Persistent private School school;
 	@Persistent(serialized = "true") @Unowned private Map<Subject, Score> scores = new HashMap<Subject, Score>();
 
-	@PrimaryKey @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY) private Key key;
+	@PrimaryKey private Key key;
 
 	Student(int grade, School school) {
 		this("Anonymous" + anonCounter, school, grade);
@@ -71,6 +71,7 @@ public class Student implements Serializable {
 		this.name = Objects.requireNonNull(name);
 		this.grade = Objects.requireNonNull(grade);
 		this.school = Objects.requireNonNull(school);
+		key = KeyFactory.createKey(this.school.getKey(), this.getClass().getSimpleName(), name + "_" + grade + "_" + school.getName());
 	}
 
 	@Override
@@ -142,6 +143,10 @@ public class Student implements Serializable {
 
 	public Map<Subject, Score> getScores() {
 		return scores;
+	}
+
+	public Key getKey() {
+		return key;
 	}
 
 	@Override

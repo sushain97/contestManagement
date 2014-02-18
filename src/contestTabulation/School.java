@@ -35,6 +35,8 @@ import javax.jdo.annotations.PrimaryKey;
 
 import util.Pair;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.datanucleus.annotations.Unowned;
 
 @PersistenceCapable
@@ -202,6 +204,10 @@ public class School implements Serializable {
 
 	public ArrayList<Score> getAnonScores(Test test) {
 		return anonScores.get(Objects.requireNonNull(test));
+	}
+
+	public Key getKey() {
+		return KeyFactory.createKey(this.getClass().getSimpleName(), key);
 	}
 
 	public Level getLevel() {

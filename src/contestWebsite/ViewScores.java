@@ -20,6 +20,7 @@ package contestWebsite;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,10 +38,13 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
-import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
+
+import contestTabulation.Level;
+import contestTabulation.Retrieve;
+import contestTabulation.School;
+import contestTabulation.Subject;
+import contestTabulation.Test;
 
 @SuppressWarnings("serial")
 public class ViewScores extends BaseHttpServlet {
@@ -48,7 +52,7 @@ public class ViewScores extends BaseHttpServlet {
 	@SuppressWarnings("deprecation")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		VelocityEngine ve = new VelocityEngine();
-		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
+		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets, html/templates");
 		ve.init();
 		VelocityContext context = new VelocityContext();
 		Pair<Entity, UserCookie> infoAndCookie = init(context, req);
@@ -63,23 +67,23 @@ public class ViewScores extends BaseHttpServlet {
 			context.put("user", user.getProperty("user-id"));
 			context.put("name", user.getProperty("name"));
 
+			Level level = Level.fromString((String) user.getProperty("schoolLevel"));
+			context.put("levels", Level.values());
+			context.put("level", level.toString());
+			context.put("tests", Test.getTests(level));
+			context.put("subjects", Subject.values());
+
 			Query query = new Query("registration").addFilter("email", FilterOperator.EQUAL, user.getProperty("user-id"));
 			List<Entity> registration = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-			if (registration.size() > 0 && registration.get(0).getProperty("registrationType").equals("coach")) {
-				context.put("coach", true);
-			}
+			context.put("coach", !registration.isEmpty() && registration.get(0).getProperty("registrationType").equals("coach"));
 
-			Filter typeFilter = new FilterPredicate("type", FilterOperator.EQUAL, "school");
-			Filter levelFilter = new FilterPredicate("level", FilterOperator.EQUAL, registration.get(0).getProperty("schoolLevel"));
-			Filter nameFilter = new FilterPredicate("school", FilterOperator.EQUAL, user.getProperty("school"));
-			Filter filter = CompositeFilterOperator.and(typeFilter, nameFilter, levelFilter);
-			query = new Query("html").setFilter(filter);
-			List<Entity> html = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-			if (html.size() != 0) {
-				context.put("html", ((com.google.appengine.api.datastore.Text) html.get(0).getProperty("html")).getValue());
-			}
+			Pair<School, Pair<Map<Test, List<Integer>>, Map<Test, List<Integer>>>> schoolAndStats = Retrieve.schoolOverview((String) user.getProperty("school"));
+			context.put("school", schoolAndStats.x);
+			context.put("summaryStats", schoolAndStats.y.x);
+			context.put("outliers", schoolAndStats.y.y);
 
 			context.put("date", infoAndCookie.x.getProperty("updated"));
+			context.put("hideFullNames", false);
 
 			close(context, ve.getTemplate("schoolScores.html"), resp);
 		}

@@ -55,6 +55,7 @@ import util.BaseHttpServlet;
 import util.Pair;
 import util.Password;
 import util.PropNames;
+import util.Retrieve;
 import util.UserCookie;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -197,9 +198,7 @@ public class Registration extends BaseHttpServlet {
 	@SuppressWarnings({"deprecation", "unchecked"})
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-		Query query = new Query("contestInfo");
-		Entity contestInfo = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+		Entity contestInfo = Retrieve.contestInfo();
 
 		Map<String, String[]> params = new HashMap<String, String[]>(req.getParameterMap());
 		for (Entry<String, String[]> param : params.entrySet()) {
@@ -248,7 +247,7 @@ public class Registration extends BaseHttpServlet {
 				confPassword = params.get("confPassword")[0];
 			}
 
-			query = new Query("registration").addFilter("email", FilterOperator.EQUAL, email);
+			Query query = new Query("registration").addFilter("email", FilterOperator.EQUAL, email);
 			List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 
 			if (users.size() != 0 || account.equals("yes") && !confPassword.equals(password)) {
@@ -291,7 +290,7 @@ public class Registration extends BaseHttpServlet {
 				for (int i = 0; i < regData.length(); i++) {
 					try {
 						JSONObject studentRegData = regData.getJSONObject(i);
-						for (Subject subject : Subject.getSubjects()) {
+						for (Subject subject : Subject.values()) {
 							cost += price * (studentRegData.getBoolean(subject.toString()) ? 1 : 0);
 						}
 					}

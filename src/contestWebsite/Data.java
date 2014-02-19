@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,7 +32,9 @@ import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.tools.generic.EscapeTool;
 
 import util.BaseHttpServlet;
+import util.PMF;
 import util.Pair;
+import util.Retrieve;
 import util.UserCookie;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -41,12 +44,14 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
-import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
+
+import contestTabulation.Level;
+import contestTabulation.School;
+import contestTabulation.Subject;
+import contestTabulation.Test;
 
 @SuppressWarnings("serial")
 public class Data extends BaseHttpServlet {
@@ -54,7 +59,7 @@ public class Data extends BaseHttpServlet {
 	@SuppressWarnings("deprecation")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		VelocityEngine ve = new VelocityEngine();
-		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
+		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets, html/templates");
 		ve.init();
 		VelocityContext context = new VelocityContext();
 		String template = null;
@@ -71,6 +76,7 @@ public class Data extends BaseHttpServlet {
 			String choice = req.getParameter("choice");
 			if (choice == null) {
 				resp.sendRedirect("/data?choice=overview");
+				return;
 			}
 			else if (choice.equals("overview")) {
 				template = "data.html";
@@ -101,66 +107,64 @@ public class Data extends BaseHttpServlet {
 			else if (choice.equals("scores")) {
 				template = "dataScores.html";
 
-				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-				Query query;
+				Map<String, Integer> awardCriteria = Retrieve.awardCriteria(infoAndCookie.x);
 
 				String type = req.getParameter("type");
-				context.put("type", type);
 				if (type != null) {
+					context.put("type", type);
 					String[] types = type.split("_");
-					Filter levelFilter = new FilterPredicate("level", FilterOperator.EQUAL, types[0]);
-					if (types.length == 2 && !types[1].equals("category")) {
-						Filter typeFilter = new FilterPredicate("type", FilterOperator.EQUAL, types[1]);
-						Filter filter = CompositeFilterOperator.and(typeFilter, levelFilter);
-						query = new Query("html").setFilter(filter);
-						List<Entity> html = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-						if (!html.isEmpty()) {
-							context.put("html", ((com.google.appengine.api.datastore.Text) html.get(0).getProperty("html")).getValue());
-						}
+					Level level = Level.fromString(req.getParameter("level"));
+					context.put("level", level.toString());
+					context.put("tests", Test.getTests(level));
+
+					if (type.equals("students")) {
+						context.put("subjects", Subject.values());
+						context.put("students", Retrieve.allStudents(level));
 					}
-					else if (types.length == 3 && types[1].equals("school")) {
-						Filter typeFilter = new FilterPredicate("type", FilterOperator.EQUAL, "school");
-						Filter nameFilter = new FilterPredicate("school", FilterOperator.EQUAL, types[2]);
-						Filter filter = CompositeFilterOperator.and(CompositeFilterOperator.and(typeFilter, levelFilter), nameFilter);
-						query = new Query("html").setFilter(filter);
-						List<Entity> html = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-						if (!html.isEmpty()) {
-							context.put("html", ((com.google.appengine.api.datastore.Text) html.get(0).getProperty("html")).getValue());
-						}
+					else if (type.startsWith("school_")) {
+						Pair<School, Pair<Map<Test, List<Integer>>, Map<Test, List<Integer>>>> schoolAndStats = Retrieve.schoolOverview(types[1]);
+						context.put("school", schoolAndStats.x);
+						context.put("summaryStats", schoolAndStats.y.x);
+						context.put("outliers", schoolAndStats.y.y);
 					}
-					else if (types.length == 3 && types[1].equals("category")) {
-						Filter typeFilter = new FilterPredicate("type", FilterOperator.EQUAL, types[1]);
-						Filter testFilter = new FilterPredicate("test", FilterOperator.EQUAL, types[2]);
-						Filter filter = CompositeFilterOperator.and(CompositeFilterOperator.and(typeFilter, levelFilter), testFilter);
-						query = new Query("html").setFilter(filter);
-						List<Entity> html = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-						if (!html.isEmpty()) {
-							context.put("html", ((com.google.appengine.api.datastore.Text) html.get(0).getProperty("html")).getValue());
-						}
+					else if (type.startsWith("category_")) {
+						context.put("test", Test.fromString(types[1]));
+						context.put("trophy", awardCriteria.get("category_" + level + "_trophy"));
+						context.put("medal", awardCriteria.get("category_" + level + "_medal"));
+						context.put("winners", Retrieve.categoryWinners(types[1], level));
+					}
+					else if (type.startsWith("categorySweep")) {
+						context.put("trophy", awardCriteria.get("categorySweep_" + level));
+						context.put("winners", Retrieve.categorySweepstakesWinners(level));
+					}
+					else if (type.equals("sweep")) {
+						context.put("trophy", awardCriteria.get("sweepstakes_" + level));
+						context.put("winners", Retrieve.sweepstakesWinners(level));
+					}
+					else if (type.equals("visualizations")) {
+						Pair<Map<Test, List<Integer>>, Map<Test, List<Integer>>> statsAndOutliers = Retrieve.visualizations(level);
+						context.put("summaryStats", statsAndOutliers.x);
+						context.put("outliers", statsAndOutliers.y);
+					}
+					else {
+						resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+						return;
 					}
 				}
 				else {
-					context.put("overview", true);
+					context.put("type", "overview");
 				}
 
-				Filter typeFilter = new FilterPredicate("type", FilterOperator.EQUAL, "school");
-				Filter levelFilter = new FilterPredicate("level", FilterOperator.EQUAL, "middle");
-				Filter filter = CompositeFilterOperator.and(typeFilter, levelFilter);
-				query = new Query("html").setFilter(filter);
-				List<Entity> middleSchools = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-				if (!middleSchools.isEmpty()) {
-					context.put("middleSchools", middleSchools);
-				}
+				PersistenceManager pm = PMF.get().getPersistenceManager();
+				javax.jdo.Query q = pm.newQuery("select name from " + School.class.getName());
+				q.setFilter("level == :schoolLevel");
+				context.put("middleSchools", q.execute(Level.MIDDLE));
+				context.put("highSchools", q.execute(Level.HIGH));
 
-				levelFilter = new FilterPredicate("level", FilterOperator.EQUAL, "high");
-				filter = CompositeFilterOperator.and(typeFilter, levelFilter);
-				query = new Query("html").setFilter(filter);
-				List<Entity> highSchools = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-				if (!highSchools.isEmpty()) {
-					context.put("highSchools", highSchools);
-				}
-
+				context.put("hideFullNames", false);
 				context.put("date", infoAndCookie.x.getProperty("updated"));
+				context.put("subjects", Subject.values());
+				context.put("levels", Level.values());
 				context.put("esc", new EscapeTool());
 			}
 			else {

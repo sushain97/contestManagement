@@ -18,12 +18,24 @@
 
 package contestTabulation;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
-public class Student {
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.PrimaryKey;
+
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.datanucleus.annotations.Unowned;
+
+@PersistenceCapable
+public class Student implements Serializable {
 	private static int anonCounter = 0;
+	private static final long serialVersionUID = 8963228643353855438L;
 
 	public static Comparator<Student> getNameComparator() {
 		return new Comparator<Student>() {
@@ -43,10 +55,12 @@ public class Student {
 		};
 	}
 
-	private final int grade;
-	private final String name;
-	private final School school;
-	private final HashMap<Subject, Score> scores = new HashMap<Subject, Score>();
+	@Persistent private int grade;
+	@Persistent private String name;
+	@Persistent private School school;
+	@Persistent(serialized = "true") @Unowned private Map<Subject, Score> scores = new HashMap<Subject, Score>();
+
+	@PrimaryKey private Key key;
 
 	Student(int grade, School school) {
 		this("Anonymous" + anonCounter, school, grade);
@@ -57,6 +71,7 @@ public class Student {
 		this.name = Objects.requireNonNull(name);
 		this.grade = Objects.requireNonNull(grade);
 		this.school = Objects.requireNonNull(school);
+		key = KeyFactory.createKey(this.school.getKey(), this.getClass().getSimpleName(), name + "_" + grade + "_" + school.getName());
 	}
 
 	@Override
@@ -126,8 +141,12 @@ public class Student {
 		return scores.get(Objects.requireNonNull(subject));
 	}
 
-	public HashMap<Subject, Score> getScores() {
+	public Map<Subject, Score> getScores() {
 		return scores;
+	}
+
+	public Key getKey() {
+		return key;
 	}
 
 	@Override

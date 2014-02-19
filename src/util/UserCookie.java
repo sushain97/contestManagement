@@ -32,15 +32,12 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 
-public class UserCookie extends Cookie
-{
-	public UserCookie(String name, String value)
-	{
+public class UserCookie extends Cookie {
+	public UserCookie(String name, String value) {
 		super(name, value);
 	}
 
-	public UserCookie(Cookie cookie)
-	{
+	public UserCookie(Cookie cookie) {
 		super(cookie.getName(), cookie.getValue());
 		setComment(cookie.getComment());
 		String domain = cookie.getDomain();
@@ -53,8 +50,7 @@ public class UserCookie extends Cookie
 		setVersion(cookie.getVersion());
 	}
 
-	public static UserCookie getCookie(HttpServletRequest req)
-	{
+	public static UserCookie getCookie(HttpServletRequest req) {
 		Cookie[] cookies = req.getCookies();
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
@@ -66,22 +62,18 @@ public class UserCookie extends Cookie
 		return null;
 	}
 
-	public String getUsername() throws UnsupportedEncodingException
-	{
+	public String getUsername() throws UnsupportedEncodingException {
 		String cookieContent = URLDecoder.decode(getValue(), "UTF-8");
 		return cookieContent.split("\\$")[0];
 	}
 
-	public boolean isAdmin() throws UnsupportedEncodingException
-	{
+	public boolean isAdmin() throws UnsupportedEncodingException {
 		String cookieContent = URLDecoder.decode(getValue(), "UTF-8");
 		return "admin".equals(cookieContent.split("\\$")[0]);
 	}
 
-	public boolean authenticate()
-	{
-		try
-		{
+	public boolean authenticate() {
+		try {
 			String cookieContent = URLDecoder.decode(getValue(), "UTF-8");
 			if (cookieContent.split("\\$").length != 2) {
 				return false;
@@ -94,17 +86,14 @@ public class UserCookie extends Cookie
 			List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(3));
 			return users.size() != 0 && users.get(0).getProperty("hash").equals(hash);
 		}
-		catch (UnsupportedEncodingException e)
-		{
+		catch (UnsupportedEncodingException e) {
 			return false;
 		}
 	}
 
 	@SuppressWarnings("deprecation")
-	public Entity authenticateUser()
-	{
-		try
-		{
+	public Entity authenticateUser() {
+		try {
 			String cookieContent = URLDecoder.decode(getValue(), "UTF-8");
 			if (cookieContent.split("\\$").length != 2) {
 				return null;
@@ -121,8 +110,7 @@ public class UserCookie extends Cookie
 				return null;
 			}
 		}
-		catch (UnsupportedEncodingException e)
-		{
+		catch (UnsupportedEncodingException e) {
 			return null;
 		}
 	}

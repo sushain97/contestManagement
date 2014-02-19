@@ -15,16 +15,26 @@
         </tr>
     </thead>
     #foreach($student in $winners)
-    	#if($student.getScore($subject).getScoreNum() < 0)
-    		#break
-    	#end
+		#if($student.getScore($subject).getScoreNum() < 0)
+			#break
+		#end
     	<tr>
+    		#if($foreach.count > $trophy + $medal && !$admin)
+				#break
+	   		#end
         	<td> $foreach.count 
         		#if($foreach.count <= $trophy) <i class="fa fa-trophy"></i> #end
         		#if($foreach.count > $trophy && $foreach.count <= ($medal + $trophy)) <i class="icon-medal"></i> #end	
        		</td>
-        	<td> #[[#if($hideFullNames)]]# $student.getPublicName() #[[#else]]# $student.getName() #[[#end]]# </td>
-        	<td> $student.getSchool().getName() </td>
+        	<td> #if($hideFullNames) $student.getPublicName() #else $student.getName() #end </td>
+        	
+			#set($schoolName = $student.getSchool().getName())
+      		#if($admin)
+      			<td><a href="/data?choice=scores&type=school_$esc.url($schoolName)&level=$level">$schoolName</a></td>
+    		#else
+      			<td>$schoolName</td>
+     		#end
+
         	<td> $student.getScore($subject).getScore() </td>
     	</tr>
     #end

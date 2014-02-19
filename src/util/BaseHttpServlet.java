@@ -21,7 +21,6 @@ package util;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -30,24 +29,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Text;
 
 @SuppressWarnings("serial")
-public class BaseHttpServlet extends HttpServlet
-{
-	public Pair<Entity, UserCookie> init(VelocityContext context, HttpServletRequest req) throws UnsupportedEncodingException
-	{
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Query query = new Query("contestInfo");
-		List<Entity> info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-		Entity contestInfo = null;
-		if (info.size() > 0) {
-			contestInfo = info.get(0);
+public class BaseHttpServlet extends HttpServlet {
+	public Pair<Entity, UserCookie> init(VelocityContext context, HttpServletRequest req) throws UnsupportedEncodingException {
+		Entity contestInfo = Retrieve.contestInfo();
+		if (contestInfo != null) {
 			context.put("enabledLevels", contestInfo.getProperty("levels"));
 			context.put("title", contestInfo.getProperty("title"));
 
@@ -60,8 +49,7 @@ public class BaseHttpServlet extends HttpServlet
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
 
 		context.put("loggedIn", loggedIn);
-		if (loggedIn)
-		{
+		if (loggedIn) {
 			context.put("user", userCookie.getUsername());
 			context.put("admin", userCookie.isAdmin());
 		}

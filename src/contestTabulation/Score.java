@@ -18,7 +18,13 @@
 
 package contestTabulation;
 
-public class Score implements Comparable<Score> {
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+
+@PersistenceCapable
+public class Score implements Comparable<Score>, java.io.Serializable {
+	private static final long serialVersionUID = 1631716116306090911L;
+
 	private static boolean isInteger(String str) {
 		if (str == null) {
 			return false;
@@ -47,7 +53,7 @@ public class Score implements Comparable<Score> {
 		return isInteger(str) || str.length() > 1 && isInteger(str.substring(0, str.length() - 1));
 	}
 
-	private final String score;
+	@Persistent private String score;
 
 	Score(String score) {
 		if (isScore(score)) {

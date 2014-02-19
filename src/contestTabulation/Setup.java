@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import util.BaseHttpServlet;
+import util.Retrieve;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
@@ -84,8 +85,7 @@ public class Setup extends BaseHttpServlet {
 		JacksonFactory jsonFactory = new JacksonFactory();
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-		Query query = new Query("contestInfo");
-		Entity contestInfo = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+		Entity contestInfo = Retrieve.contestInfo();
 
 		GoogleCredential credential = new GoogleCredential.Builder().setJsonFactory(jsonFactory)
 			.setTransport(httpTransport)
@@ -114,7 +114,7 @@ public class Setup extends BaseHttpServlet {
 		body.setMimeType("application/vnd.google-apps.spreadsheet");
 		File file = drive.files().insert(body).execute();
 
-		query = new Query("registration").addFilter("schoolLevel", FilterOperator.EQUAL, level).addSort("schoolName", SortDirection.ASCENDING);
+		Query query = new Query("registration").addFilter("schoolLevel", FilterOperator.EQUAL, level).addSort("schoolName", SortDirection.ASCENDING);
 		List<Entity> registrations = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
 
 		SpreadsheetService service = new SpreadsheetService("contestTabulation");
@@ -169,7 +169,7 @@ public class Setup extends BaseHttpServlet {
 						row.getCustomElements().setValueLocal("name", student.getString("name"));
 						row.getCustomElements().setValueLocal("grade", Integer.toString(student.getInt("grade")));
 
-						for (Subject subject : Subject.getSubjects()) {
+						for (Subject subject : Subject.values()) {
 							row.getCustomElements().setValueLocal(subject.toString(), student.getBoolean(subject.toString()) ? "" : "X");
 						}
 

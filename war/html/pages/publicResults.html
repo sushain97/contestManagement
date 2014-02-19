@@ -6,7 +6,7 @@
 	<meta name="description" content="View public contest results including sweepstakes and category winners for the $title">
 	<meta name="robots" content="index, follow">
 	<meta name="tab" content="ContestResults">
-	<meta name="type" content="$type">
+	<meta name="type" content="$type#if($level)$level.toString().toUpperCase()#end">
 	#parse("head.html")
 	<style type="text/css">
 		@media print {
@@ -18,7 +18,6 @@
 			}
 			@page {	size: potrait; }
 		}
-		.num { display: none; }
 		.highlighted { background-color: #e8f8fd !important; }
 		table {	width: auto !important; }
 		th, td { text-align: center !important; }
@@ -52,41 +51,30 @@
 			<div class="row">
 				<div class="col-md-3 col-xs-5 hidden-print">
 					<ul class="nav nav-pills nav-stacked" >
-						<li id="avail"><a href="/contestResults">Availability</a></li>
+						<li data-type="avail"><a href="/contestResults">Availability</a></li>
 						
-						#if($enabledLevels.contains("middle"))
-							<li class="nav-header"><h4>Middle School</h4></li>
-							<li id="middle_sweep"><a href="/contestResults?type=middle_sweep">Sweepstakes</a></li>
-							<li id="middle_categorySweep"><a href="/contestResults?type=middle_categorySweep">Category Sweekstakes</a></li>
-							<li id="middle_visualizations"><a href="/contestResults?type=middle_visualizations">Visualizations</a></li>
-							<li class="divider"></li>
-							#foreach($num in [6..8])
-							<li id="$num" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">${num}th Grade<b class="caret"></b></a>
-								<ul class="dropdown-menu">
-									<li id="middle_category_${num}C"><a href="/contestResults?type=middle_category_${num}C">Calculator</a></li>
-									<li id="middle_category_${num}N"><a href="/contestResults?type=middle_category_${num}N">Number Sense</a></li>
-									<li id="middle_category_${num}M"><a href="/contestResults?type=middle_category_${num}M">Math</a></li>
-									<li id="middle_category_${num}S"><a href="/contestResults?type=middle_category_${num}S">Science</a></li>
-								</ul>
-							</li> 
-							#end
-						#end
-	
-						#if($enabledLevels.contains("high"))
-							<li class="nav-header"><h4>High School</h4></li>
-							<li id="high_sweep"><a href="/contestResults?type=high_sweep">Sweepstakes</a></li>
-							<li id="high_categorySweep"><a href="/contestResults?type=high_categorySweep">Category Sweekstakes</a></li>
-							<li id="high_visualizations"><a href="/contestResults?type=high_visualizations">Visualizations</a></li>
-							<li class="divider"></li> 
-							#foreach($num in [9..12])
-								<li id="$num" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">${num}th Grade<b class="caret"></b></a>
-									<ul class="dropdown-menu">
-										<li id="high_category_${num}C"><a href="/contestResults?type=high_category_${num}C">Calculator</a></li>
-										<li id="high_category_${num}N"><a href="/contestResults?type=high_category_${num}N">Number Sense</a></li>
-										<li id="high_category_${num}M"><a href="/contestResults?type=high_category_${num}M">Math</a></li>
-										<li id="high_category_${num}S"><a href="/contestResults?type=high_category_${num}S">Science</a></li>
-									</ul>
-								</li> 
+						#foreach($level in $levels)
+							#if($enabledLevels.contains($level.toString()))
+								#set($LEVEL = $level.toString().toUpperCase())
+								<li class="nav-header"><h4>$level.getName() School</h4></li>
+								<li data-type="sweep$LEVEL"><a href="/contestResults?choice=scores&type=sweep&level=$level">Sweepstakes</a></li>
+								<li data-type="categorySweep$LEVEL"><a href="/contestResults?choice=scores&type=categorySweep&level=$level">Category Sweekstakes</a></li>
+								<li data-type="visualizations$LEVEL"><a href="/contestResults?choice=scores&type=visualizations&level=$level">Visualizations</a></li>
+								
+								<li class="divider"></li>
+			
+								#foreach($num in [$level.getLowGrade()..$level.getHighGrade()])
+									<li id="${num}" class="dropdown">
+										<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+											${num}th Grade <b class="caret"></b>
+										</a>
+										<ul class="dropdown-menu">
+											#foreach($subject in $subjects)
+												<li data-type="category_${num}${subject}$LEVEL"><a href="/contestResults?choice=scores&type=category_${num}${subject}&level=$level">$subject.getName()</a></li>
+											#end
+										</ul>
+									</li>
+								#end
 							#end
 						#end
 					</ul>
@@ -97,20 +85,42 @@
 					<h1>Contest Results
 					#include("printButton.html")
 					</h1>
-	
-					#if(!$complete) Results are not yet public, please return later. 
-					#elseif($overview) 
-					Choose an option at the left to view specific results.
-					#elseif($complete && !$html) 
-					Results for this competition are not yet available. Check the <a href="\contestResults">Availability tab</a> for more information.
+
+					#if(!$complete) 
+						Results are not yet public, please return later.
 					#else
-					#evaluate($html)
+						#if($type.startsWith("category_"))
+							#if($winners)
+								#parse("categoryWinners.html")
+							#else
+								Score information for this category is not yet available.
+							#end
+						#elseif($type.equals("sweep"))
+							#parse("sweepstakesWinners.html")
+						#elseif($type.startsWith("categorySweep"))
+							#if($winners)
+								#parse("categorySweepstakes.html")
+							#else
+								Score information is not yet available.
+							#end
+						#elseif($type == "visualizations")
+							#if($summaryStats && $outliers)
+								#parse("visualizations.html")
+							#else
+								Visualizations not yet available.
+							#end
+						#end
 					#end
 					
-					#if(!$complete || $overview)
+					#if($type == "avail" || !$complete)
+						#if($complete) Choose an option at the left to view specific results. #end
+					
 					<h2>Grading Progress (Tests Graded)</h2>
 					
-					#set($percentComplete = $testsGraded.size() / 16 * 100)
+					#set($numTests = 0.0)
+					#if($enabledLevels.contains("middle")) #set($numTests = $numTests + 12) #end
+					#if($enabledLevels.contains("high")) #set($numTests = $numTests + 16) #end
+					#set($percentComplete = $testsGraded.size() / $numTests * 100)
 					<div class="progress progress-striped active" style="width: 65%">
 						<div class="progress-bar" role="progressbar" aria-valuenow="$percentComplete" aria-valuemin="0" aria-valuemax="100" style="width: $percentComplete%;"></div> 
 					</div> 
@@ -130,8 +140,8 @@
 								#foreach($grade in [6..8])
 								<tr>
 									<td class="row-header">${grade}th</td>
-									#foreach($subject in ["N", "C", "M", "S"])
-										#set($subjectString = $grade + $subject)
+									#foreach($subject in $subjects)
+										#set($subjectString = $grade + $subject.toString())
 										#if($testsGraded.contains($subjectString))
 										<td class="success">
 											<i class="glyphicon glyphicon-check"></i>
@@ -158,8 +168,8 @@
 								#foreach($grade in [9..12])
 								<tr>
 									<td class="row-header">${grade}th</td>
-									#foreach($subject in ["N", "C", "M", "S"])
-										#set($subjectString = $grade + $subject)
+									#foreach($subject in $subjects)
+										#set($subjectString = $grade + $subject.toString())
 										#if($testsGraded.contains($subjectString))
 										<td class="success">
 											<i class="glyphicon glyphicon-check"></i>

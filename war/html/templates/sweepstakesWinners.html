@@ -5,7 +5,7 @@
 	    <tr>
 	        <th title="Click to sort">Rank</th>
 	        <th title="Click to sort">School</th>
-	        <th title="Click to sort" class="num">Number of Students</th>
+	        #if($admin) <th title="Click to sort">Number of Students</th> #end
 	        #foreach($subject in $subjects)
 				<th title="Click to sort">$subject.getName() Score</th>
 			#end
@@ -16,13 +16,22 @@
     	<tr>
         	<td> $foreach.count #if($foreach.count <= $trophy) <i class="fa fa-trophy"></i> #end</td>
         	<td> $school.getName() </td>
-        	<td class="num"> $school.getNumStudents() </td>
+        	#if($admin) 
+        		<td>
+	        		<a class="popovers" href="#" data-toggle="popover" 
+		        			title="#foreach($entry in $school.getNumTests().entrySet()) <strong>$entry.getKey()</strong>: $entry.getValue() <br> #end">
+	       				$school.getNumStudents()
+	        		</a>
+        		</td>	
+        	#end
         	#foreach($subject in $subjects)
 	        	<td> 
-	        		<a class="popovers" href="#" data-toggle="popover" title="#foreach($student in $school.getScoreStudents($subject)) 
-	        			<strong>#[[#if($hideFullNames)]]#$student.getPublicName() ($student.getGrade())
-						#[[#else]]# $student.getName() ($student.getGrade())#[[#end]]#</strong> - 
-	        			$student.getScore($subject).getScoreNum() <br> #end">
+	        		<a class="popovers" href="#" data-toggle="popover" 
+	        			title="#foreach($student in $school.getScoreStudents($subject))
+			        			<strong>#if($hideFullNames) $student.getPublicName() ($student.getGrade()) 
+			        			#else $student.getName() ($student.getGrade()) #end</strong> 
+			        			- $student.getScore($subject).getScoreNum() <br> 
+		        			#end">
 	        			
 						$school.getScore($subject)
 					</a> 

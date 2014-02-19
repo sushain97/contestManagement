@@ -18,20 +18,25 @@
 
 package util;
 
-public class Pair<X, Y>
-{
-	public final X x;
-	public final Y y;
+import java.io.Serializable;
 
-	public Pair(X x, Y y)
-	{
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+
+@PersistenceCapable
+public class Pair<X, Y> implements Serializable {
+	private static final long serialVersionUID = 2983654560430252584L;
+
+	@Persistent public final X x;
+	@Persistent public final Y y;
+
+	public Pair(X x, Y y) {
 		this.x = x;
 		this.y = y;
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return "(" + this.x + ", " + this.y + ")";
 	}
 }

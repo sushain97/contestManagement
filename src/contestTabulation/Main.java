@@ -19,36 +19,30 @@
 package contestTabulation;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
 
+import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.math3.distribution.NormalDistribution;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.runtime.RuntimeConstants;
-
+import util.PMF;
 import util.Pair;
+import util.Retrieve;
+import util.Statistics;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
@@ -59,11 +53,10 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Text;
-import com.google.appengine.labs.repackaged.org.json.JSONException;
-import com.google.appengine.labs.repackaged.org.json.JSONObject;
 import com.google.gdata.client.Service;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.CustomElementCollection;
@@ -75,7 +68,6 @@ import com.google.gdata.data.spreadsheet.WorksheetEntry;
 import com.google.gdata.data.spreadsheet.WorksheetFeed;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
-import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
 
 @SuppressWarnings("serial")
 public class Main extends HttpServlet {
@@ -90,73 +82,74 @@ public class Main extends HttpServlet {
 		final Set<Test> testsGraded = new HashSet<Test>();
 		final SpreadsheetEntry middle, high;
 
-		final Map<String, Integer> awardCriteria = new HashMap<String, Integer>();
+		final Entity contestInfo;
+		final Map<String, Integer> awardCriteria;
 
-		final List<Student> middleStudents = new ArrayList<Student>();
+		final Set<Student> middleStudents = new HashSet<Student>();
 		final Map<String, School> middleSchools = new HashMap<String, School>();
 		final Map<Test, List<Student>> middleCategoryWinners = new HashMap<Test, List<Student>>();
 		final Map<Subject, List<School>> middleCategorySweepstakesWinners = new HashMap<Subject, List<School>>();
 		final List<School> middleSweepstakesWinners = new ArrayList<School>();
-		final Map<Test, List<Score>> middleAnonScores = new HashMap<Test, List<Score>>();
 
-		final List<Student> highStudents = new ArrayList<Student>();
+		final Set<Student> highStudents = new HashSet<Student>();
 		final Map<String, School> highSchools = new HashMap<String, School>();
 		final Map<Test, List<Student>> highCategoryWinners = new HashMap<Test, List<Student>>();
 		final Map<Subject, List<School>> highCategorySweepstakesWinners = new HashMap<Subject, List<School>>();
 		final List<School> highSweepstakesWinners = new ArrayList<School>();
-		final Map<Test, List<Score>> highAnonScores = new HashMap<Test, List<Score>>();
 
 		try {
+			// Retrieve contest information from Datastore
+			contestInfo = Retrieve.contestInfo();
+
+			// Get award criteria from Datastore
+			awardCriteria = Retrieve.awardCriteria(contestInfo);
+
 			// Authenticate to Google Documents Service using OAuth 2.0 Authentication Token from Datastore
 			Map<String, String[]> params = req.getParameterMap();
 			SpreadsheetService service = new SpreadsheetService("contestTabulation");
-			authService(service);
+			authService(service, contestInfo);
 
 			// Populate base data structures by traversing Google Documents Spreadsheets
 			middle = getSpreadSheet(params.get("docMiddle")[0], service);
 			high = getSpreadSheet(params.get("docHigh")[0], service);
-			updateDatabase(Level.MIDDLE, middle, middleStudents, middleSchools, middleAnonScores, testsGraded, service);
-			updateDatabase(Level.HIGH, high, highStudents, highSchools, highAnonScores, testsGraded, service);
+			updateDatabase(Level.MIDDLE, middle, middleStudents, middleSchools, testsGraded, service);
+			updateDatabase(Level.HIGH, high, highStudents, highSchools, testsGraded, service);
 
 			// Populate categoryWinners maps with top 20 scorers
-			tabulateCategoryWinners(Level.MIDDLE, middleStudents, middleCategoryWinners, testsGraded);
-			tabulateCategoryWinners(Level.HIGH, highStudents, highCategoryWinners, testsGraded);
+			tabulateCategoryWinners(Level.MIDDLE, middleStudents, middleCategoryWinners, testsGraded, awardCriteria);
+			tabulateCategoryWinners(Level.HIGH, highStudents, highCategoryWinners, testsGraded, awardCriteria);
 
-			// Calculate school fields with sweepstakes scores and populate sorted sweekstakes maps & arrays with all schools
+			// Calculate school fields with sweepstakes scores, populate sorted sweekstakes maps & arrays with all schools, and calculate test numbers
 			for (School school : middleSchools.values()) {
 				school.calculateScores();
+				school.calculateTestNums();
 			}
 			for (School school : highSchools.values()) {
 				school.calculateScores();
+				school.calculateTestNums();
 			}
 			tabulateCategorySweepstakesWinners(middleSchools, middleCategorySweepstakesWinners);
 			tabulateCategorySweepstakesWinners(highSchools, highCategorySweepstakesWinners);
 			tabulateSweepstakesWinners(middleSchools, middleSweepstakesWinners);
 			tabulateSweepstakesWinners(highSchools, highSweepstakesWinners);
 
-			// Get award criteria from Datastore
-			getAwardCriteria(awardCriteria);
-
-			// Generate and store HTML in Datastore
-			storeHTML(Level.MIDDLE, middleStudents, middleSchools, middleCategoryWinners, middleCategorySweepstakesWinners, middleSweepstakesWinners, middleAnonScores, awardCriteria);
-			storeHTML(Level.HIGH, highStudents, highSchools, highCategoryWinners, highCategorySweepstakesWinners, highSweepstakesWinners, highAnonScores, awardCriteria);
+			// Persist JDOs in Datastore
+			persistData(Level.MIDDLE, middleSchools.values(), middleCategoryWinners, middleCategorySweepstakesWinners, middleSweepstakesWinners);
+			persistData(Level.HIGH, highSchools.values(), highCategoryWinners, highCategorySweepstakesWinners, highSweepstakesWinners);
 
 			// Update Datastore by modifying registrations to include actual number of tests taken
 			updateRegistrations(Level.MIDDLE, middleSchools);
 			updateRegistrations(Level.HIGH, highSchools);
 
 			// Update Datastore by modifying contest information entity to include tests graded
-			updateContestInfo(testsGraded);
+			updateContestInfo(testsGraded, contestInfo);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static void authService(SpreadsheetService service) throws IOException {
-		Query query = new Query("contestInfo");
-		Entity contestInfo = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
-
+	private static void authService(SpreadsheetService service, Entity contestInfo) throws IOException {
 		String clientSecret = (String) contestInfo.getProperty("OAuth2ClientSecret");
 		String clientId = (String) contestInfo.getProperty("OAuth2ClientId");
 		String authToken = ((Text) contestInfo.getProperty("OAuth2Token")).getValue();
@@ -183,7 +176,7 @@ public class Main extends HttpServlet {
 		return null;
 	}
 
-	private static void updateDatabase(Level level, SpreadsheetEntry spreadsheet, List<Student> students, Map<String, School> schools, Map<Test, List<Score>> anonScores, Set<Test> testsGraded, Service service) throws IOException, ServiceException {
+	private static void updateDatabase(Level level, SpreadsheetEntry spreadsheet, Set<Student> students, Map<String, School> schools, Set<Test> testsGraded, Service service) throws IOException, ServiceException {
 		WorksheetFeed worksheetFeed = service.getFeed(spreadsheet.getWorksheetFeedUrl(), WorksheetFeed.class);
 		List<WorksheetEntry> worksheets = worksheetFeed.getEntries();
 
@@ -205,7 +198,7 @@ public class Main extends HttpServlet {
 					Student student = new Student(name, school, grade);
 					students.add(student);
 
-					for (Subject subject : Subject.getSubjects()) {
+					for (Subject subject : Subject.values()) {
 						String score = row.getValue(subject.toString());
 						if (score != null && Score.isScore(score.trim())) {
 							student.setScore(subject, new Score(score));
@@ -222,7 +215,7 @@ public class Main extends HttpServlet {
 		}
 	}
 
-	private static void tabulateCategoryWinners(Level level, List<Student> students, Map<Test, List<Student>> categoryWinners, Set<Test> testsGraded) {
+	private static void tabulateCategoryWinners(Level level, Set<Student> students, Map<Test, List<Student>> categoryWinners, Set<Test> testsGraded, Map<String, Integer> awardCriteria) {
 		for (Test test : testsGraded) {
 			ArrayList<Student> winners = new ArrayList<Student>();
 			int grade = test.getGrade();
@@ -234,21 +227,20 @@ public class Main extends HttpServlet {
 				}
 			}
 
+			int numStudents = awardCriteria.get("category_" + level + "_medal") + awardCriteria.get("category_" + level + "_trophy") + 5;
 			Collections.sort(winners, Student.getScoreComparator(subject));
 			Collections.reverse(winners);
-			winners = new ArrayList<Student>(winners.subList(0, winners.size() >= 20 ? 20 : winners.size()));
-			if (level == Level.MIDDLE && grade <= level.getHighGrade() || level == Level.HIGH && grade >= level.getLowGrade()) {
-				categoryWinners.put(test, winners);
-			}
+			winners = new ArrayList<Student>(winners.subList(0, winners.size() >= numStudents ? numStudents : winners.size()));
+			categoryWinners.put(test, winners);
 		}
 	}
 
-	static void tabulateCategorySweepstakesWinners(Map<String, School> schools, Map<Subject, List<School>> highCategorySweepstakesWinners) {
-		for (final Subject subject : Subject.getSubjects()) {
+	private static void tabulateCategorySweepstakesWinners(Map<String, School> schools, Map<Subject, List<School>> categorySweepstakesWinners) {
+		for (final Subject subject : Subject.values()) {
 			ArrayList<School> schoolList = new ArrayList<School>(schools.values());
 			Collections.sort(schoolList, School.getScoreComparator(subject));
 			Collections.reverse(schoolList);
-			highCategorySweepstakesWinners.put(subject, schoolList);
+			categorySweepstakesWinners.put(subject, schoolList);
 		}
 	}
 
@@ -261,253 +253,86 @@ public class Main extends HttpServlet {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private static void getAwardCriteria(Map<String, Integer> awardCriteria) {
-		Query query = new Query("contestInfo");
-		Entity contestInfo = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+	private static void persistData(Level level, Collection<School> schools, Map<Test, List<Student>> categoryWinners, Map<Subject, List<School>> categorySweepstakesWinners, List<School> sweepstakesWinners) {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
 
-		JSONObject awardCriteriaJSON = null;
 		try {
-			awardCriteriaJSON = new JSONObject(((Text) contestInfo.getProperty("awardCriteria")).getValue());
+			pm.makePersistent(schools.toArray()[0]);
+			pm.makePersistentAll(schools);
 		}
-		catch (JSONException e) {
-			e.printStackTrace();
+		finally {
+			pm.close();
 		}
 
-		Iterator<String> awardCountKeyIter = awardCriteriaJSON.keys();
-		while (awardCountKeyIter.hasNext()) {
-			String awardCountType = awardCountKeyIter.next();
-			try {
-				awardCriteria.put(awardCountType, (Integer) awardCriteriaJSON.get(awardCountType));
+		List<Entity> categoryWinnersEntities = new ArrayList<Entity>();
+		for (Entry<Test, List<Student>> categoryWinnerEntry : categoryWinners.entrySet()) {
+			String entityKey = categoryWinnerEntry.getKey().toString() + "_" + level.toString();
+			Entity categoryWinnersEntity = new Entity("CategoryWinners", entityKey);
+
+			List<Key> studentKeys = new ArrayList<Key>();
+			for (Student student : categoryWinnerEntry.getValue()) {
+				studentKeys.add(student.getKey());
 			}
-			catch (JSONException e) {
-				e.printStackTrace();
+			categoryWinnersEntity.setProperty("students", studentKeys);
+
+			categoryWinnersEntities.add(categoryWinnersEntity);
+		}
+		datastore.put(categoryWinnersEntities);
+
+		List<Entity> categorySweepstakesWinnersEntities = new ArrayList<Entity>();
+		for (Entry<Subject, List<School>> categorySweepstakesWinnerEntry : categorySweepstakesWinners.entrySet()) {
+			String entityKey = categorySweepstakesWinnerEntry.getKey().toString() + "_" + level.toString();
+			Entity categoryWinnersEntity = new Entity("CategorySweepstakesWinners", entityKey);
+
+			List<Key> schoolKeys = new ArrayList<Key>();
+			for (School school : categorySweepstakesWinnerEntry.getValue()) {
+				schoolKeys.add(school.getKey());
 			}
+			categoryWinnersEntity.setProperty("schools", schoolKeys);
+
+			categorySweepstakesWinnersEntities.add(categoryWinnersEntity);
 		}
-	}
+		datastore.put(categorySweepstakesWinnersEntities);
 
-	private static void storeHTML(Level level, List<Student> students, Map<String, School> schools, Map<Test, List<Student>> categoryWinners, Map<Subject, List<School>> middleCategorySweepstakesWinners, List<School> sweepstakesWinners, Map<Test, List<Score>> anonScores, Map<String, Integer> awardCriteria) throws IOException {
-		VelocityEngine ve = new VelocityEngine();
-		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/templates, html/snippets");
-		ve.init();
-		Template t;
-		StringWriter sw;
-		VelocityContext context;
-		HtmlCompressor compressor = new HtmlCompressor();
-		Entity html;
-		LinkedList<Entity> htmlEntries = new LinkedList<Entity>();
+		List<Entity> visualizationEntities = new ArrayList<Entity>();
 
-		for (Entry<String, School> schoolEntry : schools.entrySet()) {
-			if (!schoolEntry.getKey().equals("?")) {
-				School school = schoolEntry.getValue();
-				context = new VelocityContext();
-				context.put("schoolLevel", Character.toString(school.getLevel().toString().charAt(0)).toUpperCase() + school.getLevel().toString().substring(1));
-				ArrayList<Student> schoolStudents = school.getStudents();
-				Collections.sort(schoolStudents, Student.getNameComparator());
-
-				Test[] tests = level == Level.MIDDLE ? Test.middleTests() : Test.highTests();
-				HashMap<Test, List<Integer>> scores = new HashMap<Test, List<Integer>>();
-				for (Test test : tests) {
-					scores.put(test, new ArrayList<Integer>());
-				}
-
-				for (Student student : school.getStudents()) {
-					for (Entry<Subject, Score> scoreEntry : student.getScores().entrySet()) {
-						scores.get(Test.fromSubjectAndGrade(student.getGrade(), scoreEntry.getKey())).add(scoreEntry.getValue().getScoreNum());
-					}
-				}
-
-				for (Entry<Test, ArrayList<Score>> anonScoreEntry : school.getAnonScores().entrySet()) {
-					for (Score score : anonScoreEntry.getValue()) {
-						scores.get(anonScoreEntry.getKey()).add(score.getScoreNum());
-					}
-				}
-
-				HashMap<Test, List<Integer>> summaryStats = new HashMap<Test, List<Integer>>();
-				HashMap<Test, List<Integer>> outliers = new HashMap<Test, List<Integer>>();
-				for (Entry<Test, List<Integer>> scoreEntry : scores.entrySet()) {
-					Pair<List<Integer>, List<Integer>> stats = calculateStats(scoreEntry.getValue());
-					summaryStats.put(scoreEntry.getKey(), stats.x);
-					outliers.put(scoreEntry.getKey(), stats.y);
-				}
-
-				context.put("summaryStats", summaryStats);
-				context.put("outliers", outliers);
-				context.put("tests", tests);
-				context.put("subjects", Subject.getSubjects());
-				context.put("school", school);
-				context.put("level", level.toString());
-
-				sw = new StringWriter();
-				t = ve.getTemplate("schoolOverview.html");
-				t.merge(context, sw);
-				html = new Entity("html", "school_" + level + "_" + school.getName());
-				html.setProperty("level", level.toString());
-				html.setProperty("type", "school");
-				html.setProperty("school", school.getName());
-				html.setProperty("html", new Text(compressor.compress(sw.toString())));
-				htmlEntries.add(html);
-				sw.close();
-			}
+		Entity sweepstakesWinnerEntity = new Entity("SweepstakesWinners", level.toString());
+		List<Key> schoolKeys = new ArrayList<Key>();
+		for (School school : sweepstakesWinners) {
+			schoolKeys.add(school.getKey());
 		}
-
-		for (Test test : categoryWinners.keySet()) {
-			context = new VelocityContext();
-			context.put("winners", categoryWinners.get(test));
-			context.put("test", test);
-			context.put("trophy", awardCriteria.get("category_" + level + "_trophy"));
-			context.put("medal", awardCriteria.get("category_" + level + "_medal"));
-			sw = new StringWriter();
-			t = ve.getTemplate("categoryWinners.html");
-			t.merge(context, sw);
-			html = new Entity("html", "category_" + level + "_" + test);
-			html.setProperty("type", "category");
-			html.setProperty("level", level.toString());
-			html.setProperty("test", test.toString());
-			html.setProperty("html", new Text(compressor.compress(sw.toString())));
-			htmlEntries.add(html);
-			sw.close();
-		}
-
-		context = new VelocityContext();
-		context.put("winners", middleCategorySweepstakesWinners);
-		context.put("trophy", awardCriteria.get("categorySweep_" + level));
-		sw = new StringWriter();
-		t = ve.getTemplate("categorySweepstakes.html");
-		t.merge(context, sw);
-		html = new Entity("html", "categorySweep_" + level);
-		html.setProperty("type", "categorySweep");
-		html.setProperty("level", level.toString());
-		html.setProperty("html", new Text(compressor.compress(sw.toString())));
-		htmlEntries.add(html);
-		sw.close();
-
-		context = new VelocityContext();
-		context.put("winners", sweepstakesWinners);
-		context.put("trophy", awardCriteria.get("sweepstakes_" + level));
-		context.put("subjects", Subject.getSubjects());
-		sw = new StringWriter();
-		t = ve.getTemplate("sweepstakesWinners.html");
-		t.merge(context, sw);
-		html = new Entity("html", "sweep_" + level);
-		html.setProperty("type", "sweep");
-		html.setProperty("level", level.toString());
-		html.setProperty("html", new Text(compressor.compress(sw.toString())));
-		htmlEntries.add(html);
-		sw.close();
-
-		context = new VelocityContext();
-		Collections.sort(students, Student.getNameComparator());
-		context.put("students", students);
-		context.put("subjects", Subject.getSubjects());
-		sw = new StringWriter();
-		t = ve.getTemplate("studentsOverview.html");
-		t.merge(context, sw);
-		html = new Entity("html", "students_" + level);
-		html.setProperty("type", "students");
-		html.setProperty("level", level.toString());
-		html.setProperty("html", new Text(compressor.compress(sw.toString())));
-		htmlEntries.add(html);
-		sw.close();
+		sweepstakesWinnerEntity.setProperty("schools", schoolKeys);
+		datastore.put(sweepstakesWinnerEntity);
 
 		HashMap<Test, List<Integer>> scores = new HashMap<Test, List<Integer>>();
-		Test[] tests = level == Level.MIDDLE ? Test.middleTests() : Test.highTests();
+		Test[] tests = Test.getTests(level);
 		for (Test test : tests) {
 			scores.put(test, new ArrayList<Integer>());
 		}
 
-		for (School school : schools.values()) {
+		for (School school : schools) {
 			for (Student student : school.getStudents()) {
 				for (Entry<Subject, Score> scoreEntry : student.getScores().entrySet()) {
 					scores.get(Test.fromSubjectAndGrade(student.getGrade(), scoreEntry.getKey())).add(scoreEntry.getValue().getScoreNum());
 				}
-			}
-
-			for (Entry<Test, ArrayList<Score>> anonScoreEntry : school.getAnonScores().entrySet()) {
-				for (Score score : anonScoreEntry.getValue()) {
-					scores.get(anonScoreEntry.getKey()).add(score.getScoreNum());
-				}
-			}
-		}
-
-		for (Entry<Test, List<Score>> scoreEntry : anonScores.entrySet()) {
-			for (Score score : scoreEntry.getValue()) {
-				scores.get(scoreEntry.getKey()).add(score.getScoreNum());
 			}
 		}
 
 		HashMap<Test, List<Integer>> summaryStats = new HashMap<Test, List<Integer>>();
 		HashMap<Test, List<Integer>> outliers = new HashMap<Test, List<Integer>>();
 		for (Entry<Test, List<Integer>> scoreEntry : scores.entrySet()) {
-			Pair<List<Integer>, List<Integer>> stats = calculateStats(scoreEntry.getValue());
+			Pair<List<Integer>, List<Integer>> stats = Statistics.calculateStats(scoreEntry.getValue());
 			summaryStats.put(scoreEntry.getKey(), stats.x);
 			outliers.put(scoreEntry.getKey(), stats.y);
 		}
 
-		context = new VelocityContext();
-		context.put("summaryStats", summaryStats);
-		context.put("outliers", outliers);
-		context.put("tests", tests);
-		context.put("subjects", Subject.getSubjects());
-		context.put("level", level);
-		sw = new StringWriter();
-		t = ve.getTemplate("visualizations.html");
-		t.merge(context, sw);
-		html = new Entity("html", "visualizations_" + level);
-		html.setProperty("type", "visualizations");
-		html.setProperty("level", level.toString());
-		html.setProperty("html", new Text(compressor.compress(sw.toString())));
-		htmlEntries.add(html);
-		sw.close();
-
-		datastore.put(htmlEntries); // TODO: Convert to Transaction
-	}
-
-	private static Pair<List<Integer>, List<Integer>> calculateStats(List<Integer> list) {
-		double[] data = new double[list.size()];
-		for (int i = 0; i < list.size(); i++) {
-			data[i] = list.get(i);
+		for (Test test : tests) {
+			Entity visualizationsEntity = new Entity("Visualization", test.toString());
+			visualizationsEntity.setProperty("summaryStats", summaryStats.get(test));
+			visualizationsEntity.setProperty("outliers", outliers.get(test));
+			visualizationEntities.add(visualizationsEntity);
 		}
-		DescriptiveStatistics dStats = new DescriptiveStatistics(data);
-
-		List<Integer> summary = new ArrayList<Integer>(5);
-		summary.add((int) dStats.getMin()); // Minimum
-		summary.add((int) dStats.getPercentile(25)); // Lower Quartile (Q1)
-		summary.add((int) dStats.getPercentile(50)); // Middle Quartile (Median - Q2)
-		summary.add((int) dStats.getPercentile(75)); // High Quartile (Q3)
-		summary.add((int) dStats.getMax()); // Maxiumum
-
-		List<Integer> outliers = new ArrayList<Integer>();
-		if (list.size() > 5 && dStats.getStandardDeviation() > 0) // Only remove outliers if relatively normal
-		{
-			double mean = dStats.getMean();
-			double stDev = dStats.getStandardDeviation();
-			NormalDistribution normalDistribution = new NormalDistribution(mean, stDev);
-
-			Iterator<Integer> listIterator = list.iterator();
-			double significanceLevel = .50 / list.size(); // Chauvenet's Criterion for Outliers
-			while (listIterator.hasNext()) {
-				int num = listIterator.next();
-				double pValue = normalDistribution.cumulativeProbability(num);
-				if (pValue < significanceLevel) {
-					outliers.add(num);
-					listIterator.remove();
-				}
-			}
-
-			if (list.size() != dStats.getN()) // If and only if outliers have been removed
-			{
-				double[] significantData = new double[list.size()];
-				for (int i = 0; i < list.size(); i++) {
-					significantData[i] = list.get(i);
-				}
-				dStats = new DescriptiveStatistics(significantData);
-				summary.set(0, (int) dStats.getMin());
-				summary.set(4, (int) dStats.getMax());
-			}
-		}
-
-		return new Pair<List<Integer>, List<Integer>>(summary, outliers);
+		datastore.put(visualizationEntities);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -515,14 +340,12 @@ public class Main extends HttpServlet {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 		for (School school : schools.values()) {
-			Query query = new Query("registration")
-				.addFilter("schoolName", FilterOperator.EQUAL, school.getName())
+			Query query = new Query("registration").addFilter("schoolName", FilterOperator.EQUAL, school.getName())
 				.addFilter("schoolLevel", FilterOperator.EQUAL, level.toString())
 				.addFilter("registrationType", FilterOperator.EQUAL, "coach");
 			List<Entity> registrations = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
 
 			if (registrations.size() > 0) {
-				school.calculateTestNums();
 				Entity registration = registrations.get(0);
 				for (Entry<Test, Integer> numTest : school.getNumTests().entrySet()) {
 					registration.setProperty(numTest.getKey().toString(), numTest.getValue());
@@ -532,13 +355,17 @@ public class Main extends HttpServlet {
 		}
 	}
 
-	private static void updateContestInfo(Set<Test> testsGraded) {
-		Query query = new Query("contestInfo");
-		Entity info = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+	private static void updateContestInfo(Set<Test> testsGraded, Entity contestInfo) {
 		SimpleDateFormat isoFormat = new SimpleDateFormat("hh:mm:ss a EEEE MMMM d, yyyy zzzz");
 		isoFormat.setTimeZone(TimeZone.getTimeZone("America/Chicago"));
-		info.setProperty("updated", isoFormat.format(new Date()).toString());
-		info.setProperty("testsGraded", Arrays.asList(testsGraded.toArray()).toString());
-		datastore.put(info);
+		contestInfo.setProperty("updated", isoFormat.format(new Date()).toString());
+
+		List<String> testsGradedList = new ArrayList<String>();
+		for (Test test : testsGraded) {
+			testsGradedList.add(test.toString());
+		}
+		contestInfo.setProperty("testsGraded", testsGradedList);
+
+		datastore.put(contestInfo);
 	}
 }

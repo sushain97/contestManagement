@@ -18,22 +18,15 @@
 
 package util;
 
-import java.io.StringWriter;
+import javax.jdo.JDOHelper;
+import javax.jdo.PersistenceManagerFactory;
 
-import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
+public final class PMF {
+	private static final PersistenceManagerFactory pmfInstance = JDOHelper.getPersistenceManagerFactory("transactions-optional");
 
-public class HTMLCompressor extends HtmlCompressor {
-	public static HTMLCompressor compressor = new HTMLCompressor();
-	static {
-		compressor.setCompressCss(true);
-		compressor.setCompressJavaScript(true);
-	}
+	private PMF() {}
 
-	public static String customCompress(String html) {
-		return compressor.compress(html);
-	}
-
-	public static String customCompress(StringWriter sw) {
-		return compressor.compress(sw.toString());
+	public static PersistenceManagerFactory get() {
+		return pmfInstance;
 	}
 }

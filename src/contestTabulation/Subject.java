@@ -25,10 +25,6 @@ public enum Subject {
 		return new String[] {N.getName(), C.getName(), M.getName(), S.getName()};
 	}
 
-	public static Subject[] getSubjects() {
-		return new Subject[] {N, C, M, S};
-	}
-
 	private final String subjectName;
 
 	private Subject(String subjectName) {

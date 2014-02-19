@@ -62,11 +62,10 @@
 			#include("printButton.html")
 			</h1>
 			#if($coach)
-				#if($html) $html #else <p> No data is currently available, <a href="/contactUs">contact us</a> if you have any
-				questions. </p>#end
+				#parse("schoolOverview.html")
 			#else
 				<p> Your account does not have sufficient permissions to view your school's scores (probably because you are a student).
-				If you believe that this error is incorrect, please <a href="/contactUs">contact us</a>.</p>
+				If you believe that this is incorrect, please <a href="/contactUs">contact us</a>.</p>
 			#end
 			<div id="push"></div>
 		</div>

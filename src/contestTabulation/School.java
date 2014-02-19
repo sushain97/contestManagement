@@ -18,15 +18,31 @@
 
 package contestTabulation;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+
+import javax.jdo.annotations.Element;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.PrimaryKey;
 
 import util.Pair;
 
-public class School {
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.datanucleus.annotations.Unowned;
+
+@PersistenceCapable
+public class School implements Serializable {
+	private static final long serialVersionUID = 2266690598440801464L;
+
 	public static Comparator<School> getScoreComparator(final Subject subject) {
 		return new Comparator<School>() {
 			@Override
@@ -45,21 +61,21 @@ public class School {
 		};
 	}
 
-	private final HashMap<Test, ArrayList<Score>> anonScores = new HashMap<Test, ArrayList<Score>>();
-	private final Level level;
-	private final int lowGrade, highGrade;
-	private final String name;
-	private final HashMap<Test, Integer> numTests = new HashMap<Test, Integer>();
-	private final ArrayList<Student> students = new ArrayList<Student>();
-	private final HashMap<Subject, Pair<Student[], Integer>> topScores = new HashMap<Subject, Pair<Student[], Integer>>();
+	@Persistent @Unowned private Level level;
+	@Persistent private String name;
+	@Persistent private int totalScore;
+	@Persistent(mappedBy = "school") @Element(dependent = "true") private Set<Student> students = new HashSet<Student>();
 
-	private int totalScore;
+	@Persistent(serialized = "true") private Map<Test, Integer> numTests = new HashMap<Test, Integer>();
+	@Persistent(serialized = "true") private Map<Test, ArrayList<Score>> anonScores = new HashMap<Test, ArrayList<Score>>();
+	@Persistent(serialized = "true") @Unowned private Map<Subject, Pair<Student[], Integer>> topScores = new HashMap<Subject, Pair<Student[], Integer>>();
+
+	@PrimaryKey private String key;
 
 	School(String name, Level level) {
 		this.name = Objects.requireNonNull(name);
 		this.level = Objects.requireNonNull(level);
-		this.lowGrade = level.getLowGrade();
-		this.highGrade = level.getHighGrade();
+		this.key = name + "_" + level;
 	}
 
 	protected void addAnonScores(Test test, ArrayList<Score> scores) {
@@ -85,7 +101,7 @@ public class School {
 			}
 		}
 
-		for (int grade = lowGrade; grade <= highGrade; grade++) {
+		for (int grade = level.getLowGrade(); grade <= level.getHighGrade(); grade++) {
 			ArrayList<Score> scores = anonScores.get(Test.valueOf(subject + Integer.toString(grade)));
 			if (scores != null) {
 				for (Score score : scores) {
@@ -110,11 +126,11 @@ public class School {
 		for (Student student : subjectStudents) {
 			if (top4.size() < 4) {
 				Score score = student.getScore(subject);
-				if (highGrade == student.getGrade() && inHighGrade < 3) {
+				if (level.getHighGrade() == student.getGrade() && inHighGrade < 3) {
 					top4.put(student, score);
 					inHighGrade++;
 				}
-				else if (highGrade != student.getGrade()) {
+				else if (level.getHighGrade() != student.getGrade()) {
 					top4.put(student, score);
 				}
 			}
@@ -132,7 +148,7 @@ public class School {
 	}
 
 	public void calculateScores() {
-		for (Subject subject : Subject.getSubjects()) {
+		for (Subject subject : Subject.values()) {
 			calculateScore(subject);
 		}
 		if (level == Level.MIDDLE) {
@@ -144,6 +160,7 @@ public class School {
 	}
 
 	public void calculateTestNums() {
+		numTests.clear();
 		for (Student student : students) {
 			int grade = student.getGrade();
 			for (Subject s : student.getScores().keySet()) {
@@ -182,12 +199,16 @@ public class School {
 		return true;
 	}
 
-	public HashMap<Test, ArrayList<Score>> getAnonScores() {
+	public Map<Test, ArrayList<Score>> getAnonScores() {
 		return anonScores;
 	}
 
 	public ArrayList<Score> getAnonScores(Test test) {
 		return anonScores.get(Objects.requireNonNull(test));
+	}
+
+	public Key getKey() {
+		return KeyFactory.createKey(this.getClass().getSimpleName(), key);
 	}
 
 	public Level getLevel() {
@@ -202,7 +223,7 @@ public class School {
 		return students.size();
 	}
 
-	public HashMap<Test, Integer> getNumTests() {
+	public Map<Test, Integer> getNumTests() {
 		return numTests;
 	}
 
@@ -214,8 +235,12 @@ public class School {
 		return topScores.get(Objects.requireNonNull(subject)).x;
 	}
 
-	public ArrayList<Student> getStudents() {
+	public Set<Student> getStudents() {
 		return students;
+	}
+
+	public Map<Subject, Pair<Student[], Integer>> getTopScores() {
+		return topScores;
 	}
 
 	public int getTotalScore() {

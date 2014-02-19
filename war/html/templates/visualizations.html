@@ -10,7 +10,7 @@
 			</div>
 			<div id="collapse$subject" class="panel-collapse collapse #if($foreach.first) in #end">
 				<div class="panel-body">
-					<div id="${subject}-graph"></div>
+					<div id="${subject}-graph" class="scoreGraph" style="min-width: 60%"></div>
 				</div>
 			</div>
 		</div>
@@ -25,7 +25,7 @@
 
 #set($minGrade = 1000)
 #foreach($test in $tests)
-	#if($summaryStats[$test]) <div id="$test" style="display: none;">$summaryStats[$test]</div> #end
+	#if($summaryStats[$test]) <div id="$test" class="hide">$summaryStats[$test]</div> #end
 	#if($test.grade() < $minGrade)
 		#set($minGrade = $test.grade())
 	#end
@@ -50,7 +50,8 @@
 			$('#${subject}-graph').highcharts({
 			    chart: {
 			        type: 'boxplot',
-		            inverted: true
+		            inverted: true,
+		            width: $('.collapse.in').width() * .95
 			    },
 			    title: {
 			        text: '$title'
@@ -111,5 +112,9 @@
 			    }]
 			});
 		#end
+	});
+	
+	$(window).resize(function() {
+		$('.scoreGraph').setSize($('.collapse.in').width() * .95, 500);       
 	});
 </script>

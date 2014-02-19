@@ -23,8 +23,7 @@ import java.util.HashMap;
 public class PropNames
 {
 	public static HashMap<String, String> names = new HashMap<String, String>();
-	static
-	{
+	static {
 		names.put("schoolName", "School Name");
 		names.put("registrationType", "Registration Type");
 		names.put("aliases", "School Aliases");

@@ -41,6 +41,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Transaction;
 
 @SuppressWarnings("serial")
@@ -84,7 +85,6 @@ public class Login extends BaseHttpServlet {
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		String username = req.getParameter("username").toLowerCase();
@@ -95,10 +95,9 @@ public class Login extends BaseHttpServlet {
 			redirect = "/?refresh=1";
 		}
 
-		Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, username);
+		Query query = new Query("user").setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, username));
 		List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(3));
-		String hash = "";
-		String salt = "";
+		String hash = "", salt = "";
 		if (users.size() == 0) {
 			resp.sendRedirect("/login?user=" + username + "&error=" + "401" + "&redirect=" + redirect);
 		}

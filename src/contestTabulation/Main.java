@@ -55,7 +55,10 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
+import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Text;
 import com.google.gdata.client.Service;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
@@ -76,7 +79,6 @@ public class Main extends HttpServlet {
 	private static final JacksonFactory jsonFactory = new JacksonFactory();
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		// TODO: Add Logging
 		final Set<Test> testsGraded = new HashSet<Test>();
@@ -335,14 +337,15 @@ public class Main extends HttpServlet {
 		datastore.put(visualizationEntities);
 	}
 
-	@SuppressWarnings("deprecation")
 	private static void updateRegistrations(Level level, Map<String, School> schools) {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 		for (School school : schools.values()) {
-			Query query = new Query("registration").addFilter("schoolName", FilterOperator.EQUAL, school.getName())
-				.addFilter("schoolLevel", FilterOperator.EQUAL, level.toString())
-				.addFilter("registrationType", FilterOperator.EQUAL, "coach");
+			Filter schoolNameFilter = new FilterPredicate("schoolName", FilterOperator.EQUAL, school.getName());
+			Filter schoolLevelFilter = new FilterPredicate("schoolLevel", FilterOperator.EQUAL, level.toString());
+			Filter regTypeFilter = new FilterPredicate("registrationType", FilterOperator.EQUAL, "coach");
+
+			Query query = new Query("registration").setFilter(CompositeFilterOperator.and(schoolNameFilter, schoolLevelFilter, regTypeFilter));
 			List<Entity> registrations = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
 
 			if (registrations.size() > 0) {

@@ -31,6 +31,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 public class UserCookie extends Cookie {
 	public UserCookie(String name, String value) {
@@ -81,8 +82,7 @@ public class UserCookie extends Cookie {
 			String user = cookieContent.split("\\$")[0];
 			String hash = cookieContent.split("\\$")[1];
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-			@SuppressWarnings("deprecation")
-			Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, user);
+			Query query = new Query("user").setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, user));
 			List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(3));
 			return users.size() != 0 && users.get(0).getProperty("hash").equals(hash);
 		}
@@ -91,7 +91,6 @@ public class UserCookie extends Cookie {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public Entity authenticateUser() {
 		try {
 			String cookieContent = URLDecoder.decode(getValue(), "UTF-8");
@@ -101,7 +100,7 @@ public class UserCookie extends Cookie {
 			String user = cookieContent.split("\\$")[0];
 			String hash = cookieContent.split("\\$")[1];
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-			Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, user);
+			Query query = new Query("user").setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, user));
 			List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 			if (users.size() != 0 && users.get(0).getProperty("hash").equals(hash)) {
 				return users.get(0);
@@ -114,5 +113,4 @@ public class UserCookie extends Cookie {
 			return null;
 		}
 	}
-
 }

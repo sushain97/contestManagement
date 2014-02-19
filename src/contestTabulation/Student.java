@@ -34,7 +34,7 @@ import com.google.appengine.datanucleus.annotations.Unowned;
 
 @PersistenceCapable
 public class Student implements Serializable {
-	private static int anonCounter = 0;
+	@Deprecated private static int anonCounter = 0;
 	private static final long serialVersionUID = 8963228643353855438L;
 
 	public static Comparator<Student> getNameComparator() {
@@ -62,6 +62,7 @@ public class Student implements Serializable {
 
 	@PrimaryKey private Key key;
 
+	@Deprecated
 	Student(int grade, School school) {
 		this("Anonymous" + anonCounter, school, grade);
 		anonCounter++;

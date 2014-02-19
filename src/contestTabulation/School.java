@@ -67,7 +67,7 @@ public class School implements Serializable {
 	@Persistent(mappedBy = "school") @Element(dependent = "true") private Set<Student> students = new HashSet<Student>();
 
 	@Persistent(serialized = "true") private Map<Test, Integer> numTests = new HashMap<Test, Integer>();
-	@Persistent(serialized = "true") private Map<Test, ArrayList<Score>> anonScores = new HashMap<Test, ArrayList<Score>>();
+	@Deprecated @Persistent(serialized = "true") private Map<Test, ArrayList<Score>> anonScores = new HashMap<Test, ArrayList<Score>>();
 	@Persistent(serialized = "true") @Unowned private Map<Subject, Pair<Student[], Integer>> topScores = new HashMap<Subject, Pair<Student[], Integer>>();
 
 	@PrimaryKey private String key;
@@ -78,6 +78,7 @@ public class School implements Serializable {
 		this.key = name + "_" + level;
 	}
 
+	@Deprecated
 	protected void addAnonScores(Test test, ArrayList<Score> scores) {
 		anonScores.put(test, scores);
 		if (!numTests.containsKey(test)) {
@@ -106,6 +107,7 @@ public class School implements Serializable {
 			if (scores != null) {
 				for (Score score : scores) {
 					if (score.getScoreNum() > 0) {
+						@SuppressWarnings("deprecation")
 						Student tempStudent = new Student(grade, this);
 						tempStudent.setScore(subject, score);
 						subjectStudents.add(tempStudent);
@@ -199,10 +201,12 @@ public class School implements Serializable {
 		return true;
 	}
 
+	@Deprecated
 	public Map<Test, ArrayList<Score>> getAnonScores() {
 		return anonScores;
 	}
 
+	@Deprecated
 	public ArrayList<Score> getAnonScores(Test test) {
 		return anonScores.get(Objects.requireNonNull(test));
 	}

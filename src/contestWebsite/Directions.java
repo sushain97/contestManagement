@@ -39,7 +39,6 @@ import com.google.appengine.api.datastore.Text;
 @SuppressWarnings("serial")
 public class Directions extends BaseHttpServlet {
 	@Override
-	@SuppressWarnings("unchecked")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");

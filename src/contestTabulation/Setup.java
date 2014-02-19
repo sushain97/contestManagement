@@ -44,6 +44,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.taskqueue.Queue;
@@ -79,7 +80,6 @@ public class Setup extends BaseHttpServlet {
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		HttpTransport httpTransport = new NetHttpTransport();
 		JacksonFactory jsonFactory = new JacksonFactory();
@@ -114,7 +114,9 @@ public class Setup extends BaseHttpServlet {
 		body.setMimeType("application/vnd.google-apps.spreadsheet");
 		File file = drive.files().insert(body).execute();
 
-		Query query = new Query("registration").addFilter("schoolLevel", FilterOperator.EQUAL, level).addSort("schoolName", SortDirection.ASCENDING);
+		Query query = new Query("registration")
+			.setFilter(new FilterPredicate("schoolLevel", FilterOperator.EQUAL, level))
+			.addSort("schoolName", SortDirection.ASCENDING);
 		List<Entity> registrations = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
 
 		SpreadsheetService service = new SpreadsheetService("contestTabulation");

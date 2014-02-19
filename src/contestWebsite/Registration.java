@@ -64,6 +64,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
@@ -76,7 +77,6 @@ import contestTabulation.Subject;
 @SuppressWarnings("serial")
 public class Registration extends BaseHttpServlet {
 	@Override
-	@SuppressWarnings("unchecked")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
@@ -195,7 +195,6 @@ public class Registration extends BaseHttpServlet {
 	}
 
 	@Override
-	@SuppressWarnings({"deprecation", "unchecked"})
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Entity contestInfo = Retrieve.contestInfo();
@@ -247,7 +246,7 @@ public class Registration extends BaseHttpServlet {
 				confPassword = params.get("confPassword")[0];
 			}
 
-			Query query = new Query("registration").addFilter("email", FilterOperator.EQUAL, email);
+			Query query = new Query("registration").setFilter(new FilterPredicate("email", FilterOperator.EQUAL, email));
 			List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 
 			if (users.size() != 0 || account.equals("yes") && !confPassword.equals(password)) {

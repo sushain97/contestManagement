@@ -74,7 +74,16 @@ public class PublicResults extends BaseHttpServlet {
 
 			if (type != null) {
 				String[] types = type.split("_");
-				Level level = Level.fromString(req.getParameter("level"));
+
+				Level level;
+				try {
+					level = Level.fromString(req.getParameter("level"));
+				}
+				catch (IllegalArgumentException e) {
+					resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+					return;
+				}
+
 				context.put("tests", Test.getTests(level));
 				context.put("level", level);
 

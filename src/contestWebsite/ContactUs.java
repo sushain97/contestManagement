@@ -54,6 +54,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Transaction;
 
 @SuppressWarnings("serial")
@@ -95,10 +96,9 @@ public class ContactUs extends BaseHttpServlet {
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Query query = new Query("user").addFilter("name", FilterOperator.EQUAL, req.getParameter("name"));
+		Query query = new Query("user").setFilter(new FilterPredicate("name", FilterOperator.EQUAL, req.getParameter("name")));
 		List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(3));
 		Entity feedback = new Entity("feedback");
 		if (users.size() != 0) {

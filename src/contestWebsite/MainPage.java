@@ -46,12 +46,12 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Text;
 
 @SuppressWarnings("serial")
 public class MainPage extends BaseHttpServlet {
 	@Override
-	@SuppressWarnings({"deprecation", "unchecked"})
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets");
@@ -73,7 +73,7 @@ public class MainPage extends BaseHttpServlet {
 				String name = (String) user.getProperty("name");
 
 				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-				Query query = new Query("registration").addFilter("email", FilterOperator.EQUAL, username);
+				Query query = new Query("registration").setFilter(new FilterPredicate("email", FilterOperator.EQUAL, username));
 				Entity reg = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 				ArrayList<String> regData = new ArrayList<String>();
 				Map<String, Object> props = reg.getProperties();

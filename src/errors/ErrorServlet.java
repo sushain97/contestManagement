@@ -24,6 +24,7 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.tools.generic.EscapeTool;
 
 import util.BaseHttpServlet;
 import util.Pair;
@@ -43,6 +44,7 @@ public class ErrorServlet extends BaseHttpServlet {
 		context.put("servlet", req.getAttribute("javax.servlet.error.servlet_name"));
 		context.put("diaginfo", RequestPrinter.debugString(req, true).replaceAll("\n", "<br>"));
 		context.put("date", new Date().toString());
+		context.put("esc", new EscapeTool());
 
 		return infoAndCookie;
 	}

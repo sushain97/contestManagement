@@ -226,6 +226,7 @@ function CheckAccount() {
 	var account = $('#account').prop('checked') && $('#regType1').prop('checked');
 	$('#password').prop('required', account);
 	$('#confPassword').prop('required', account);
+	
 	if(account) {
 		$('#accountCreds').show('fast');
 		$('#account').prop('checked', true);
@@ -233,6 +234,8 @@ function CheckAccount() {
 	else {
 		$('#accountCreds').hide('fast');
 		$('#account').prop('checked', false);
+		$('#password').val('');
+		$('#confPassword').val('');
 	}
 	
 	if($('#regType2').prop('checked')) {

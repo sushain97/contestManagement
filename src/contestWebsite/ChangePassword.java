@@ -42,6 +42,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 @SuppressWarnings({"serial", "unused"})
 public class ChangePassword extends BaseHttpServlet {
@@ -71,7 +72,6 @@ public class ChangePassword extends BaseHttpServlet {
 	}
 
 	@Override
-	@SuppressWarnings({"deprecation", "unchecked"})
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		UserCookie userCookie = UserCookie.getCookie(req);
 		Entity user = userCookie != null ? userCookie.authenticateUser() : null;
@@ -87,7 +87,7 @@ public class ChangePassword extends BaseHttpServlet {
 			}
 			else {
 				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-				Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, userCookie.getUsername());
+				Query query = new Query("user").setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, userCookie.getUsername()));
 				List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 				if (users.size() < 1) {
 					resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User account required for that operation");

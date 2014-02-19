@@ -51,6 +51,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Transaction;
 
 @SuppressWarnings({"serial"})
@@ -88,12 +89,11 @@ public class ForgotPassword extends BaseHttpServlet {
 	}
 
 	@Override
-	@SuppressWarnings({"deprecation", "unchecked"})
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		if (req.getParameter("noise") == null) {
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 			String email = req.getParameter("email");
-			Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, email);
+			Query query = new Query("user").setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, email));
 
 			List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(3));
 			if (users.size() != 0) {
@@ -159,7 +159,7 @@ public class ForgotPassword extends BaseHttpServlet {
 			String noise = params.get("noise")[0];
 
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-			Query query = new Query("user").addFilter("reset", FilterOperator.EQUAL, noise);
+			Query query = new Query("user").setFilter(new FilterPredicate("reset", FilterOperator.EQUAL, noise));
 
 			List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(3));
 			if (users.size() != 0) {

@@ -45,6 +45,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
 
@@ -56,7 +57,6 @@ import contestTabulation.Test;
 @SuppressWarnings("serial")
 public class Data extends BaseHttpServlet {
 	@Override
-	@SuppressWarnings("deprecation")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets, html/templates");
@@ -86,20 +86,19 @@ public class Data extends BaseHttpServlet {
 				context.put("updated", req.getParameter("updated"));
 				context.put("price", infoAndCookie.x.getProperty("price"));
 				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-				Query query = new Query("registration").addFilter("schoolLevel", FilterOperator.EQUAL, "middle");
-				List<Entity> middleRegs = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-				query = new Query("registration").addFilter("schoolLevel", FilterOperator.EQUAL, "high");
-				List<Entity> highRegs = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-				context.put("middleRegs", middleRegs);
-				context.put("highRegs", highRegs);
+				for (Level level : Level.values()) {
+					Query query = new Query("registration").setFilter(new FilterPredicate("schoolLevel", FilterOperator.EQUAL, level.toString()));
+					List<Entity> regs = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
+					context.put(level.toString() + "Regs", regs);
+				}
 			}
 			else if (choice.equals("questions")) {
 				template = "dataQuestions.html";
 				context.put("updated", req.getParameter("updated"));
 				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-				Query query = new Query("feedback").addFilter("resolved", FilterOperator.EQUAL, true);
+				Query query = new Query("feedback").setFilter(new FilterPredicate("resolved", FilterOperator.EQUAL, true));
 				List<Entity> resolvedQs = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-				query = new Query("feedback").addFilter("resolved", FilterOperator.NOT_EQUAL, true);
+				query = new Query("feedback").setFilter(new FilterPredicate("resolved", FilterOperator.NOT_EQUAL, true));
 				List<Entity> unresolvedQs = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
 				context.put("resolvedQs", resolvedQs);
 				context.put("unresolvedQs", unresolvedQs);
@@ -113,7 +112,16 @@ public class Data extends BaseHttpServlet {
 				if (type != null) {
 					context.put("type", type);
 					String[] types = type.split("_");
-					Level level = Level.fromString(req.getParameter("level"));
+
+					Level level;
+					try {
+						level = Level.fromString(req.getParameter("level"));
+					}
+					catch (IllegalArgumentException e) {
+						resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+						return;
+					}
+
 					context.put("level", level.toString());
 					context.put("tests", Test.getTests(level));
 
@@ -177,7 +185,6 @@ public class Data extends BaseHttpServlet {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		UserCookie userCookie = UserCookie.getCookie(req);
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
@@ -216,7 +223,7 @@ public class Data extends BaseHttpServlet {
 								datastore.delete(key);
 							}
 							else {
-								throw new IllegalArgumentException();
+								resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
 							}
 						}
 					}

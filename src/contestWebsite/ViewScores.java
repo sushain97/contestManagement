@@ -40,6 +40,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 import contestTabulation.Level;
 import contestTabulation.School;
@@ -49,7 +50,6 @@ import contestTabulation.Test;
 @SuppressWarnings("serial")
 public class ViewScores extends BaseHttpServlet {
 	@Override
-	@SuppressWarnings("deprecation")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets, html/templates");
@@ -73,7 +73,7 @@ public class ViewScores extends BaseHttpServlet {
 			context.put("tests", Test.getTests(level));
 			context.put("subjects", Subject.values());
 
-			Query query = new Query("registration").addFilter("email", FilterOperator.EQUAL, user.getProperty("user-id"));
+			Query query = new Query("registration").setFilter(new FilterPredicate("email", FilterOperator.EQUAL, user.getProperty("user-id")));
 			List<Entity> registration = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 			context.put("coach", !registration.isEmpty() && registration.get(0).getProperty("registrationType").equals("coach"));
 

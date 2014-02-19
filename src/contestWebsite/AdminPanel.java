@@ -49,6 +49,7 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
@@ -95,7 +96,6 @@ public class AdminPanel extends BaseHttpServlet {
 	}
 
 	@Override
-	@SuppressWarnings({"deprecation", "unchecked"})
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		UserCookie userCookie = UserCookie.getCookie(req);
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
@@ -172,7 +172,7 @@ public class AdminPanel extends BaseHttpServlet {
 
 				datastore.put(contestInfo);
 
-				Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, "admin");
+				Query query = new Query("user").setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, "admin"));
 				Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 				String hash = (String) user.getProperty("hash");
 				String salt = (String) user.getProperty("salt");

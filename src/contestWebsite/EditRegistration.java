@@ -45,6 +45,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
@@ -118,7 +119,6 @@ public class EditRegistration extends BaseHttpServlet {
 	}
 
 	@Override
-	@SuppressWarnings({"unchecked", "deprecation"})
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		UserCookie userCookie = UserCookie.getCookie(req);
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
@@ -137,7 +137,7 @@ public class EditRegistration extends BaseHttpServlet {
 					String newValue = params.get("newValue")[0];
 					String modified = params.get("modified")[0];
 					if ("yes".equals(params.get("account")[0]) && ("email".equals(modified) || "schoolName".equals(modified) || "name".equals(modified))) {
-						Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, registration.getProperty("email"));
+						Query query = new Query("user").setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, registration.getProperty("email")));
 						Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 						switch (modified) {
 							case "email":
@@ -162,7 +162,7 @@ public class EditRegistration extends BaseHttpServlet {
 				else {
 					if (params.containsKey("delete")) {
 						if (registration.getProperty("account").equals("yes")) {
-							Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, registration.getProperty("email"));
+							Query query = new Query("user").setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, registration.getProperty("email")));
 							Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 							datastore.delete(user.getKey());
 						}
@@ -175,16 +175,15 @@ public class EditRegistration extends BaseHttpServlet {
 						String name = params.get("name")[0];
 						String schoolName = params.get("schoolName")[0];
 						String email = params.get("email")[0];
-
 						String account = params.get("account")[0];
 						if (registration.getProperty("account").equals("yes") && account.equals("no")) {
 							registration.setProperty("account", "no");
-							Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, registration.getProperty("email"));
+							Query query = new Query("user").setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, registration.getProperty("email")));
 							Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 							datastore.delete(user.getKey());
 						}
 						else if (registration.getProperty("account").equals("yes")) {
-							Query query = new Query("user").addFilter("user-id", FilterOperator.EQUAL, registration.getProperty("email"));
+							Query query = new Query("user").setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, registration.getProperty("email")));
 							Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 							user.setProperty("name", name);
 							user.setProperty("school", schoolName);
@@ -200,7 +199,7 @@ public class EditRegistration extends BaseHttpServlet {
 						registration.setProperty("email", email);
 						registration.setProperty("cost", Integer.parseInt(params.get("cost")[0]));
 						registration.setProperty("paid", params.get("paid")[0]);
-						registration.setProperty("division", params.get("division")[0]);
+						registration.setProperty("division", params.containsKey("division") ? params.get("division")[0] : "");
 						registration.setProperty("studentData", new Text(params.get("studentData")[0]));
 
 						datastore.put(registration);

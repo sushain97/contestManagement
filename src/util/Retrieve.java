@@ -52,7 +52,6 @@ public class Retrieve {
 	private static final PersistenceManager pm = PMF.get().getPersistenceManager();
 	private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-	@SuppressWarnings("unchecked")
 	public static List<Student> allStudents(Level level) {
 		javax.jdo.Query q = pm.newQuery(Student.class);
 		q.setFilter("grade >= :lowGrade && grade <= :highGrade");
@@ -61,7 +60,6 @@ public class Retrieve {
 		return students;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static Pair<School, Pair<Map<Test, List<Integer>>, Map<Test, List<Integer>>>> schoolOverview(String schoolName) {
 		javax.jdo.Query q = pm.newQuery(School.class);
 		q.setFilter("name == :schoolName");
@@ -94,7 +92,6 @@ public class Retrieve {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static List<Student> categoryWinners(String category, Level level) {
 		try {
 			Entity categoryWinnersEntity = datastore.get(KeyFactory.createKey("CategoryWinners", category + "_" + level.toString()));
@@ -107,7 +104,6 @@ public class Retrieve {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public static Map<Subject, List<School>> categorySweepstakesWinners(Level level) {
 		List<Key> categorySweepstakesWinnersEntityKeys = new ArrayList<Key>();
 		for (Subject subject : Subject.values()) {
@@ -127,7 +123,6 @@ public class Retrieve {
 		return categorySweepstakesWinners;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static List<School> sweepstakesWinners(Level level) {
 		javax.jdo.Query q = pm.newQuery(School.class);
 		q.setOrdering("totalScore desc");
@@ -135,7 +130,6 @@ public class Retrieve {
 		return (List<School>) q.execute(level);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static Pair<Map<Test, List<Integer>>, Map<Test, List<Integer>>> visualizations(Level level) {
 		List<Key> visualizationKeys = new ArrayList<Key>();
 		for (Test test : Test.getTests(level)) {
@@ -155,7 +149,6 @@ public class Retrieve {
 		return new Pair<Map<Test, List<Integer>>, Map<Test, List<Integer>>>(summaryStats, outliers);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static Map<String, Integer> awardCriteria(Entity contestInfo) {
 		Map<String, Integer> awardCriteria = new HashMap<String, Integer>();
 		JSONObject awardCriteriaJSON = null;

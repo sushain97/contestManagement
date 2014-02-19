@@ -160,6 +160,7 @@ public class School implements Serializable {
 	}
 
 	public void calculateTestNums() {
+		numTests.clear();
 		for (Student student : students) {
 			int grade = student.getGrade();
 			for (Subject s : student.getScores().keySet()) {

@@ -76,6 +76,7 @@ public class Data extends BaseHttpServlet {
 			String choice = req.getParameter("choice");
 			if (choice == null) {
 				resp.sendRedirect("/data?choice=overview");
+				return;
 			}
 			else if (choice.equals("overview")) {
 				template = "data.html";
@@ -144,6 +145,10 @@ public class Data extends BaseHttpServlet {
 						Pair<Map<Test, List<Integer>>, Map<Test, List<Integer>>> statsAndOutliers = Retrieve.visualizations(level);
 						context.put("summaryStats", statsAndOutliers.x);
 						context.put("outliers", statsAndOutliers.y);
+					}
+					else {
+						resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+						return;
 					}
 				}
 				else {

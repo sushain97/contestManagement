@@ -119,12 +119,14 @@ public class Main extends HttpServlet {
 			tabulateCategoryWinners(Level.MIDDLE, middleStudents, middleCategoryWinners, testsGraded, awardCriteria);
 			tabulateCategoryWinners(Level.HIGH, highStudents, highCategoryWinners, testsGraded, awardCriteria);
 
-			// Calculate school fields with sweepstakes scores and populate sorted sweekstakes maps & arrays with all schools
+			// Calculate school fields with sweepstakes scores, populate sorted sweekstakes maps & arrays with all schools, and calculate test numbers
 			for (School school : middleSchools.values()) {
 				school.calculateScores();
+				school.calculateTestNums();
 			}
 			for (School school : highSchools.values()) {
 				school.calculateScores();
+				school.calculateTestNums();
 			}
 			tabulateCategorySweepstakesWinners(middleSchools, middleCategorySweepstakesWinners);
 			tabulateCategorySweepstakesWinners(highSchools, highCategorySweepstakesWinners);
@@ -344,7 +346,6 @@ public class Main extends HttpServlet {
 			List<Entity> registrations = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
 
 			if (registrations.size() > 0) {
-				school.calculateTestNums();
 				Entity registration = registrations.get(0);
 				for (Entry<Test, Integer> numTest : school.getNumTests().entrySet()) {
 					registration.setProperty(numTest.getKey().toString(), numTest.getValue());

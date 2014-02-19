@@ -97,6 +97,10 @@ public class PublicResults extends BaseHttpServlet {
 					context.put("summaryStats", statsAndOutliers.x);
 					context.put("outliers", statsAndOutliers.y);
 				}
+				else {
+					resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+					return;
+				}
 			}
 			else {
 				context.put("type", "avail");

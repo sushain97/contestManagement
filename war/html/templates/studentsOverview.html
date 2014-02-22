@@ -16,7 +16,7 @@
 		<td>#set($schoolName = $student.getSchool().getName()) <a href="/data?choice=scores&type=school_$esc.url($schoolName)&level=$level">$schoolName</a></td>
 		#foreach($subject in $subjects)
 			#set($score = false)
-			#set($score = $student.getScore($subject).getScore())
+			#set($score = $student.getScore($subject))
 			<td>#if($score) $score #else - #end</td>
 		#end
 	</tr>

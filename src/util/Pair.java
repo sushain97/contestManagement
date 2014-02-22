@@ -39,4 +39,35 @@ public class Pair<X, Y> implements Serializable {
 	public String toString() {
 		return "(" + this.x + ", " + this.y + ")";
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Pair<?, ?> other = (Pair<?, ?>) obj;
+		if (x == null) {
+			if (other.x != null) {
+				return false;
+			}
+		}
+		else if (!x.equals(other.x)) {
+			return false;
+		}
+		if (y == null) {
+			if (other.y != null) {
+				return false;
+			}
+		}
+		else if (!y.equals(other.y)) {
+			return false;
+		}
+		return true;
+	}
 }

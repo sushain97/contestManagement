@@ -16,7 +16,7 @@
 			<td>$student.getGrade()</td> 
 			#foreach($subject in $subjects)
 				#set($score = false)
-				#set($score = $student.getScore($subject).getScore())
+				#set($score = $student.getScore($subject))
 				<td>#if($score) $score #else - #end</td>
 			#end
 		</tr>

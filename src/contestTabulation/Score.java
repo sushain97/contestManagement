@@ -18,49 +18,80 @@
 
 package contestTabulation;
 
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
+
+import util.Pair;
 
 @PersistenceCapable
 public class Score implements Comparable<Score>, java.io.Serializable {
 	private static final long serialVersionUID = 1631716116306090911L;
 
-	private static boolean isInteger(String str) {
-		if (str == null) {
-			return false;
-		}
-		int length = str.length();
-		if (length == 0) {
-			return false;
-		}
-		int i = 0;
-		if (str.charAt(0) == '-') {
-			if (length == 1) {
-				return false;
-			}
-			i = 1;
-		}
-		for (; i < length; i++) {
-			char c = str.charAt(i);
-			if (c <= '/' || c >= ':') {
-				return false;
-			}
-		}
-		return true;
-	}
+	private static final String LETTER_FORMAT = "^((?:[\\+-])?[0-9]+)([A-z])?$";
+	private static final String DECIMAL_FORMAT = "^((?:[\\+-])?[0-9]+)(?:\\.([0-9]+))?$";
 
 	public static boolean isScore(String str) {
-		return isInteger(str) || str.length() > 1 && isInteger(str.substring(0, str.length() - 1));
+		return str.matches(LETTER_FORMAT) || str.matches(DECIMAL_FORMAT);
 	}
 
-	@Persistent private String score;
+	@Persistent private Pair<Integer, Integer> score; // Number, Modifier
 
 	Score(String score) {
-		if (isScore(score)) {
-			this.score = score;
+		score = Objects.requireNonNull(score).trim();
+		try {
+			Integer scoreNum, scoreMod;
+			if (score.matches(LETTER_FORMAT)) {
+				Pattern pattern = Pattern.compile(LETTER_FORMAT);
+				Matcher matcher = pattern.matcher(score);
+				matcher.matches();
+
+				scoreNum = Integer.parseInt(matcher.group(1), 10);
+				if (matcher.group(2) != null) {
+					char letter = matcher.group(2).toUpperCase().charAt(0);
+					if (letter >= 'A' && letter <= 'Z') {
+						scoreMod = letter - 64;
+					}
+					else {
+						throw new IllegalArgumentException("Invalid letter modifier");
+					}
+				}
+				else {
+					scoreMod = 0;
+				}
+			}
+			else if (score.matches(DECIMAL_FORMAT)) {
+				Pattern pattern = Pattern.compile(DECIMAL_FORMAT);
+				Matcher matcher = pattern.matcher(score);
+				matcher.matches();
+
+				scoreNum = Integer.parseInt(matcher.group(1), 10);
+				if (matcher.group(2) != null) {
+					scoreMod = Integer.parseInt(matcher.group(2), 10);
+				}
+				else {
+					scoreMod = 0;
+				}
+			}
+			else {
+				throw new IllegalArgumentException("Invalid score format");
+			}
+
+			this.score = new Pair<Integer, Integer>(scoreNum, scoreMod);
 		}
-		else {
-			throw new IllegalArgumentException();
+		catch (Exception e) {
+			throw new IllegalArgumentException("Unable to parse score");
+		}
+
+		if (this.score.x > 1000) {
+			throw new IllegalArgumentException("Score larger than expected: " + this.score.x);
+		}
+
+		if (this.score.y > 100) {
+			throw new IllegalArgumentException("Score modifier larger than expected: " + this.score.y);
 		}
 	}
 
@@ -69,43 +100,15 @@ public class Score implements Comparable<Score>, java.io.Serializable {
 		if (other.equals(this)) {
 			return 0;
 		}
-
-		int thisScore = 0;
-		int otherScore = 0;
-
-		if (isInteger(getScore()) && isInteger(other.getScore())) {
-			return Integer.parseInt(getScore()) - Integer.parseInt(other.getScore());
-		}
-		else if (isInteger(getScore()) && !isInteger(other.getScore())) {
-			thisScore = Integer.parseInt(getScore());
-			otherScore = Integer.parseInt(other.getScore().substring(0, other.getScore().length() - 1));
-			if (thisScore == otherScore) {
-				return 0;
-			}
-			else {
-				return thisScore - otherScore;
-			}
-		}
-		else if (!isInteger(getScore()) && isInteger(other.getScore())) {
-			thisScore = Integer.parseInt(getScore().substring(0, getScore().length() - 1));
-			otherScore = Integer.parseInt(other.getScore());
-			if (thisScore == otherScore) {
-				return 0;
-			}
-			else {
-				return thisScore - otherScore;
-			}
-		}
 		else {
-			thisScore = Integer.parseInt(getScore().substring(0, getScore().length() - 1));
-			otherScore = Integer.parseInt(other.getScore().substring(0, other.getScore().length() - 1));
-			if (thisScore == otherScore) {
-				char thisScoreLetter = getScore().charAt(getScore().length() - 1);
-				char otherScoreLetter = other.getScore().charAt(other.getScore().length() - 1);
-				return otherScoreLetter - thisScoreLetter;
+			Pair<Integer, Integer> otherScore = other.getScore();
+			Pair<Integer, Integer> thisScore = this.getScore();
+
+			if (thisScore.x != otherScore.x) {
+				return thisScore.x - otherScore.x;
 			}
 			else {
-				return thisScore - otherScore;
+				return thisScore.y - otherScore.y;
 			}
 		}
 	}
@@ -133,17 +136,12 @@ public class Score implements Comparable<Score>, java.io.Serializable {
 		return true;
 	}
 
-	public String getScore() {
+	public Pair<Integer, Integer> getScore() {
 		return score;
 	}
 
 	public int getScoreNum() {
-		try {
-			return Integer.parseInt(score);
-		}
-		catch (NumberFormatException e) {
-			return Integer.parseInt(score.substring(0, score.length() - 1));
-		}
+		return score.x;
 	}
 
 	@Override
@@ -156,6 +154,6 @@ public class Score implements Comparable<Score>, java.io.Serializable {
 
 	@Override
 	public String toString() {
-		return "Score [score=" + score + "]";
+		return score.x.toString() + (score.y != 0 ? (char) (score.y + 64) : "");
 	}
 }

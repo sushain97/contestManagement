@@ -24,6 +24,7 @@
 		}
 	</style>
 
+	<script type="text/javascript" src="/js/pagescripts/adminPanel.js"></script>
 	<script type="text/javascript">
 		(function() {
 			var po = document.createElement('script');
@@ -185,6 +186,21 @@
 						<input type="number" class="form-control" name="counts_sweepstakes_high" value="#if($awardCriteria.sweepstakes_high)$awardCriteria.sweepstakes_high#end" required>
 					</div>
 				</div>
+
+				#if($levels.contains("middle"))
+				<div class="form-group">
+					<label class="col-sm-3 control-label" for="qualifying">Qualifying Scores</label>
+					#foreach($subject in $middleSubjects)
+						<div class="col-sm-1 control-label">$subject <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" title="$subject.getGrade()th $subject.getSubject().getName()"></span></div>
+						<div class="col-sm-1">
+							<input type="number" class="form-control" name="qualifying_$subject" value="#if($qualifyingCriteria.get($subject.toString()))$qualifyingCriteria.get($subject.toString())#end" required>
+						</div>
+						#if($foreach.count % 4 == 0)
+							<div class="col-sm-3"></div>
+						#end
+					#end
+				</div>
+				#end
 				
 				<div class="form-group">
 					<label class="col-sm-2 control-label" for="price">Test Charges</label>
@@ -202,10 +218,9 @@
 					<div class="input-prepend col-sm-6">
 	      				<div class="input-group">
 	      					<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
-							<input type="email" name="email" id="email" class="form-control"
-								value='#if($contestInfo.getProperty("email"))$contestInfo.getProperty("email")#end' required>
+							<input type="email" name="email" id="email" class="form-control" value='#if($contestInfo.getProperty("email"))$contestInfo.getProperty("email")#end' required>
 						</div>
-						<span class="help-block">Where should questions submitted through the <a href="\contactUs">contact us</a> page be sent?</span>
+						<span class="help-block">Where should questions submitted through the <a href="/contactUs">contact us</a> page be sent?</span>
 					</div>
 				</div>
 				
@@ -225,13 +240,11 @@
 					<label class="col-sm-2 control-label" for="recaptcha"><a href="https://www.google.com/recaptcha" target="_blank">ReCaptcha API Keys</a></label>
 					<div class="col-sm-1 control-label"><strong>Public</strong></div>
 					<div class="col-sm-4">
-						<input type="text" name="publicKey" class="form-control" 
-							value='#if($contestInfo.getProperty("publicKey"))$contestInfo.getProperty("publicKey")#end' required>
+						<input type="text" name="publicKey" class="form-control" value='#if($contestInfo.getProperty("publicKey"))$contestInfo.getProperty("publicKey")#end' required>
 					</div>
 					<div class="col-sm-1 control-label"><strong>Private</strong></div>
 					<div class="col-sm-4">
-						<input type="text" name="privateKey" class="form-control" placeholder="Private Key" 
-							value='#if($contestInfo.getProperty("privateKey"))$contestInfo.getProperty("privateKey")#end'  required>
+						<input type="text" name="privateKey" class="form-control" value='#if($contestInfo.getProperty("privateKey"))$contestInfo.getProperty("privateKey")#end'  required>
 					</div>
 				</div>
 				
@@ -404,7 +417,6 @@
 	
 	<script type="text/javascript" src="/js/bootstrap/bootstrap-datepicker.min.js"></script>
 	<script type="text/javascript" src="/js/bootstrap/bootstrap-slider.js"></script>
-	<script type="text/javascript" src="/js/pagescripts/adminPanel.js"></script>
 	#include("noscript.html")
 </body>
 </html>

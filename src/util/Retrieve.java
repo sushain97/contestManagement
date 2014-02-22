@@ -150,30 +150,36 @@ public class Retrieve {
 	}
 
 	public static Map<String, Integer> awardCriteria(Entity contestInfo) {
-		Map<String, Integer> awardCriteria = new HashMap<String, Integer>();
-		JSONObject awardCriteriaJSON = null;
-		try {
-			awardCriteriaJSON = new JSONObject(((Text) Objects.requireNonNull(contestInfo).getProperty("awardCriteria")).getValue());
-			Iterator<String> awardCountKeyIter = awardCriteriaJSON.keys();
-			while (awardCountKeyIter.hasNext()) {
-				String awardCountType = awardCountKeyIter.next();
-				try {
-					awardCriteria.put(awardCountType, (Integer) awardCriteriaJSON.get(awardCountType));
-				}
-				catch (JSONException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return awardCriteria;
+		return textToMap(contestInfo, "awardCriteria");
+	}
+
+	public static Map<String, Integer> qualifyingCriteria(Entity contestInfo) {
+		return textToMap(contestInfo, "qualifyingCriteria");
 	}
 
 	public static Entity contestInfo() {
 		Query query = new Query("contestInfo");
 		List<Entity> contestInfos = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 		return !contestInfos.isEmpty() ? contestInfos.get(0) : null;
+	}
+
+	private static Map<String, Integer> textToMap(Entity contestInfo, String propertyName) {
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		JSONObject mapJSON = null;
+		try {
+			Object mapText = Objects.requireNonNull(contestInfo).getProperty(propertyName);
+			if (mapText != null) {
+				mapJSON = new JSONObject(((Text) mapText).getValue());
+				Iterator<String> keyIter = mapJSON.keys();
+				while (keyIter.hasNext()) {
+					String key = keyIter.next();
+					map.put(key, (Integer) mapJSON.get(key));
+				}
+			}
+		}
+		catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return map;
 	}
 }

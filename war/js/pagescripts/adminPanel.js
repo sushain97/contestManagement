@@ -20,6 +20,7 @@ $(document).ready(function() {
 	CheckUpdate();
 	
 	$('.input-daterange').datepicker();
+	$('.glyphicon-question-sign').tooltip();
 	
 	$('.price').slider({
 		formater: function(value) {

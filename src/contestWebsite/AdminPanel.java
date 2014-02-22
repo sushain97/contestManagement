@@ -57,6 +57,9 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
+import contestTabulation.Level;
+import contestTabulation.Test;
+
 @SuppressWarnings("serial")
 public class AdminPanel extends BaseHttpServlet {
 	@Override
@@ -86,7 +89,9 @@ public class AdminPanel extends BaseHttpServlet {
 			context.put("passError", passError != null && passError.equals("1") ? "That password is incorrect, try again." : null);
 
 			context.put("awardCriteria", Retrieve.awardCriteria(contestInfo));
+			context.put("qualifyingCriteria", Retrieve.qualifyingCriteria(contestInfo));
 			context.put("clientId", contestInfo.getProperty("OAuth2ClientId"));
+			context.put("middleSubjects", Test.getTests(Level.MIDDLE));
 
 			close(context, ve.getTemplate("adminPanel.html"), resp);
 		}
@@ -122,13 +127,17 @@ public class AdminPanel extends BaseHttpServlet {
 				contestInfo.setProperty("complete", params.get("complete") != null);
 				contestInfo.setProperty("hideFullNames", params.get("fullnames") != null);
 
-				JSONObject awardCriteria = new JSONObject();
+				JSONObject awardCriteria = new JSONObject(), qualifyingCriteria = new JSONObject();;
 				for (Entry<String, String[]> entry : params.entrySet()) {
 					if (entry.getKey().startsWith("counts_")) {
 						awardCriteria.put(entry.getKey().replace("counts_", ""), Integer.parseInt(entry.getValue()[0]));
 					}
+					else if (entry.getKey().startsWith("qualifying_")) {
+						qualifyingCriteria.put(entry.getKey().replace("qualifying_", ""), Integer.parseInt(entry.getValue()[0]));
+					}
 				}
 				contestInfo.setProperty("awardCriteria", new Text(awardCriteria.toString()));
+				contestInfo.setProperty("qualifyingCriteria", new Text(qualifyingCriteria.toString()));
 
 				Yaml yaml = new Yaml();
 				String[] mapPropNames = {"schedule", "directions"};

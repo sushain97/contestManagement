@@ -144,6 +144,7 @@ public class ContactUs extends BaseHttpServlet {
 			txn.commit();
 
 			resp.sendRedirect("/contactUs?updated=1");
+			sess.invalidate();
 
 			Session session = Session.getDefaultInstance(new Properties(), null);
 			String appEngineEmail = (String) contestInfo.getProperty("account");

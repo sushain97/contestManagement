@@ -212,7 +212,7 @@ public class Data extends BaseHttpServlet {
 				try {
 					for (String paramName : params.keySet()) {
 						if (!paramName.equals("choice") && !paramName.equals("updated")) {
-							Key key = KeyFactory.createKey("feedback", Integer.parseInt(paramName));
+							Key key = KeyFactory.createKey("feedback", Long.parseLong(paramName));
 							String option = params.get(paramName)[0];
 							if (option.equals("r")) {
 								Entity q = datastore.get(key);

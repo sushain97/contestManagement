@@ -17,7 +17,11 @@
 			#foreach($subject in $subjects)
 				#set($score = false)
 				#set($score = $student.getScore($subject))
-				<td>#if($score) $score #else - #end</td>
+				#set($testString = $student.getGrade().toString() + $subject.toString())
+				
+				<td #if($score && $score.getScoreNum() >= $qualifyingCriteria.get($testString)) class="qual text-success" #end>
+					#if($score) $score #else - #end
+				</td>
 			#end
 		</tr>
 	#end
@@ -30,7 +34,7 @@
 #foreach($subject in $subjects)
 	<div>
 		<div class="lead">$subject.getName(): <strong>$school.getScore($subject)</strong></div>
-		#foreach($student in $school.getScoreStudents($subject)) 
+		#foreach($student in $school.getScoreStudents($subject))
 			<strong>$student.getName() ($student.getGrade())</strong> - 
 			$student.getScore($subject).getScoreNum() <br> 
 		#end

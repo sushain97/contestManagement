@@ -82,6 +82,7 @@ public class ViewScores extends BaseHttpServlet {
 			context.put("summaryStats", schoolAndStats.y.x);
 			context.put("outliers", schoolAndStats.y.y);
 
+			context.put("qualifyingCriteria", Retrieve.qualifyingCriteria(infoAndCookie.x));
 			context.put("date", infoAndCookie.x.getProperty("updated"));
 			context.put("hideFullNames", false);
 

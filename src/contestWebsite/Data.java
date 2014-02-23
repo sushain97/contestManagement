@@ -169,6 +169,7 @@ public class Data extends BaseHttpServlet {
 				context.put("middleSchools", q.execute(Level.MIDDLE));
 				context.put("highSchools", q.execute(Level.HIGH));
 
+				context.put("qualifyingCriteria", Retrieve.qualifyingCriteria(infoAndCookie.x));
 				context.put("hideFullNames", false);
 				context.put("date", infoAndCookie.x.getProperty("updated"));
 				context.put("subjects", Subject.values());

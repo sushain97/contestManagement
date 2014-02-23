@@ -121,8 +121,12 @@
 				</div>
 	
 				<div class="col-md-9 col-xs-7">
-					<h1>Contest Results
-					#include("printButton.html")
+					<h1>
+						Contest Results
+						#include("printButton.html")
+						#if($level == "middle" && ($type.equals("students") || $type.startsWith("school_"))) 
+							<button type="button" class="btn btn-default btn-sm" id="qualButton">Mute Qualifying</button>
+						#end
 					</h1>
 					#if($type == "overview")
 						Choose an option at the left to view specific results.

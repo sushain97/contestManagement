@@ -17,8 +17,19 @@
 
 $(document).ready(function () {
 	ChangeActive();
-	$('button').on('click', function() {
+	$('#printButton').on('click', function() {
 		window.print();
+	});
+	
+	$('#qualButton').on('click', function() {
+		if($(this).text().indexOf('Mute') === -1) {
+			$('.qual').addClass('text-success');
+			$(this).text('Mute Qualifying');
+		}
+		else {
+			$('.qual').removeClass('text-success');
+			$(this).text('Show Qualifying');
+		}
 	});
 	
 	$.each($('table'), function() {

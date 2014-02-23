@@ -17,7 +17,10 @@
 		#foreach($subject in $subjects)
 			#set($score = false)
 			#set($score = $student.getScore($subject))
-			<td>#if($score) $score #else - #end</td>
+			#set($testString = $student.getGrade().toString() + $subject.toString())
+			<td #if($score && $score.getScoreNum() >= $qualifyingCriteria.get($testString)) class="qual text-success" #end>
+				#if($score) $score #else - #end
+			</td>
 		#end
 	</tr>
 	#end

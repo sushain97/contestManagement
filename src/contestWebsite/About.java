@@ -32,10 +32,15 @@ import org.yaml.snakeyaml.Yaml;
 
 import util.BaseHttpServlet;
 import util.Pair;
+import util.Retrieve;
 import util.UserCookie;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Text;
+
+import contestTabulation.Level;
+import contestTabulation.Subject;
+import contestTabulation.Test;
 
 @SuppressWarnings("serial")
 public class About extends BaseHttpServlet {
@@ -52,6 +57,11 @@ public class About extends BaseHttpServlet {
 		HashMap<String, String> schedule = (HashMap<String, String>) yaml.load(((Text) infoAndCookie.x.getProperty("schedule")).getValue());
 		context.put("schedule", schedule);
 		context.put("aboutText", ((Text) infoAndCookie.x.getProperty("aboutText")).getValue());
+
+		context.put("qualifyingCriteria", Retrieve.qualifyingCriteria(infoAndCookie.x));
+		context.put("Test", Test.class);
+		context.put("Level", Level.class);
+		context.put("Subject", Subject.class);
 
 		close(context, ve.getTemplate("about.html"), resp);
 	}

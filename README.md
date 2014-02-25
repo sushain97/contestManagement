@@ -78,19 +78,38 @@ Tabulation
 ### The admin will... ###
 1. Enqueue a spreadsheet creation task to generate empty spreadsheets with student data pre-populated through the Admin Panel.
 2. Each spreadsheet (one for each level) will contain worksheets corresponding to each school enrolled where the worksheets are simple tables consisting of student name, grade, and score for each subject.
-3. Populate scores throughout the spreadsheet, marking ties with either integers following the decimal (e.g. 123.4 to denote the 4th 123) or letters (e.g. 123 to denote the 4th 123).
+3. Populate scores throughout the spreadsheet, marking ties with either integers following the decimal (e.g. 123.4 to denote the 4th 123) or letters (e.g. 123 to denote the 4th 123). For example:
+
+	|Name |Grade  |NS  |CA  |MA  |SC  |
+	|:----:|:-----:|:--:|:--:|:--:|:--:|
+	|John Doe |6|356|312.1|    |   |
+	|Sarah Doe|7|   |264  |265B|102|
+	|Bobby Doe|8|132|     |265A|140|
+
 4. Enqueue a tabulation task through the Admin Panel.
 
 ### The tabulation task will... ###
-1. Retrieve contest information from the GAE Datastore: 
-        Retrieve.contestInfo()
-2. Get award criteria from the GAE Datastore:
-        Retrieve.awardCriteria(contestInfo)
-3. Authenticate to the Google Documents Service using an OAuth 2.0 Authentication Token from the Datastore:
-        authService(SpreadsheetService service, Entity contestInfo)
-4. Populate base data structures by traversing Google Documents Spreadsheets:
-        getSpreadSheet(String docString, Service service)
-        updateDatabase(Level level, SpreadsheetEntry spreadsheet, Set<Student> students, Map<String, School> schools, Set<Test> testsGraded, Service service)
+1. Retrieve contest information from the GAE Datastore
+
+    ```java
+    Retrieve.contestInfo()
+    ```
+2. Get award criteria from the GAE Datastore
+
+    ```java
+    Retrieve.awardCriteria(contestInfo)
+    ```
+3. Authenticate to the Google Documents Service using an OAuth 2.0 Authentication Token from the Datastore
+
+    ```java
+    authService(SpreadsheetService service, Entity contestInfo)
+    ```
+4. Populate base data structures by traversing Google Documents Spreadsheets
+
+    ```java
+    getSpreadSheet(String docString, Service service)
+    updateDatabase(Level level, SpreadsheetEntry spreadsheet, Set<Student> students, Map<String, School> schools, Set<Test> testsGraded, Service service)
+    ```
     * `Set<Student> students` (`HashSet`) → 
         * `String name`
         * `int grade`
@@ -105,22 +124,42 @@ Tabulation
         * `Map<Test, List<Score>> anonScores` (`HashMap`)
         * `Map<Subject, Pair<Student[], Integer>> topScores` (`HashMap`)
     * `Map<Test, List<Student>> categoryWinners` (`HashMap`)
-	* `Map<Subject, List<School>> categorySweepstakesWinners` (`HashMap`)
+    * `Map<Subject, List<School>> categorySweepstakesWinners` (`HashMap`)
 	* `List<School> sweepstakesWinners` (`ArrayList`)
 5. Populate category winners lists with top scorers (as defined by award criteria)
-        tabulateCategoryWinners(Level level, Set<Student> students, Map<Test, List<Student>> categoryWinners, Set<Test> testsGraded, Map<String, Integer> awardCriteria)
+
+    ```java
+    tabulateCategoryWinners(Level level, Set<Student> students, Map<Test, List<Student>> categoryWinners, Set<Test> testsGraded, Map<String, Integer> awardCriteria)
+    ```
 6. Calculate school sweepstakes scores and number of tests fields
-        school.calculateScores();
-    	school.calculateTestNums();
+
+    ```java
+    school.calculateScores();
+    school.calculateTestNums();
+    ```
 7. Populate category sweepstakes winners maps and sweepstakes winners lists with top scorers
-        tabulateCategorySweepstakesWinners(Map<String, School> schools, Map<Subject, List<School>> categorySweepstakesWinners)
-        tabulateSweepstakesWinners(Map<String, School> schools, List<School> sweepstakeWinners)
+
+    ```java
+    tabulateCategorySweepstakesWinners(Map<String, School> schools, Map<Subject, List<School>> categorySweepstakesWinners)
+    tabulateSweepstakesWinners(Map<String, School> schools, List<School> sweepstakeWinners)
+    ```
+
 8. Persist JDOs in the GAE Datastore
-        persistData(Level level, Collection<School> schools, Map<Test, List<Student>> categoryWinners, Map<Subject, List<School>> categorySweepstakesWinners, List<School> sweepstakesWinners)
+
+    ```java
+   persistData(Level level, Collection<School> schools, Map<Test, List<Student>> categoryWinners, Map<Subject, List<School>> categorySweepstakesWinners, List<School> sweepstakesWinners)
+     ```   
+        
 9. Update the GAE Datastore by modifying registrations to include actual number of tests taken
-        updateRegistrations(Level level, Map<String, School> schools)
+
+    ```java
+    updateRegistrations(Level level, Map<String, School> schools)
+    ```
 10. Update the GAE Datastore by modifying contest information entity to include tests graded and last updated timestamp
-        updateContestInfo(Set<Test> testsGraded, Entity contestInfo)
+
+    ```java
+	updateContestInfo(Set<Test> testsGraded, Entity contestInfo)
+    ```
 
 License
 -------

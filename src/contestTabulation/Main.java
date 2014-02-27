@@ -82,22 +82,16 @@ public class Main extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		// TODO: Add Logging
 		final Set<Test> testsGraded = new HashSet<Test>();
-		final SpreadsheetEntry middle, high;
 
 		final Entity contestInfo;
 		final Map<String, Integer> awardCriteria;
 
-		final Set<Student> middleStudents = new HashSet<Student>();
-		final Map<String, School> middleSchools = new HashMap<String, School>();
-		final Map<Test, List<Student>> middleCategoryWinners = new HashMap<Test, List<Student>>();
-		final Map<Subject, List<School>> middleCategorySweepstakesWinners = new HashMap<Subject, List<School>>();
-		final List<School> middleSweepstakesWinners = new ArrayList<School>();
-
-		final Set<Student> highStudents = new HashSet<Student>();
-		final Map<String, School> highSchools = new HashMap<String, School>();
-		final Map<Test, List<Student>> highCategoryWinners = new HashMap<Test, List<Student>>();
-		final Map<Subject, List<School>> highCategorySweepstakesWinners = new HashMap<Subject, List<School>>();
-		final List<School> highSweepstakesWinners = new ArrayList<School>();
+		final Map<Level, SpreadsheetEntry> spreadsheet = new HashMap<Level, SpreadsheetEntry>();
+		final Map<Level, Set<Student>> students = new HashMap<Level, Set<Student>>();
+		final Map<Level, Map<String, School>> schools = new HashMap<Level, Map<String, School>>();
+		final Map<Level, Map<Test, List<Student>>> categoryWinners = new HashMap<Level, Map<Test, List<Student>>>();
+		final Map<Level, Map<Subject, List<School>>> categorySweepstakesWinners = new HashMap<Level, Map<Subject, List<School>>>();
+		final Map<Level, List<School>> sweepstakesWinners = new HashMap<Level, List<School>>();
 
 		try {
 			// Retrieve contest information from Datastore
@@ -106,44 +100,51 @@ public class Main extends HttpServlet {
 			// Get award criteria from Datastore
 			awardCriteria = Retrieve.awardCriteria(contestInfo);
 
+			// Initialize data structures
+			for (Level level : Level.values()) {
+				students.put(level, new HashSet<Student>());
+				schools.put(level, new HashMap<String, School>());
+				categoryWinners.put(level, new HashMap<Test, List<Student>>());
+				categorySweepstakesWinners.put(level, new HashMap<Subject, List<School>>());
+				sweepstakesWinners.put(level, new ArrayList<School>());
+			}
+
 			// Authenticate to Google Documents Service using OAuth 2.0 Authentication Token from Datastore
 			Map<String, String[]> params = req.getParameterMap();
 			SpreadsheetService service = new SpreadsheetService("contestTabulation");
 			authService(service, contestInfo);
 
-			// Populate base data structures by traversing Google Documents Spreadsheets
-			middle = getSpreadSheet(params.get("docMiddle")[0], service);
-			high = getSpreadSheet(params.get("docHigh")[0], service);
-			updateDatabase(Level.MIDDLE, middle, middleStudents, middleSchools, testsGraded, service);
-			updateDatabase(Level.HIGH, high, highStudents, highSchools, testsGraded, service);
+			for (Level level : Level.values()) {
+				Map<String, School> lSchools = schools.get(level);
+				List<School> lsweepstakesWinners = sweepstakesWinners.get(level);
+				Map<Test, List<Student>> lCategoryWinners = categoryWinners.get(level);
+				Map<Subject, List<School>> lCategorySweepstakesWinners = categorySweepstakesWinners.get(level);
 
-			// Populate categoryWinners maps with top 20 scorers
-			tabulateCategoryWinners(Level.MIDDLE, middleStudents, middleCategoryWinners, testsGraded, awardCriteria);
-			tabulateCategoryWinners(Level.HIGH, highStudents, highCategoryWinners, testsGraded, awardCriteria);
+				// Populate base data structures by traversing Google Documents Spreadsheets
+				spreadsheet.put(level, getSpreadSheet(params.get("doc" + level.getName())[0], service));
+				updateDatabase(level, spreadsheet.get(level), students.get(level), lSchools, testsGraded, service);
 
-			// Calculate school fields with sweepstakes scores, populate sorted sweekstakes maps & arrays with all schools, and calculate test numbers
-			for (School school : middleSchools.values()) {
-				school.calculateScores();
-				school.calculateTestNums();
+				// Populate category winners lists with top scorers (as defined by award criteria)
+				tabulateCategoryWinners(level, students.get(level), lCategoryWinners, testsGraded, awardCriteria);
+
+				// Calculate school sweepstakes scores and number of tests fields
+				for (School school : lSchools.values()) {
+					school.calculateScores();
+					school.calculateTestNums();
+				}
+
+				// Populate category sweepstakes winners maps and sweepstakes winners lists with top scorers
+				tabulateCategorySweepstakesWinners(lSchools, lCategorySweepstakesWinners);
+				tabulateSweepstakesWinners(lSchools, lsweepstakesWinners);
+
+				// Persist JDOs in Datastore
+				persistData(level, lSchools.values(), lCategoryWinners, lCategorySweepstakesWinners, lsweepstakesWinners);
+
+				// Update Datastore by modifying registrations to include actual number of tests taken
+				updateRegistrations(level, lSchools);
 			}
-			for (School school : highSchools.values()) {
-				school.calculateScores();
-				school.calculateTestNums();
-			}
-			tabulateCategorySweepstakesWinners(middleSchools, middleCategorySweepstakesWinners);
-			tabulateCategorySweepstakesWinners(highSchools, highCategorySweepstakesWinners);
-			tabulateSweepstakesWinners(middleSchools, middleSweepstakesWinners);
-			tabulateSweepstakesWinners(highSchools, highSweepstakesWinners);
 
-			// Persist JDOs in Datastore
-			persistData(Level.MIDDLE, middleSchools.values(), middleCategoryWinners, middleCategorySweepstakesWinners, middleSweepstakesWinners);
-			persistData(Level.HIGH, highSchools.values(), highCategoryWinners, highCategorySweepstakesWinners, highSweepstakesWinners);
-
-			// Update Datastore by modifying registrations to include actual number of tests taken
-			updateRegistrations(Level.MIDDLE, middleSchools);
-			updateRegistrations(Level.HIGH, highSchools);
-
-			// Update Datastore by modifying contest information entity to include tests graded
+			// Update Datastore by modifying contest information entity to include tests graded and last updated timestamp
 			updateContestInfo(testsGraded, contestInfo);
 		}
 		catch (Exception e) {
@@ -259,7 +260,6 @@ public class Main extends HttpServlet {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 
 		try {
-			pm.makePersistent(schools.toArray()[0]);
 			pm.makePersistentAll(schools);
 		}
 		finally {

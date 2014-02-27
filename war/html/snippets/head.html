@@ -3,7 +3,25 @@
 <meta name="author" content="Sushain Cherivirala">
 <link rel="shortcut icon" href="/favicon.ico">
 
-<link type="text/css" href="//netdna.bootstrapcdn.com/bootswatch/3.1.0/cosmo/bootstrap.min.css" rel="stylesheet">
+#set($bootstrapURL = "//netdna.bootstrapcdn.com/bootswatch/3.1.0/osmo/bootstrap.min.css")
+<link type="text/css" href="$bootstrapURL" rel="stylesheet">
+<script type="text/javascript">
+	var styleSheets = document.styleSheets;
+	for(var i = 0; i < styleSheets.length; i++) {
+		var sheet = styleSheets[i];
+		if(sheet.href && sheet.href.indexOf('$bootstrapURL') !== -1) {
+			var rules = sheet.rules ? sheet.rules : sheet.cssRules;
+			if(rules == null || rules.length == 0) {
+				var bootstrapLink = document.createElement('link');
+				bootstrapLink.type = 'text/css';
+				bootstrapLink.href = '/css/bootstrap.min.css';
+				bootstrapLink.rel = 'stylesheet';
+				
+				document.getElementsByTagName('head')[0].appendChild(bootstrapLink);
+			}
+		}
+	}
+</script>
 
 <style type="text/css">
 	body { padding-top: 60px; } /* 60px to make the container go all the way to the bottom of the topbar */

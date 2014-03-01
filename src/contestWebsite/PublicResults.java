@@ -75,12 +75,13 @@ public class PublicResults extends BaseHttpServlet {
 			if (type != null) {
 				String[] types = type.split("_");
 
+				String levelString = req.getParameter("level");
 				Level level;
 				try {
-					level = Level.fromString(req.getParameter("level"));
+					level = Level.fromString(levelString);
 				}
 				catch (IllegalArgumentException e) {
-					resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+					resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid level: " + levelString);
 					return;
 				}
 
@@ -107,7 +108,7 @@ public class PublicResults extends BaseHttpServlet {
 					context.put("outliers", statsAndOutliers.y);
 				}
 				else {
-					resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+					resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid type: " + type);
 					return;
 				}
 			}

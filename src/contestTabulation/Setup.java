@@ -74,8 +74,7 @@ public class Setup extends BaseHttpServlet {
 			queue.add(withUrl("/createSpreadsheet").param("docHigh", req.getParameter("docHigh")));
 		}
 		else {
-			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return;
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Spreadsheet creation request must have paramater 'docMiddle' or 'docHigh' set");
 		}
 	}
 
@@ -103,7 +102,7 @@ public class Setup extends BaseHttpServlet {
 			level = Level.HIGH.toString();
 		}
 		else {
-			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Spreadsheet creation request must have paramater 'docMiddle' or 'docHigh' set");
 			return;
 		}
 

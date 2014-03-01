@@ -124,16 +124,16 @@ public class Login extends BaseHttpServlet {
 					Long loginAttempts = (Long) user.getProperty("loginAttempts");
 					if (loginAttempts == null) {
 						user.setProperty("loginAttempts", 1);
-						resp.sendRedirect("/login?user=" + username + "&error=" + "401" + "&redirect=" + redirect);
+						resp.sendRedirect("/login?user=" + username + "&error=401&redirect=" + redirect);
 					}
 					else {
 						if (loginAttempts >= 30) {
 							user.setProperty("loginAttempts", ++loginAttempts);
-							resp.sendRedirect("/login?user=" + username + "&error=" + "403" + "&redirect=" + redirect);
+							resp.sendRedirect("/login?user=" + username + "&error=403&redirect=" + redirect);
 						}
 						else {
 							user.setProperty("loginAttempts", ++loginAttempts);
-							resp.sendRedirect("/login?user=" + username + "&error=" + "401" + "&redirect=" + redirect);
+							resp.sendRedirect("/login?user=" + username + "&error=401&redirect=" + redirect);
 						}
 					}
 

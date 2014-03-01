@@ -54,7 +54,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Transaction;
 
-@SuppressWarnings({"serial"})
+@SuppressWarnings("serial")
 public class ForgotPassword extends BaseHttpServlet {
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {

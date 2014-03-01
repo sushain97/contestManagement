@@ -39,7 +39,9 @@ public class ErrorServlet extends BaseHttpServlet {
 	public Pair<Entity, UserCookie> init(VelocityContext context, HttpServletRequest req) throws UnsupportedEncodingException {
 		Pair<Entity, UserCookie> infoAndCookie = super.init(context, req);
 
-		context.put("error", req.getAttribute("javax.servlet.error.message"));
+		context.put("error", req.getAttribute("javax.servlet.error.exception"));
+		context.put("errorType", req.getAttribute("javax.servlet.error.exception_type"));
+		context.put("errorMessage", req.getAttribute("javax.servlet.error.message"));
 		context.put("uri", req.getAttribute("javax.servlet.error.request_uri"));
 		context.put("servlet", req.getAttribute("javax.servlet.error.servlet_name"));
 		context.put("diaginfo", RequestPrinter.debugString(req, true).replaceAll("\n", "<br>"));

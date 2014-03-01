@@ -73,20 +73,24 @@
     <servlet-class>contestWebsite.OAuth</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>errors.Prohibited_403</servlet-name>
-    <servlet-class>errors.Prohibited_403</servlet-class>
+    <servlet-name>errors.BadRequest_400</servlet-name>
+    <servlet-class>errors.BadRequest_400</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>errors.Unauthorized_401</servlet-name>
     <servlet-class>errors.Unauthorized_401</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>errors.ServerError_500</servlet-name>
-    <servlet-class>errors.ServerError_500</servlet-class>
+    <servlet-name>errors.Prohibited_403</servlet-name>
+    <servlet-class>errors.Prohibited_403</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>errors.NotFound_404</servlet-name>
     <servlet-class>errors.NotFound_404</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>errors.ServerError_500</servlet-name>
+    <servlet-class>errors.ServerError_500</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>contestWebsite.MainPage</servlet-name>
@@ -179,35 +183,43 @@
     <url-pattern>/authToken</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>errors.Prohibited_403</servlet-name>
-    <url-pattern>/403</url-pattern>
+    <servlet-name>errors.BadRequest_400</servlet-name>
+    <url-pattern>/400</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>errors.Unauthorized_401</servlet-name>
     <url-pattern>/401</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>errors.ServerError_500</servlet-name>
-    <url-pattern>/500</url-pattern>
+    <servlet-name>errors.Prohibited_403</servlet-name>
+    <url-pattern>/403</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>errors.NotFound_404</servlet-name>
     <url-pattern>/404</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>errors.ServerError_500</servlet-name>
+    <url-pattern>/500</url-pattern>
+  </servlet-mapping>
 <error-page>
-  <error-code>403</error-code>
-  <location>/403</location>
+  <error-code>400</error-code>
+  <location>/400</location>
 </error-page>
 <error-page>
   <error-code>401</error-code>
   <location>/401</location>
 </error-page>
 <error-page>
-  <error-code>500</error-code>
-  <location>/500</location>
+  <error-code>403</error-code>
+  <location>/403</location>
 </error-page>
 <error-page>
   <error-code>404</error-code>
   <location>/404</location>
+</error-page>
+<error-page>
+  <error-code>500</error-code>
+  <location>/500</location>
 </error-page>
 </web-app>

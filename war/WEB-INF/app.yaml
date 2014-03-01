@@ -61,17 +61,20 @@ handlers:
 - url: /authToken
   servlet: contestWebsite.OAuth
   
-- url: /403
-  servlet: errors.Prohibited_403
-
+- url: /400
+  servlet: errors.BadRequest_400
+  
 - url: /401
   servlet: errors.Unauthorized_401
   
-- url: /500
-  servlet: errors.ServerError_500
-  
+- url: /403
+  servlet: errors.Prohibited_403
+
 - url: /404
   servlet: errors.NotFound_404
+
+- url: /500
+  servlet: errors.ServerError_500
   
 static_files:
   - include: /favicon.ico
@@ -89,18 +92,22 @@ static_files:
 
 web_xml: |
   <error-page>
-    <error-code>403</error-code>
-    <location>/403</location>
+    <error-code>400</error-code>
+    <location>/400</location>
   </error-page>
   <error-page>
     <error-code>401</error-code>
     <location>/401</location>
   </error-page>
   <error-page>
-    <error-code>500</error-code>
-    <location>/500</location>
+    <error-code>403</error-code>
+    <location>/403</location>
   </error-page>
   <error-page>
     <error-code>404</error-code>
     <location>/404</location>
+  </error-page>
+  <error-page>
+    <error-code>500</error-code>
+    <location>/500</location>
   </error-page>

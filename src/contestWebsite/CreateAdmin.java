@@ -38,16 +38,18 @@ public class CreateAdmin extends HttpServlet {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Entity admin = new Entity("user");
 		admin.setProperty("user-id", "admin");
+		admin.setProperty("name", "Admin");
+		admin.setProperty("school", "Admin School");
 
 		try {
 			String salthash = Password.getSaltedHash("password");
 			admin.setProperty("hash", salthash.split("\\$")[1]);
 			admin.setProperty("salt", salthash.split("\\$")[0]);
-			admin.setProperty("name", "Admin");
-			admin.setProperty("email", "admin");
-			admin.setProperty("school", "Admin School");
 		}
 		catch (Exception e) {
+			e.printStackTrace();
+			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+			return;
 		}
 
 		datastore.put(admin);

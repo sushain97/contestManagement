@@ -19,6 +19,7 @@
 package contestWebsite;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -26,12 +27,45 @@ import javax.servlet.http.HttpServletResponse;
 
 import util.UserCookie;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.TransactionOptions;
+
 @SuppressWarnings("serial")
 public class Logout extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		UserCookie userCookie = UserCookie.getCookie(req);
+
 		if (userCookie != null) {
+			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+			Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
+			try {
+				userCookie.authenticate();
+				Query query = new Query("authToken").setKeysOnly().setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, userCookie.getUsername()));
+				List<Entity> tokens = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
+				for (Entity token : tokens) {
+					datastore.delete(token.getKey());
+				}
+				txn.commit();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+				return;
+			}
+			finally {
+				if (txn.isActive()) {
+					txn.rollback();
+				}
+			}
+
 			userCookie.setMaxAge(0);
 			userCookie.setValue("");
 			resp.addCookie(userCookie);

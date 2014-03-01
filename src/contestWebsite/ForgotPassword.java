@@ -20,10 +20,11 @@ package contestWebsite;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Random;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -67,20 +68,20 @@ public class ForgotPassword extends BaseHttpServlet {
 		UserCookie userCookie = infoAndCookie.y;
 		boolean loggedIn = (boolean) context.get("loggedIn");
 
-		String noise = req.getParameter("noise");
+		String resetToken = req.getParameter("resetToken");
 		String updatedPass = req.getParameter("updatedPass");
 		String error = req.getParameter("error");
 
 		if (loggedIn && !userCookie.isAdmin()) {
 			resp.sendRedirect("/signout");
 		}
-		else if (noise == null && updatedPass == null && error == null) {
+		else if (resetToken == null && updatedPass == null && error == null) {
 			context.put("updated", req.getParameter("updated"));
 
 			close(context, ve.getTemplate("forgotPass.html"), resp);
 		}
 		else {
-			context.put("noise", noise);
+			context.put("resetToken", resetToken);
 			context.put("updated", updatedPass);
 			context.put("error", error);
 
@@ -90,7 +91,7 @@ public class ForgotPassword extends BaseHttpServlet {
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		if (req.getParameter("noise") == null) {
+		if (req.getParameter("resetToken") == null) {
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 			String email = req.getParameter("email");
 			Query query = new Query("user").setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, email));
@@ -99,10 +100,12 @@ public class ForgotPassword extends BaseHttpServlet {
 			if (users.size() != 0) {
 				Entity user = users.get(0);
 				Transaction txn = datastore.beginTransaction();
-				Random rand = new Random();
-				String noise = Long.toString(Math.abs(rand.nextLong()), 36);
+
+				SecureRandom random = new SecureRandom();
+				String resetToken = new BigInteger(130, random).toString(32);
+
 				try {
-					user.setProperty("reset", noise);
+					user.setProperty("resetToken", resetToken);
 					datastore.put(user);
 					txn.commit();
 				}
@@ -122,13 +125,13 @@ public class ForgotPassword extends BaseHttpServlet {
 
 				String url = req.getRequestURL().toString();
 				url = url.substring(0, url.indexOf("/", 7));
-				url = url + "/forgotPass?noise=" + noise;
+				url = url + "/forgotPass?resetToken=" + resetToken;
 
 				try {
 					Message msg = new MimeMessage(session);
 					msg.setFrom(new InternetAddress(appEngineEmail, "Tournament Website Admin"));
 					msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email, (String) user.getProperty("name")));
-					msg.setSubject("Password Reset for the" + contestInfo.getProperty("title") + " Website");
+					msg.setSubject("Password Reset for the " + contestInfo.getProperty("title") + " Website");
 
 					VelocityEngine ve = new VelocityEngine();
 					ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/email");
@@ -155,19 +158,19 @@ public class ForgotPassword extends BaseHttpServlet {
 		else {
 			Map<String, String[]> params = req.getParameterMap();
 			String password = params.get("password")[0];
-			String confPassword = params.get("confPassword")[0];
-			String noise = params.get("noise")[0];
+			String confPassword = params.get("confNewPass")[0];
+			String resetToken = params.get("resetToken")[0];
 
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-			Query query = new Query("user").setFilter(new FilterPredicate("reset", FilterOperator.EQUAL, noise));
+			Query query = new Query("user").setFilter(new FilterPredicate("resetToken", FilterOperator.EQUAL, resetToken));
+			List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 
-			List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(3));
-			if (users.size() != 0) {
+			if (users.size() > 0) {
 				if (confPassword.equals(password)) {
 					Transaction txn = datastore.beginTransaction();
 					try {
 						Entity user = users.get(0);
-						user.removeProperty("reset");
+						user.removeProperty("resetToken");
 						user.removeProperty("loginAttempts");
 						String hash = Password.getSaltedHash(password);
 						user.setProperty("salt", hash.split("\\$")[0]);
@@ -187,11 +190,11 @@ public class ForgotPassword extends BaseHttpServlet {
 					resp.sendRedirect("/forgotPass?updatedPass=1");
 				}
 				else {
-					resp.sendRedirect("/forgotPass?error=1&noise=" + noise);
+					resp.sendRedirect("/forgotPass?error=1&resetToken=" + resetToken);
 				}
 			}
 			else {
-				resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid noise(" + noise + ") for password recovery");
+				resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid reset token for password recovery: " + resetToken);
 			}
 		}
 	}

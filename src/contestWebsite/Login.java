@@ -19,7 +19,8 @@
 package contestWebsite;
 
 import java.io.IOException;
-import java.net.URLEncoder;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.List;
 
 import javax.servlet.http.Cookie;
@@ -43,6 +44,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.TransactionOptions;
 
 @SuppressWarnings("serial")
 public class Login extends BaseHttpServlet {
@@ -96,27 +98,33 @@ public class Login extends BaseHttpServlet {
 		}
 
 		Query query = new Query("user").setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, username));
-		List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(3));
+		List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 		String hash = "", salt = "";
 		if (users.size() == 0) {
-			resp.sendRedirect("/login?user=" + username + "&error=" + "401" + "&redirect=" + redirect);
+			resp.sendRedirect("/login?user=" + username + "&error=401&redirect=" + redirect);
 		}
 		else {
 			Entity user = users.get(0);
 			hash = (String) user.getProperty("hash");
 			salt = (String) user.getProperty("salt");
 
-			Transaction txn = datastore.beginTransaction();
+			Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
 			try {
 				if (Password.check(password, salt + "$" + hash)) {
-					String newHash = Password.getSaltedHash(password);
-					Cookie cookie = new Cookie("user-id", URLEncoder.encode(username + "$" + newHash.split("\\$")[1], "UTF-8"));
+
+					SecureRandom random = new SecureRandom();
+					String authToken = new BigInteger(130, random).toString(32);
+
+					Entity token = new Entity("authToken");
+					token.setProperty("user-id", username);
+					token.setProperty("token", authToken);
+
+					Cookie cookie = new Cookie("authToken", authToken);
 					cookie.setMaxAge("stay".equals(req.getParameter("signedIn")) ? -1 : 3600);
+					cookie.setValue(authToken);
 					resp.addCookie(cookie);
 
-					user.setProperty("salt", newHash.split("\\$")[0]);
-					user.setProperty("hash", newHash.split("\\$")[1]);
-					user.removeProperty("loginAttempts");
+					datastore.put(token);
 					datastore.put(user);
 					resp.sendRedirect(redirect);
 				}

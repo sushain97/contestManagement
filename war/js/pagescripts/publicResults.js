@@ -21,7 +21,16 @@ $(document).ready(function() {
 		window.print();
 	});
 	
-	$("table:not(#statusTable)").tablesorter({sortList: [[0,0]]});
+	$.extend($.tablesorter.themes.bootstrap, {
+		table: 'table'
+	});
+	
+	$("table:not(#statusTable)").tablesorter({
+		theme : 'bootstrap',
+		headerTemplate : '{content} {icon}',
+	    widgets : ['uitheme'],
+	    sortList: [[0,0]]
+	});
 	
 	$('.table-hover td').hover(function() {
 	    var t = parseInt($(this).index()) + 1;

@@ -50,7 +50,14 @@ $(document).ready(function () {
 	CheckAccount();
 	adjustGradeSelect();
 	
+	$.extend($.tablesorter.themes.bootstrap, {
+		table: 'table'
+	});
+	
 	$('#registrations').tablesorter({
+		theme : 'bootstrap',
+		headerTemplate : '{content} {icon}',
+	    widgets : ['uitheme'],
 		headers: {
 			0: {sorter: false},
 			1: {sorter: 'inputs'},

@@ -20,11 +20,6 @@ $(document).ready(function() {
 		window.print();
 	});
 	
-	$.each($('table'), function() {
-		if($('tr', this).length > 1)
-			$(this).tablesorter();
-	});
-	
 	var price = parseInt($('#price').val());
 
 	$.each($('.registrationInfo'), function() {
@@ -51,6 +46,20 @@ $(document).ready(function() {
 			});
 				
 		});
+	});
+	
+	$.extend($.tablesorter.themes.bootstrap, {
+		table: 'table'
+	});
+	
+	$('table#middleReg, table#highReg').tablesorter({
+		theme : 'bootstrap',
+		headerTemplate : '{content} {icon}',
+	    widgets : ['uitheme'],
+		headers: {
+			0: {sorter: false},
+			1: {sorter: 'shortDate'}
+		}
 	});
 	
 	$('input:radio:checked').data('chk', true);

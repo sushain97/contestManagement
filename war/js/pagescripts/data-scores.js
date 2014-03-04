@@ -33,8 +33,17 @@ $(document).ready(function () {
 	});
 	
 	$.each($('table'), function() {
+		$.extend($.tablesorter.themes.bootstrap, {
+			table: 'table'
+		});
+		
 		if($('tr', this).length > 1)
-			$(this).tablesorter({sortList: [[0,0]]});
+			$(this).tablesorter({
+				theme : 'bootstrap',
+				headerTemplate : '{content} {icon}',
+			    widgets : ['uitheme'],
+			    sortList: [[0,0]]
+			});
 	});
 
 	$('td').hover(function() {

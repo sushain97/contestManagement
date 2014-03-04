@@ -9,7 +9,7 @@
 	<meta name="type" content="$type#if($level)$level.toUpperCase()#end">
 	#parse("head.html")
 	<style type="text/css">
-		.highlighted { background-color: #e8f8fd !important; }
+		.highlighted { background-color: #f5f5f5 !important; }
 		@media print {
 			.col-md-9 {
 				position: absolute;
@@ -41,8 +41,8 @@
 	</style>
 	<link type="text/css" href="/css/footer.css" rel="stylesheet">
 	<link type="text/css" href="/css/sticky-sidebar.css" rel="stylesheet">
-	<link type="text/css" href="/css/sortedtable.css" rel="stylesheet">
 	<link type="text/css" href="/css/fontello.css" rel="stylesheet">
+	<link type="text/css" href="/css/theme.bootstrap.css" rel="stylesheet">
 	<link type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
 </head>
 
@@ -174,6 +174,7 @@
 
 	<script type="text/javascript" src="/js/pagescripts/data-scores.js"></script>
 	<script type="text/javascript" src="/js/jquery/jquery.tablesorter.min.js"></script>
+	<script type="text/javascript" src="/js/jquery/jquery.tablesorter.widgets.min.js"></script>
 	#if($type.toLowerCase().endsWith("sweep"))
 		<script type="text/javascript" src="/js/score-popovers.js"></script>
 	#end

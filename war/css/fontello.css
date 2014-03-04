@@ -19,7 +19,7 @@
 }
 */
  
- [class^="icon-"]:before, [class*=" icon-"]:before {
+ [class^="iconfontello-"]:before, [class*=" iconfontello-"]:before {
   font-family: "fontello";
   font-style: normal;
   font-weight: normal;
@@ -50,4 +50,4 @@
   /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
 }
  
-.icon-medal:before { content: '\e801'; } /* '' */
+.iconfontello-medal:before { content: '\e801'; } /* '' */

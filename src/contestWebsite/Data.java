@@ -19,6 +19,7 @@
 package contestWebsite;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -85,6 +86,8 @@ public class Data extends BaseHttpServlet {
 				template = "dataRegistrations.html";
 				context.put("updated", req.getParameter("updated"));
 				context.put("price", infoAndCookie.x.getProperty("price"));
+				context.put("dateFormat", new SimpleDateFormat("MMM dd, yyyy HH:mm aa"));
+				context.put("Test", Test.class);
 				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 				for (Level level : Level.values()) {
 					Query query = new Query("registration").setFilter(new FilterPredicate("schoolLevel", FilterOperator.EQUAL, level.toString()));

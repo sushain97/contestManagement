@@ -26,7 +26,15 @@ $(document).ready(function() {
 			addStudent(this["name"], this["grade"], [this['N'], this['C'], this['M'], this['S']]);
 		});
 		
-		$('#registrations').tablesorter();
+		$.extend($.tablesorter.themes.bootstrap, {
+			table: 'table'
+		});
+		
+		$('#registrations').tablesorter({
+			theme : 'bootstrap',
+			headerTemplate : '{content} {icon}',
+		    widgets : ['uitheme']
+		});
 	}
 });
 

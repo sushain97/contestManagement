@@ -16,6 +16,10 @@
  */
 
 $(document).ready(function() {
+	$.extend($.tablesorter.themes.bootstrap, {
+		table: 'table'
+	});
+	
 	if($('form').length) {
 		EnableSubmit();
 		CalcCost();
@@ -34,6 +38,9 @@ $(document).ready(function() {
 		}
 		
 		$('#registrations').tablesorter({
+			theme : 'bootstrap',
+			headerTemplate : '{content} {icon}',
+		    widgets : ['uitheme'],
 			headers: {
 				0: {sorter: false},
 				1: {sorter: 'inputs'},
@@ -52,7 +59,11 @@ $(document).ready(function() {
 				addStudentRow(this["name"], this["grade"], [this['N'], this['C'], this['M'], this['S']]);
 			});
 			
-			$('#registrations').tablesorter();
+			$('#registrations').tablesorter({
+				theme : 'bootstrap',
+				headerTemplate : '{content} {icon}',
+			    widgets : ['uitheme']
+			});
 		}
 	}
 	

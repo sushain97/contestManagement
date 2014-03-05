@@ -152,7 +152,7 @@ public class Setup extends BaseHttpServlet {
 
 				String studentDataJSON = unescapeHtml4(((Text) registration.getProperty("studentData")).getValue());
 
-				JSONArray studentData = null;
+				JSONArray studentData = null; // TODO: Sort this.
 				try {
 					studentData = new JSONArray(studentDataJSON);
 				}

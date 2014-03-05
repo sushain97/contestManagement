@@ -58,7 +58,7 @@ public class Student implements Serializable {
 	@Persistent private int grade;
 	@Persistent private String name;
 	@Persistent private School school;
-	@Persistent(serialized = "true") @Unowned private Map<Subject, Score> scores = new HashMap<Subject, Score>();
+	@Persistent(serialized = "true", defaultFetchGroup = "true") @Unowned private Map<Subject, Score> scores = new HashMap<Subject, Score>();
 
 	@PrimaryKey private Key key;
 

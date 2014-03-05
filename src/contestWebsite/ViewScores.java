@@ -78,9 +78,11 @@ public class ViewScores extends BaseHttpServlet {
 			context.put("coach", !registration.isEmpty() && registration.get(0).getProperty("registrationType").equals("coach"));
 
 			Pair<School, Pair<Map<Test, List<Integer>>, Map<Test, List<Integer>>>> schoolAndStats = Retrieve.schoolOverview((String) user.getProperty("school"));
-			context.put("school", schoolAndStats.x);
-			context.put("summaryStats", schoolAndStats.y.x);
-			context.put("outliers", schoolAndStats.y.y);
+			if (schoolAndStats != null) {
+				context.put("school", schoolAndStats.x);
+				context.put("summaryStats", schoolAndStats.y.x);
+				context.put("outliers", schoolAndStats.y.y);
+			}
 
 			context.put("qualifyingCriteria", Retrieve.qualifyingCriteria(infoAndCookie.x));
 			context.put("date", infoAndCookie.x.getProperty("updated"));

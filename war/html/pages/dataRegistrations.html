@@ -104,6 +104,12 @@
 						</tr>
 					</tfoot>
 				</table>
+				<dl class="dl-horizontal">
+					#foreach($subject in $Subject.values())
+						<dt>$subject.getName()</dt>
+						<dd class="subjectTotal" data-type="$subject">$subject</dd>
+					#end
+				</dl>
 			#end
 			
 			#if($enabledLevels.contains("high"))
@@ -169,6 +175,12 @@
 						</tr>
 					</tfoot>
 				</table>
+				<dl class="dl-horizontal">
+					#foreach($subject in $Subject.values())
+						<dt>$subject.getName()</dt>
+						<dd class="subjectTotal" data-type="$subject">$subject</dd>
+					#end
+				</dl>
 			#end
 		
 			<input type="hidden" id="price" value="$price">

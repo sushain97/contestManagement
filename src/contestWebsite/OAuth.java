@@ -50,7 +50,9 @@ public class OAuth extends HttpServlet {
 		final String clientSecret = (String) contestInfo.getProperty("OAuth2ClientSecret");
 
 		UserCookie userCookie = UserCookie.getCookie(req);
-		if (userCookie != null && userCookie.isAdmin()) {
+		boolean loggedIn = userCookie != null && userCookie.authenticate();
+
+		if (loggedIn && userCookie.isAdmin()) {
 			ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
 			getContent(req.getInputStream(), resultStream);
 			String code = new String(resultStream.toByteArray(), "UTF-8");

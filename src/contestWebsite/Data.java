@@ -86,8 +86,9 @@ public class Data extends BaseHttpServlet {
 				template = "dataRegistrations.html";
 				context.put("updated", req.getParameter("updated"));
 				context.put("price", infoAndCookie.x.getProperty("price"));
-				context.put("dateFormat", new SimpleDateFormat("MMM dd, yyyy HH:mm aa"));
+				context.put("dateFormat", new SimpleDateFormat("MMM dd, yyyy hh:mm aa"));
 				context.put("Test", Test.class);
+				context.put("Subject", Subject.class);
 				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 				for (Level level : Level.values()) {
 					Query query = new Query("registration").setFilter(new FilterPredicate("schoolLevel", FilterOperator.EQUAL, level.toString()));

@@ -20,14 +20,19 @@ $(document).ready(function() {
 		window.print();
 	});
 	
+	$(document).on('click', 'a', function(e) {
+		if($(this).attr('href') === '#')
+			e.preventDefault();
+	});
+	
 	var price = parseInt($('#price').val());
 
+	var subjects = ['N', 'C', 'M', 'S'];
 	$.each($('.registrationInfo'), function() {
 		var studentData = JSON.parse($(this).text());
 		var registrationRow = $(this).parent(), table = registrationRow.parents('table');
 		$.each(studentData, function() {
 			var student = this;
-			var subjects = ['C', 'M', 'N', 'S'];
 			$.each(subjects, function() {
 				if(student[this]) {
 					var test = (student["grade"] + this).toLowerCase();
@@ -44,8 +49,21 @@ $(document).ready(function() {
 					totalCostCell.text(parseInt(totalCostCell.text()) + price);
 				}
 			});
-				
 		});
+	});
+	
+	$.each(subjects, function() {
+		var subjectTotal = 0;
+		$.each($('#middleReg .total[data-type$=' + this.toLowerCase() + ']'), function() {
+			subjectTotal += parseInt($(this).text());
+		});
+		$('.subjectTotal[data-type=' + this + ']', $('#middleReg').parent()).text(subjectTotal);
+		
+		subjectTotal = 0;
+		$.each($('#highReg .total[data-type$=' + this.toLowerCase() + ']'), function() {
+			subjectTotal += parseInt($(this).text());
+		});
+		$('.subjectTotal[data-type=' + this + ']', $('#highReg').parent()).text(subjectTotal);
 	});
 	
 	$.extend($.tablesorter.themes.bootstrap, {

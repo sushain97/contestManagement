@@ -38,6 +38,13 @@
 		#if($type == "schoolOverview")
 			body { padding-top: 51px !important; }
 		#end
+		@media screen and (max-width: 768px) {
+		    body { padding-top: 100px; }
+		    .navbar-brand { height: 21px !important; }
+		}
+		@media screen and (min-width: 768px) and (max-width: 992px) {
+			body { padding-top: 110px; } 
+		}
 	</style>
 	<link type="text/css" href="/css/footer.css" rel="stylesheet">
 	<link type="text/css" href="/css/sticky-sidebar.css" rel="stylesheet">
@@ -74,7 +81,7 @@
 		
 		<div class="container">
 			<div class="row">
-				<div class="col-md-3 col-xs-5 hidden-print">
+				<div class="col-md-3 col-xs-6 hidden-print">
 					<ul class="nav nav-pills nav-stacked">
 						<li data-type="overview"><a href="/data?choice=scores">Overview</a></li>
 						
@@ -120,7 +127,7 @@
 					<div id="push"></div>
 				</div>
 	
-				<div class="col-md-9 col-xs-7">
+				<div class="col-md-9 col-xs-6">
 					<h1>
 						Contest Results
 						#include("printButton.html")

@@ -157,7 +157,7 @@
 					<div class="input-prepend col-sm-5 col-xs-8">
 	      				<div class="input-group">
 	      					<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
-							<input type="email" name="email" value="$email" class="form-control" id="email" required>
+							<input type="email" name="email" value="$email" class="form-control" id="email" #if(!$admin) required #end>
 						</div>
 						#if($userError) <span class="help-block">A registration already exists for that E-Mail Address.</span> #end
 					</div>

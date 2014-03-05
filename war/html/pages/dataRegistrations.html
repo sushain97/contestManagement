@@ -70,10 +70,16 @@
 										<input type="radio" name="key" value="$reg.getKey().getId()">
 									</td>
 									<td data-type="name">$reg.getProperty("name")</td>
+									
+									#if($reg.getProperty("email"))
 									<td data-type="email" class="email" style="padding-right: 0px;">$reg.getProperty("email")</td>
 									<td class="uneditable" style="padding-left: 0px;">
 										<a href='mailto:$reg.getProperty("name")<$reg.getProperty("email")>' target="_blank"><i class="glyphicon glyphicon-envelope"></i></a>
 									</td>
+									#else
+									<td></td><td></td>
+									#end
+									
 									<td data-type="registrationType" class="regType uneditable">$reg.getProperty("registrationType")</td>
 									<td data-type="schoolName">$reg.getProperty("schoolName")</td>
 									<td data-type="division" class="division uneditable">$reg.getProperty("division")</td>
@@ -141,10 +147,16 @@
 										<input type="radio" name="key" value="$reg.getKey().getId()">
 									</td>
 									<td data-type="name">$reg.getProperty("name")</td>
+									
+									#if($reg.getProperty("email"))
 									<td data-type="email" class="email" style="padding-right: 0px;">$reg.getProperty("email")</td>
 									<td class="uneditable" style="padding-left: 0px;">
 										<a href='mailto:$reg.getProperty("name")<$reg.getProperty("email")>' target="_blank"><i class="glyphicon glyphicon-envelope"></i></a>
 									</td>
+									#else
+									<td></td><td></td>
+									#end
+									
 									<td data-type="registrationType" class="regType uneditable">$reg.getProperty("registrationType")</td>
 									<td data-type="schoolName">$reg.getProperty("schoolName")</td>
 									<td data-type="division" class="division uneditable">$reg.getProperty("division")</td>

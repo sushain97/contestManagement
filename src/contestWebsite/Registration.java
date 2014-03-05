@@ -209,7 +209,7 @@ public class Registration extends BaseHttpServlet {
 		if (params.containsKey("account")) {
 			account = "yes";
 		}
-		String email = params.get("email")[0].toLowerCase();
+		String email = params.containsKey("email") && params.get("email")[0].length() > 0 ? params.get("email")[0].toLowerCase() : null;
 		String schoolLevel = params.get("schoolLevel")[0];
 		String schoolName = params.get("schoolName")[0];
 		String name = params.get("name")[0];
@@ -217,6 +217,13 @@ public class Registration extends BaseHttpServlet {
 		String studentData = req.getParameter("studentData");
 		String password = null;
 		String confPassword = null;
+
+		UserCookie userCookie = UserCookie.getCookie(req);
+		boolean loggedIn = userCookie != null && userCookie.authenticate();
+		if ((!loggedIn || !userCookie.isAdmin()) && email == null) {
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "E-Mail Address parameter ('email') must be specified");
+			return;
+		}
 
 		HttpSession sess = req.getSession(true);
 		sess.setAttribute("registrationType", registrationType);
@@ -246,10 +253,10 @@ public class Registration extends BaseHttpServlet {
 				confPassword = params.get("confPassword")[0];
 			}
 
-			Query query = new Query("registration").setFilter(new FilterPredicate("email", FilterOperator.EQUAL, email));
+			Query query = new Query("registration").setFilter(new FilterPredicate("email", FilterOperator.EQUAL, email)).setKeysOnly();
 			List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 
-			if (users.size() != 0 || account.equals("yes") && !confPassword.equals(password)) {
+			if (users.size() != 0 && email != null || account.equals("yes") && !confPassword.equals(password)) {
 				if (users.size() != 0) {
 					resp.sendRedirect("/registration?userError=1");
 				}
@@ -306,7 +313,7 @@ public class Registration extends BaseHttpServlet {
 				try {
 					datastore.put(registration);
 
-					if (account.equals("yes") && password != null && password.length() > 0) {
+					if (account.equals("yes") && password != null && password.length() > 0 && email != null) {
 						Entity user = new Entity("user");
 						String hash = Password.getSaltedHash(password);
 						user.setProperty("name", name);
@@ -323,38 +330,40 @@ public class Registration extends BaseHttpServlet {
 					sess.setAttribute("props", registration.getProperties());
 					resp.sendRedirect("/registration?updated=1");
 
-					Session session = Session.getDefaultInstance(new Properties(), null);
-					String appEngineEmail = (String) contestInfo.getProperty("account");
+					if (email != null) {
+						Session session = Session.getDefaultInstance(new Properties(), null);
+						String appEngineEmail = (String) contestInfo.getProperty("account");
 
-					String url = req.getRequestURL().toString();
-					url = url.substring(0, url.indexOf("/", 7));
+						String url = req.getRequestURL().toString();
+						url = url.substring(0, url.indexOf("/", 7));
 
-					try {
-						Message msg = new MimeMessage(session);
-						msg.setFrom(new InternetAddress(appEngineEmail, "Tournament Website Admin"));
-						msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email, name));
-						msg.setSubject("Thank you for your registration!");
+						try {
+							Message msg = new MimeMessage(session);
+							msg.setFrom(new InternetAddress(appEngineEmail, "Tournament Website Admin"));
+							msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email, name));
+							msg.setSubject("Thank you for your registration!");
 
-						VelocityEngine ve = new VelocityEngine();
-						ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/email");
-						ve.init();
-						Template t = ve.getTemplate("registration.html");
-						VelocityContext context = new VelocityContext();
+							VelocityEngine ve = new VelocityEngine();
+							ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/email");
+							ve.init();
+							Template t = ve.getTemplate("registration.html");
+							VelocityContext context = new VelocityContext();
 
-						context.put("name", name);
-						context.put("url", url);
-						context.put("cost", cost);
-						context.put("title", contestInfo.getProperty("title"));
-						context.put("account", account.equals("yes"));
+							context.put("name", name);
+							context.put("url", url);
+							context.put("cost", cost);
+							context.put("title", contestInfo.getProperty("title"));
+							context.put("account", account.equals("yes"));
 
-						StringWriter sw = new StringWriter();
-						t.merge(context, sw);
-						msg.setContent(sw.toString(), "text/html");
-						Transport.send(msg);
-					}
-					catch (MessagingException e) {
-						e.printStackTrace();
-						resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+							StringWriter sw = new StringWriter();
+							t.merge(context, sw);
+							msg.setContent(sw.toString(), "text/html");
+							Transport.send(msg);
+						}
+						catch (MessagingException e) {
+							e.printStackTrace();
+							resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+						}
 					}
 				}
 				catch (Exception e) {

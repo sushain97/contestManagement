@@ -18,8 +18,13 @@
 
 package contestWebsite;
 
+import static org.apache.commons.lang3.StringEscapeUtils.unescapeHtml4;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -47,8 +52,13 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
+import com.google.appengine.labs.repackaged.org.json.JSONArray;
+import com.google.appengine.labs.repackaged.org.json.JSONException;
+import com.google.appengine.labs.repackaged.org.json.JSONObject;
+import com.google.common.base.Function;
 
 import contestTabulation.Level;
 import contestTabulation.School;
@@ -95,6 +105,36 @@ public class Data extends BaseHttpServlet {
 					List<Entity> regs = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
 					context.put(level.toString() + "Regs", regs);
 				}
+				context.put("regJSONtoList", new Function<Text, List<Map<String, Object>>>() {
+					@Override
+					public List<Map<String, Object>> apply(Text textJSON) {
+						List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+
+						String rawJSON = unescapeHtml4(textJSON.getValue());
+						try {
+							JSONArray arrayJSON = new JSONArray(rawJSON);
+							for (int i = 0; i < arrayJSON.length(); i++) {
+								JSONObject objectJSON = arrayJSON.getJSONObject(i);
+
+								Iterator<String> objectKeys = objectJSON.keys();
+								Map<String, Object> map = new HashMap<String, Object>();
+								while (objectKeys.hasNext()) {
+									String objectKey = objectKeys.next();
+									map.put(objectKey, objectJSON.get(objectKey));
+								}
+
+								list.add(map);
+							}
+
+							return list;
+						}
+						catch (JSONException e) {
+							e.printStackTrace();
+						}
+
+						return null;
+					}
+				});
 			}
 			else if (choice.equals("questions")) {
 				template = "dataQuestions.html";

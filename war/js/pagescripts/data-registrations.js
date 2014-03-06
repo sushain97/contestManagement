@@ -19,74 +19,67 @@ $(document).ready(function() {
 	$('h1 button').on('click', function() {
 		window.print();
 	});
-	
+
 	$(document).on('click', 'a', function(e) {
 		if($(this).attr('href') === '#')
 			e.preventDefault();
 	});
-	
-	var price = parseInt($('#price').val());
 
-	var subjects = ['N', 'C', 'M', 'S'];
-	$.each($('.registrationInfo'), function() {
-		var studentData = JSON.parse($(this).text());
-		var registrationRow = $(this).parent(), table = registrationRow.parents('table');
-		$.each(studentData, function() {
-			var student = this;
-			$.each(subjects, function() {
-				if(student[this]) {
-					var test = (student["grade"] + this).toLowerCase();
-					var cell = $('td[data-type=' + test + '] a', registrationRow);
-					cell.text(parseInt(cell.text()) + 1);
-					
-					var tooltip = (cell.attr('data-original-title') ? cell.attr('data-original-title') + ", " : "") + student["name"];
-					cell.attr('data-original-title', tooltip).popover('fixTitle');
-					
-					var totalCell = table.find('.total[data-type=' + test + ']');
-					totalCell.text(parseInt(totalCell.text()) + 1);
-					
-					var totalCostCell = table.find('.totalCost');
-					totalCostCell.text(parseInt(totalCostCell.text()) + price);
-				}
-			});
-		});
-	});
-	
-	$.each(subjects, function() {
-		var subjectTotal = 0;
-		$.each($('#middleReg .total[data-type$=' + this.toLowerCase() + ']'), function() {
-			subjectTotal += parseInt($(this).text());
-		});
-		$('.subjectTotal[data-type=' + this + ']', $('#middleReg').parent()).text(subjectTotal);
-		
-		subjectTotal = 0;
-		$.each($('#highReg .total[data-type$=' + this.toLowerCase() + ']'), function() {
-			subjectTotal += parseInt($(this).text());
-		});
-		$('.subjectTotal[data-type=' + this + ']', $('#highReg').parent()).text(subjectTotal);
-	});
-	
+	$('.popovers').popover();
+
 	$.extend($.tablesorter.themes.bootstrap, {
 		table: 'table'
 	});
-	
+
 	$('table#middleReg, table#highReg').tablesorter({
 		theme : 'bootstrap',
 		headerTemplate : '{content} {icon}',
-	    widgets : ['uitheme'],
+		widgets : ['uitheme', 'filter', 'zebra'],
+		filter_reset : 'button.reset',
+		widgetOptions : {
+			filter_hideFilters : true,
+			filter_saveFilters : true,
+			filter_reset : '.reset',
+			zebra : ["even", "odd"],
+			filter_functions : {
+				4: {
+					"Coach": function(e, n, f, i, $r) { return n === 'coach'; },
+					"Student": function(e, n, f, i, $r) { return n === 'student'; }
+				},
+				6: {
+					"5A": function(e, n, f, i, $r) { return n === '5a'; },
+					"4A": function(e, n, f, i, $r) { return n === '4a'; },
+					"3A": function(e, n, f, i, $r) { return n === '3a'; },
+					"2A": function(e, n, f, i, $r) { return n === '2a'; },
+					"1A": function(e, n, f, i, $r) { return n === '1a'; }
+				},
+				7: {
+					"Yes": function(e, n, f, i, $r) { return n === 'yes'; },
+					"No": function(e, n, f, i, $r) { return n === 'no'; }
+				}
+			}
+		},
 		headers: {
-			0: {sorter: false},
+			0: {filter: false},
 			1: {sorter: 'shortDate'}
 		}
 	});
-	
+
+	var disabled = [0, 3];
+	for(var i = 0; i < disabled.length; i++)
+		$('.tablesorter-filter[data-column=' + disabled[i] + ']').prop('disabled', true).addClass('disabled');
+
+	$('button.reset').click(function() {
+		$($(this).parent().next('table')[0]).trigger('filterReset');
+	});
+
 	$('input:radio:checked').data('chk', true);
 	$('input:radio').click(function() {
 		$("input[name='" + $(this).attr('name') + "']:radio").not(this).removeData('chk');
 		$(this).data('chk', !$(this).data('chk'));
 		$(this).prop('checked', $(this).data('chk'));
 	});
-	
+
 	$('tbody td:not(.uneditable)').editable(function(value, settings) {
 		sendAJAXReq(this, value);
 	}, { 
@@ -94,29 +87,29 @@ $(document).ready(function() {
 		tooltip: 'Click to edit...',
 		placeholder: '',
 	});
-	
+
 	$('.regType').editable(function(value, settings) {
 		sendAJAXReq(this, value);
 	}, { 
 		data: "{'student':'student','coach':'coach'}",
-	    type: 'select',
-	    submit: 'OK'
+		type: 'select',
+		submit: 'OK'
 	});
-	
+
 	$('.division').editable(function(value, settings) {
 		sendAJAXReq(this, value);
 	}, { 
 		data: "{'1A':'1A','2A':'2A','3A':'3A','4A':'4A','5A':'5A'}",
-	    type: 'select',
-	    submit: 'OK'
+		type: 'select',
+		submit: 'OK'
 	});
-	
+
 	$('td').hover(function() {
-	    var t = parseInt($(this).index()) + 1;
-	    $('td:nth-child(' + t + '):not(tfoot td)', $(this).closest('table')).addClass('highlighted');
+		var t = parseInt($(this).index()) + 1;
+		$('td:nth-child(' + t + '):not(tfoot td)', $(this).closest('table')).addClass('highlighted');
 	}, function() {
-	    var t = parseInt($(this).index()) + 1;
-	    $('td:nth-child(' + t + '):not(tfoot td)', $(this).closest('table')).removeClass('highlighted');
+		var t = parseInt($(this).index()) + 1;
+		$('td:nth-child(' + t + '):not(tfoot td)', $(this).closest('table')).removeClass('highlighted');
 	});
 });
 

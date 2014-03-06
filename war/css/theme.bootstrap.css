@@ -65,10 +65,9 @@
 
 /* filter widget */
 .tablesorter-bootstrap .tablesorter-filter-row .tablesorter-filter {
-	width: 98%;
+	width: 100%;
 	height: auto;
 	margin: 0 auto;
-	padding: 4px 6px;
 	color: #333;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;

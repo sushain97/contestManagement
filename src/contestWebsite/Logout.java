@@ -19,6 +19,7 @@
 package contestWebsite;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.List;
 
 import javax.servlet.http.HttpServlet;
@@ -48,11 +49,21 @@ public class Logout extends HttpServlet {
 			Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
 			try {
 				userCookie.authenticate();
-				Query query = new Query("authToken").setKeysOnly().setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, userCookie.getUsername()));
+
+				Query query = new Query("authToken").setKeysOnly();
+
+				if (req.getParameterMap().containsKey("all")) {
+					query.setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, userCookie.getUsername()));
+				}
+				else {
+					query.setFilter(new FilterPredicate("token", FilterOperator.EQUAL, URLDecoder.decode(userCookie.getValue(), "UTF-8")));
+				}
+
 				List<Entity> tokens = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
 				for (Entity token : tokens) {
 					datastore.delete(token.getKey());
 				}
+
 				txn.commit();
 			}
 			catch (Exception e) {

@@ -84,17 +84,25 @@
 				
 				<div class="form-group">
 					<label class="col-sm-2 control-label" for="datepicker">Registration Dates</label>
-					<div class="col-sm-6 col-xs-9">
-						<div class="input-daterange input-group" id="datepicker" data-date-format="mm/dd/yyyy">
-						    <input type="text" class="col-sm-3 form-control" name="startDate" 
-						    	value='#if($contestInfo.getProperty("startDate"))$contestInfo.getProperty("startDate")#end' required>
-						    <span class="input-group-addon"><strong>to</strong></span>
-						    <input type="text" class="col-sm-3 form-control" name="endDate" 
-						    	value='#if($contestInfo.getProperty("endDate"))$contestInfo.getProperty("endDate")#end' required>
+					#set($types = ["Early", "Normal", "Late"])
+					
+					#foreach($type in $types)
+						<div class="#if(!$foreach.first) col-sm-offset-2 #end col-sm-6 col-xs-9">
+							<div class="input-daterange input-group" id="datepicker" data-date-format="mm/dd/yyyy">
+								<span class="input-group-addon" style="width: 15%;"><strong>$type: </strong></span>
+								#set($typeName = $type.toLowerCase())
+								#set($typeStart = $typeName + "StartDate")
+								#set($typeEnd = $typeName + "EndDate")
+							    <input type="text" class="col-sm-3 form-control" name="$typeStart" 
+							    	value='#if($contestInfo.getProperty($typeStart))$contestInfo.getProperty($typeStart)#end' required>
+							    <span class="input-group-addon"><strong>to</strong></span>
+							    <input type="text" class="col-sm-3 form-control" name="$typeEnd" 
+							    	value='#if($contestInfo.getProperty($typeEnd))$contestInfo.getProperty($typeEnd)#end' required>
+							</div>
 						</div>
-					</div>
+					#end
 				</div>
-				
+									
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-5 control-label" for="aboutText">About Text</label>
 					<div class="col-xs-7">

@@ -86,11 +86,11 @@ public class Score implements Comparable<Score>, java.io.Serializable {
 			throw new IllegalArgumentException("Unable to parse score");
 		}
 
-		if (this.score.x > 1000) {
+		if (Math.abs(this.score.x) > 401) {
 			throw new IllegalArgumentException("Score larger than expected: " + this.score.x);
 		}
 
-		if (this.score.y > 100) {
+		if (this.score.y > 26) {
 			throw new IllegalArgumentException("Score modifier larger than expected: " + this.score.y);
 		}
 	}

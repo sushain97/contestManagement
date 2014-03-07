@@ -61,8 +61,23 @@ public class ScoreTests {
 	}
 
 	@Test(expected = java.lang.IllegalArgumentException.class)
-	public void testLengthExceeded() {
-		new Score("1234");
+	public void testMissingScoreWithLetterModifier() {
+		new Score("A");
+	}
+
+	@Test(expected = java.lang.IllegalArgumentException.class)
+	public void testMissingScoreWithNumberModifier() {
+		new Score(".11");
+	}
+
+	@Test(expected = java.lang.IllegalArgumentException.class)
+	public void testScoreTooHigh() {
+		new Score("402");
+	}
+
+	@Test(expected = java.lang.IllegalArgumentException.class)
+	public void testScoreTooLow() {
+		new Score("-402");
 	}
 
 	@Test(expected = java.lang.IllegalArgumentException.class)

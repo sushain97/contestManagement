@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServlet;
@@ -114,7 +115,14 @@ public class Main extends HttpServlet {
 			SpreadsheetService service = new SpreadsheetService("contestTabulation");
 			authService(service, contestInfo);
 
-			for (Level level : Level.values()) {
+			// Retrieve enabled levels from Datastore
+			String[] stringLevels = ((String) contestInfo.getProperty("levels")).split(Pattern.quote("+"));
+			Level[] levels = new Level[stringLevels.length];
+			for (int i = 0; i < stringLevels.length; i++) {
+				levels[i] = Level.fromString(stringLevels[i]);
+			}
+
+			for (Level level : levels) {
 				Map<String, School> lSchools = schools.get(level);
 				List<School> lsweepstakesWinners = sweepstakesWinners.get(level);
 				Map<Test, List<Student>> lCategoryWinners = categoryWinners.get(level);

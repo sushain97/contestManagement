@@ -41,6 +41,15 @@ public class Pair<X, Y> implements Serializable {
 	}
 
 	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (x == null ? 0 : x.hashCode());
+		result = prime * result + (y == null ? 0 : y.hashCode());
+		return result;
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;

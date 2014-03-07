@@ -65,7 +65,7 @@
 				<tbody>
 				</tbody>
 			</table>
-		#elseif(!$registrationError.equals(''))
+		#elseif($registrationError)
 			<div class="alert alert-danger">
 				<a class="close" data-dismiss="alert">&times;</a> <strong>Oh no!</strong> $registrationError
 			</div>

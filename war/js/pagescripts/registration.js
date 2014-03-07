@@ -268,7 +268,7 @@ function adjustGradeSelect() {
 }
 
 function EnableSubmit() {
-	if ($('#regError').val() === '') {
+	if ($('#regError').val() === '' || $('#regError').val() == '$registrationError') {
 		$('#submit').prop('disabled', false);
 		$('#reset').prop('disabled', false);
 	}

@@ -18,8 +18,11 @@
 
 package util;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -181,5 +184,45 @@ public class Retrieve {
 			e.printStackTrace();
 		}
 		return map;
+	}
+
+	public static Long registrationPrice(Entity contestInfo) throws ParseException {
+		Map<Pair<RegType, SpanType>, Date> regDates = new HashMap<Pair<RegType, SpanType>, Date>();
+		for (RegType regType : RegType.values()) {
+			for (SpanType spanType : SpanType.values()) {
+				String dateType = regType.toString().toLowerCase() + spanType.toString() + "Date";
+				Date date = new SimpleDateFormat("MM/dd/yyyy").parse((String) contestInfo.getProperty(dateType));
+				regDates.put(new Pair<RegType, SpanType>(regType, spanType), date);
+			}
+		}
+
+		Date now = new Date();
+
+		if (now.before(regDates.get(new Pair<RegType, SpanType>(RegType.EARLY, SpanType.Start)))) {
+			return null;
+		}
+		else if (now.after(regDates.get(new Pair<RegType, SpanType>(RegType.EARLY, SpanType.Start))) &&
+				now.before(regDates.get(new Pair<RegType, SpanType>(RegType.EARLY, SpanType.End)))) {
+			return (Long) contestInfo.getProperty(RegType.EARLY.toString().toLowerCase() + "Price");
+		}
+		else if (now.after(regDates.get(new Pair<RegType, SpanType>(RegType.NORMAL, SpanType.Start))) &&
+				now.before(regDates.get(new Pair<RegType, SpanType>(RegType.NORMAL, SpanType.End)))) {
+			return (Long) contestInfo.getProperty(RegType.NORMAL.toString().toLowerCase() + "Price");
+		}
+		else if (now.after(regDates.get(new Pair<RegType, SpanType>(RegType.LATE, SpanType.Start))) &&
+				now.before(regDates.get(new Pair<RegType, SpanType>(RegType.LATE, SpanType.End)))) {
+			return (Long) contestInfo.getProperty(RegType.LATE.toString().toLowerCase() + "Price");
+		}
+		else {
+			return null;
+		}
+	}
+
+	private enum SpanType {
+		Start, End;
+	}
+
+	private enum RegType {
+		EARLY, NORMAL, LATE
 	}
 }

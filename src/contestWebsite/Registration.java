@@ -23,7 +23,6 @@ import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -89,41 +88,23 @@ public class Registration extends BaseHttpServlet {
 			context.put("registrationError", "You are already registered.");
 		}
 
-		String endDateStr = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
-		String startDateStr = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
-
 		Entity contestInfo = infoAndCookie.x;
-		if (contestInfo != null) {
-			endDateStr = (String) contestInfo.getProperty("endDate");
-			startDateStr = (String) contestInfo.getProperty("startDate");
 
-			Date endDate = new Date();
-			Date startDate = new Date();
-			try {
-				endDate = new SimpleDateFormat("MM/dd/yyyy").parse(endDateStr);
-				startDate = new SimpleDateFormat("MM/dd/yyyy").parse(startDateStr);
-			}
-			catch (ParseException e) {
-				e.printStackTrace();
-				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Incorrect date format");
-			}
-
-			if (loggedIn && infoAndCookie.y.isAdmin()) {
-				context.put("registrationError", "");
-			}
-			else if (new Date().after(endDate) || new Date().before(startDate)) {
-				context.put("registrationError", "Registration is closed, please try again next year.");
-			}
-			else {
-				context.put("registrationError", "");
-			}
-
-			context.put("price", contestInfo.getProperty("price"));
-			context.put("publicKey", contestInfo.getProperty("publicKey"));
+		Long registrationPrice;
+		try {
+			registrationPrice = Retrieve.registrationPrice(contestInfo);
+		}
+		catch (ParseException e) {
+			e.printStackTrace();
+			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+			return;
+		}
+		if (registrationPrice == null) {
+			context.put("registrationError", "Registration is closed, please try again next year.");
 		}
 		else {
-			context.put("registrationError", "Registration is closed, please try again next year.");
-			context.put("price", 5);
+			context.put("price", registrationPrice.intValue());
+			context.put("publicKey", contestInfo.getProperty("publicKey"));
 		}
 
 		HttpSession sess = req.getSession(true);
@@ -290,7 +271,15 @@ public class Registration extends BaseHttpServlet {
 					return;
 				}
 
-				long price = (Long) contestInfo.getProperty("price");
+				long price;
+				try {
+					price = Retrieve.registrationPrice(contestInfo);
+				}
+				catch (ParseException e) {
+					e.printStackTrace();
+					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+					return;
+				}
 				int cost = (int) (0 * price);
 
 				for (int i = 0; i < regData.length(); i++) {

@@ -55,6 +55,7 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
 
 @SuppressWarnings("serial")
@@ -135,7 +136,7 @@ public class ContactUs extends BaseHttpServlet {
 		feedback.setProperty("name", name);
 		feedback.setProperty("school", school);
 		feedback.setProperty("email", email);
-		feedback.setProperty("comment", comment);
+		feedback.setProperty("comment", new Text(comment));
 		feedback.setProperty("resolved", false);
 
 		Transaction txn = datastore.beginTransaction();

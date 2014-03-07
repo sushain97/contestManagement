@@ -46,7 +46,7 @@
 						<td>$q.getProperty("name")</td>
 						<td><a href='mailto:$q.getProperty("email")' target="_blank">$q.getProperty("email")</a></td>
 						<td>$q.getProperty("school")</td>
-						<td>$q.getProperty("comment")</td>
+						<td>#if($q.getProperty("comment").getValue()) $q.getProperty("comment").getValue() #else $q.getProperty("comment") #end</td>
 					</tr>
 					#end
 				</tbody>
@@ -70,7 +70,7 @@
 						<td>$q.getProperty("name")</td>
 						<td><a href='mailto:$q.getProperty("email")' target="_blank">$q.getProperty("email")</a></td>
 						<td>$q.getProperty("school")</td>
-						<td>$q.getProperty("comment")</td>
+						<td>#if($q.getProperty("comment").getValue()) $q.getProperty("comment").getValue() #else $q.getProperty("comment") #end</td>
 					</tr>
 					#end
 				</tbody>

@@ -127,6 +127,8 @@ public class Registration extends BaseHttpServlet {
 		}
 
 		HttpSession sess = req.getSession(true);
+		sess.setAttribute("nocaptcha", loggedIn && infoAndCookie.y.isAdmin());
+		context.put("nocaptcha", loggedIn && infoAndCookie.y.isAdmin());
 
 		String userError = req.getParameter("userError");
 		String passwordError = req.getParameter("passwordError");
@@ -163,6 +165,7 @@ public class Registration extends BaseHttpServlet {
 			context.put("email", "");
 			context.put("studentData", "[]");
 		}
+
 		if ("1".equals(req.getParameter("updated"))) {
 			context.put("updated", true);
 			if (sess != null) {
@@ -184,6 +187,7 @@ public class Registration extends BaseHttpServlet {
 				}
 			}
 		}
+
 		context.put("userError", userError);
 		context.put("passwordError", passwordError);
 		context.put("captchaError", captchaError);
@@ -236,15 +240,18 @@ public class Registration extends BaseHttpServlet {
 		sess.setAttribute("email", email);
 		sess.setAttribute("studentData", studentData);
 
-		String remoteAddr = req.getRemoteAddr();
-		ReCaptchaImpl reCaptcha = new ReCaptchaImpl();
-		reCaptcha.setPrivateKey((String) contestInfo.getProperty("privateKey"));
+		ReCaptchaResponse reCaptchaResponse = null;
+		if (!(Boolean) sess.getAttribute("nocaptcha")) {
+			String remoteAddr = req.getRemoteAddr();
+			ReCaptchaImpl reCaptcha = new ReCaptchaImpl();
+			reCaptcha.setPrivateKey((String) contestInfo.getProperty("privateKey"));
 
-		String challenge = req.getParameter("recaptcha_challenge_field");
-		String userResponse = req.getParameter("recaptcha_response_field");
-		ReCaptchaResponse reCaptchaResponse = reCaptcha.checkAnswer(remoteAddr, challenge, userResponse);
+			String challenge = req.getParameter("recaptcha_challenge_field");
+			String userResponse = req.getParameter("recaptcha_response_field");
+			reCaptchaResponse = reCaptcha.checkAnswer(remoteAddr, challenge, userResponse);
+		}
 
-		if (!reCaptchaResponse.isValid()) {
+		if (!(Boolean) sess.getAttribute("nocaptcha") && !reCaptchaResponse.isValid()) {
 			resp.sendRedirect("/registration?captchaError=1");
 		}
 		else {

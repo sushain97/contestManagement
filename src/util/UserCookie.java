@@ -20,6 +20,7 @@ package util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.Cookie;
@@ -34,13 +35,14 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 public class UserCookie extends Cookie {
+	private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	private String username;
 
-	public UserCookie(String name, String value) {
+	private UserCookie(String name, String value) {
 		super(name, value);
 	}
 
-	public UserCookie(Cookie cookie) {
+	private UserCookie(Cookie cookie) {
 		super(cookie.getName(), cookie.getValue());
 		setComment(cookie.getComment());
 		String domain = cookie.getDomain();
@@ -73,21 +75,11 @@ public class UserCookie extends Cookie {
 		return "admin".equals(username);
 	}
 
-	public boolean authenticate() {
-		String cookieContent;
-		try {
-			cookieContent = URLDecoder.decode(getValue(), "UTF-8");
-		}
-		catch (UnsupportedEncodingException e) {
-			return false;
-		}
+	public boolean authenticate() throws UnsupportedEncodingException {
+		Entity token = getToken(URLDecoder.decode(getValue(), "UTF-8"));
 
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Query query = new Query("authToken").setFilter(new FilterPredicate("token", FilterOperator.EQUAL, cookieContent));
-		List<Entity> tokens = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
-
-		if (tokens.size() > 0) {
-			username = (String) tokens.get(0).getProperty("user-id");
+		if (token != null) {
+			username = (String) token.getProperty("user-id");
 			return true;
 		}
 		else {
@@ -95,27 +87,26 @@ public class UserCookie extends Cookie {
 		}
 	}
 
-	public Entity authenticateUser() {
-		String cookieContent;
-		try {
-			cookieContent = URLDecoder.decode(getValue(), "UTF-8");
-		}
-		catch (UnsupportedEncodingException e) {
-			return null;
-		}
+	public Entity authenticateUser() throws UnsupportedEncodingException {
+		Entity token = getToken(URLDecoder.decode(getValue(), "UTF-8"));
 
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Query query = new Query("authToken").setFilter(new FilterPredicate("token", FilterOperator.EQUAL, cookieContent));
-		List<Entity> tokens = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+		if (token != null) {
+			username = (String) token.getProperty("user-id");
 
-		if (tokens.size() > 0) {
-			username = (String) tokens.get(0).getProperty("user-id");
-
-			query = new Query("user").setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, username));
+			Query query = new Query("user").setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, username));
 			return datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 		}
 		else {
 			return null;
 		}
+	}
+
+	private static Entity getToken(String token) {
+		Query query = new Query("authToken")
+			.setFilter(new FilterPredicate("token", FilterOperator.EQUAL, token))
+			.setFilter(new FilterPredicate("expires", FilterOperator.GREATER_THAN, new Date()));
+		List<Entity> tokens = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+
+		return !tokens.isEmpty() ? tokens.get(0) : null;
 	}
 }

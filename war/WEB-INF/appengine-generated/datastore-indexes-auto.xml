@@ -1,4 +1,11 @@
-<!-- Indices written at Thu, 6 Mar 2014 11:22:44 CST -->
+<!-- Indices written at Thu, 6 Mar 2014 22:30:05 CST -->
 
-<datastore-indexes/>
+<datastore-indexes>
 
+    <!-- Used 4 times in query history -->
+    <datastore-index kind="School" ancestor="false" source="auto">
+        <property name="level" direction="asc"/>
+        <property name="totalScore" direction="desc"/>
+    </datastore-index>
+
+</datastore-indexes>

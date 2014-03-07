@@ -23,6 +23,9 @@ import static org.apache.commons.lang3.StringEscapeUtils.unescapeHtml4;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -152,7 +155,7 @@ public class Setup extends BaseHttpServlet {
 
 				String studentDataJSON = unescapeHtml4(((Text) registration.getProperty("studentData")).getValue());
 
-				JSONArray studentData = null; // TODO: Sort this.
+				JSONArray studentData = null;
 				try {
 					studentData = new JSONArray(studentDataJSON);
 				}
@@ -162,10 +165,25 @@ public class Setup extends BaseHttpServlet {
 					return;
 				}
 
+				List<JSONObject> studentDataList = new ArrayList<JSONObject>(studentData.length());
 				for (int i = 0; i < studentData.length(); i++) {
-					try {
-						JSONObject student = studentData.getJSONObject(i);
+					studentDataList.add(studentData.getJSONObject(i));
+				}
+				Collections.sort(studentDataList, new Comparator<JSONObject>() {
+					@Override
+					public int compare(JSONObject a, JSONObject b) {
+						try {
+							return a.getString("name").compareTo(b.getString("name"));
+						}
+						catch (JSONException e) {
+							e.printStackTrace();
+							return 0;
+						}
+					}
+				});
 
+				for (JSONObject student : studentDataList) {
+					try {
 						ListEntry row = new ListEntry();
 						row.getCustomElements().setValueLocal("name", student.getString("name"));
 						row.getCustomElements().setValueLocal("grade", Integer.toString(student.getInt("grade")));
@@ -184,7 +202,7 @@ public class Setup extends BaseHttpServlet {
 				}
 			}
 		}
-		catch (ServiceException e) {
+		catch (ServiceException | JSONException e) {
 			resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			e.printStackTrace();
 			return;

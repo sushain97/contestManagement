@@ -1,6 +1,4 @@
-html,body {
-	height: 100%; /* The html and body elements cannot have any padding or margin. */
-}
+html,body { height: 100%; } /* The html and body elements cannot have any padding or margin. */
 
 /* Wrapper for page content to push down footer */
 #wrap {
@@ -10,10 +8,7 @@ html,body {
 	margin: 0 auto -60px; /* Negative indent footer by it's height */
 }
 
-/* Set the fixed height of the footer here */
-#push {
-	height: 60px;
-}
+#push {	height: 60px; } /* Set the fixed height of the footer */
 
 #footer {
 	background-color: #eee;
@@ -30,6 +25,6 @@ html,body {
 	}
 }
 
-.container p {
-	margin: 20px 0;
-}
+.container p { margin: 20px 0; }
+
+@media print { #footer { display: none; } }

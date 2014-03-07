@@ -17,6 +17,8 @@
 				width: 100% !important;
 			}
 			@page {	size: potrait; }
+			a[href]:after { content: "" !important; }
+			.text-success { color: #3fb618 !important; }
 		}
 		.highlighted { background-color: #f5f5f5 !important; }
 
@@ -67,6 +69,11 @@
 				<p> Your account does not have sufficient permissions to view your school's scores (probably because you are a student).
 				If you believe that this is incorrect, please <a href="/contactUs">contact us</a>.</p>
 			#end
+			
+			<div class="visible-print well well-sm">
+				<p><i class="icon-time"></i> Last auto-generated <b>#if($date) $date #else never #end</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
+			</div>
+			
 			<div id="push"></div>
 		</div>
 	</div>

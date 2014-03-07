@@ -18,6 +18,9 @@
 				width: 100% !important;
 			}
 			@page {	size: potrait; }
+			a[href]:after { content: "" !important; }
+			.text-success { color: #3fb618 !important; }
+			.col-md-6 { page-break-inside: avoid; }
 		}
 		table {	width: auto !important; }
 		th, td { text-align: center !important; }
@@ -132,7 +135,7 @@
 						Contest Results
 						#include("printButton.html")
 						#if($level == "middle" && ($type.equals("students") || $type.startsWith("school_"))) 
-							<button type="button" class="btn btn-default btn-sm" id="qualButton">Mute Qualifying</button>
+							<button type="button" class="btn btn-default btn-sm hidden-print" id="qualButton">Mute Qualifying</button>
 						#end
 					</h1>
 					#if($type == "overview")
@@ -166,6 +169,10 @@
 							Visualizations not yet available.
 						#end
 					#end
+					
+					<div class="visible-print well well-sm">
+						<p><i class="icon-time"></i> Last auto-generated <b>#if($date) $date #else never #end</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
+					</div>
 					
 					<div id="push"></div>
 				</div>

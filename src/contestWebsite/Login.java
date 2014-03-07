@@ -21,6 +21,8 @@ package contestWebsite;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.Cookie;
@@ -119,8 +121,17 @@ public class Login extends BaseHttpServlet {
 					token.setProperty("user-id", username);
 					token.setProperty("token", authToken);
 
+					boolean persistent = "stay".equals(req.getParameter("signedIn"));
+					Calendar calendar = Calendar.getInstance();
+					if (persistent) {
+						calendar.add(Calendar.WEEK_OF_YEAR, 2);
+					}
+					else {
+						calendar.add(Calendar.MINUTE, 60);
+					}
+					token.setProperty("expires", new Date(calendar.getTimeInMillis()));
+
 					Cookie cookie = new Cookie("authToken", authToken);
-					cookie.setMaxAge("stay".equals(req.getParameter("signedIn")) ? -1 : 3600);
 					cookie.setValue(authToken);
 					resp.addCookie(cookie);
 

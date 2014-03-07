@@ -19,6 +19,8 @@
 package contestWebsite;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServlet;
@@ -32,6 +34,8 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
+import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Transaction;
@@ -48,11 +52,23 @@ public class Logout extends HttpServlet {
 			Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
 			try {
 				userCookie.authenticate();
-				Query query = new Query("authToken").setKeysOnly().setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, userCookie.getUsername()));
-				List<Entity> tokens = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
+
+				Query query = new Query("authToken").setKeysOnly();
+
+				if (req.getParameterMap().containsKey("all")) {
+					query.setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, userCookie.getUsername()));
+				}
+				else {
+					Filter tokenFilter = new FilterPredicate("token", FilterOperator.EQUAL, URLDecoder.decode(userCookie.getValue(), "UTF-8"));
+					Filter expiredFilter = new FilterPredicate("expires", FilterOperator.LESS_THAN, new Date());
+					query.setFilter(CompositeFilterOperator.or(tokenFilter, expiredFilter));
+				}
+
+				List<Entity> tokens = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(5));
 				for (Entity token : tokens) {
 					datastore.delete(token.getKey());
 				}
+
 				txn.commit();
 			}
 			catch (Exception e) {

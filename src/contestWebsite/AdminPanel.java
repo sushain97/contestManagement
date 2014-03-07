@@ -124,7 +124,11 @@ public class AdminPanel extends BaseHttpServlet {
 				contestInfo.setProperty("aboutText", new Text(params.get("aboutText")[0]));
 				contestInfo.setProperty("googleAnalytics", new Text(params.get("googleAnalytics")[0]));
 				contestInfo.setProperty("location", new GeoPt(Float.parseFloat(params.get("location_lat")[0]), Float.parseFloat(params.get("location_long")[0])));
-				contestInfo.setProperty("price", Integer.parseInt(params.get("price")[0]));
+
+				contestInfo.setProperty("earlyPrice", Integer.parseInt(params.get("earlyPrice")[0]));
+				contestInfo.setProperty("normalPrice", Integer.parseInt(params.get("normalPrice")[0]));
+				contestInfo.setProperty("latePrice", Integer.parseInt(params.get("latePrice")[0]));
+
 				contestInfo.setProperty("complete", params.get("complete") != null);
 				contestInfo.setProperty("hideFullNames", params.get("fullnames") != null);
 

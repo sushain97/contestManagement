@@ -28,7 +28,7 @@ $(document).ready(function() {
 		}
     });
 	$('.price').slider().on('slide', function(ev) {
-		$('#priceText').html('$' + ev.value);
+		$('#' + $(this).prop('id') + 'Text').html('$' + ev.value);
 	});
 	
 	$('#update').change(function() {

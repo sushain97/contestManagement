@@ -82,9 +82,10 @@
 					</div>
 				</div>
 				
+				#set($types = ["Early", "Normal", "Late"])
+				
 				<div class="form-group">
 					<label class="col-sm-2 control-label" for="datepicker">Registration Dates</label>
-					#set($types = ["Early", "Normal", "Late"])
 					
 					#foreach($type in $types)
 						<div class="#if(!$foreach.first) col-sm-offset-2 #end col-sm-6 col-xs-9">
@@ -98,6 +99,25 @@
 							    <span class="input-group-addon"><strong>to</strong></span>
 							    <input type="text" class="col-sm-3 form-control" name="$typeEnd" 
 							    	value='#if($contestInfo.getProperty($typeEnd))$contestInfo.getProperty($typeEnd)#end' required>
+							</div>
+						</div>
+					#end
+				</div>
+						
+				<div class="form-group">
+					<label class="col-sm-2 control-label" for="price">Test Charges</label>
+					#foreach($type in $types)
+						<div class="col-sm-5 #if(!$foreach.first) col-sm-offset-2 #end">
+							<div class="input-group">
+								<div class="input-group-addon" style="min-width: 100px; text-align: right;"><strong>$type: </strong></div>
+								<div style="margin-top: 5px; margin-left: 10px;">
+									#set($priceName = $type.toLowerCase().concat("Price"))
+									#set($price = $contestInfo.getProperty($priceName))
+									#if(!$price) #set($price = 5) #end
+									<b id="${priceName}Text">$$price</b>
+									<input type="text" class="span2 price" id="$priceName" name="$priceName" data-slider-min="0" data-slider-max="15" 
+										data-slider-step="1" data-slider-value="$price" value="$price" required>
+								</div>
 							</div>
 						</div>
 					#end
@@ -209,18 +229,7 @@
 					#end
 				</div>
 				#end
-				
-				<div class="form-group">
-					<label class="col-sm-2 control-label" for="price">Test Charges</label>
-					<div class="col-sm-5" style="padding-top: 10px;">
-						#set($price = $contestInfo.getProperty("price"))
-						#if(!$price) #set($price = 5) #end
-						<b id="priceText">$$price</b>
-						<input type="text" class="span2 price" id="price" name="price" data-slider-min="0" data-slider-max="15" data-slider-step="1" data-slider-value="$price" value="$price" required>
-					<p class="help-block">How much should each test registration cost in dollars?</p>
-					</div>
-				</div>
-				
+
 				<div class="form-group">
 					<label class="col-sm-2 control-label" for="email">E-Mail Address</label>
 					<div class="input-prepend col-sm-6">

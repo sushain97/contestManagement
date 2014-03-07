@@ -31,6 +31,8 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
+import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
@@ -102,11 +104,11 @@ public class UserCookie extends Cookie {
 	}
 
 	private static Entity getToken(String token) {
-		Query query = new Query("authToken")
-			.setFilter(new FilterPredicate("token", FilterOperator.EQUAL, token))
-			.setFilter(new FilterPredicate("expires", FilterOperator.GREATER_THAN, new Date()));
-		List<Entity> tokens = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+		Filter tokenFilter = new FilterPredicate("token", FilterOperator.EQUAL, token);
+		Filter expireFilter = new FilterPredicate("expires", FilterOperator.GREATER_THAN, new Date());
+		Query query = new Query("authToken").setFilter(CompositeFilterOperator.and(tokenFilter, expireFilter));
 
+		List<Entity> tokens = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 		return !tokens.isEmpty() ? tokens.get(0) : null;
 	}
 }

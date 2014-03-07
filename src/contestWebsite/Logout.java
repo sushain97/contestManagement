@@ -64,7 +64,7 @@ public class Logout extends HttpServlet {
 					query.setFilter(CompositeFilterOperator.or(tokenFilter, expiredFilter));
 				}
 
-				List<Entity> tokens = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
+				List<Entity> tokens = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(5));
 				for (Entity token : tokens) {
 					datastore.delete(token.getKey());
 				}

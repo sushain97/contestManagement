@@ -60,7 +60,7 @@ public class Retrieve {
 		return students;
 	}
 
-	public static Pair<School, Pair<Map<Test, List<Integer>>, Map<Test, List<Integer>>>> schoolOverview(String schoolName) {
+	public static Pair<School, Pair<Map<Test, Map<String, Double>>, Map<Test, List<Integer>>>> schoolOverview(String schoolName) {
 		javax.jdo.Query q = pm.newQuery(School.class);
 		q.setFilter("name == :schoolName");
 		List<School> schools = (List<School>) q.execute(schoolName);
@@ -78,16 +78,16 @@ public class Retrieve {
 				}
 			}
 
-			HashMap<Test, List<Integer>> summaryStats = new HashMap<Test, List<Integer>>();
-			HashMap<Test, List<Integer>> outliers = new HashMap<Test, List<Integer>>();
+			Map<Test, Map<String, Double>> summaryStats = new HashMap<Test, Map<String, Double>>();
+			Map<Test, List<Integer>> outliers = new HashMap<Test, List<Integer>>();
 			for (Entry<Test, List<Integer>> scoreEntry : scores.entrySet()) {
-				Pair<List<Integer>, List<Integer>> stats = Statistics.calculateStats(scoreEntry.getValue());
+				Pair<Map<String, Double>, List<Integer>> stats = Statistics.calculateStats(scoreEntry.getValue());
 				summaryStats.put(scoreEntry.getKey(), stats.x);
 				outliers.put(scoreEntry.getKey(), stats.y);
 			}
 
-			return new Pair<School, Pair<Map<Test, List<Integer>>, Map<Test, List<Integer>>>>(school,
-					new Pair<Map<Test, List<Integer>>, Map<Test, List<Integer>>>(summaryStats, outliers));
+			return new Pair<School, Pair<Map<Test, Map<String, Double>>, Map<Test, List<Integer>>>>(school,
+					new Pair<Map<Test, Map<String, Double>>, Map<Test, List<Integer>>>(summaryStats, outliers));
 		}
 		return null;
 	}
@@ -130,23 +130,31 @@ public class Retrieve {
 		return (List<School>) q.execute(level);
 	}
 
-	public static Pair<Map<Test, List<Integer>>, Map<Test, List<Integer>>> visualizations(Level level) {
+	public static Pair<Map<Test, Map<String, Double>>, Map<Test, List<Integer>>> visualizations(Level level) throws JSONException {
 		List<Key> visualizationKeys = new ArrayList<Key>();
 		for (Test test : Test.getTests(level)) {
 			visualizationKeys.add(KeyFactory.createKey("Visualization", test.toString()));
 		}
 		Map<Key, Entity> visualizationEntities = datastore.get(visualizationKeys);
 
-		HashMap<Test, List<Integer>> summaryStats = new HashMap<Test, List<Integer>>();
-		HashMap<Test, List<Integer>> outliers = new HashMap<Test, List<Integer>>();
+		Map<Test, Map<String, Double>> summaryStats = new HashMap<Test, Map<String, Double>>();
+		Map<Test, List<Integer>> outliers = new HashMap<Test, List<Integer>>();
 
 		for (Entry<Key, Entity> visualizationEntry : visualizationEntities.entrySet()) {
 			Test test = Test.fromString(visualizationEntry.getKey().getName());
-			summaryStats.put(test, (List<Integer>) visualizationEntry.getValue().getProperty("summaryStats"));
 			outliers.put(test, (List<Integer>) visualizationEntry.getValue().getProperty("outliers"));
+
+			Map<String, Double> testSummaryStats = new HashMap<String, Double>();
+			JSONObject summaryStatsJSON = new JSONObject((String) visualizationEntry.getValue().getProperty("summaryStats"));
+			Iterator<String> summaryStatsIterator = summaryStatsJSON.keys();
+			while (summaryStatsIterator.hasNext()) {
+				String summaryStatsKey = summaryStatsIterator.next();
+				testSummaryStats.put(summaryStatsKey, summaryStatsJSON.getDouble(summaryStatsKey));
+			}
+			summaryStats.put(test, testSummaryStats);
 		}
 
-		return new Pair<Map<Test, List<Integer>>, Map<Test, List<Integer>>>(summaryStats, outliers);
+		return new Pair<Map<Test, Map<String, Double>>, Map<Test, List<Integer>>>(summaryStats, outliers);
 	}
 
 	public static Map<String, Integer> awardCriteria(Entity contestInfo) {

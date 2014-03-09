@@ -6,7 +6,7 @@
         	
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<a class="panel-title" data-toggle="collapse" data-parent="#accordion" href="#collapse${subject}"> $title</a>
+				<a class="panel-title" data-parent="#accordion" data-toggle="collapse" href="#collapse${subject}"> $title</a>
 			</div>
 			<div id="collapse$subject" class="panel-collapse collapse #if($foreach.first) in #end">
 				<div class="panel-body">
@@ -19,7 +19,8 @@
 
 <div class="well well-sm">
 	Outliers computed using <a href="https://en.wikipedia.org/wiki/Chauvenet's_criterion" target="_blank">Chauvenet's Criterion for Outliers</a>
-	with assumptions of Gaussian normality for sample populations of over 5 scores.
+	with assumptions of Gaussian normality for sample populations of over 5 scores. Normal distribution curves idealized using the normal
+	probability density function with the relevant group of scores' mean and standard deviation (artificial vertical scaling applied).
 </div>
 
 #set($minGrade = 1000)
@@ -71,21 +72,27 @@
 			    yAxis: {
 			        title: {
 			            text: 'Score'
-			        }	 
+			        }
 			    },
-			
+				plotOptions: {
+					boxplot: {
+						colorByPoint: true
+					}
+				},
 			    series: [{
 			        name: 'Score',
+			        color: Highcharts.getOptions().colors[0],
 			        data: [
-						#if($level == "middle")   
-			            	$.parseJSON($('#6${subject}').html()),
-			            	$.parseJSON($('#7${subject}').html()),
-			           		$.parseJSON($('#8${subject}').html())
+						#if($level == "middle")
+				        	#foreach($i in [6..8])
+								#set($testSummaryStats = $summaryStats[$Test.fromString("$i$subject")])
+								[$testSummaryStats.get("min"), $testSummaryStats.get("q1"), $testSummaryStats.get("q2"), $testSummaryStats.get("q3"), $testSummaryStats.get("max")]#if(!$foreach.last),#end
+							#end
 			           	#else
-			           		$.parseJSON($('#9${subject}').html()),
-			            	$.parseJSON($('#10${subject}').html()),
-			           		$.parseJSON($('#11${subject}').html()),
-			           		$.parseJSON($('#12${subject}').html())
+			            	#foreach($i in [9..12])
+								#set($testSummaryStats = $summaryStats[$Test.fromString("$i$subject")])
+								[$testSummaryStats.get("min"), $testSummaryStats.get("q1"), $testSummaryStats.get("q2"), $testSummaryStats.get("q3"), $testSummaryStats.get("max")]#if(!$foreach.last),#end
+							#end
 			            #end
 			        ],
 			        tooltip: {
@@ -109,7 +116,59 @@
 			            pointFormat: 'Score: {point.y}'
 			        }
 			    }]
-			});
+			}, function(chart) {
+				#if($level == "middle")
+		        	#foreach($i in [6..8])
+						#set($testSummaryStats = $summaryStats[$Test.fromString("$i$subject")])
+					
+						var mean = $testSummaryStats.get("mean"), sd = $testSummaryStats.get("sd");
+						var multiplierX = chart.plotWidth / (chart.yAxis[0].max - chart.yAxis[0].min);
+						var multiplierY = (chart.plotHeight / pdf(mean, mean, sd) * .9) * ((3 - $foreach.index) / 3);
+						
+						var points = ['M', chart.plotLeft, (chart.plotTop + chart.plotHeight) - (pdf(chart.yAxis[0].min, mean, sd) * multiplierY)];
+						for(var i = chart.yAxis[0].min; (i - chart.yAxis[0].min) * multiplierX <= chart.plotWidth; i+=1) {
+							points.push('L');
+							points.push((i - chart.yAxis[0].min) * multiplierX + chart.plotLeft);
+							points.push((chart.plotTop + chart.plotHeight) - (pdf(i, mean, sd) * multiplierY));
+						}
+						
+				        chart.renderer.path(points).attr({
+			                'stroke-width': 1,
+			                stroke: Highcharts.getOptions().colors[$foreach.index],
+			                zIndex: 3
+			            }).add();
+					#end
+					
+					function pdf(x, mean, sd) {
+			    		var term1 = Math.pow(sd * Math.sqrt(2 * Math.PI), -1);
+			    		var term2 = Math.pow(Math.E, -(Math.pow(x - mean, 2) / (2 * sd * sd)));
+			    		return term1 * term2;
+			    	}
+	           	#else
+	            	#foreach($i in [9..12])
+						#set($testSummaryStats = $summaryStats[$Test.fromString("$i$subject")])
+					
+						var mean = $testSummaryStats.get("mean"), sd = $testSummaryStats.get("sd");
+						var multiplierX = chart.plotWidth / (chart.yAxis[0].max - chart.yAxis[0].min);
+						var multiplierY = (chart.plotHeight / pdf(mean, mean, sd) * .9) * ((4 - $foreach.index) / 4);
+						
+						var points = ['M', chart.plotLeft, (chart.plotTop + chart.plotHeight) - (pdf(chart.yAxis[0].min, mean, sd) * multiplierY)];
+						for(var i = chart.yAxis[0].min; (i - chart.yAxis[0].min) * multiplierX <= chart.plotWidth; i+=1) {
+							points.push('L');
+							points.push((i - chart.yAxis[0].min) * multiplierX + chart.plotLeft);
+							points.push((chart.plotTop + chart.plotHeight) - (pdf(i, mean, sd) * multiplierY));
+						}
+						
+				        chart.renderer.path(points).attr({
+			                'stroke-width': 1,
+			                stroke: Highcharts.getOptions().colors[$foreach.index],
+			                zIndex: 3
+			            }).add();
+					#end
+	            #end
+	            
+				
+		    });
 		#end
 	});
 	

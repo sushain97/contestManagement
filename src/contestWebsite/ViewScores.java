@@ -77,7 +77,7 @@ public class ViewScores extends BaseHttpServlet {
 			List<Entity> registration = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 			context.put("coach", !registration.isEmpty() && registration.get(0).getProperty("registrationType").equals("coach"));
 
-			Pair<School, Pair<Map<Test, List<Integer>>, Map<Test, List<Integer>>>> schoolAndStats = Retrieve.schoolOverview((String) user.getProperty("school"));
+			Pair<School, Pair<Map<Test, Map<String, Double>>, Map<Test, List<Integer>>>> schoolAndStats = Retrieve.schoolOverview((String) user.getProperty("school"));
 			if (schoolAndStats != null) {
 				context.put("school", schoolAndStats.x);
 				context.put("summaryStats", schoolAndStats.y.x);

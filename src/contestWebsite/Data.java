@@ -169,13 +169,14 @@ public class Data extends BaseHttpServlet {
 
 					context.put("level", level.toString());
 					context.put("tests", Test.getTests(level));
+					context.put("Test", Test.class);
 
 					if (type.equals("students")) {
 						context.put("subjects", Subject.values());
 						context.put("students", Retrieve.allStudents(level));
 					}
 					else if (type.startsWith("school_")) {
-						Pair<School, Pair<Map<Test, List<Integer>>, Map<Test, List<Integer>>>> schoolAndStats = Retrieve.schoolOverview(types[1]);
+						Pair<School, Pair<Map<Test, Map<String, Double>>, Map<Test, List<Integer>>>> schoolAndStats = Retrieve.schoolOverview(types[1]);
 						context.put("school", schoolAndStats.x);
 						context.put("summaryStats", schoolAndStats.y.x);
 						context.put("outliers", schoolAndStats.y.y);
@@ -195,7 +196,16 @@ public class Data extends BaseHttpServlet {
 						context.put("winners", Retrieve.sweepstakesWinners(level));
 					}
 					else if (type.equals("visualizations")) {
-						Pair<Map<Test, List<Integer>>, Map<Test, List<Integer>>> statsAndOutliers = Retrieve.visualizations(level);
+						Pair<Map<Test, Map<String, Double>>, Map<Test, List<Integer>>> statsAndOutliers;
+						try {
+							statsAndOutliers = Retrieve.visualizations(level);
+						}
+						catch (JSONException e) {
+							resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+							e.printStackTrace();
+							return;
+						}
+
 						context.put("summaryStats", statsAndOutliers.x);
 						context.put("outliers", statsAndOutliers.y);
 					}

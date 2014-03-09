@@ -61,6 +61,8 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.labs.repackaged.org.json.JSONException;
+import com.google.appengine.labs.repackaged.org.json.JSONObject;
 import com.google.gdata.client.Service;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.CustomElementCollection;
@@ -264,7 +266,7 @@ public class Main extends HttpServlet {
 		}
 	}
 
-	private static void persistData(Level level, Collection<School> schools, Map<Test, List<Student>> categoryWinners, Map<Subject, List<School>> categorySweepstakesWinners, List<School> sweepstakesWinners) {
+	private static void persistData(Level level, Collection<School> schools, Map<Test, List<Student>> categoryWinners, Map<Subject, List<School>> categorySweepstakesWinners, List<School> sweepstakesWinners) throws JSONException {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 
 		try {
@@ -328,17 +330,17 @@ public class Main extends HttpServlet {
 			}
 		}
 
-		HashMap<Test, List<Integer>> summaryStats = new HashMap<Test, List<Integer>>();
-		HashMap<Test, List<Integer>> outliers = new HashMap<Test, List<Integer>>();
+		Map<Test, Map<String, Double>> summaryStats = new HashMap<Test, Map<String, Double>>();
+		Map<Test, List<Integer>> outliers = new HashMap<Test, List<Integer>>();
 		for (Entry<Test, List<Integer>> scoreEntry : scores.entrySet()) {
-			Pair<List<Integer>, List<Integer>> stats = Statistics.calculateStats(scoreEntry.getValue());
+			Pair<Map<String, Double>, List<Integer>> stats = Statistics.calculateStats(scoreEntry.getValue());
 			summaryStats.put(scoreEntry.getKey(), stats.x);
 			outliers.put(scoreEntry.getKey(), stats.y);
 		}
 
 		for (Test test : tests) {
 			Entity visualizationsEntity = new Entity("Visualization", test.toString());
-			visualizationsEntity.setProperty("summaryStats", summaryStats.get(test));
+			visualizationsEntity.setProperty("summaryStats", new JSONObject(summaryStats.get(test)).toString());
 			visualizationsEntity.setProperty("outliers", outliers.get(test));
 			visualizationEntities.add(visualizationsEntity);
 		}

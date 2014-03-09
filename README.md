@@ -170,6 +170,11 @@ Todo
 4. Ability to specify NS/NG/DQ in tabulation spreadsheets
 5. Send email to all users after competition ends with details on how to access scores
 6. Better docs
+7. More/improved graphs (can never really have too many)
+8. Complete sorting when generating tabulation spreadsheet
+9. Prevent CSRF
+10. Optimize DB queries with limits
+11. Allow undo of registration deletion
 
 License
 -------

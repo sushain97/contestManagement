@@ -76,18 +76,24 @@
 				        text: '${grade}th Grade $subject.getName()'
 				    },
 	        		legend: false,
+	        		tooltip: {
+	        			useHTML: true
+	        		},
 	        		xAxis: {
 	        			categories: [
 							#foreach($bin in $bins)
-								'<b>$bin.getX().getX().intValue()</b> → <b>$bin.getX().getY().intValue()</b>'#if(!$foreach.last),#end
+								'<b>$bin.getX().getX().intValue()</b> &#8614; <b>$bin.getX().getY().intValue()</b>'#if(!$foreach.last),#end
 							#end
 	        			],
 	        			labels: {
 	        	            rotation: -90,
-	        	            y: 20
+	        	            y: 50,
+	        	            x: 40,
+	        	            useHTML: true
 	        	        },
 	        	        title: {
-				            text: 'Score'
+				            text: 'Score',
+				            margin: 20
 				        }
 	        		},
 	        		yAxis: {

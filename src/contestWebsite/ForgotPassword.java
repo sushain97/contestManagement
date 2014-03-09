@@ -93,7 +93,7 @@ public class ForgotPassword extends BaseHttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		if (req.getParameter("resetToken") == null) {
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-			String email = req.getParameter("email");
+			String email = req.getParameter("email").toLowerCase();
 			Query query = new Query("user").setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, email));
 
 			List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(3));

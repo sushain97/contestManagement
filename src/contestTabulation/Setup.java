@@ -132,7 +132,7 @@ public class Setup extends BaseHttpServlet {
 			URL listFeedUrl = null;
 
 			for (Entity registration : registrations) {
-				String schoolName = (String) registration.getProperty("schoolName");
+				String schoolName = ((String) registration.getProperty("schoolName")).trim();
 				if (!schoolName.equals(currentSchool)) {
 					currentSchool = schoolName;
 					worksheet = new WorksheetEntry();

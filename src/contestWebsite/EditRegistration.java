@@ -134,7 +134,7 @@ public class EditRegistration extends BaseHttpServlet {
 				}
 
 				if (params.get("ajax") != null && "1".equals(params.get("ajax")[0])) {
-					String newValue = params.get("newValue")[0];
+					String newValue = params.get("newValue")[0].trim();
 					String modified = params.get("modified")[0];
 					if ("yes".equals(params.get("account")[0]) && ("email".equals(modified) || "schoolName".equals(modified) || "name".equals(modified))) {
 						Query query = new Query("user").setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, registration.getProperty("email")));
@@ -172,10 +172,11 @@ public class EditRegistration extends BaseHttpServlet {
 					}
 					else {
 						String schoolLevel = params.get("schoolLevel")[0];
-						String name = params.get("name")[0];
-						String schoolName = params.get("schoolName")[0];
-						String email = params.get("email")[0];
+						String name = params.get("name")[0].trim();
+						String schoolName = params.get("schoolName")[0].trim();
+						String email = params.containsKey("email") && params.get("email")[0].length() > 0 ? params.get("email")[0].toLowerCase().trim() : null;
 						String account = params.get("account")[0];
+
 						if (registration.getProperty("account").equals("yes") && account.equals("no")) {
 							registration.setProperty("account", "no");
 							Query query = new Query("user").setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, registration.getProperty("email")));

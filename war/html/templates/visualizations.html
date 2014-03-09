@@ -22,12 +22,11 @@
 	with assumptions of Gaussian normality for sample populations of over 5 scores.
 </div>
 
-
 #set($minGrade = 1000)
 #foreach($test in $tests)
 	#if($summaryStats[$test]) <div id="$test" class="hide">$summaryStats[$test]</div> #end
-	#if($test.grade() < $minGrade)
-		#set($minGrade = $test.grade())
+	#if($test.getGrade() < $minGrade)
+		#set($minGrade = $test.getGrade())
 	#end
 #end
 
@@ -38,9 +37,9 @@
 
         	#set($outlierList = [])
         	#foreach($test in $tests)
-        		#if($test.test() == $subject)
+        		#if($test.getSubject() == $subject)
 	        		#foreach($outlier in $outliers[$test])
-	        			#set($marker = $test.grade() - $minGrade)
+	        			#set($marker = $test.getGrade() - $minGrade)
 	        			#set($outlierString = "[" + $marker + "," + $outlier + "]")
 	        			#set($dummy = $outlierList.add($outlierString))
 	        		#end

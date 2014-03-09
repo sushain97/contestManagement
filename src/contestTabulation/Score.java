@@ -104,11 +104,11 @@ public class Score implements Comparable<Score>, java.io.Serializable {
 			Pair<Integer, Integer> otherScore = other.getScore();
 			Pair<Integer, Integer> thisScore = this.getScore();
 
-			if (thisScore.x != otherScore.x) {
+			if (!thisScore.x.equals(otherScore.x)) {
 				return thisScore.x - otherScore.x;
 			}
 			else {
-				return thisScore.y - otherScore.y;
+				return otherScore.y - thisScore.y;
 			}
 		}
 	}

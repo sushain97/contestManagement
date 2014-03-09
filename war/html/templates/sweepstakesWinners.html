@@ -13,9 +13,18 @@
 	    </tr>
     </thead>
     #foreach($school in $winners)
+   		#if($foreach.count > $trophy * 3 && !$admin)
+			#break
+   		#end
     	<tr>
         	<td> $foreach.count #if($foreach.count <= $trophy) <i class="fa fa-trophy"></i> #end</td>
-        	<td> $school.getName() </td>
+        	
+        	#if($admin)
+        		<td><a href="/data?choice=scores&type=school_$esc.url($school.getName())&level=$level">$school.getName()</a></td>
+       		#else
+        		<td>$school.getName()</td>
+       		#end
+       		
         	#if($admin) 
         		<td>
 	        		<a class="popovers" href="#" data-toggle="popover" 
@@ -24,6 +33,7 @@
 	        		</a>
         		</td>	
         	#end
+        	
         	#foreach($subject in $subjects)
 	        	<td> 
 	        		<a class="popovers" href="#" data-toggle="popover" 
@@ -37,6 +47,7 @@
 					</a> 
 				</td>
 			#end
+			
         	<td> $school.getTotalScore() </td>
     	</tr>
     #end

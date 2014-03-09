@@ -68,7 +68,7 @@
 								#set($LEVEL = $level.toString().toUpperCase())
 								<li class="nav-header"><h4>$level.getName() School</h4></li>
 								<li data-type="sweep$LEVEL"><a href="/contestResults?choice=scores&type=sweep&level=$level">Sweepstakes</a></li>
-								<li data-type="categorySweep$LEVEL"><a href="/contestResults?choice=scores&type=categorySweep&level=$level">Category Sweekstakes</a></li>
+								<li data-type="categorySweep$LEVEL"><a href="/contestResults?choice=scores&type=categorySweep&level=$level">Category Sweepstakes</a></li>
 								<li data-type="visualizations$LEVEL"><a href="/contestResults?choice=scores&type=visualizations&level=$level">Visualizations</a></li>
 								
 								<li class="divider"></li>
@@ -150,8 +150,8 @@
 								#foreach($grade in [6..8])
 								<tr>
 									<td class="row-header">${grade}th</td>
-									#foreach($subject in $subjects)
-										#set($subjectString = $grade + $subject.toString())
+									#foreach($subject in ["N", "C", "M", "S"])
+										#set($subjectString = $grade + $subject)
 										#if($testsGraded.contains($subjectString))
 										<td class="success">
 											<i class="glyphicon glyphicon-check"></i>

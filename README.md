@@ -167,10 +167,9 @@ Todo
 1. Support for early/normal/late registration with different prices and spans
 2. Allowing logged-in user to modify registration (until a certain date)
 3. Better database consistency for tabulation results
-4. More/improved graphs
-5. Ability to specify NS/NG/DQ in tabulation spreadsheets
-6. Send email to all users after competition ends with details on how to access scores
-7. Better docs
+4. Ability to specify NS/NG/DQ in tabulation spreadsheets
+5. Send email to all users after competition ends with details on how to access scores
+6. Better docs
 
 License
 -------

@@ -19,7 +19,6 @@
 package contestWebsite;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +32,7 @@ import org.apache.velocity.tools.generic.EscapeTool;
 import util.BaseHttpServlet;
 import util.Pair;
 import util.Retrieve;
+import util.Statistics;
 import util.UserCookie;
 
 import com.google.appengine.api.datastore.Entity;
@@ -89,6 +89,7 @@ public class PublicResults extends BaseHttpServlet {
 				context.put("level", level.toString());
 				context.put("tests", Test.getTests(level));
 				context.put("Test", Test.class);
+				context.put("Level", Level.class);
 
 				if (type.startsWith("category_")) {
 					context.put("test", Test.fromString(types[1]));
@@ -105,9 +106,9 @@ public class PublicResults extends BaseHttpServlet {
 					context.put("winners", Retrieve.sweepstakesWinners(level));
 				}
 				else if (type.equals("visualizations")) {
-					Pair<Map<Test, Map<String, Double>>, Map<Test, List<Integer>>> statsAndOutliers;
+					Map<Test, Statistics> statistics;
 					try {
-						statsAndOutliers = Retrieve.visualizations(level);
+						statistics = Retrieve.visualizations(level);
 					}
 					catch (JSONException e) {
 						resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
@@ -115,8 +116,7 @@ public class PublicResults extends BaseHttpServlet {
 						return;
 					}
 
-					context.put("summaryStats", statsAndOutliers.x);
-					context.put("outliers", statsAndOutliers.y);
+					context.put("statistics", statistics);
 				}
 				else {
 					resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid type: " + type);

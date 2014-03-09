@@ -41,6 +41,7 @@ import util.BaseHttpServlet;
 import util.PMF;
 import util.Pair;
 import util.Retrieve;
+import util.Statistics;
 import util.UserCookie;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -170,16 +171,16 @@ public class Data extends BaseHttpServlet {
 					context.put("level", level.toString());
 					context.put("tests", Test.getTests(level));
 					context.put("Test", Test.class);
+					context.put("Level", Level.class);
 
 					if (type.equals("students")) {
 						context.put("subjects", Subject.values());
 						context.put("students", Retrieve.allStudents(level));
 					}
 					else if (type.startsWith("school_")) {
-						Pair<School, Pair<Map<Test, Map<String, Double>>, Map<Test, List<Integer>>>> schoolAndStats = Retrieve.schoolOverview(types[1]);
+						Pair<School, Map<Test, Statistics>> schoolAndStats = Retrieve.schoolOverview(types[1]);
 						context.put("school", schoolAndStats.x);
-						context.put("summaryStats", schoolAndStats.y.x);
-						context.put("outliers", schoolAndStats.y.y);
+						context.put("statistics", schoolAndStats.y);
 					}
 					else if (type.startsWith("category_")) {
 						context.put("test", Test.fromString(types[1]));
@@ -196,9 +197,9 @@ public class Data extends BaseHttpServlet {
 						context.put("winners", Retrieve.sweepstakesWinners(level));
 					}
 					else if (type.equals("visualizations")) {
-						Pair<Map<Test, Map<String, Double>>, Map<Test, List<Integer>>> statsAndOutliers;
+						Map<Test, Statistics> statistics;
 						try {
-							statsAndOutliers = Retrieve.visualizations(level);
+							statistics = Retrieve.visualizations(level);
 						}
 						catch (JSONException e) {
 							resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
@@ -206,8 +207,7 @@ public class Data extends BaseHttpServlet {
 							return;
 						}
 
-						context.put("summaryStats", statsAndOutliers.x);
-						context.put("outliers", statsAndOutliers.y);
+						context.put("statistics", statistics);
 					}
 					else {
 						resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid type: " + type);
@@ -226,9 +226,9 @@ public class Data extends BaseHttpServlet {
 
 				context.put("qualifyingCriteria", Retrieve.qualifyingCriteria(infoAndCookie.x));
 				context.put("hideFullNames", false);
-				context.put("date", infoAndCookie.x.getProperty("updated"));
 				context.put("subjects", Subject.values());
 				context.put("levels", Level.values());
+				context.put("date", infoAndCookie.x.getProperty("updated"));
 				context.put("esc", new EscapeTool());
 			}
 			else {

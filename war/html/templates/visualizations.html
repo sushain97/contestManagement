@@ -10,7 +10,27 @@
 			</div>
 			<div id="collapse$subject" class="panel-collapse collapse #if($foreach.first) in #end">
 				<div class="panel-body">
-					<div id="${subject}-graph" class="scoreGraph" style="min-width: 60%"></div>
+					<ul class="nav nav-tabs ">
+						<li class="active"><a href="#${subject}Overview" data-toggle="tab">Overview</a></li>
+						#foreach($test in $tests)
+							#if($test.getSubject() == $subject && $statistics[$test])
+								<li><a href="#${test}" data-toggle="tab">$test.getGrade()th Grade</a></li>
+							#end
+						#end
+					</ul>
+					
+					<div class="tab-content">
+						<div class="tab-pane fade in active" id="${subject}Overview">
+							<div id="${subject}-BoxWhiskerGraph" class="scoreGraph"></div>
+						</div>
+						#foreach($test in $tests)
+							#if($test.getSubject() == $subject && $statistics[$test])
+								<div class="tab-pane fade" id="${test}">
+									<div id="$subject$test.getGrade()-HistoGraph" class="scoreGraph"></div>
+								</div>
+							#end
+						#end
+					</div>
 				</div>
 			</div>
 		</div>
@@ -23,13 +43,8 @@
 	probability density function with the relevant group of scores' mean and standard deviation (artificial vertical scaling applied).
 </div>
 
-#set($minGrade = 1000)
-#foreach($test in $tests)
-	#if($summaryStats[$test]) <div id="$test" class="hide">$summaryStats[$test]</div> #end
-	#if($test.getGrade() < $minGrade)
-		#set($minGrade = $test.getGrade())
-	#end
-#end
+#set($grades = $Level.fromString($level).getGrades())
+#set($minGrade = $Level.fromString($level).getLowGrade())
 
 <script type="text/javascript">
 	$(document).ready(function () {
@@ -39,7 +54,9 @@
         	#set($outlierList = [])
         	#foreach($test in $tests)
         		#if($test.getSubject() == $subject)
-	        		#foreach($outlier in $outliers[$test])
+        			#set($outliers = [])
+       				#set($outliers = $statistics[$test].getOutliers())
+	        		#foreach($outlier in $outliers)
 	        			#set($marker = $test.getGrade() - $minGrade)
 	        			#set($outlierString = "[" + $marker + "," + $outlier + "]")
 	        			#set($dummy = $outlierList.add($outlierString))
@@ -47,7 +64,84 @@
         		#end
         	#end
         	
-			$('#${subject}-graph').highcharts({
+        	#foreach($grade in $grades)
+        		#set($bins = $statistics[$Test.fromSubjectAndGrade($grade, $subject)].getBins())
+        		
+	        	$('#${subject}${grade}-HistoGraph').highcharts({
+	        		chart: {
+	        			type: 'column',
+	        			width: $('.collapse.in').width() * .95
+	        		},
+	        		title: {
+				        text: '${grade}th Grade $subject.getName()'
+				    },
+	        		legend: false,
+	        		xAxis: {
+	        			categories: [
+							#foreach($bin in $bins)
+								'<b>$bin.getX().getX().intValue()</b> → <b>$bin.getX().getY().intValue()</b>'#if(!$foreach.last),#end
+							#end
+	        			],
+	        			labels: {
+	        	            rotation: -90,
+	        	            y: 20
+	        	        },
+	        	        title: {
+				            text: 'Score'
+				        }
+	        		},
+	        		yAxis: {
+	        			title: {
+				            text: 'Frequency'
+				        }
+	        		},
+	        		plotOptions: {
+	        	        column: {
+	        	            groupPadding: 0,
+	        	            pointPadding: 0,
+	        	            borderWidth: 1.5,
+	        	            borderColor: Highcharts.getOptions().colors[1]
+	        	        },
+	        	    },
+	        	    series: [{
+	        	    	name: 'Frequency',
+	        	        data: [
+							#foreach($bin in $bins)
+	        	        		$bin.getY()#if(!$foreach.last),#end
+        	        		#end
+       	               ],
+       	               
+	        	    }]
+	        	}, function(chart) {
+					#set($testSummaryStats = $statistics[$Test.fromSubjectAndGrade($grade, $subject)].getSummary())
+				
+					var mean = $testSummaryStats.get("mean"), sd = $testSummaryStats.get("sd");
+					var min = $testSummaryStats.get("min"), max = $testSummaryStats.get("max");
+					var multiplierX = chart.plotWidth / (max - min);
+					var multiplierY = (chart.plotHeight / pdf(mean, mean, sd) * .9);
+					
+					var points = ['M', chart.plotLeft, (chart.plotTop + chart.plotHeight) - (pdf(min, mean, sd) * multiplierY)];
+					for(var i = min; (i - min) * multiplierX <= chart.plotWidth; i+=1) {
+						points.push('L');
+						points.push((i - min) * multiplierX + chart.plotLeft);
+						points.push((chart.plotTop + chart.plotHeight) - (pdf(i, mean, sd) * multiplierY));
+					}
+					
+			        chart.renderer.path(points).attr({
+		                'stroke-width': 2,
+		                stroke: Highcharts.getOptions().colors[3],
+		                zIndex: 4
+		            }).add();
+					
+					function pdf(x, mean, sd) {
+			    		var term1 = Math.pow(sd * Math.sqrt(2 * Math.PI), -1);
+			    		var term2 = Math.pow(Math.E, -(Math.pow(x - mean, 2) / (2 * sd * sd)));
+			    		return term1 * term2;
+			    	}
+				});
+			#end
+        	
+			$('#${subject}-BoxWhiskerGraph').highcharts({
 			    chart: {
 			        type: 'boxplot',
 		            inverted: true,
@@ -83,17 +177,10 @@
 			        name: 'Score',
 			        color: Highcharts.getOptions().colors[0],
 			        data: [
-						#if($level == "middle")
-				        	#foreach($i in [6..8])
-								#set($testSummaryStats = $summaryStats[$Test.fromString("$i$subject")])
-								[$testSummaryStats.get("min"), $testSummaryStats.get("q1"), $testSummaryStats.get("q2"), $testSummaryStats.get("q3"), $testSummaryStats.get("max")]#if(!$foreach.last),#end
-							#end
-			           	#else
-			            	#foreach($i in [9..12])
-								#set($testSummaryStats = $summaryStats[$Test.fromString("$i$subject")])
-								[$testSummaryStats.get("min"), $testSummaryStats.get("q1"), $testSummaryStats.get("q2"), $testSummaryStats.get("q3"), $testSummaryStats.get("max")]#if(!$foreach.last),#end
-							#end
-			            #end
+			        	#foreach($grade in $grades)
+							#set($testSummaryStats = $statistics[$Test.fromSubjectAndGrade($grade, $subject)].getSummary())
+							[$testSummaryStats.get("min"), $testSummaryStats.get("q1"), $testSummaryStats.get("q2"), $testSummaryStats.get("q3"), $testSummaryStats.get("max")]#if(!$foreach.last),#end
+						#end
 			        ],
 			        tooltip: {
 			            headerFormat: '<em>Grade {point.key}</em><br/>'
@@ -117,58 +204,33 @@
 			        }
 			    }]
 			}, function(chart) {
-				#if($level == "middle")
-		        	#foreach($i in [6..8])
-						#set($testSummaryStats = $summaryStats[$Test.fromString("$i$subject")])
-					
-						var mean = $testSummaryStats.get("mean"), sd = $testSummaryStats.get("sd");
-						var multiplierX = chart.plotWidth / (chart.yAxis[0].max - chart.yAxis[0].min);
-						var multiplierY = (chart.plotHeight / pdf(mean, mean, sd) * .9) * ((3 - $foreach.index) / 3);
-						
-						var points = ['M', chart.plotLeft, (chart.plotTop + chart.plotHeight) - (pdf(chart.yAxis[0].min, mean, sd) * multiplierY)];
-						for(var i = chart.yAxis[0].min; (i - chart.yAxis[0].min) * multiplierX <= chart.plotWidth; i+=1) {
-							points.push('L');
-							points.push((i - chart.yAxis[0].min) * multiplierX + chart.plotLeft);
-							points.push((chart.plotTop + chart.plotHeight) - (pdf(i, mean, sd) * multiplierY));
-						}
-						
-				        chart.renderer.path(points).attr({
-			                'stroke-width': 1,
-			                stroke: Highcharts.getOptions().colors[$foreach.index],
-			                zIndex: 3
-			            }).add();
-					#end
-					
-					function pdf(x, mean, sd) {
-			    		var term1 = Math.pow(sd * Math.sqrt(2 * Math.PI), -1);
-			    		var term2 = Math.pow(Math.E, -(Math.pow(x - mean, 2) / (2 * sd * sd)));
-			    		return term1 * term2;
-			    	}
-	           	#else
-	            	#foreach($i in [9..12])
-						#set($testSummaryStats = $summaryStats[$Test.fromString("$i$subject")])
-					
-						var mean = $testSummaryStats.get("mean"), sd = $testSummaryStats.get("sd");
-						var multiplierX = chart.plotWidth / (chart.yAxis[0].max - chart.yAxis[0].min);
-						var multiplierY = (chart.plotHeight / pdf(mean, mean, sd) * .9) * ((4 - $foreach.index) / 4);
-						
-						var points = ['M', chart.plotLeft, (chart.plotTop + chart.plotHeight) - (pdf(chart.yAxis[0].min, mean, sd) * multiplierY)];
-						for(var i = chart.yAxis[0].min; (i - chart.yAxis[0].min) * multiplierX <= chart.plotWidth; i+=1) {
-							points.push('L');
-							points.push((i - chart.yAxis[0].min) * multiplierX + chart.plotLeft);
-							points.push((chart.plotTop + chart.plotHeight) - (pdf(i, mean, sd) * multiplierY));
-						}
-						
-				        chart.renderer.path(points).attr({
-			                'stroke-width': 1,
-			                stroke: Highcharts.getOptions().colors[$foreach.index],
-			                zIndex: 3
-			            }).add();
-					#end
-	            #end
-	            
+				#foreach($grade in $grades)
+					#set($testSummaryStats = $statistics[$Test.fromSubjectAndGrade($grade, $subject)].getSummary())
 				
-		    });
+					var mean = $testSummaryStats.get("mean"), sd = $testSummaryStats.get("sd");
+					var multiplierX = chart.plotWidth / (chart.yAxis[0].max - chart.yAxis[0].min);
+					var multiplierY = (chart.plotHeight / pdf(mean, mean, sd) * .9) * (($grades.size() - $foreach.index) / $grades.size());
+					
+					var points = ['M', chart.plotLeft, (chart.plotTop + chart.plotHeight) - (pdf(chart.yAxis[0].min, mean, sd) * multiplierY)];
+					for(var i = chart.yAxis[0].min; (i - chart.yAxis[0].min) * multiplierX <= chart.plotWidth; i+=1) {
+						points.push('L');
+						points.push((i - chart.yAxis[0].min) * multiplierX + chart.plotLeft);
+						points.push((chart.plotTop + chart.plotHeight) - (pdf(i, mean, sd) * multiplierY));
+					}
+					
+			        chart.renderer.path(points).attr({
+		                'stroke-width': 1,
+		                stroke: Highcharts.getOptions().colors[$foreach.index],
+		                zIndex: 3
+		            }).add();
+				#end
+				
+				function pdf(x, mean, sd) {
+		    		var term1 = Math.pow(sd * Math.sqrt(2 * Math.PI), -1);
+		    		var term2 = Math.pow(Math.E, -(Math.pow(x - mean, 2) / (2 * sd * sd)));
+		    		return term1 * term2;
+		    	}
+			});
 		#end
 	});
 	

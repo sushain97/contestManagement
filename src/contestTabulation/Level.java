@@ -44,6 +44,15 @@ public enum Level {
 		}
 	}
 
+	public int[] getGrades() {
+		if (this == MIDDLE) {
+			return new int[] {6, 7, 8};
+		}
+		else {
+			return new int[] {9, 10, 11, 12};
+		}
+	}
+
 	public int getHighGrade() {
 		return highGrade;
 	}

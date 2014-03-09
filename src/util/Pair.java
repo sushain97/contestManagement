@@ -40,6 +40,14 @@ public class Pair<X, Y> implements Serializable {
 		return "(" + this.x + ", " + this.y + ")";
 	}
 
+	public X getX() {
+		return x;
+	}
+
+	public Y getY() {
+		return y;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {

@@ -25,27 +25,42 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.math3.distribution.NormalDistribution;
+import org.apache.commons.math3.random.EmpiricalDistribution;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 public class Statistics {
-	public static Pair<Map<String, Double>, List<Integer>> calculateStats(List<Integer> list) {
-		double[] data = new double[list.size()]; // Convert integers scores to doubles for Apache Math
-		for (int i = 0; i < list.size(); i++) {
-			data[i] = list.get(i);
+	public final static int NUM_BINS = 15;
+	private double[] scores;
+	private List<Integer> outliers = new ArrayList<Integer>();
+	private Map<String, Double> summaryStatistics = new HashMap<String, Double>(7);
+	private List<Pair<Pair<Double, Double>, Long>> bins = new ArrayList<Pair<Pair<Double, Double>, Long>>(NUM_BINS);
+
+	public Statistics(List<Integer> list) {
+		scores = intsToDoubles(list);
+		DescriptiveStatistics dStats = new DescriptiveStatistics(scores);
+
+		summaryStatistics.put("min", dStats.getMin()); // Minimum
+		summaryStatistics.put("q1", dStats.getPercentile(25)); // Lower Quartile (Q1)
+		summaryStatistics.put("q2", dStats.getPercentile(50)); // Middle Quartile (Median - Q2)
+		summaryStatistics.put("q3", dStats.getPercentile(75)); // High Quartile (Q3)
+		summaryStatistics.put("max", dStats.getMax()); // Maxiumum
+
+		summaryStatistics.put("mean", dStats.getMean()); // Mean
+		summaryStatistics.put("sd", dStats.getStandardDeviation()); // Standard Deviation
+
+		EmpiricalDistribution distribution = new EmpiricalDistribution(NUM_BINS);
+		distribution.load(scores);
+		List<SummaryStatistics> binStats = distribution.getBinStats();
+		double[] upperBounds = distribution.getUpperBounds();
+
+		Double lastUpperBound = upperBounds[0];
+		bins.add(new Pair<Pair<Double, Double>, Long>(new Pair<Double, Double>(summaryStatistics.get("min"), lastUpperBound), binStats.get(0).getN()));
+		for (int i = 1; i < binStats.size(); i++) {
+			bins.add(new Pair<Pair<Double, Double>, Long>(new Pair<Double, Double>(lastUpperBound, upperBounds[i]), binStats.get(i).getN()));
+			lastUpperBound = upperBounds[i];
 		}
-		DescriptiveStatistics dStats = new DescriptiveStatistics(data);
 
-		Map<String, Double> summary = new HashMap<String, Double>(5);
-		summary.put("min", dStats.getMin()); // Minimum
-		summary.put("q1", dStats.getPercentile(25)); // Lower Quartile (Q1)
-		summary.put("q2", dStats.getPercentile(50)); // Middle Quartile (Median - Q2)
-		summary.put("q3", dStats.getPercentile(75)); // High Quartile (Q3)
-		summary.put("max", dStats.getMax()); // Maxiumum
-
-		summary.put("mean", dStats.getMean()); // Mean
-		summary.put("sd", dStats.getStandardDeviation()); // Standard Deviation
-
-		List<Integer> outliers = new ArrayList<Integer>();
 		if (list.size() > 5 && dStats.getStandardDeviation() > 0) // Only remove outliers if relatively normal
 		{
 			double mean = dStats.getMean();
@@ -65,19 +80,38 @@ public class Statistics {
 
 			if (list.size() != dStats.getN()) // If and only if outliers have been removed
 			{
-				double[] significantData = new double[list.size()];
-				for (int i = 0; i < list.size(); i++) {
-					significantData[i] = list.get(i);
-				}
-
+				double[] significantData = intsToDoubles(list);
 				dStats = new DescriptiveStatistics(significantData);
-				summary.put("min", dStats.getMin());
-				summary.put("max", dStats.getMax());
-				summary.put("mean", dStats.getMean());
-				summary.put("sd", dStats.getStandardDeviation());
+
+				summaryStatistics.put("min", dStats.getMin());
+				summaryStatistics.put("max", dStats.getMax());
+				summaryStatistics.put("mean", dStats.getMean());
+				summaryStatistics.put("sd", dStats.getStandardDeviation());
 			}
 		}
+	}
 
-		return new Pair<Map<String, Double>, List<Integer>>(summary, outliers);
+	public double[] getScores() {
+		return scores;
+	}
+
+	public Map<String, Double> getSummary() {
+		return summaryStatistics;
+	}
+
+	public List<Integer> getOutliers() {
+		return outliers;
+	}
+
+	public List<Pair<Pair<Double, Double>, Long>> getBins() {
+		return bins;
+	}
+
+	private static double[] intsToDoubles(List<Integer> ints) {
+		double[] doubles = new double[ints.size()];
+		for (int i = 0; i < ints.size(); i++) {
+			doubles[i] = ints.get(i);
+		}
+		return doubles;
 	}
 }

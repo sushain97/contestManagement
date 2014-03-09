@@ -32,6 +32,7 @@ import org.apache.velocity.runtime.RuntimeConstants;
 import util.BaseHttpServlet;
 import util.Pair;
 import util.Retrieve;
+import util.Statistics;
 import util.UserCookie;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -72,16 +73,17 @@ public class ViewScores extends BaseHttpServlet {
 			context.put("level", level.toString());
 			context.put("tests", Test.getTests(level));
 			context.put("subjects", Subject.values());
+			context.put("Test", Test.class);
+			context.put("Level", Level.class);
 
 			Query query = new Query("registration").setFilter(new FilterPredicate("email", FilterOperator.EQUAL, user.getProperty("user-id")));
 			List<Entity> registration = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 			context.put("coach", !registration.isEmpty() && registration.get(0).getProperty("registrationType").equals("coach"));
 
-			Pair<School, Pair<Map<Test, Map<String, Double>>, Map<Test, List<Integer>>>> schoolAndStats = Retrieve.schoolOverview((String) user.getProperty("school"));
+			Pair<School, Map<Test, Statistics>> schoolAndStats = Retrieve.schoolOverview((String) user.getProperty("school"));
 			if (schoolAndStats != null) {
 				context.put("school", schoolAndStats.x);
-				context.put("summaryStats", schoolAndStats.y.x);
-				context.put("outliers", schoolAndStats.y.y);
+				context.put("statistics", schoolAndStats.y);
 			}
 
 			context.put("qualifyingCriteria", Retrieve.qualifyingCriteria(infoAndCookie.x));

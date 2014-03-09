@@ -41,9 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import util.PMF;
-import util.Pair;
 import util.Retrieve;
-import util.Statistics;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
@@ -62,7 +60,6 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
-import com.google.appengine.labs.repackaged.org.json.JSONObject;
 import com.google.gdata.client.Service;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.CustomElementCollection;
@@ -330,18 +327,9 @@ public class Main extends HttpServlet {
 			}
 		}
 
-		Map<Test, Map<String, Double>> summaryStats = new HashMap<Test, Map<String, Double>>();
-		Map<Test, List<Integer>> outliers = new HashMap<Test, List<Integer>>();
-		for (Entry<Test, List<Integer>> scoreEntry : scores.entrySet()) {
-			Pair<Map<String, Double>, List<Integer>> stats = Statistics.calculateStats(scoreEntry.getValue());
-			summaryStats.put(scoreEntry.getKey(), stats.x);
-			outliers.put(scoreEntry.getKey(), stats.y);
-		}
-
 		for (Test test : tests) {
 			Entity visualizationsEntity = new Entity("Visualization", test.toString());
-			visualizationsEntity.setProperty("summaryStats", new JSONObject(summaryStats.get(test)).toString());
-			visualizationsEntity.setProperty("outliers", outliers.get(test));
+			visualizationsEntity.setProperty("scores", scores.get(test));
 			visualizationEntities.add(visualizationsEntity);
 		}
 		datastore.put(visualizationEntities);

@@ -28,28 +28,28 @@ $(document).ready(function() {
 	$("table:not(#statusTable)").tablesorter({
 		theme : 'bootstrap',
 		headerTemplate : '{content} {icon}',
-	    widgets : ['uitheme'],
-	    sortList: [[0,0]]
+		widgets : ['uitheme'],
+		sortList: [[0,0]]
 	});
 	
 	$('.table-hover td').hover(function() {
-	    var t = parseInt($(this).index()) + 1;
-	    $('td:nth-child(' + t + ')', $(this).closest('table')).addClass('highlighted');
+		var t = parseInt($(this).index()) + 1;
+		$('td:nth-child(' + t + ')', $(this).closest('table')).addClass('highlighted');
 	}, function() {
-	    var t = parseInt($(this).index()) + 1;
-	    $('td:nth-child(' + t + ')', $(this).closest('table')).removeClass('highlighted');
+		var t = parseInt($(this).index()) + 1;
+		$('td:nth-child(' + t + ')', $(this).closest('table')).removeClass('highlighted');
 	});
 	
 	$('.popovers').popover({
-	    html: true,
-	    trigger: 'manual',
-	    placement: 'right'
+		html: true,
+		trigger: 'manual',
+		placement: 'right'
 	}).click(function(e) {
-	    $(this).popover('toggle');
-	    e.stopPropagation();
+		$(this).popover('toggle');
+		e.stopPropagation();
 	});
 	$('html').click(function(e) {
-	    $('.popovers').popover('hide');
+		$('.popovers').popover('hide');
 	});
 });
 

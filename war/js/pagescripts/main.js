@@ -33,7 +33,7 @@ $(document).ready(function() {
 		$('#registrations').tablesorter({
 			theme : 'bootstrap',
 			headerTemplate : '{content} {icon}',
-		    widgets : ['uitheme']
+			widgets : ['uitheme']
 		});
 	}
 });

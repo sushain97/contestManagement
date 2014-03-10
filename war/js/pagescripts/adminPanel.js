@@ -26,7 +26,7 @@ $(document).ready(function() {
 		formater: function(value) {
 		  return '$' + value;
 		}
-    });
+	});
 	$('.price').slider().on('slide', function(ev) {
 		$('#priceText').html('$' + ev.value);
 	});

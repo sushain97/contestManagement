@@ -57,7 +57,7 @@ $(document).ready(function () {
 	$('#registrations').tablesorter({
 		theme : 'bootstrap',
 		headerTemplate : '{content} {icon}',
-	    widgets : ['uitheme'],
+		widgets : ['uitheme'],
 		headers: {
 			0: {sorter: false},
 			1: {sorter: 'inputs'},

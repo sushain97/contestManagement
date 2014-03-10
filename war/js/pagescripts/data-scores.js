@@ -41,17 +41,17 @@ $(document).ready(function () {
 			$(this).tablesorter({
 				theme : 'bootstrap',
 				headerTemplate : '{content} {icon}',
-			    widgets : ['uitheme'],
-			    sortList: [[0,0]]
+				widgets : ['uitheme'],
+				sortList: [[0,0]]
 			});
 	});
 
 	$('td').hover(function() {
-	    var t = parseInt($(this).index()) + 1;
-	    $('td:nth-child(' + t + ')', $(this).closest('table')).addClass('highlighted');
+		var t = parseInt($(this).index()) + 1;
+		$('td:nth-child(' + t + ')', $(this).closest('table')).addClass('highlighted');
 	}, function() {
-	    var t = parseInt($(this).index()) + 1;
-	    $('td:nth-child(' + t + ')', $(this).closest('table')).removeClass('highlighted');
+		var t = parseInt($(this).index()) + 1;
+		$('td:nth-child(' + t + ')', $(this).closest('table')).removeClass('highlighted');
 	});
 });
 	
@@ -68,12 +68,12 @@ function ChangeActive() {
 }
 
 hashCode = function(s) {
-    var hash = 0, i, c;
-    if (s.length == 0) return hash;
-    for (i = 0; i < s.length; i++) {
-        c = s.charCodeAt(i);
-        hash = ((hash << 5) - hash) + c;
-        hash = hash & hash; // Convert to 32bit integer
-    }
-    return hash;
+	var hash = 0, i, c;
+	if (s.length == 0) return hash;
+	for (i = 0; i < s.length; i++) {
+		c = s.charCodeAt(i);
+		hash = ((hash << 5) - hash) + c;
+		hash = hash & hash; // Convert to 32bit integer
+	}
+	return hash;
 };

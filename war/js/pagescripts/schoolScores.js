@@ -24,10 +24,10 @@ $(document).ready(function() {
 		$("table").tablesorter({sortList: [[0,0]]});
 	
 	$('td').hover(function() {
-	    var t = parseInt($(this).index()) + 1;
-	    $('td:nth-child(' + t + '):not(tfoot td)', $(this).closest('table')).addClass('highlighted');
+		var t = parseInt($(this).index()) + 1;
+		$('td:nth-child(' + t + '):not(tfoot td)', $(this).closest('table')).addClass('highlighted');
 	}, function() {
-	    var t = parseInt($(this).index()) + 1;
-	    $('td:nth-child(' + t + '):not(tfoot td)', $(this).closest('table')).removeClass('highlighted');
+		var t = parseInt($(this).index()) + 1;
+		$('td:nth-child(' + t + '):not(tfoot td)', $(this).closest('table')).removeClass('highlighted');
 	});
 });

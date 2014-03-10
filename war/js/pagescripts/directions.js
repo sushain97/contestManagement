@@ -32,12 +32,12 @@ function initialize() {
 	var directionsDisplay = new google.maps.DirectionsRenderer();
 	var school = new google.maps.LatLng($('#location_lat').val(),$('#location_long').val());
 	var mapOptions = {
-	    zoom: 13,
-	    center: school,
-	    mapTypeId: google.maps.MapTypeId.ROADMAP,
-	    zoomControl: true,
-	    zoomControlOptions: { style: google.maps.ZoomControlStyle.SMALL }
-    };
+		zoom: 13,
+		center: school,
+		mapTypeId: google.maps.MapTypeId.ROADMAP,
+		zoomControl: true,
+		zoomControlOptions: { style: google.maps.ZoomControlStyle.SMALL }
+	};
 	var map = new google.maps.Map($('#map')[0], mapOptions);
 	directionsDisplay.setMap(map);
 	

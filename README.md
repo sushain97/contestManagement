@@ -173,6 +173,7 @@ Todo
 3. **MEDIUM** Improved tables/menus on mobile viewports
 4. **MEDIUM** Support for early/normal/late registration with different prices and date spans
 5. **MEDIUM** Ability to specify NS/NG/DQ in tabulation spreadsheets
+6. **MEDIUM** Ability to control availability table manually
 6. **LOW** Send email to all users after competition ends with details on how to access scores
 7. **LOW** Better/updated documentation & comprehensive JavaDocs
 8. **LOW** More/improved graphs (can never really have too many)

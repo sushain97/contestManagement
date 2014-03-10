@@ -131,7 +131,7 @@
 					#if($enabledLevels.contains("middle")) #set($numTests = $numTests + 12) #end
 					#if($enabledLevels.contains("high")) #set($numTests = $numTests + 16) #end
 					#set($percentComplete = $testsGraded.size() / $numTests * 100)
-					<div class="progress progress-striped active" style="width: 65%">
+					<div class="progress progress-striped active" style="width: 65%; min-width: 300px;">
 						<div class="progress-bar" role="progressbar" aria-valuenow="$percentComplete" aria-valuemin="0" aria-valuemax="100" style="width: $percentComplete%;"></div> 
 					</div> 
 					
@@ -139,10 +139,9 @@
 						<thead>
 							<tr>
 								<th>Grade</th>
-								<th>Number Sense</th>
-								<th>Calculator</th>
-								<th>General Math</th>
-								<th>General Science</th>
+								#foreach($subject in $subjects)
+								<th>$subject.getName()</th>
+								#end
 							</tr>
 						</thead>
 						<tbody>
@@ -150,9 +149,8 @@
 								#foreach($grade in [6..8])
 								<tr>
 									<td class="row-header">${grade}th</td>
-									#foreach($subject in ["N", "C", "M", "S"])
-										#set($subjectString = $grade + $subject)
-										#if($testsGraded.contains($subjectString))
+									#foreach($subject in $subjects)
+										#if($testsGraded.contains("$grade$subject"))
 										<td class="success">
 											<i class="glyphicon glyphicon-check"></i>
 										</td>
@@ -179,8 +177,7 @@
 								<tr>
 									<td class="row-header">${grade}th</td>
 									#foreach($subject in $subjects)
-										#set($subjectString = $grade + $subject.toString())
-										#if($testsGraded.contains($subjectString))
+										#if($testsGraded.contains("$grade$subject"))
 										<td class="success">
 											<i class="glyphicon glyphicon-check"></i>
 										</td>

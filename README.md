@@ -80,8 +80,8 @@ Tabulation
 2. Each spreadsheet (one for each level) will contain worksheets corresponding to each school enrolled where the worksheets are simple tables consisting of student name, grade, and score for each subject.
 3. Populate scores throughout the spreadsheet, marking ties with either integers following the decimal (e.g. 123.4 to denote the 4th 123) or letters (e.g. 123 to denote the 4th 123). For example:
 
-	|Name |Grade  |NS  |CA  |MA  |SC  |
-	|:----:|:-----:|:--:|:--:|:--:|:--:|
+    |Name |Grade  |NS  |CA  |MA  |SC  |
+    |:----:|:-----:|:--:|:--:|:--:|:--:|
 	|John Doe |6|356|312.1|    |   |
 	|Sarah Doe|7|   |264  |265B|102|
 	|Bobby Doe|8|132|     |265A|140|
@@ -163,18 +163,29 @@ Tabulation
 
 Todo
 ----
+(Critical, High, Medium, or Low priority)
 
-1. Support for early/normal/late registration with different prices and spans
-2. Allowing logged-in user to modify registration (until a certain date)
-3. Better database consistency for tabulation results
-4. Ability to specify NS/NG/DQ in tabulation spreadsheets
-5. Send email to all users after competition ends with details on how to access scores
-6. Better docs
-7. More/improved graphs (can never really have too many)
-8. Complete sorting when generating tabulation spreadsheet
-9. Prevent CSRF
-10. Optimize DB queries with limits
-11. Allow undo of registration deletion
+
+### Website ###
+
+1. **CRITICAL** Better database consistency for tabulation results
+2. **HIGH** Allowing logged-in user to modify registration (until a certain date)
+3. **MEDIUM** Improved tables/menus on mobile viewports
+4. **MEDIUM** Support for early/normal/late registration with different prices and date spans
+5. **MEDIUM** Ability to specify NS/NG/DQ in tabulation spreadsheets
+6. **LOW** Send email to all users after competition ends with details on how to access scores
+7. **LOW** Better/updated documentation & comprehensive JavaDocs
+8. **LOW** More/improved graphs (can never really have too many)
+9. **LOW** Complete sorting when generating tabulation spreadsheet
+10. **LOW** Prevent CSRF
+11. **LOW** Optimize DB queries with limits
+12. **LOW** Allow undo of registration deletion
+13. **LOW** Display no-shows to admin
+
+### Workflow ###
+
+1. **HIGH** Improved workflow for resolving ties
+2. **HIGH** Include coach powered verification in workflow
 
 License
 -------

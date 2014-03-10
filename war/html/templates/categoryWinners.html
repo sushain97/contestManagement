@@ -35,7 +35,7 @@
       			<td>$schoolName</td>
      		#end
 
-        	<td> #if($student.getScore($subject)) $student.getScore($subject) #else ??? #end </td>
+        	<td> #if($student.getScore($subject)) $student.getScore($subject) #else <span class="text-danger">???</span> #end </td>
     	</tr>
     #end
 </table>

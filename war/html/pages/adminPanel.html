@@ -86,11 +86,11 @@
 					<label class="col-sm-2 control-label" for="datepicker">Registration Dates</label>
 					<div class="col-sm-6 col-xs-9">
 						<div class="input-daterange input-group" id="datepicker" data-date-format="mm/dd/yyyy">
-						    <input type="text" class="col-sm-3 form-control" name="startDate" 
-						    	value='#if($contestInfo.getProperty("startDate"))$contestInfo.getProperty("startDate")#end' required>
-						    <span class="input-group-addon"><strong>to</strong></span>
-						    <input type="text" class="col-sm-3 form-control" name="endDate" 
-						    	value='#if($contestInfo.getProperty("endDate"))$contestInfo.getProperty("endDate")#end' required>
+							<input type="text" class="col-sm-3 form-control" name="startDate" 
+								value='#if($contestInfo.getProperty("startDate"))$contestInfo.getProperty("startDate")#end' required>
+							<span class="input-group-addon"><strong>to</strong></span>
+							<input type="text" class="col-sm-3 form-control" name="endDate" 
+								value='#if($contestInfo.getProperty("endDate"))$contestInfo.getProperty("endDate")#end' required>
 						</div>
 					</div>
 				</div>
@@ -216,8 +216,8 @@
 				<div class="form-group">
 					<label class="col-sm-2 control-label" for="email">E-Mail Address</label>
 					<div class="input-prepend col-sm-6">
-	      				<div class="input-group">
-	      					<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+		  				<div class="input-group">
+		  					<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
 							<input type="email" name="email" id="email" class="form-control" value='#if($contestInfo.getProperty("email"))$contestInfo.getProperty("email")#end' required>
 						</div>
 						<span class="help-block">Where should questions submitted through the <a href="/contactUs">contact us</a> page be sent?</span>
@@ -227,8 +227,8 @@
 				<div class="form-group">
 					<label class="col-sm-2 control-label" for="email">Google E-Mail</label>
 					<div class="input-prepend col-sm-6">
-	      				<div class="input-group">
-	      					<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+		  				<div class="input-group">
+		  					<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
 							<input type="email" name="account" id="account" class="form-control" 
 								value='#if($contestInfo.getProperty("account"))$contestInfo.getProperty("account")#end' required>
 						</div>

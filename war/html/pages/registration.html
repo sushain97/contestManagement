@@ -46,7 +46,7 @@
 			</div>
 			
 			<h3>Your Registration Information</h3>
-			To make any changes to the following information, go to the <a href="/contactUs">Contact Us</a> page. <br />
+			To make any changes to the following information, go to the <a href="/contactUs">Contact Us</a> page. <br>
 			<dl class="dl-horizontal"> 
 				#foreach($str in $regData) $str #end 
 			</dl>
@@ -146,7 +146,7 @@
 					<label class="col-sm-2 col-xs-4 control-label" for="name">Your Name</label>
 					<div class="input-prepend col-sm-5 col-xs-8">
 						<div class="input-group">
-	      					<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+		  					<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
 							<input type="text" name="name" value="$name" class="form-control" id="name" required>
 						</div>
 					</div>
@@ -155,8 +155,8 @@
 				<div class=#if($userError) "form-group has-error" #else "form-group" #end>
 					<label class="col-sm-2 col-xs-4 control-label" for="email">Your E-Mail Address</label>
 					<div class="input-prepend col-sm-5 col-xs-8">
-	      				<div class="input-group">
-	      					<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+		  				<div class="input-group">
+		  					<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
 							<input type="email" name="email" value="$email" class="form-control" id="email" #if(!$admin) required #end>
 						</div>
 						#if($userError) <span class="help-block">A registration already exists for that E-Mail Address.</span> #end
@@ -181,7 +181,7 @@
 						<label class="col-sm-2 col-xs-4 control-label" for="password">Password</label>
 						<div class="input-prepend col-sm-5 col-xs-8">
 							<div class="input-group">
-		      					<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+			  					<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
 								<input type="password" class="form-control" pattern=".{8,}" title="Passwords must be at least 8 characters" id="password" name="password" value='' maxlength="32" required>
 							</div>
 							<div id="passHelp" class="help-block">Your password would be broken in <span class="text-info" data-toggle="tooltip" id="passStrength"></span></div>
@@ -192,7 +192,7 @@
 						<label class="col-sm-2 col-xs-4 control-label" for="confPassword">Confirm Password</label>
 						<div class="input-prepend col-sm-5 col-xs-8">
 							<div class="input-group">
-		      					<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+			  					<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
 								<input type="password" class="form-control" pattern=".{8,}" title="Passwords must be at least 8 characters" id="confPassword" name="confPassword" value='' maxlength="32" required>
 							</div>
 							#if($passwordError) <span class="help-block text-danger">Those passwords didn't match, try again.</span> #end
@@ -367,7 +367,7 @@ Bobby Doe	8&#9;x&#9;&#9;x&#9;x</pre>
 		</div>
 		#end
 	
-	<input type="hidden" name="price" id="price" value="$price" />
+	<input type="hidden" name="price" id="price" value="$price">
 
 	<script type="text/javascript" src="/js/pagescripts/registration.js"></script>
 	<script type="text/javascript" src="/js/zxcvbn/zxcvbn-async.js"></script>

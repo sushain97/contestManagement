@@ -30,7 +30,7 @@
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-4 control-label" for="name">Your Name</label>
 					<div class="input-prepend col-sm-5 col-xs-8">
-	      				<div class="input-group">
+		  				<div class="input-group">
 							<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
 							<input type="text" name="name" class="form-control" id="name" #if($name) value="$name" #end #if($loggedIn) readonly #else required #end>
 						</div>
@@ -40,7 +40,7 @@
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-4 control-label" for="email">Your E-Mail Address</label>
 					<div class="input-prepend col-sm-5 col-xs-8">
-	      				<div class="input-group">
+		  				<div class="input-group">
 							<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
 							<input type="email" name="email" class="form-control" id="email" #if($email) value="$email" #end #if($loggedIn) readonly #else required #end>
 						</div>
@@ -75,7 +75,7 @@
 				</div>
 				#end 
 				
-				<input type="hidden" name="nocaptcha" id="nocaptcha" value="$nocaptcha" />
+				<input type="hidden" name="nocaptcha" id="nocaptcha" value="$nocaptcha">
 
 				<div class="form-group">
    					<div class="col-sm-offset-2 col-sm-10">

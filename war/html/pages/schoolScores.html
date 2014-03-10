@@ -2,14 +2,14 @@
 
 <html lang="en-US">
 <head>
-    <title>View Scores | $title</title>
-    <meta name="description" content="$title School Specific Scores">
-    <meta name="robots" content="noindex, nofollow">
-    <meta name="tab" content="ViewScores">
-    #parse("head.html")
-    <style type="text/css">
-	    body { padding-top: 51px !important; }
-	    @media print {
+	<title>View Scores | $title</title>
+	<meta name="description" content="$title School Specific Scores">
+	<meta name="robots" content="noindex, nofollow">
+	<meta name="tab" content="ViewScores">
+	#parse("head.html")
+	<style type="text/css">
+		body { padding-top: 51px !important; }
+		@media print {
 			.col-md-9 {
 				position: absolute;
 				left: 0;
@@ -30,9 +30,9 @@
 			top: -100px; 
 			visibility: hidden;
 		}
-    </style>
-    <link type="text/css" href="/css/footer.css" rel="stylesheet">
-    <link type="text/css" href="/css/theme.bootstrap.css" rel="stylesheet">
+	</style>
+	<link type="text/css" href="/css/footer.css" rel="stylesheet">
+	<link type="text/css" href="/css/theme.bootstrap.css" rel="stylesheet">
 </head>
 
 <body>
@@ -42,13 +42,13 @@
 		<div class="navbar navbar-inverse hidden-xs" style="margin-bottom: 0px;">
 			<div class="container">
 				<div class="navbar-header">
-			    	<button class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse"> 
-				    	<span class="sr-only">Toggle navigation</span> 
+					<button class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse"> 
+						<span class="sr-only">Toggle navigation</span> 
 						<span class="icon-bar"></span> 
 						<span class="icon-bar"></span> 
 						<span class="icon-bar"></span>
 					</button>
-			    </div>
+				</div>
 				<div class="collapse navbar-collapse" id="navbar-collapse">
 					<ul class="nav navbar-nav">
 						<li><a href="#scores">Student Scores</a></li>
@@ -79,11 +79,11 @@
 	</div>
 	
 	<div id="footer">
-      <div class="container text-center">
-        <p><i class="icon-time"></i> Last auto-generated <b>#if($date) $date #else never #end</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
-      </div>
-    </div>
-    
+	  <div class="container text-center">
+		<p><i class="icon-time"></i> Last auto-generated <b>#if($date) $date #else never #end</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
+	  </div>
+	</div>
+	
 	<script type="text/javascript" src="/js/pagescripts/schoolScores.js"></script>
 	<script type="text/javascript" src="/js/jquery/jquery.tablesorter.min.js"></script>
 	<script type="text/javascript" src="/js/jquery/jquery.tablesorter.widgets.min.js"></script>

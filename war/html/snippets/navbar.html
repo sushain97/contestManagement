@@ -1,52 +1,52 @@
 <div class="navbar navbar-fixed-top navbar-default hidden-print" role="navigation">
 	<div class="container">
-	    <div class="navbar-header">
-	    	<a class="navbar-brand" href="/">$title</a>
-	    	<button class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse"> 
-		    	<span class="sr-only">Toggle navigation</span> 
+		<div class="navbar-header">
+			<a class="navbar-brand" href="/">$title</a>
+			<button class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse"> 
+				<span class="sr-only">Toggle navigation</span> 
 				<span class="icon-bar"></span> 
 				<span class="icon-bar"></span> 
 				<span class="icon-bar"></span>
 			</button>
-	    </div>
-        <div class="collapse navbar-collapse" id="navbar-collapse">
-            <ul class="nav navbar-nav">
-            	#if($loggedIn && $admin)
-	                <li class="dropdown" id="PublicPages-tab">
-	                	<a href="#" class="dropdown-toggle" data-toggle="dropdown">Public Pages<b class="caret"></b></a>
-	                    <ul class="dropdown-menu">
-	                        <li><a href="/about">About</a></li>
-	                        <li><a href="/contestResults">Contest Results</a></li>
-	                        <li><a href="/registration">Registration</a></li>
-	                        <li><a href="/directions">Directions</a></li>
-	                        <li><a href="/contactUs">Contact Us</a></li>
-	            		</ul>
-	            	</li>
-		            <li><a href="/adminPanel" id="ControlPanel-tab">Control Panel</a></li>
-		            <li class="dropdown" id="ContestData-tab"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Contest Data<b class="caret"></b></a>
-		                <ul class="dropdown-menu">
-		                    <li><a href="/data?choice=overview">Overview</a></li>
-		                    <li><a href="/data?choice=registrations">Registrations</a></li>
-		                    <li><a href="/data?choice=questions">Questions</a></li>
-		                    <li><a href="/data?choice=scores">Scores</a></li>
-		                </ul>
-		            </li>
-		            <li><a href="/signout" id="Logout-tab">Logout</a></li>
-            	#else
-		            <li><a href="/about" id="About-tab">About</a></li>
-		            <li><a href="/directions" id="Directions-tab">Directions</a></li>
-		            <li><a href="/contestResults" id="ContestResults-tab">Contest Results</a></li>
-		            #if(!$loggedIn)
-			            <li><a href="/registration" id="Registration-tab">Registration</a></li>
-			            <li><a href="/contactUs" id="ContactUs-tab">Contact Us</a></li>
-			            <li><a href="/login" id="Login-tab">Login</a></li>
-			        #else
-			            <li><a href="/viewScores" id="ViewScores-tab">View Scores</a></li>
-			            <li><a href="/contactUs" id="ContactUs-tab">Contact Us</a></li>
-			            <li><a href="/signout" id="Logout-tab">Logout</a></li>
-		            #end
-	            #end
+		</div>
+		<div class="collapse navbar-collapse" id="navbar-collapse">
+			<ul class="nav navbar-nav">
+				#if($loggedIn && $admin)
+					<li class="dropdown" id="PublicPages-tab">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Public Pages<b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li><a href="/about">About</a></li>
+							<li><a href="/contestResults">Contest Results</a></li>
+							<li><a href="/registration">Registration</a></li>
+							<li><a href="/directions">Directions</a></li>
+							<li><a href="/contactUs">Contact Us</a></li>
+						</ul>
+					</li>
+					<li><a href="/adminPanel" id="ControlPanel-tab">Control Panel</a></li>
+					<li class="dropdown" id="ContestData-tab"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Contest Data<b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li><a href="/data?choice=overview">Overview</a></li>
+							<li><a href="/data?choice=registrations">Registrations</a></li>
+							<li><a href="/data?choice=questions">Questions</a></li>
+							<li><a href="/data?choice=scores">Scores</a></li>
+						</ul>
+					</li>
+					<li><a href="/signout" id="Logout-tab">Logout</a></li>
+				#else
+					<li><a href="/about" id="About-tab">About</a></li>
+					<li><a href="/directions" id="Directions-tab">Directions</a></li>
+					<li><a href="/contestResults" id="ContestResults-tab">Contest Results</a></li>
+					#if(!$loggedIn)
+						<li><a href="/registration" id="Registration-tab">Registration</a></li>
+						<li><a href="/contactUs" id="ContactUs-tab">Contact Us</a></li>
+						<li><a href="/login" id="Login-tab">Login</a></li>
+					#else
+						<li><a href="/viewScores" id="ViewScores-tab">View Scores</a></li>
+						<li><a href="/contactUs" id="ContactUs-tab">Contact Us</a></li>
+						<li><a href="/signout" id="Logout-tab">Logout</a></li>
+					#end
+				#end
 			</ul>
-        </div>
-    </div>
+		</div>
+	</div>
 </div>

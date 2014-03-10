@@ -13,41 +13,41 @@
 		</tr>
 	</thead>
 	#foreach($school in $winners)
-   		#if($foreach.count > $trophy * 3 && !$admin)
+		#if($foreach.count > $trophy * 3 && !$admin)
 			#break
-   		#end
+		#end
 		<tr>
 			<td> $foreach.count #if($foreach.count <= $trophy) <i class="fa fa-trophy"></i> #end</td>
-			
+
 			#if($admin)
 				<td><a href="/data?choice=scores&type=school_$esc.url($school.getName())&level=$level">$school.getName()</a></td>
-	   		#else
+			#else
 				<td>$school.getName()</td>
-	   		#end
-	   		
-			#if($admin) 
-				<td>
-					<a class="popovers" href="#" data-toggle="popover" 
-							title="#foreach($entry in $school.getNumTests().entrySet()) <strong>$entry.getKey()</strong>: $entry.getValue() <br> #end">
-		   				$school.getNumStudents()
-					</a>
-				</td>	
 			#end
-			
-			#foreach($subject in $subjects)
-				<td> 
-					<a class="popovers" href="#" data-toggle="popover" 
-						title="#foreach($student in $school.getScoreStudents($subject))
-								<strong>#if($hideFullNames) $student.getPublicName() ($student.getGrade()) 
-								#else $student.getName() ($student.getGrade()) #end</strong> 
-								- $student.getScore($subject).getScoreNum() <br> 
-							#end">
-						
-						$school.getScore($subject)
-					</a> 
+
+			#if($admin)
+				<td>
+					<a class="popovers" href="#" data-toggle="popover"
+							title="#foreach($entry in $school.getNumTests().entrySet()) <strong>$entry.getKey()</strong>: $entry.getValue() <br> #end">
+						$school.getNumStudents()
+					</a>
 				</td>
 			#end
-			
+
+			#foreach($subject in $subjects)
+				<td>
+					<a class="popovers" href="#" data-toggle="popover"
+						title="#foreach($student in $school.getScoreStudents($subject))
+								<strong>#if($hideFullNames) $student.getPublicName() ($student.getGrade())
+								#else $student.getName() ($student.getGrade()) #end</strong>
+								- $student.getScore($subject).getScoreNum() <br>
+							#end">
+
+						$school.getScore($subject)
+					</a>
+				</td>
+			#end
+
 			<td> $school.getTotalScore() </td>
 		</tr>
 	#end

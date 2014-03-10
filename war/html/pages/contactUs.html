@@ -21,16 +21,16 @@
 		#else
 		<form method="post" class="form-horizontal">
 			<fieldset>
-				<legend>Please contact us for any <em>clarifications</em> or <em>registration changes</em>. 
-				#if(!$loggedIn && !$admin) 
+				<legend>Please contact us for any <em>clarifications</em> or <em>registration changes</em>.
+				#if(!$loggedIn && !$admin)
 				Please <a href="/login">login</a> before submitting questions if you have an account. Thank you!
 				#end
 				</legend>
-				
+
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-4 control-label" for="name">Your Name</label>
 					<div class="input-prepend col-sm-5 col-xs-8">
-		  				<div class="input-group">
+						<div class="input-group">
 							<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
 							<input type="text" name="name" class="form-control" id="name" #if($name) value="$name" #end #if($loggedIn) readonly #else required #end>
 						</div>
@@ -40,7 +40,7 @@
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-4 control-label" for="email">Your E-Mail Address</label>
 					<div class="input-prepend col-sm-5 col-xs-8">
-		  				<div class="input-group">
+						<div class="input-group">
 							<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
 							<input type="email" name="email" class="form-control" id="email" #if($email) value="$email" #end #if($loggedIn) readonly #else required #end>
 						</div>
@@ -73,12 +73,12 @@
 					</noscript>
 					#if($captchaError) <span class="help-block text-danger lead">Incorrect captcha, try again.</span> #end
 				</div>
-				#end 
-				
+				#end
+
 				<input type="hidden" name="nocaptcha" id="nocaptcha" value="$nocaptcha">
 
 				<div class="form-group">
-   					<div class="col-sm-offset-2 col-sm-10">
+					<div class="col-sm-offset-2 col-sm-10">
 						<button type="submit" id="submit" class="btn btn-primary">Submit Feedback</button>
 						<span class="help-block lead" id="answerCaptcha">Please enable JavaScript to continue.</span>
 					</div>

@@ -21,20 +21,20 @@
 			been sent to the provided e-mail address.
 		</div>
 		#end
-		
+
 		#if(!$updated)
 		<form method="post" class="form-horizontal">
 			<fieldset>
 				<legend>
-					Please enter your E-Mail Address below to recieve a password reset E-Mail. 
-					It is impossible for us to retrieve your original password due to the secure construction of 
+					Please enter your E-Mail Address below to recieve a password reset E-Mail.
+					It is impossible for us to retrieve your original password due to the secure construction of
 					<a href="http://en.wikipedia.org/wiki/PBKDF2" class="muted" target="_blank"><abbr title="Password-Based Key Derivation Function 2">PDKDF2</abbr></a>.
 				</legend>
 
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-4 control-label" for="email">Your E-Mail Address</label>
 					<div class="input-prepend col-sm-5 col-xs-8">
-		  				<div class="input-group">
+						<div class="input-group">
 							<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
 							<input type="email" name="email" class="input-xlarge form-control" id="email" required>
 						</div>

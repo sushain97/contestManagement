@@ -28,21 +28,21 @@
 						</div>
 					</div>
 				</div>
-				
+
 				<div class=#if($error) "form-group has-error" #else "form-group" #end>
 					<label class="col-sm-2 col-xs-4 control-label" for="password">Password</label>
 					<div class="input-prepend col-sm-5 col-xs-8">
 						<div class="input-group">
-			  				<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+							<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
 							<input type="password" id="password" name="password" class="form-control" value="" required>
 						</div>
 						<span class="help-block pull-left">
 							<a href="/forgotPass">Forgot your Password?</a>
-						</span> 
+						</span>
 						#if($error) <span class="help-block pull-right">$error</span> #end
 					</div>
 				</div>
-				
+
 				<div class="form-group">
 					<div class="col-sm-offset-2 col-sm-10">
 						<div class="checkbox">
@@ -54,19 +54,19 @@
 				</div>
 
 				<div class="form-group">
-   					<div class="col-sm-offset-2 col-sm-10">
+					<div class="col-sm-offset-2 col-sm-10">
 						<button type="submit" class="btn btn-primary">Login</button>
-						<span style="padding-left: 15px"> 
-							#if($testingMode) 
+						<span style="padding-left: 15px">
+							#if($testingMode)
 							<strong>
-								<a href="#" id="testingMode" data-toggle="popover" data-content="&lt;p&gt;During Testing Mode, 
-									the contest administrator account can be easily accessed with the credentials &quot;admin&quot; 
+								<a href="#" id="testingMode" data-toggle="popover" data-content="&lt;p&gt;During Testing Mode,
+									the contest administrator account can be easily accessed with the credentials &quot;admin&quot;
 									and &quot;password&quot;.&lt;/p&gt;
-									&lt;p&gt;Click &lt;a href=&quot;#&quot; id=&quot;fillCreds&quot;&gt;here&lt;/a&gt; to login as the admin.&lt;/p&gt" 
-									data-original-title="Testing Mode">Testing Mode</a> 
+									&lt;p&gt;Click &lt;a href=&quot;#&quot; id=&quot;fillCreds&quot;&gt;here&lt;/a&gt; to login as the admin.&lt;/p&gt"
+									data-original-title="Testing Mode">Testing Mode</a>
 								is currently enabled
-							</strong> 
-							#end 
+							</strong>
+							#end
 						</span>
 					</div>
 				</div>

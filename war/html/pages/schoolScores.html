@@ -24,10 +24,10 @@
 
 		th, td { text-align: center !important; }
 		.lead { margin-bottom: 0px !important; }
-		a.anchor { 
-			display: block; 
-			position: relative; 
-			top: -100px; 
+		a.anchor {
+			display: block;
+			position: relative;
+			top: -100px;
 			visibility: hidden;
 		}
 	</style>
@@ -38,14 +38,14 @@
 <body>
 	<div id="wrap">
 		#parse("navbar.html")
-		
+
 		<div class="navbar navbar-inverse hidden-xs" style="margin-bottom: 0px;">
 			<div class="container">
 				<div class="navbar-header">
-					<button class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse"> 
-						<span class="sr-only">Toggle navigation</span> 
-						<span class="icon-bar"></span> 
-						<span class="icon-bar"></span> 
+					<button class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
 				</div>
@@ -58,7 +58,7 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<div class="container">
 			<h1>School Score Overview
 			#include("printButton.html")
@@ -69,21 +69,21 @@
 				<p> Your account does not have sufficient permissions to view your school's scores (probably because you are a student).
 				If you believe that this is incorrect, please <a href="/contactUs">contact us</a>.</p>
 			#end
-			
+
 			<div class="visible-print well well-sm">
 				<p><i class="icon-time"></i> Last auto-generated <b>#if($date) $date #else never #end</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
 			</div>
-			
+
 			<div id="push"></div>
 		</div>
 	</div>
-	
+
 	<div id="footer">
-	  <div class="container text-center">
+	<div class="container text-center">
 		<p><i class="icon-time"></i> Last auto-generated <b>#if($date) $date #else never #end</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
-	  </div>
 	</div>
-	
+	</div>
+
 	<script type="text/javascript" src="/js/pagescripts/schoolScores.js"></script>
 	<script type="text/javascript" src="/js/jquery/jquery.tablesorter.min.js"></script>
 	<script type="text/javascript" src="/js/jquery/jquery.tablesorter.widgets.min.js"></script>

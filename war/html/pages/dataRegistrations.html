@@ -22,7 +22,7 @@
 			overflow: hidden;
 			text-overflow: ellipsis;
 		}
-		
+
 		.tablesorter-filter-row.hideme td {
 			padding: 2px;
 			margin: 0;
@@ -65,14 +65,14 @@
 	#parse("navbar.html")
 	<div class="container">
 		<h1>Contest Data Viewer &amp; Editor #include("printButton.html")</h1>
-		
+
 		#if($updated)
 		<div class="alert alert-success">
 			<a class="close" data-dismiss="alert">&times;</a> <strong>Success! </strong>The changes have been committed
 			to the database and are reflected below.
 		</div>
 		#end
-		
+
 		<h2>Recorded Registrations</h2>
 		<em>Note:</em> first number indicates number of registrations and second the number of tests actually taken
 		<br><strong class="hidden-print">Click a cell to edit its registration</strong>
@@ -97,17 +97,17 @@
 					</thead>
 					<tbody>
 						#set($totalCost = 0)
-						
+
 						#set($testTotals = {})
 						#foreach($test in $Test.middleTests())
 							$!testTotals.put($test, 0)
 						#end
-						
+
 						#set($subjectTotals = {})
 						#foreach($subject in $Subject.values())
 							$!subjectTotals.put($subject, 0)
 						#end
-					
+
 						#foreach($reg in $middleRegs)
 							#if($reg.hasProperty("studentData"))
 								<tr data-eid="$reg.getKey().getId()">
@@ -116,7 +116,7 @@
 										<input type="radio" name="key" value="$reg.getKey().getId()">
 									</td>
 									<td data-type="name">$reg.getProperty("name")</td>
-									
+
 									#if($reg.getProperty("email"))
 									<td data-type="email" class="email hidden-print" style="padding-right: 0px;">$reg.getProperty("email")</td>
 									<td class="uneditable hidden-print" style="padding-left: 0px;">
@@ -125,50 +125,50 @@
 									#else
 									<td class="hidden-print"></td><td class="hidden-print"></td>
 									#end
-									
+
 									<td data-type="registrationType" class="regType uneditable">$reg.getProperty("registrationType")</td>
 									<td data-type="schoolName">$reg.getProperty("schoolName")</td>
 									<td data-type="division" class="division uneditable">$reg.getProperty("division")</td>
-									<!-- <td data-type="paid" class="paidComments">$reg.getProperty("paid")</td>  --> 
+									<!-- <td data-type="paid" class="paidComments">$reg.getProperty("paid")</td>  -->
 									<td class="account uneditable">$reg.getProperty("account")</td>
-									
-									
+
+
 									#set($studentData = $regJSONtoList.apply($reg.getProperty("studentData")))
 									#set($testStudents = {})
-									
+
 									#foreach($student in $studentData)
 										#set($studentGrade = $student.get("grade"))
 										#set($studentName = $student.get("name"))
 										#foreach($subject in $Subject.values())
 											#set($testString = $studentGrade.toString().concat($subject.toString()))
 											#set($test = $Test.fromString($testString))
-											
+
 											#if(!$testStudents.containsKey($test))
 												$!testStudents.put($test, [])
 											#end
-											
+
 											#if($student.get($subject.toString()))
 												#set($_ = $testStudents.get($Test.fromString($testString)).add($studentName))
-												
+
 												#set($newTotal = $testTotals.get($test) + 1)
 												#set($_ = $testTotals.put($test, $newTotal))
-												
+
 												#set($newTotal = $subjectTotals.get($subject) + 1)
 												#set($_ = $subjectTotals.put($subject, $newTotal))
 											#end
 										#end
 									#end
-									
+
 									#foreach($test in $Test.middleTests())
 										<td class="test uneditable">
 											#set($title = "")
-											
+
 											#if($testStudents.get($test))
 												#set($students = $testStudents.get($test))
 											#else
 												#set($students = [])
 											#end
-											
+
 											#if($students)
 												#foreach($student in $students)
 													#if($foreach.hasNext)
@@ -178,21 +178,21 @@
 													#end
 												#end
 											#end
-											
+
 											<a class="popovers" href="#" data-toggle="popover" data-html="true" data-placement="bottom" data-title="$title">
 												#if($students) $students.size() #else 0 #end
 											</a>
 										</td>
 										<td class="uneditable">#if($reg.getProperty($test.toString().toUpperCase()))$reg.getProperty($test.toString().toUpperCase())#else 0 #end</td>
 									#end
-									
+
 									#set($totalCost = $totalCost + $reg.getProperty("cost"))
 									<td class="uneditable">&#36;$reg.getProperty("cost")</td>
 								</tr>
 							#end
-						#end 
+						#end
 					</tbody>
-					<tfoot> 
+					<tfoot>
 						<tr>
 							<td></td>
 							<td><strong>Total</strong></td>
@@ -211,7 +211,7 @@
 					#end
 				</dl>
 			#end
-			
+
 			#if($enabledLevels.contains("high"))
 				<h3>High School <button type="button" class="reset btn btn-sm btn-danger pull-right hidden-print"><i class="glyphicon glyphicon-refresh"></i> Reset</button></h3>
 				<table class="table table-striped table-condensed table-hover" id="highReg">
@@ -232,17 +232,17 @@
 					</thead>
 					<tbody>
 						#set($totalCost = 0)
-					
+
 						#set($testTotals = {})
 						#foreach($test in $Test.highTests())
 							$!testTotals.put($test, 0)
 						#end
-						
+
 						#set($subjectTotals = {})
 						#foreach($subject in $Subject.values())
 							$!subjectTotals.put($subject, 0)
 						#end
-					
+
 						#foreach($reg in $highRegs)
 							#if($reg.hasProperty("studentData"))
 								<tr data-eid="$reg.getKey().getId()">
@@ -251,7 +251,7 @@
 										<input type="radio" name="key" value="$reg.getKey().getId()">
 									</td>
 									<td data-type="name">$reg.getProperty("name")</td>
-									
+
 									#if($reg.getProperty("email"))
 									<td data-type="email" class="email hidden-print" style="padding-right: 0px;">$reg.getProperty("email")</td>
 									<td class="uneditable hidden-print" style="padding-left: 0px;">
@@ -260,49 +260,49 @@
 									#else
 									<td class="hidden-print"></td><td class="hidden-print"></td>
 									#end
-									
+
 									<td data-type="registrationType" class="regType uneditable">$reg.getProperty("registrationType")</td>
 									<td data-type="schoolName">$reg.getProperty("schoolName")</td>
 									<td data-type="division" class="division uneditable">$reg.getProperty("division")</td>
 									<!-- <td data-type="paid" class="paidComments">$reg.getProperty("paid")</td>  -->
 									<td class="account uneditable">$reg.getProperty("account")</td>
-									
+
 									#set($studentData = $regJSONtoList.apply($reg.getProperty("studentData")))
 									#set($testStudents = {})
-									
+
 									#foreach($student in $studentData)
 										#set($studentGrade = $student.get("grade"))
 										#set($studentName = $student.get("name"))
 										#foreach($subject in $Subject.values())
 											#set($testString = $studentGrade.toString().concat($subject.toString()))
 											#set($test = $Test.fromString($testString))
-											
+
 											#if(!$testStudents.containsKey($test))
 												$!testStudents.put($test, [])
 											#end
-											
+
 											#if($student.get($subject.toString()))
 												#set($_ = $testStudents.get($Test.fromString($testString)).add($studentName))
-												
+
 												#set($newTotal = $testTotals.get($test) + 1)
 												#set($_ = $testTotals.put($test, $newTotal))
-												
+
 												#set($newTotal = $subjectTotals.get($subject) + 1)
 												#set($_ = $subjectTotals.put($subject, $newTotal))
 											#end
 										#end
 									#end
-									
+
 									#foreach($test in $Test.highTests())
 										<td class="test uneditable">
 											#set($title = "")
-											
+
 											#if($testStudents.get($test))
 												#set($students = $testStudents.get($test))
 											#else
 												#set($students = [])
 											#end
-											
+
 											#if($students)
 												#foreach($student in $students)
 													#if($foreach.hasNext)
@@ -312,14 +312,14 @@
 													#end
 												#end
 											#end
-											
+
 											<a class="popovers" href="#" data-toggle="popover" data-html="true" data-placement="bottom" data-title="$title">
 												#if($students) $students.size() #else 0 #end
 											</a>
 										</td>
 										<td class="uneditable">#if($reg.getProperty($test.toString().toUpperCase()))$reg.getProperty($test.toString().toUpperCase())#else 0 #end</td>
 									#end
-									
+
 									#set($totalCost = $totalCost + $reg.getProperty("cost"))
 									<td class="uneditable">&#36;$reg.getProperty("cost")</td>
 								</tr>
@@ -345,9 +345,9 @@
 					#end
 				</dl>
 			#end
-		
+
 			<div class="form-group hidden-print">
-  				<div class="col-sm-12">
+				<div class="col-sm-12">
 					<button type="submit" id="submit" class="btn btn-primary"><i class="icon-edit"></i> Edit Selected</button>
 					<span class="lead">Individual registration editing interface</span>
 				</div>

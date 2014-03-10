@@ -21,19 +21,19 @@
 		<tr>
 			#if($foreach.count > $trophy + $medal && !$admin)
 				#break
-	   		#end
-			<td> $foreach.count 
+			#end
+			<td> $foreach.count
 				#if($foreach.count <= $trophy) <i class="fa fa-trophy"></i> #end
-				#if($foreach.count > $trophy && $foreach.count <= ($medal + $trophy)) <i class="iconfontello-medal"></i> #end	
-	   		</td>
+				#if($foreach.count > $trophy && $foreach.count <= ($medal + $trophy)) <i class="iconfontello-medal"></i> #end
+			</td>
 			<td> #if($hideFullNames) $student.getPublicName() #else $student.getName() #end </td>
-			
+
 			#set($schoolName = $student.getSchool().getName())
-	  		#if($admin)
-	  			<td><a href="/data?choice=scores&type=school_$esc.url($schoolName)&level=$level">$schoolName</a></td>
+			#if($admin)
+				<td><a href="/data?choice=scores&type=school_$esc.url($schoolName)&level=$level">$schoolName</a></td>
 			#else
-	  			<td>$schoolName</td>
-	 		#end
+				<td>$schoolName</td>
+			#end
 
 			<td> #if($student.getScore($subject)) $student.getScore($subject) #else <span class="text-danger">???</span> #end </td>
 		</tr>

@@ -6,7 +6,7 @@
 				$test.getName()
 				Winners
 			</h2>
-			
+
 			<table class="table table-striped table-condensed table-hover">
 				<thead>
 					<tr>
@@ -21,22 +21,22 @@
 						#end
 						<tr>
 							<td> $foreach.count #if($foreach.count <= $trophy) <i class="fa fa-trophy"></i> #end</td>
-							
+
 							#set($schoolName = $school.getName())
 							#if($admin)
 								<td><a href="/data?choice=scores&type=school_$esc.url($schoolName)&level=$level">$schoolName</a></td>
 							#else
 								<td>$schoolName</td>
 							#end
-							
+
 							<td>
-								<a class="popovers" href="#" data-toggle="popover" 
-									title="#foreach($student in $school.getScoreStudents($test)) 
+								<a class="popovers" href="#" data-toggle="popover"
+									title="#foreach($student in $school.getScoreStudents($test))
 											<strong>#if($hideFullNames)$student.getPublicName() ($student.getGrade())
-											#else $student.getName() ($student.getGrade())#end</strong> - 
-											$student.getScore($test).getScoreNum() <br> 
+											#else $student.getName() ($student.getGrade())#end</strong> -
+											$student.getScore($test).getScoreNum() <br>
 										#end">
-										
+
 									$school.getScore($test)
 								</a>
 							</td>

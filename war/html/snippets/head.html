@@ -17,7 +17,7 @@
 				bootstrapLink.type = 'text/css';
 				bootstrapLink.href = '/css/bootstrap.min.css';
 				bootstrapLink.rel = 'stylesheet';
-				
+
 				document.getElementsByTagName('head')[0].appendChild(bootstrapLink);
 			}
 		}
@@ -31,7 +31,7 @@
 		.navbar-brand { height: 21px !important; }
 	}
 	@media screen and (min-width: 768px) and (max-width: 992px) {
-		body { padding-top: 90px; } 
+		body { padding-top: 90px; }
 	}
 </style>
 
@@ -67,7 +67,7 @@
 			else
 				$('#PublicPages-tab').parents('li').addClass('active');
 		}
-		
+
 		if (window.top !== window.self)
 			window.top.location.replace(window.self.location.href);
 	});

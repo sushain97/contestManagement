@@ -216,7 +216,9 @@ public class Main extends HttpServlet {
 						}
 					}
 
-					school.addStudent(student);
+					if (!school.addStudent(student)) {
+						System.err.println("!!! Duplicate student detected !!! " + student);
+					}
 				}
 				catch (Exception e) {
 					e.printStackTrace();

@@ -58,7 +58,7 @@ public class Student implements Serializable {
 	@Persistent private int grade;
 	@Persistent private String name;
 	@Persistent private School school;
-	@Persistent(serialized = "true", defaultFetchGroup = "true") @Unowned private Map<Subject, Score> scores = new HashMap<Subject, Score>();
+	@Persistent(serialized = "true") @Unowned private Map<Subject, Score> scores = new HashMap<Subject, Score>();
 
 	@PrimaryKey private Key key;
 
@@ -106,14 +106,6 @@ public class Student implements Serializable {
 		else if (!school.equals(other.school)) {
 			return false;
 		}
-		if (scores == null) {
-			if (other.scores != null) {
-				return false;
-			}
-		}
-		else if (!scores.equals(other.scores)) {
-			return false;
-		}
 		return true;
 	}
 
@@ -157,7 +149,6 @@ public class Student implements Serializable {
 		result = prime * result + grade;
 		result = prime * result + (name == null ? 0 : name.hashCode());
 		result = prime * result + (school == null ? 0 : school.hashCode());
-		result = prime * result + (scores == null ? 0 : scores.hashCode());
 		return result;
 	}
 

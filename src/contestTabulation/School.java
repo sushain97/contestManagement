@@ -89,8 +89,8 @@ public class School implements Serializable {
 		}
 	}
 
-	protected void addStudent(Student student) {
-		students.add(Objects.requireNonNull(student));
+	protected boolean addStudent(Student student) {
+		return students.add(Objects.requireNonNull(student));
 	}
 
 	private HashMap<Student, Score> calculateScore(final Subject subject) {
@@ -190,13 +190,16 @@ public class School implements Serializable {
 			return false;
 		}
 		School other = (School) obj;
+		if (level != other.level) {
+			return false;
+		}
 		if (name == null) {
 			if (other.name != null) {
 				return false;
 			}
-			else if (!name.equals(other.name)) {
-				return false;
-			}
+		}
+		else if (!name.equals(other.name)) {
+			return false;
 		}
 		return true;
 	}
@@ -255,6 +258,7 @@ public class School implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + (level == null ? 0 : level.hashCode());
 		result = prime * result + (name == null ? 0 : name.hashCode());
 		return result;
 	}

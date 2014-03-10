@@ -34,16 +34,16 @@
 			height: 1px;
 			margin: 9px 1px;
 		}
-		.nav-header { 
-			text-transform: uppercase; 
-			font-weight: bold; 
+		.nav-header {
+			text-transform: uppercase;
+			font-weight: bold;
 		}
 		@media screen and (max-width: 768px) {
-		    body { padding-top: 100px; }
-		    .navbar-brand { height: 21px !important; }
+			body { padding-top: 100px; }
+			.navbar-brand { height: 21px !important; }
 		}
 		@media screen and (min-width: 768px) and (max-width: 992px) {
-			body { padding-top: 110px; } 
+			body { padding-top: 110px; }
 		}
 	</style>
 	<link type="text/css" href="/css/footer.css" rel="stylesheet">
@@ -56,13 +56,13 @@
 <body>
 	<div id="wrap">
 		#parse("navbar.html")
-	
+
 		<div class="container">
 			<div class="row">
 				<div class="col-md-3 col-xs-6 hidden-print">
 					<ul class="nav nav-pills nav-stacked" >
 						<li data-type="avail"><a href="/contestResults">Availability</a></li>
-						
+
 						#foreach($level in $levels)
 							#if($enabledLevels.contains($level.toString()))
 								#set($LEVEL = $level.toString().toUpperCase())
@@ -70,9 +70,9 @@
 								<li data-type="sweep$LEVEL"><a href="/contestResults?choice=scores&type=sweep&level=$level">Sweepstakes</a></li>
 								<li data-type="categorySweep$LEVEL"><a href="/contestResults?choice=scores&type=categorySweep&level=$level">Category Sweepstakes</a></li>
 								<li data-type="visualizations$LEVEL"><a href="/contestResults?choice=scores&type=visualizations&level=$level">Visualizations</a></li>
-								
+
 								<li class="divider"></li>
-			
+
 								#foreach($num in [$level.getLowGrade()..$level.getHighGrade()])
 									<li id="${num}" class="dropdown">
 										<a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -90,13 +90,13 @@
 					</ul>
 					<div id="push"></div>
 				</div>
-				
+
 				<div class="col-md-9 col-xs-6">
 					<h1>Contest Results
 					#include("printButton.html")
 					</h1>
 
-					#if(!$complete) 
+					#if(!$complete)
 						Results are not yet public, please return later.
 					#else
 						#if($type.startsWith("category_"))
@@ -121,28 +121,27 @@
 							#end
 						#end
 					#end
-					
+
 					#if($type == "avail" || !$complete)
 						#if($complete) Choose an option at the left to view specific results. #end
-					
+
 					<h2>Grading Progress (Tests Graded)</h2>
-					
+
 					#set($numTests = 0.0)
 					#if($enabledLevels.contains("middle")) #set($numTests = $numTests + 12) #end
 					#if($enabledLevels.contains("high")) #set($numTests = $numTests + 16) #end
 					#set($percentComplete = $testsGraded.size() / $numTests * 100)
-					<div class="progress progress-striped active" style="width: 65%">
-						<div class="progress-bar" role="progressbar" aria-valuenow="$percentComplete" aria-valuemin="0" aria-valuemax="100" style="width: $percentComplete%;"></div> 
-					</div> 
-					
+					<div class="progress progress-striped active" style="width: 65%; min-width: 300px;">
+						<div class="progress-bar" role="progressbar" aria-valuenow="$percentComplete" aria-valuemin="0" aria-valuemax="100" style="width: $percentComplete%;"></div>
+					</div>
+
 					<table id="statusTable" class="table table-condensed">
 						<thead>
 							<tr>
 								<th>Grade</th>
-								<th>Number Sense</th>
-								<th>Calculator</th>
-								<th>General Math</th>
-								<th>General Science</th>
+								#foreach($subject in $subjects)
+								<th>$subject.getName()</th>
+								#end
 							</tr>
 						</thead>
 						<tbody>
@@ -150,9 +149,8 @@
 								#foreach($grade in [6..8])
 								<tr>
 									<td class="row-header">${grade}th</td>
-									#foreach($subject in ["N", "C", "M", "S"])
-										#set($subjectString = $grade + $subject)
-										#if($testsGraded.contains($subjectString))
+									#foreach($subject in $subjects)
+										#if($testsGraded.contains("$grade$subject"))
 										<td class="success">
 											<i class="glyphicon glyphicon-check"></i>
 										</td>
@@ -165,7 +163,7 @@
 								</tr>
 								#end
 							#end
-							
+
 							#if($enabledLevels.contains("middle") && $enabledLevels.contains("high"))
 							<tr>
 								#foreach($i in [1..5])
@@ -173,14 +171,13 @@
 								#end
 							</tr>
 							#end
-							
+
 							#if($enabledLevels.contains("high"))
 								#foreach($grade in [9..12])
 								<tr>
 									<td class="row-header">${grade}th</td>
 									#foreach($subject in $subjects)
-										#set($subjectString = $grade + $subject.toString())
-										#if($testsGraded.contains($subjectString))
+										#if($testsGraded.contains("$grade$subject"))
 										<td class="success">
 											<i class="glyphicon glyphicon-check"></i>
 										</td>
@@ -196,23 +193,23 @@
 						</tbody>
 					</table>
 					#end
-					
+
 					<div class="visible-print well well-sm">
 						<p><i class="icon-time"></i> Last auto-generated <b>#if($date) $date #else never #end</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
 					</div>
-					
+
 					<div id="push"></div>
 				</div>
 			</div>
 		</div>
 	</div>
-	
+
 	<div id="footer">
-      <div class="container text-center">
-        <p><i class="icon-time"></i> Last auto-generated <b>#if($date) $date #else never #end</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
-      </div>
-    </div>
-    
+	<div class="container text-center">
+		<p><i class="icon-time"></i> Last auto-generated <b>#if($date) $date #else never #end</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
+	</div>
+	</div>
+
 	<script type="text/javascript" src="/js/pagescripts/publicResults.js"></script>
 	<script type="text/javascript" src="/js/jquery/jquery.tablesorter.min.js"></script>
 	<script type="text/javascript" src="/js/jquery/jquery.tablesorter.widgets.min.js"></script>

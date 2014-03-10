@@ -23,7 +23,7 @@
 			margin-top: 8px !important;
 		}
 		.tableBtn {
-			margin-top: 6px; 
+			margin-top: 6px;
 			padding-top: 2px;
 		}
 		.tooltip { width: 300px !important; }
@@ -36,7 +36,7 @@
 
 	<div class="container">
 		<h1>Contest Registration #if($updated) #include("printButton.html") #end</h1>
-		
+
 		<input type="hidden" name="studentData" id="studentData" value='$studentData'>
 
 		#if($updated)
@@ -44,13 +44,13 @@
 				<a class="close" data-dismiss="alert">&times;</a> <strong>Success! </strong>Your registration has been
 				recorded. You will receive a confirmation e-mail soon.
 			</div>
-			
+
 			<h3>Your Registration Information</h3>
-			To make any changes to the following information, go to the <a href="/contactUs">Contact Us</a> page. <br />
-			<dl class="dl-horizontal"> 
-				#foreach($str in $regData) $str #end 
+			To make any changes to the following information, go to the <a href="/contactUs">Contact Us</a> page. <br>
+			<dl class="dl-horizontal">
+				#foreach($str in $regData) $str #end
 			</dl>
-			
+
 			<table class="table table-striped table-condensed table-hover table-responsive" id="registrations">
 				<thead>
 					<tr>
@@ -79,14 +79,14 @@
 				times, <a class="alert-link" href="/contactUs">contact us</a> to make changes to your registration.
 			</div>
 		#end
-		
+
 		#if(!$updated)
 		<form method="post" class="form-horizontal">
 			<fieldset>
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-5 control-label" for="registration">Registration Type</label>
 					<div class="input-group col-sm-7 col-xs-7">
-						<label class="radio-inline"> 
+						<label class="radio-inline">
 							<input type="radio" name="registrationType" id="regType1" value="coach" #if($coach) checked #end> Coach
 						</label>
 						<label class="radio-inline">
@@ -112,23 +112,23 @@
 						#end
 					</div>
 				</div>
-				
+
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-5 control-label" for="division">Division</label>
 					<div class="input-group col-sm-5 col-xs-7">
-						<label class="radio-inline"> 
+						<label class="radio-inline">
 							<input type="radio" name="division" value="1A" #if($division == "1A") checked #end> 1A
 						</label>
-						<label class="radio-inline"> 
+						<label class="radio-inline">
 							<input type="radio" name="division" value="2A" #if($division == "2A") checked #end> 2A
 						</label>
-						<label class="radio-inline"> 
+						<label class="radio-inline">
 							<input type="radio" name="division" value="3A" #if($division == "3A") checked #end> 3A
 						</label>
-						<label class="radio-inline"> 
+						<label class="radio-inline">
 							<input type="radio" name="division" value="4A" #if($division == "4A") checked #end> 4A
 						</label>
-						<label class="radio-inline"> 
+						<label class="radio-inline">
 							<input type="radio" name="division" value="5A" #if($division == "5A") checked #end> 5A
 						</label>
 					</div>
@@ -146,7 +146,7 @@
 					<label class="col-sm-2 col-xs-4 control-label" for="name">Your Name</label>
 					<div class="input-prepend col-sm-5 col-xs-8">
 						<div class="input-group">
-	      					<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+							<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
 							<input type="text" name="name" value="$name" class="form-control" id="name" required>
 						</div>
 					</div>
@@ -155,8 +155,8 @@
 				<div class=#if($userError) "form-group has-error" #else "form-group" #end>
 					<label class="col-sm-2 col-xs-4 control-label" for="email">Your E-Mail Address</label>
 					<div class="input-prepend col-sm-5 col-xs-8">
-	      				<div class="input-group">
-	      					<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+						<div class="input-group">
+							<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
 							<input type="email" name="email" value="$email" class="form-control" id="email" #if(!$admin) required #end>
 						</div>
 						#if($userError) <span class="help-block">A registration already exists for that E-Mail Address.</span> #end
@@ -181,7 +181,7 @@
 						<label class="col-sm-2 col-xs-4 control-label" for="password">Password</label>
 						<div class="input-prepend col-sm-5 col-xs-8">
 							<div class="input-group">
-		      					<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+								<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
 								<input type="password" class="form-control" pattern=".{8,}" title="Passwords must be at least 8 characters" id="password" name="password" value='' maxlength="32" required>
 							</div>
 							<div id="passHelp" class="help-block">Your password would be broken in <span class="text-info" data-toggle="tooltip" id="passStrength"></span></div>
@@ -192,7 +192,7 @@
 						<label class="col-sm-2 col-xs-4 control-label" for="confPassword">Confirm Password</label>
 						<div class="input-prepend col-sm-5 col-xs-8">
 							<div class="input-group">
-		      					<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+								<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
 								<input type="password" class="form-control" pattern=".{8,}" title="Passwords must be at least 8 characters" id="confPassword" name="confPassword" value='' maxlength="32" required>
 							</div>
 							#if($passwordError) <span class="help-block text-danger">Those passwords didn't match, try again.</span> #end
@@ -291,11 +291,11 @@
 						</div>
 					</div>
 				#end
-				
+
 				<input type="hidden" name="regError" id="regError" value="$registrationError">
 
 				<div class="form-group">
-   					<div class="col-sm-offset-2 col-sm-10">
+					<div class="col-sm-offset-2 col-sm-10">
 						<button type="submit" id="submit" class="btn btn-primary" disabled>Submit Registration</button>
 						<button type="reset" id="reset" class="btn btn-danger" disabled>Reset</button>
 						<p class="help-block lead" id="answerCaptcha">Please enable JavaScript to continue.</p>
@@ -315,8 +315,8 @@
 				<div class="modal-body">
 					<div>
 						<p>
-							Here you can import data from Excel or another spreadsheet program. 
-							Ensure that you copy and paste only full rows with 6 columns (name, grade, NS, CA, MA, SC). 
+							Here you can import data from Excel or another spreadsheet program.
+							Ensure that you copy and paste only full rows with 6 columns (name, grade, NS, CA, MA, SC).
 							Do not include the column headings. For the exam rows, anything but a blank or whitespace will be
 							treated as a registration for that test. Following is an example:
 						</p>
@@ -325,17 +325,17 @@
 John Doe	6&#9;x&#9;x&#9;&#9;x
 Sarah Doe&#9;7&#9;&#9;&#9;&#9;x
 Bobby Doe	8&#9;x&#9;&#9;x&#9;x</pre>
-						
-						<strong>Seperator (default: <kbd>TAB</kbd>, this is used by Excel):</strong> 
+
+						<strong>Seperator (default: <kbd>TAB</kbd>, this is used by Excel):</strong>
 						<form class="form-inline" style="display: inline;">
 							<div class="form-group">
 								<input type="text" id="seperator" class="form-control input-sm" value="&#9;">
 							</div>
 						</form>
 					</div>
-					
+
 					<br><br>
-					
+
 					<div class="row">
 						<div class="col-md-6">
 							<textarea id="importData" class="form-control" placeholder="Copy and paste your data here." rows="10"></textarea>
@@ -366,8 +366,8 @@ Bobby Doe	8&#9;x&#9;&#9;x&#9;x</pre>
 			</div>
 		</div>
 		#end
-	
-	<input type="hidden" name="price" id="price" value="$price" />
+
+	<input type="hidden" name="price" id="price" value="$price">
 
 	<script type="text/javascript" src="/js/pagescripts/registration.js"></script>
 	<script type="text/javascript" src="/js/zxcvbn/zxcvbn-async.js"></script>

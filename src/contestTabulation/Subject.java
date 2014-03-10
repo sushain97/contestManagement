@@ -19,7 +19,7 @@
 package contestTabulation;
 
 public enum Subject {
-	C("Calculator"), M("Math"), N("Number Sense"), S("Science");
+	N("Number Sense"), C("Calculator"), M("Math"), S("Science");
 
 	public static String[] getSubjectNames() {
 		return new String[] {N.getName(), C.getName(), M.getName(), S.getName()};

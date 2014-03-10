@@ -61,7 +61,7 @@
 	// you can change it to use delegate (v1.4.3+) or live (v1.3+) as desired
 	// if this code interferes somehow, target the specific table $('#mytable'), instead of $('table')
 	/*
-	 $(window).load(function(){
+	$(window).load(function(){
 		// this flag prevents the updateCell event from being spammed
 		// it happens when you modify input text and hit enter
 		var alreadyUpdating = false;

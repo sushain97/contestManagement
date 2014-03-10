@@ -1,13 +1,13 @@
 $(document).ready(function() {
 	$('.popovers').popover({
-	    html: true,
-	    trigger: 'click',
-	    placement: 'right'
+		html: true,
+		trigger: 'click',
+		placement: 'right'
 	}).click(function(e) {
-	    e.stopPropagation();
-	    e.preventDefault();
+		e.stopPropagation();
+		e.preventDefault();
 	});
 	$('html').click(function(e) {
-	    $('.popovers').popover('hide');
+		$('.popovers').popover('hide');
 	});
 });

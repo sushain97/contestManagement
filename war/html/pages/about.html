@@ -3,25 +3,25 @@
 <html lang="en-US">
 <head>
 <title>$title</title>
-    <meta name="description" content="Learn about the $title">
-    <meta name="robots" content="index, follow">
-    <meta name="tab" content="About">
-    #parse("head.html")
-    <style type="text/css">
-	    .dl-horizontal dt { white-space: normal; }
-	    .row { padding-bottom: 10px; }
-    </style>
-    <link type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+	<meta name="description" content="Learn about the $title">
+	<meta name="robots" content="index, follow">
+	<meta name="tab" content="About">
+	#parse("head.html")
+	<style type="text/css">
+		.dl-horizontal dt { white-space: normal; }
+		.row { padding-bottom: 10px; }
+	</style>
+	<link type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
 </head>
 
 <body>
 	#parse("navbar.html")
-	
+
 	<div class="container">
-		<h1>About our Tournament 
+		<h1>About our Tournament
 			#include("printButton.html")
 		</h1>
-		
+
 		<p>$aboutText</p>
 		<div class="row">
 			<div class="col-sm-6">
@@ -36,7 +36,7 @@
 			#if($enabledLevels.contains("middle"))
 				<div class="col-sm-6">
 					<h2>Qualifying Scores</h2>
-	
+
 					#foreach($grade in [$Level.valueOf("MIDDLE").getLowGrade()..$Level.valueOf("MIDDLE").getHighGrade()])
 					<dl class="dl-horizontal">
 						#foreach($subject in $Subject.values())
@@ -50,15 +50,15 @@
 				</div>
 			#end
 		</div>
-		
+
 		<br>
 		<div class="form-group">
 			<div class="col-sm-12">
-  				<a href="#about" role="button" class="btn btn-default" data-toggle="modal">About the Website</a>
- 			</div>
+				<a href="#about" role="button" class="btn btn-default" data-toggle="modal">About the Website</a>
+			</div>
 		</div>
 	</div>
-	
+
 	<div id="about" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="aboutModal" aria-hidden="true">
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
@@ -82,7 +82,7 @@
 								Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>.
 						</div>
 					</div>
-					
+
 					<div class="row">
 						<div class="col-sm-2">
 							<img alt="GNU General Public License" src="http://www.gnu.org/graphics/gplv3-127x51.png">
@@ -91,9 +91,9 @@
 							Codebase of TMSCA Tournament Management System (Java, JS, etc.) is licensed under the <a href="http://www.gnu.org/licenses/gpl-3.0.html" target="_blank">GNU General Public License Version 3</a>.
 						</div>
 					</div>
-					
+
 					<br>
-					
+
 					<div class="row">
 						<div class="col-sm-6 text-center">
 							<img data-src="/img/java.png" alt="Java" height="80px">
@@ -102,12 +102,12 @@
 							<img data-src="/img/webtrifecta.png" alt="Web Trifecta (HTML, JS, CSS)" height="80px">
 						</div>
 					</div>
-					
+
 					<br>
-					
+
 					<div class="row">
 						<div class="col-sm-6 text-center">
-							<a href="https://developers.google.com/appengine/" target="_blank"><img data-src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" alt="Google App Engine"></a> 
+							<a href="https://developers.google.com/appengine/" target="_blank"><img data-src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" alt="Google App Engine"></a>
 							Powered by <a href="https://developers.google.com/appengine/" target="_blank">Google App Engine</a>
 						</div>
 						<div class="col-sm-6 text-center">
@@ -115,7 +115,7 @@
 							Built with <i class="fa fa-twitter"></i> <a href="http://twitter.github.io/bootstrap" target="_blank">Twitter Bootstrap</a>
 						</div>
 					</div>
-					
+
 					<div class="row">
 						<div class="col-sm-6 text-center">
 							<a href="http://velocity.apache.org/" target="_blank"><img data-src="http://velocity.apache.org/engine/releases/velocity-1.4/images/powered-by-logo.gif" alt="Apache Velocity" height="35px"></a>
@@ -126,7 +126,7 @@
 							Powered by <a href="http://jquery.com" target="_blank">JQuery</a>
 						</div>
 					</div>
-					
+
 					<div class="row">
 						<div class="col-sm-6 text-center">
 							<a href="http://commons.apache.org/proper/commons-math" target="_blank"><img data-src="/img/commonsMath.gif" alt="Apache Commons Math" height="45px"></a>
@@ -137,7 +137,7 @@
 							Hosted on <i class="fa fa-github"></i> <a href="https://github.com/sushain97/contestManagement" target="_blank">Github</a>
 						</div>
 					</div>
-					
+
 					<div class="row">
 						<div class="col-sm-6 text-center">
 							<a href="http://www.google.com/recaptcha"><img data-src="http://www.google.com/recaptcha/shared-media/logo2.gif" alt="reCAPTCHA" height="50px"></a>
@@ -148,7 +148,7 @@
 							Charts generated with <a href="http://highcharts.com">Highcharts JS</a>
 						</div>
 					</div>
-					
+
 					<div class="row">
 						<div class="col-sm-6 text-center">
 							<a href="http://oauth.net/" target="_blank"><img data-src="http://oauth.net/images/oauth-2-sm.png" alt="OAuth" height="50px"></a>
@@ -160,7 +160,7 @@
 							</a>
 						</div>
 					</div>
-					
+
 					<div class="row">
 						<div class="col-sm-6 text-center">
 							<a href="https://db.apache.org/jdo/" target="_blank"><img data-src="https://db.apache.org/jdo/images/JDOx150.gif" alt="JDO" height="50px"></a>
@@ -171,7 +171,7 @@
 							Uses <a href="https://developers.google.com/" target="_blank">Google APIs</a>
 						</div>
 					</div>
-					
+
 					<div class="row">
 						<div class="col-sm-12 text-center">
 							<a href="http://pagekite.net/" target="_blank"><img data-src="https://pagekite.net/static/skin/i/pagekite-logo.png" alt="PageKite" height="50px"></a>
@@ -180,27 +180,27 @@
 					</div>
 
 					<br>
-					
+
 					<div class="lead">CDN Service from</div>
 					<div class="row">
 						<div class="col-sm-3 text-center">
-							<a href="https://developers.google.com/speed/libraries" target="_blank"><img alt="Google Hosted Libraries" src="/img/googdev.png" height="50px"/></a>
+							<a href="https://developers.google.com/speed/libraries" target="_blank"><img alt="Google Hosted Libraries" src="/img/googdev.png" height="50px"></a>
 						</div>
 						<div class="col-sm-3 text-center">
-							<a href="http://www.netdna.com/" target="_blank"><img alt="NetDNA CDN" src="/img/netdna.png" height="55px"/></a>
+							<a href="http://www.netdna.com/" target="_blank"><img alt="NetDNA CDN" src="/img/netdna.png" height="55px"></a>
 						</div>
 						<div class="col-sm-3 text-center">
-							<a href="http://www.maxcdn.com/" target="_blank"><img alt="MAXCDN" src="http://www.maxcdn.com/wp-content/themes/maxcdnv4/img/png/maxcdn-colored-logo.png" height="35px"/></a>
+							<a href="http://www.maxcdn.com/" target="_blank"><img alt="MAXCDN" src="http://www.maxcdn.com/wp-content/themes/maxcdnv4/img/png/maxcdn-colored-logo.png" height="35px"></a>
 						</div>
 						<div class="col-sm-3 text-center">
 							<a href="http://cdnjs.com/" target="_blank"><span class="lead">CDNJS</span></a>
 						</div>
 					</div>
-					
+
 					<br>
-					
+
 					<p>
-						Icons from <i class="glyphicon glyphicon-plus"></i> <a href="http://glyphicons.com" target="_blank">Glyphicons Free</a>, 
+						Icons from <i class="glyphicon glyphicon-plus"></i> <a href="http://glyphicons.com" target="_blank">Glyphicons Free</a>,
 						<i class="fa fa-flag"></i> <a href="http://fortawesome.github.io/" target="_blank">Font Awesome</a>, and
 						<a href="http://thedesignoffice.org/project/modern-pictograms" target="_blank">Modern Pictograms</a>.
 					</p>
@@ -211,7 +211,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<script type="text/javascript" src="/js/pagescripts/about.js"></script>
 	#include("noscript.html")
 </body>

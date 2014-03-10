@@ -25,10 +25,10 @@
 		table {	width: auto !important; }
 		th, td { text-align: center !important; }
 		.lead { margin-bottom: 0px !important; }
-		a.anchor { 
-			display: block; 
-			position: relative; 
-			top: -100px; 
+		a.anchor {
+			display: block;
+			position: relative;
+			top: -100px;
 			visibility: hidden;
 		}
 		.divider {
@@ -42,11 +42,11 @@
 			body { padding-top: 51px !important; }
 		#end
 		@media screen and (max-width: 768px) {
-		    body { padding-top: 100px; }
-		    .navbar-brand { height: 21px !important; }
+			body { padding-top: 100px; }
+			.navbar-brand { height: 21px !important; }
 		}
 		@media screen and (min-width: 768px) and (max-width: 992px) {
-			body { padding-top: 110px; } 
+			body { padding-top: 110px; }
 		}
 	</style>
 	<link type="text/css" href="/css/footer.css" rel="stylesheet">
@@ -59,18 +59,18 @@
 <body>
 	<div id="wrap">
 		#parse("navbar.html")
-		
+
 		#if($type == "schoolOverview")
 		<div class="navbar navbar-inverse hidden-xs" style="margin-bottom: 0px;">
 			<div class="container">
 				<div class="navbar-header">
-			    	<button class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse"> 
-				    	<span class="sr-only">Toggle navigation</span> 
-						<span class="icon-bar"></span> 
-						<span class="icon-bar"></span> 
+					<button class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-			    </div>
+				</div>
 				<div class="collapse navbar-collapse" id="navbar-collapse">
 					<ul class="nav navbar-nav">
 						<li><a href="#scores">Student Scores</a></li>
@@ -81,13 +81,13 @@
 			</div>
 		</div>
 		#end
-		
+
 		<div class="container">
 			<div class="row">
 				<div class="col-md-3 col-xs-6 hidden-print">
 					<ul class="nav nav-pills nav-stacked">
 						<li data-type="overview"><a href="/data?choice=scores">Overview</a></li>
-						
+
 						#foreach($level in $levels)
 							#if($enabledLevels.contains($level.toString()))
 								#set($LEVEL = $level.toString().toUpperCase())
@@ -102,7 +102,7 @@
 									</a>
 									<ul class="dropdown-menu">
 										#if($level == "middle") #set($schools = $middleSchools) #else #set($schools = $highSchools) #end
-										
+
 										#foreach($schoolName in $schools)
 											<li data-type="school_$schoolName$LEVEL" id="$schoolName.hashCode()">
 												<a href='/data?choice=scores&type=school_$esc.url($schoolName)&level=$level'>$schoolName</a>
@@ -111,7 +111,7 @@
 									</ul>
 								</li>
 								<li class="divider"></li>
-			
+
 								#foreach($num in [$level.getLowGrade()..$level.getHighGrade()])
 									<li id="${num}" class="dropdown">
 										<a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -129,12 +129,12 @@
 					</ul>
 					<div id="push"></div>
 				</div>
-	
+
 				<div class="col-md-9 col-xs-6">
 					<h1>
 						Contest Results
 						#include("printButton.html")
-						#if($level == "middle" && ($type.equals("students") || $type.startsWith("school_"))) 
+						#if($level == "middle" && ($type.equals("students") || $type.startsWith("school_")))
 							<button type="button" class="btn btn-default btn-sm hidden-print" id="qualButton">Mute Qualifying</button>
 						#end
 					</h1>
@@ -169,22 +169,22 @@
 							Visualizations not yet available.
 						#end
 					#end
-					
+
 					<div class="visible-print well well-sm">
 						<p><i class="icon-time"></i> Last auto-generated <b>#if($date) $date #else never #end</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
 					</div>
-					
+
 					<div id="push"></div>
 				</div>
 			</div>
 		</div>
 	</div>
-	
+
 	<div id="footer">
-      <div class="container text-center">
-        <p><i class="icon-time"></i> Last auto-generated <b>#if($date) $date #else never #end</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
-      </div>
-    </div>
+	<div class="container text-center">
+		<p><i class="icon-time"></i> Last auto-generated <b>#if($date) $date #else never #end</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
+	</div>
+	</div>
 
 	<script type="text/javascript" src="/js/pagescripts/data-scores.js"></script>
 	<script type="text/javascript" src="/js/jquery/jquery.tablesorter.min.js"></script>

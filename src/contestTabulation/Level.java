@@ -44,6 +44,15 @@ public enum Level {
 		}
 	}
 
+	public static Level fromGrade(int grade) {
+		for (Level level : Level.values()) {
+			if (grade <= level.getHighGrade() && grade >= level.getLowGrade()) {
+				return level;
+			}
+		}
+		throw new IllegalArgumentException();
+	}
+
 	public int[] getGrades() {
 		if (this == MIDDLE) {
 			return new int[] {6, 7, 8};

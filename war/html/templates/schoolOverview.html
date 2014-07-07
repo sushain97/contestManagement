@@ -39,6 +39,8 @@
 				<strong>$student.getName() ($student.getGrade())</strong> -
 				$student.getScore($subject).getScoreNum() <br>
 			#end
+			#set($end = (4 - $school.getScoreStudents($subject).size()))
+			#foreach($i in [1..$end]) <br> #end
 			<div id="${subject}-PieGraph" style="padding-top: 10px;"></div>
 			<br>
 		</div>
@@ -48,7 +50,6 @@
 <script type="text/javascript">
 	$(document).ready(function () {
 		#foreach($subject in $subjects)
-			console.log('$Test.fromSubjectAndGrade($Level.fromString($level).getLowGrade(), $subject)');
 			$('#${subject}-PieGraph').highcharts({
 				chart: {
 					type: 'pie'

@@ -115,8 +115,7 @@
 							#foreach($bin in $bins)
 								$bin.getY()#if(!$foreach.last),#end
 							#end
-						  ],
-
+						],
 					}]
 				}, function(chart) {
 					#set($testSummaryStats = $statistics[$Test.fromSubjectAndGrade($grade, $subject)].getSummary())
@@ -215,13 +214,14 @@
 
 					var mean = $testSummaryStats.get("mean"), sd = $testSummaryStats.get("sd");
 					var multiplierX = chart.plotWidth / (chart.yAxis[0].max - chart.yAxis[0].min);
-					var multiplierY = (chart.plotHeight / pdf(mean, mean, sd) * .9) * (($grades.size() - $foreach.index) / $grades.size());
+					var multiplierY = chart.plotHeight / $grades.size() / pdf(mean, mean, sd) * .9;
+					var offsetY = ($grades.size() - $grades.indexOf($grade) - 1) * (chart.plotHeight / $grades.size());
 
-					var points = ['M', chart.plotLeft, (chart.plotTop + chart.plotHeight) - (pdf(chart.yAxis[0].min, mean, sd) * multiplierY)];
+					var points = ['M', chart.plotLeft, (chart.plotTop + chart.plotHeight) - (pdf(chart.yAxis[0].min, mean, sd) * multiplierY + offsetY)];
 					for(var i = chart.yAxis[0].min; (i - chart.yAxis[0].min) * multiplierX <= chart.plotWidth; i+=1) {
 						points.push('L');
 						points.push((i - chart.yAxis[0].min) * multiplierX + chart.plotLeft);
-						points.push((chart.plotTop + chart.plotHeight) - (pdf(i, mean, sd) * multiplierY));
+						points.push((chart.plotTop + chart.plotHeight) - (pdf(i, mean, sd) * multiplierY + offsetY));
 					}
 
 					chart.renderer.path(points).attr({

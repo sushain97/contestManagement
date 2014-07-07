@@ -303,7 +303,35 @@ public class Data extends BaseHttpServlet {
 				resp.sendRedirect("/data?choice=questions&updated=1");
 			}
 			else if (choice.equals("scores")) {
-				resp.sendRedirect("/data?choice=overview");
+				try {
+					JSONArray testsGradedJSON = new JSONArray(req.getParameter("testsGraded"));
+					ArrayList<String> testsGraded = new ArrayList<String>();
+					for (int i = 0; i < testsGradedJSON.length(); i++) {
+						testsGraded.add(testsGradedJSON.get(i).toString());
+					}
+
+					DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+					Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
+					try {
+						Entity contestInfo = Retrieve.contestInfo();
+						contestInfo.setProperty("testsGraded", testsGraded);
+						datastore.put(contestInfo);
+						txn.commit();
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+						resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+					}
+					finally {
+						if (txn.isActive()) {
+							txn.rollback();
+						}
+					}
+				}
+				catch (JSONException e) {
+					e.printStackTrace();
+					resp.sendError(HttpServletResponse.SC_BAD_REQUEST, e.toString());
+				}
 			}
 			else {
 				resp.sendRedirect("/data?choice=overview");

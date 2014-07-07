@@ -25,9 +25,9 @@
 		table {	width: auto !important; }
 		th, td { text-align: center !important; }
 		td.row-header { font-weight: bold; }
-		.success { background-color: #3fb618;}
-		.error { background-color: #ff0039;}
-		.warning { background-color: #ff7518;}
+		.success { background-color: #3fb618; }
+		.error { background-color: #ff0039; }
+		.warning { background-color: #ff7518; }
 		.divider {
 			background-color: #bbb;
 			border-bottom: 0;
@@ -151,13 +151,9 @@
 									<td class="row-header">${grade}th</td>
 									#foreach($subject in $subjects)
 										#if($testsGraded.contains("$grade$subject"))
-										<td class="success">
-											<i class="glyphicon glyphicon-check"></i>
-										</td>
+											<td class="success"><i class="glyphicon glyphicon-check"></i></td>
 										#else
-										<td class="warning">
-											<i class="glyphicon glyphicon-remove"></i>
-										</td>
+											<td class="warning"><i class="glyphicon glyphicon-remove"></i></td>
 										#end
 									#end
 								</tr>
@@ -178,13 +174,9 @@
 									<td class="row-header">${grade}th</td>
 									#foreach($subject in $subjects)
 										#if($testsGraded.contains("$grade$subject"))
-										<td class="success">
-											<i class="glyphicon glyphicon-check"></i>
-										</td>
+											<td class="success"><i class="glyphicon glyphicon-check"></i></td>
 										#else
-										<td class="warning">
-											<i class="glyphicon glyphicon-remove"></i>
-										</td>
+											<td class="warning"><i class="glyphicon glyphicon-remove"></i></td>
 										#end
 									#end
 								</tr>

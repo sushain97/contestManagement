@@ -48,6 +48,7 @@
 		@media screen and (min-width: 768px) and (max-width: 992px) {
 			body { padding-top: 110px; }
 		}
+		table#statusTable td { display: table-cell !important; }
 	</style>
 	<link type="text/css" href="/css/footer.css" rel="stylesheet">
 	<link type="text/css" href="/css/sticky-sidebar.css" rel="stylesheet">
@@ -169,13 +170,9 @@
 										<td class="row-header">${grade}th</td>
 										#foreach($subject in $subjects)
 											#if($testsGraded.contains("$grade$subject"))
-											<td class="success">
-												<i class="glyphicon glyphicon-check"></i>
-											</td>
+												<td class="success btn" data-test="$grade$subject"><i class="glyphicon glyphicon-check"></i></td>
 											#else
-											<td class="warning">
-												<i class="glyphicon glyphicon-remove"></i>
-											</td>
+												<td class="warning" data-test="$grade$subject"><i class="glyphicon glyphicon-remove"></i></td>
 											#end
 										#end
 									</tr>
@@ -196,13 +193,9 @@
 										<td class="row-header">${grade}th</td>
 										#foreach($subject in $subjects)
 											#if($testsGraded.contains("$grade$subject"))
-											<td class="success">
-												<i class="glyphicon glyphicon-check"></i>
-											</td>
+												<td class="success" data-test="$grade$subject"><i class="glyphicon glyphicon-check"></i></td>
 											#else
-											<td class="warning">
-												<i class="glyphicon glyphicon-remove"></i>
-											</td>
+												<td class="warning" data-test="$grade$subject"><i class="glyphicon glyphicon-remove"></i></td>
 											#end
 										#end
 									</tr>
@@ -210,7 +203,7 @@
 								#end
 							</tbody>
 						</table>
-						<button class="btn btn-default">Update</button>
+						<button class="btn btn-default" id="updateAvailability" style="display: none;">Update</button>
 
 					#elseif($type.equals("students"))
 						#parse("studentsOverview.html")

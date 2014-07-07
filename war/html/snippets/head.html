@@ -4,7 +4,7 @@
 <meta name="author" content="Sushain Cherivirala">
 <link rel="shortcut icon" href="/favicon.ico">
 
-#set($bootstrapURL = "//netdna.bootstrapcdn.com/bootswatch/3.1.0/cosmo/bootstrap.min.css")
+#set($bootstrapURL = "//netdna.bootstrapcdn.com/bootswatch/3.2.0/cosmo/bootstrap.min.css")
 <link type="text/css" href="$bootstrapURL" rel="stylesheet">
 <script type="text/javascript">
 	var styleSheets = document.styleSheets;
@@ -40,17 +40,20 @@
 	window.jQuery || document.write('<script type="text/javascript" src="/js/jquery/jquery.min.js"><\/script>')
 </script>
 
-<script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 	$.fn.modal || document.write('<script type="text/javascript" src="/js/bootstrap/bootstrap.min.js"><\/script>')
 </script>
 
 <!--[if lt IE 9]>
-	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv-printshiv.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/selectivizr/1.0.2/selectivizr-min.js"></script>
 
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv-printshiv.min.js"></script>
 	<script type="text/javascript">
 		window.html5 || document.write('<script type="text/javascript" src="js/html5hiv-printshiv.min.js"><\/script>')
 	</script>
+
+	<script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
 
 #if($googleAnalytics)

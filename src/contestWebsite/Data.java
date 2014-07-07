@@ -216,6 +216,10 @@ public class Data extends BaseHttpServlet {
 				}
 				else {
 					context.put("type", "overview");
+					Entity contestInfo = infoAndCookie.x;
+					if (contestInfo.hasProperty("testsGraded")) {
+						context.put("testsGraded", contestInfo.getProperty("testsGraded"));
+					}
 				}
 
 				PersistenceManager pm = PMF.get().getPersistenceManager();

@@ -9,7 +9,7 @@
 	<meta name="type" content="$type#if($level)$level.toUpperCase()#end">
 	#parse("head.html")
 	<style type="text/css">
-		.highlighted { background-color: #f5f5f5 !important; }
+		table:not(#statusTable) .highlighted { background-color: #f5f5f5 !important; }
 		@media print {
 			.col-md-9 {
 				position: absolute;
@@ -138,8 +138,80 @@
 							<button type="button" class="btn btn-default btn-sm hidden-print" id="qualButton">Mute Qualifying</button>
 						#end
 					</h1>
+
 					#if($type == "overview")
 						Choose an option at the left to view specific results.
+
+						<h2>Grading Progress (Tests Graded)</h2>
+
+						#set($numTests = 0.0)
+						#if($enabledLevels.contains("middle")) #set($numTests = $numTests + 12) #end
+						#if($enabledLevels.contains("high")) #set($numTests = $numTests + 16) #end
+						#set($percentComplete = $testsGraded.size() / $numTests * 100)
+						<div class="progress progress-striped active" style="width: 65%; min-width: 300px;">
+							<div class="progress-bar" role="progressbar" aria-valuenow="$percentComplete" aria-valuemin="0" aria-valuemax="100" style="width: $percentComplete%;"></div>
+						</div>
+						<div><strong class="lead">Click a test to toggle its status manually.</strong></div>
+
+						<table id="statusTable" class="table table-condensed">
+							<thead>
+								<tr>
+									<th>Grade</th>
+									#foreach($subject in $subjects)
+									<th>$subject.getName()</th>
+									#end
+								</tr>
+							</thead>
+							<tbody>
+								#if($enabledLevels.contains("middle"))
+									#foreach($grade in [6..8])
+									<tr>
+										<td class="row-header">${grade}th</td>
+										#foreach($subject in $subjects)
+											#if($testsGraded.contains("$grade$subject"))
+											<td class="success">
+												<i class="glyphicon glyphicon-check"></i>
+											</td>
+											#else
+											<td class="warning">
+												<i class="glyphicon glyphicon-remove"></i>
+											</td>
+											#end
+										#end
+									</tr>
+									#end
+								#end
+
+								#if($enabledLevels.contains("middle") && $enabledLevels.contains("high"))
+								<tr>
+									#foreach($i in [1..5])
+									<td></td>
+									#end
+								</tr>
+								#end
+
+								#if($enabledLevels.contains("high"))
+									#foreach($grade in [9..12])
+									<tr>
+										<td class="row-header">${grade}th</td>
+										#foreach($subject in $subjects)
+											#if($testsGraded.contains("$grade$subject"))
+											<td class="success">
+												<i class="glyphicon glyphicon-check"></i>
+											</td>
+											#else
+											<td class="warning">
+												<i class="glyphicon glyphicon-remove"></i>
+											</td>
+											#end
+										#end
+									</tr>
+									#end
+								#end
+							</tbody>
+						</table>
+						<button class="btn btn-default">Update</button>
+
 					#elseif($type.equals("students"))
 						#parse("studentsOverview.html")
 					#elseif($type.startsWith("school_"))

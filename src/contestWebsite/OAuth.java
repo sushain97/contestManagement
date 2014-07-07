@@ -65,7 +65,7 @@ public class OAuth extends HttpServlet {
 				resp.setStatus(HttpServletResponse.SC_OK);
 			}
 			catch (Exception e) {
-				resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
 			}
 		}
 		else {

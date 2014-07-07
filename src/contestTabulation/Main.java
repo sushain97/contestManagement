@@ -69,7 +69,6 @@ import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
 import com.google.gdata.data.spreadsheet.SpreadsheetFeed;
 import com.google.gdata.data.spreadsheet.WorksheetEntry;
 import com.google.gdata.data.spreadsheet.WorksheetFeed;
-import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
 @SuppressWarnings("serial")
@@ -79,7 +78,7 @@ public class Main extends HttpServlet {
 	private static final JacksonFactory jsonFactory = new JacksonFactory();
 
 	@Override
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) {
 		// TODO: Add Logging
 		final Set<Test> testsGraded = new HashSet<Test>();
 
@@ -174,7 +173,7 @@ public class Main extends HttpServlet {
 		service.setOAuth2Credentials(credential);
 	}
 
-	private static SpreadsheetEntry getSpreadSheet(String docString, Service service) throws AuthenticationException, MalformedURLException, IOException, ServiceException {
+	private static SpreadsheetEntry getSpreadSheet(String docString, Service service) throws ServiceException, MalformedURLException, IOException {
 		SpreadsheetFeed feed = service.getFeed(new URL("https://spreadsheets.google.com/feeds/spreadsheets/private/full"), SpreadsheetFeed.class);
 		List<SpreadsheetEntry> spreadsheets = feed.getEntries();
 

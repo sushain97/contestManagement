@@ -1,8 +1,8 @@
-<!-- Indices written at Thu, 6 Mar 2014 23:48:14 CST -->
+<!-- Indices written at Sun, 6 Jul 2014 19:36:20 CDT -->
 
 <datastore-indexes>
 
-    <!-- Used 16 times in query history -->
+    <!-- Used 7 times in query history -->
     <datastore-index kind="authToken" ancestor="false" source="auto">
         <property name="token" direction="asc"/>
         <property name="expires" direction="asc"/>

@@ -89,7 +89,8 @@ public class Setup extends BaseHttpServlet {
 
 		Entity contestInfo = Retrieve.contestInfo();
 
-		GoogleCredential credential = new GoogleCredential.Builder().setJsonFactory(jsonFactory)
+		GoogleCredential credential = new GoogleCredential.Builder()
+			.setJsonFactory(jsonFactory)
 			.setTransport(httpTransport)
 			.setClientSecrets((String) contestInfo.getProperty("OAuth2ClientId"), (String) contestInfo.getProperty("OAuth2ClientSecret"))
 			.build()

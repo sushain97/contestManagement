@@ -31,13 +31,54 @@
 
 <h2><a class="anchor" id="sweepstakes"></a>Current Sweepstakes Scores: <strong>$school.getTotalScore()</strong></h2>
 
-#foreach($subject in $subjects)
-	<div>
-		<div class="lead">$subject.getName(): <strong>$school.getScore($subject)</strong></div>
-		#foreach($student in $school.getScoreStudents($subject))
-			<strong>$student.getName() ($student.getGrade())</strong> -
-			$student.getScore($subject).getScoreNum() <br>
+<div class="row">
+	#foreach($subject in $subjects)
+		<div class="col-md-6">
+			<div class="lead">$subject.getName(): <strong>$school.getScore($subject)</strong></div>
+			#foreach($student in $school.getScoreStudents($subject))
+				<strong>$student.getName() ($student.getGrade())</strong> -
+				$student.getScore($subject).getScoreNum() <br>
+			#end
+			#set($end = (4 - $school.getScoreStudents($subject).size()))
+			#foreach($i in [1..$end]) <br> #end
+			<div id="${subject}-PieGraph" style="padding-top: 10px;"></div>
+			<br>
+		</div>
+	#end
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		#foreach($subject in $subjects)
+			$('#${subject}-PieGraph').highcharts({
+				chart: {
+					type: 'pie'
+				},
+				title: false,
+				series: [{
+					type: 'pie',
+					name: '$subject.getName() Score',
+					data: [
+						#set($total = 0)
+						#foreach($student in $school.getScoreStudents($subject))
+							#set($score = $student.getScore($subject).getScoreNum())
+							['$student.getPublicName()', $score],
+							#set($total = $total + $score)
+						#end
+						#set($remaining = $Test.fromSubjectAndGrade($Level.fromString($level).getLowGrade(), $subject).getMaxTeamScore() * 4 - $total)
+						{
+							name: 'Remaining',
+							dataLabels: false,
+							marker: {
+								enabled: false,
+							},
+							y: $remaining,
+							color: 'white',
+							tooltip: false
+						}
+					]
+				}]
+			});
 		#end
-		<br>
-	</div>
-#end
+	});
+</script>

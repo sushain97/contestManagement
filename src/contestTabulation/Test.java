@@ -67,6 +67,36 @@ public enum Test {
 		return grade;
 	}
 
+	public int getMaxTeamScore() {
+		switch (subject) {
+			case N:
+				return 400;
+			case C:
+				switch (Level.fromGrade(grade)) {
+					case MIDDLE:
+						return 400;
+					case HIGH:
+						return 350;
+				}
+			case M:
+				switch (Level.fromGrade(grade)) {
+					case MIDDLE:
+						return 250;
+					case HIGH:
+						return 360;
+				}
+			case S:
+				switch (Level.fromGrade(grade)) {
+					case MIDDLE:
+						return 250;
+					case HIGH:
+						return 360;
+				}
+		}
+
+		throw new IllegalArgumentException();
+	}
+
 	public Subject getSubject() {
 		return subject;
 	}

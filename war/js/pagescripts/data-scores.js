@@ -32,6 +32,31 @@ $(document).ready(function () {
 		}
 	});
 
+	$('table#statusTable td.success, table#statusTable td.warning').on('click', function() {
+		if($(this).hasClass('success'))
+			$(this).removeClass('success').addClass('warning').find('i').removeClass('glyphicon-check').addClass('glyphicon-remove');
+		else
+			$(this).removeClass('warning').addClass('success').find('i').removeClass('glyphicon-remove').addClass('glyphicon-check');
+		$('button#updateAvailability').fadeIn();
+	});
+
+	$('button#updateAvailability').on('click', function() {
+		var testsGraded = [];
+		$.each($('table#statusTable td.success'), function() {
+			testsGraded.push($(this).data('test'));
+		});
+
+		$.ajax({
+			'url': '/data?choice=scores',
+			'type': 'post',
+			'data': {
+				'testsGraded': JSON.stringify(testsGraded)
+			}
+		}).success(function() {
+			location.reload();
+		});
+	});
+
 	$.each($('table'), function() {
 		$.extend($.tablesorter.themes.bootstrap, {
 			table: 'table'

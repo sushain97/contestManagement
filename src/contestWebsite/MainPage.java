@@ -87,7 +87,9 @@ public class MainPage extends BaseHttpServlet {
 
 				Collections.sort(regData);
 				context.put("regData", regData);
+				context.put("level", contestTabulation.Level.fromString(props.get("schoolLevel").toString()));
 				context.put("studentData", unescapeHtml4(((Text) props.get("studentData")).getValue()));
+				context.put("price", infoAndCookie.x.getProperty("price"));
 				context.put("name", name);
 				context.put("user", user.getProperty("user-id"));
 			}
@@ -108,5 +110,28 @@ public class MainPage extends BaseHttpServlet {
 		context.put("siteVerification", infoAndCookie.x.getProperty("siteVerification"));
 
 		close(context, ve.getTemplate("main.html"), resp);
+	}
+
+	@Override
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		VelocityEngine ve = new VelocityEngine();
+		ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/pages, html/snippets, html/templates");
+		ve.init();
+		VelocityContext context = new VelocityContext();
+		Pair<Entity, UserCookie> infoAndCookie = init(context, req);
+
+		UserCookie userCookie = infoAndCookie.y;
+		Entity user = userCookie != null ? userCookie.authenticateUser() : null;
+		boolean loggedIn = (boolean) context.get("loggedIn");
+
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+		if (loggedIn && !userCookie.isAdmin()) {
+
+			resp.sendRedirect("/");
+		}
+		else {
+			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User account required for that operation");
+		}
 	}
 }

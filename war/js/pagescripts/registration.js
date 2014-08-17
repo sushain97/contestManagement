@@ -86,6 +86,7 @@ $(document).ready(function() {
 		for(var i = 0; i < numStudents; i++)
 			addStudent('', 6, [false, false, false, false]);
 	});
+
 	$(document).on('click', '.deleteBtn', function() {
 		var tr = $(this).parents('tr');
 		tr.hide('fast', function() {

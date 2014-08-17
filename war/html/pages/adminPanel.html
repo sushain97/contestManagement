@@ -96,6 +96,19 @@
 				</div>
 
 				<div class="form-group">
+					<label class="col-sm-2 control-label" for="datepicker">Registration Editing Dates</label>
+					<div class="col-sm-6 col-xs-9">
+						<div class="input-daterange input-group" id="datepicker" data-date-format="mm/dd/yyyy">
+							<input type="text" class="col-sm-3 form-control" name="editStartDate"
+								value='#if($contestInfo.getProperty("editStartDate"))$contestInfo.getProperty("editStartDate")#end' required>
+							<span class="input-group-addon"><strong>to</strong></span>
+							<input type="text" class="col-sm-3 form-control" name="editEndDate"
+								value='#if($contestInfo.getProperty("editEndDate"))$contestInfo.getProperty("editEndDate")#end' required>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
 					<label class="col-sm-2 col-xs-5 control-label" for="aboutText">About Text</label>
 					<div class="col-xs-7">
 						<textarea class="form-control" name="aboutText" rows="6">#if($contestInfo.getProperty("aboutText").getValue())$contestInfo.getProperty("aboutText").getValue()#end</textarea>

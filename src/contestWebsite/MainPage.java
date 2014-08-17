@@ -21,8 +21,11 @@ package contestWebsite;
 import static org.apache.commons.lang3.StringEscapeUtils.unescapeHtml4;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -92,11 +95,30 @@ public class MainPage extends BaseHttpServlet {
 					}
 				}
 
+				Entity contestInfo = infoAndCookie.x;
+				String endDateStr = (String) contestInfo.getProperty("editEndDate");
+				String startDateStr = (String) contestInfo.getProperty("editStartDate");
+
+				Date endDate = new Date();
+				Date startDate = new Date();
+				try {
+					endDate = new SimpleDateFormat("MM/dd/yyyy").parse(endDateStr);
+					startDate = new SimpleDateFormat("MM/dd/yyyy").parse(startDateStr);
+				}
+				catch (ParseException e) {
+					e.printStackTrace();
+					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Incorrect date format");
+				}
+
+				if (new Date().after(endDate) || new Date().before(startDate)) {
+					context.put("regEditClosed", true);
+				}
+
 				Collections.sort(regData);
 				context.put("regData", regData);
 				context.put("level", contestTabulation.Level.fromString(props.get("schoolLevel").toString()));
 				context.put("studentData", unescapeHtml4(((Text) props.get("studentData")).getValue()));
-				context.put("price", infoAndCookie.x.getProperty("price"));
+				context.put("price", contestInfo.getProperty("price"));
 				context.put("name", name);
 				context.put("user", user.getProperty("user-id"));
 				context.put("updated", req.getParameter("updated"));
@@ -135,57 +157,77 @@ public class MainPage extends BaseHttpServlet {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 		if (loggedIn && !userCookie.isAdmin()) {
-			Query query = new Query("registration").setFilter(new FilterPredicate("email", FilterOperator.EQUAL, user.getProperty("user-id")));
-			Entity registration = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
+			Entity contestInfo = infoAndCookie.x;
+			String endDateStr = (String) contestInfo.getProperty("editEndDate");
+			String startDateStr = (String) contestInfo.getProperty("editStartDate");
 
-			String studentData = req.getParameter("studentData");
-
-			JSONArray regData = null;
+			Date endDate = new Date();
+			Date startDate = new Date();
 			try {
-				regData = new JSONArray(studentData);
+				endDate = new SimpleDateFormat("MM/dd/yyyy").parse(endDateStr);
+				startDate = new SimpleDateFormat("MM/dd/yyyy").parse(startDateStr);
 			}
-			catch (JSONException e) {
+			catch (ParseException e) {
 				e.printStackTrace();
-				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
-				return;
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Incorrect date format");
 			}
 
-			long price = (Long) infoAndCookie.x.getProperty("price");
-			int cost = (int) (0 * price);
+			if (new Date().after(endDate) || new Date().before(startDate)) {
+				resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Registration editing deadline passed.");
+			}
+			else {
+				Query query = new Query("registration").setFilter(new FilterPredicate("email", FilterOperator.EQUAL, user.getProperty("user-id")));
+				Entity registration = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 
-			for (int i = 0; i < regData.length(); i++) {
+				String studentData = req.getParameter("studentData");
+
+				JSONArray regData = null;
 				try {
-					JSONObject studentRegData = regData.getJSONObject(i);
-					for (Subject subject : Subject.values()) {
-						cost += price * (studentRegData.getBoolean(subject.toString()) ? 1 : 0);
-					}
+					regData = new JSONArray(studentData);
 				}
 				catch (JSONException e) {
 					e.printStackTrace();
 					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
 					return;
 				}
-			}
 
-			registration.setProperty("cost", cost);
-			registration.setProperty("studentData", new Text(studentData));
+				long price = (Long) infoAndCookie.x.getProperty("price");
+				int cost = (int) (0 * price);
 
-			Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
-			try {
-				datastore.put(registration);
-				txn.commit();
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
-			}
-			finally {
-				if (txn.isActive()) {
-					txn.rollback();
+				for (int i = 0; i < regData.length(); i++) {
+					try {
+						JSONObject studentRegData = regData.getJSONObject(i);
+						for (Subject subject : Subject.values()) {
+							cost += price * (studentRegData.getBoolean(subject.toString()) ? 1 : 0);
+						}
+					}
+					catch (JSONException e) {
+						e.printStackTrace();
+						resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+						return;
+					}
 				}
-			}
 
-			resp.sendRedirect("/?updated=1");
+				registration.setProperty("cost", cost);
+				registration.setProperty("studentData", new Text(studentData));
+
+				Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
+				try {
+					datastore.put(registration);
+					txn.commit();
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+				}
+				finally {
+					if (txn.isActive()) {
+						txn.rollback();
+					}
+				}
+
+				resp.sendRedirect("/?updated=1");
+			}
 		}
 		else {
 			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User account required for that operation");

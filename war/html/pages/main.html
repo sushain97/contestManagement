@@ -43,7 +43,10 @@
 		<input type="hidden" name="level" id="level" value="$level">
 		<input type="hidden" name="price" id="price" value="$price">
 
-		<h3>Test Registrations</h3>
+		<h3>
+			Test Registrations
+			<button type="button" class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#importDataModal">Import Data</button>
+		</h3>
 
 		#if($updated)
 			<div class="alert alert-success">
@@ -148,6 +151,67 @@
 			</a>
 		</div>
 		#end
+	</div>
+
+	<div class="modal fade" id="importDataModal">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Import Registration Data</h4>
+				</div>
+				<div class="modal-body">
+					<div>
+						<p>
+							Here you can import data (TSV) from Excel or another spreadsheet program.
+							Ensure that you copy and paste only full rows with 6 columns (name, grade, NS, CA, MA, SC).
+							Do not include the column headings. For the exam rows, anything but a blank or whitespace will be
+							treated as a registration for that test. Following is an example:
+						</p>
+							<p><img src="http://skc.name/l?Ukt.direct"></p> <strong>when copied becomes</strong>
+							<pre>
+John Doe	6&#9;x&#9;x&#9;&#9;x
+Sarah Doe&#9;7&#9;&#9;&#9;&#9;x
+Bobby Doe	8&#9;x&#9;&#9;x&#9;x</pre>
+
+						<strong>Seperator (default: <kbd>TAB</kbd>, this is used by Excel):</strong>
+						<form class="form-inline" style="display: inline;">
+							<div class="form-group">
+								<input type="text" id="seperator" class="form-control input-sm" value="&#9;">
+							</div>
+						</form>
+					</div>
+
+					<br><br>
+
+					<div class="row">
+						<div class="col-md-6">
+							<textarea id="importData" class="form-control" placeholder="Copy and paste your data here." rows="10"></textarea>
+						</div>
+						<div class="col-md-6">
+							<table class="table table-striped table-condensed table-hover table-responsive text-center" id="importTable">
+								<thead>
+									<tr>
+										<th class="text-center">Name</th>
+										<th class="text-center">Grade</th>
+										<th class="text-center"><abbr title="Number Sense">N</abbr></th>
+										<th class="text-center"><abbr title="Calculator">C</abbr></th>
+										<th class="text-center"><abbr title="Mathematics">M</abbr></th>
+										<th class="text-center"><abbr title="Science">S</abbr></th>
+									</tr>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" id="import">Import Registrations</button>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<script type="text/javascript" src="/js/pagescripts/main.js"></script>

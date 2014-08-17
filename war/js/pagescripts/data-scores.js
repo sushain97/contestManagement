@@ -57,7 +57,7 @@ $(document).ready(function () {
 		});
 	});
 
-	$.each($('table'), function() {
+	$.each($('table:not(#statusTable)'), function() {
 		$.extend($.tablesorter.themes.bootstrap, {
 			table: 'table'
 		});

@@ -168,11 +168,11 @@ Todo
 ### Website ###
 
 1. **CRITICAL** Better database consistency for tabulation results
-2. **HIGH** Allowing logged-in user to modify registration (until a certain date) and still import data
-3. **MEDIUM** Improved tables/menus on mobile viewports
-4. **MEDIUM** Support for early/normal/late registration with different prices and date spans
-5. **MEDIUM** Ability to specify NS/NG/DQ in tabulation spreadsheets
-6. **MEDIUM** Ability to control availability table manually
+2. **CRITICAL** Adding support for elementary school
+3. **HIGH** Allowing logged-in user to modify registration (until a certain date) and still import data
+4. **MEDIUM** Improved tables/menus on mobile viewports
+5. **MEDIUM** Support for early/normal/late registration with different prices and date spans
+6. **MEDIUM** Ability to specify NS/NG/DQ in tabulation spreadsheets
 7. **LOW** All/None (clear) tests toggle button on the registration student tables
 8. **LOW** Send email to all users after competition ends with details on how to access scores
 9. **LOW** Better/updated documentation & comprehensive JavaDocs

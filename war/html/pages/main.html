@@ -31,9 +31,10 @@
 
 		#else To view the scores of your students, go to the <a
 			href="/viewScores">Score Viewer</a>.
-		<h3>Your Registration Information</h3>
-		To make any changes to the following information, go to the <a href="/contactUs">Contact Us</a> page. <br>
+		<h2>Your Registration Information</h2>
 
+		<h3>Identification</h3>
+		To make any changes to the following information, go to the <a href="/contactUs">Contact Us</a> page. <br><br>
 		<dl class="dl-horizontal">
 			#foreach($str in $regData) $str #end
 		</dl>
@@ -42,8 +43,16 @@
 		<input type="hidden" name="level" id="level" value="$level">
 		<input type="hidden" name="price" id="price" value="$price">
 
-		<form>
+		<h3>Test Registrations</h3>
 
+		#if($updated)
+			<div class="alert alert-success">
+				<a class="close" data-dismiss="alert">&times;</a>
+				<strong>Success:</strong> Your registration has been updated!
+			</div>
+		#end
+
+		<form method="post">
 			<table class="table table-striped table-condensed table-hover table-responsive" id="registrations">
 				<thead>
 					<tr>
@@ -91,7 +100,7 @@
 			</div>
 		</form>
 
-		<br><br>
+		<br><br><br><br>
 
 		<div style="clear: both;">
 			<h3>Change Password</h3>

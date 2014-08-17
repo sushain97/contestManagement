@@ -48,6 +48,13 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.TransactionOptions;
+import com.google.appengine.labs.repackaged.org.json.JSONArray;
+import com.google.appengine.labs.repackaged.org.json.JSONException;
+import com.google.appengine.labs.repackaged.org.json.JSONObject;
+
+import contestTabulation.Subject;
 
 @SuppressWarnings("serial")
 public class MainPage extends BaseHttpServlet {
@@ -80,7 +87,7 @@ public class MainPage extends BaseHttpServlet {
 
 				for (Entry<String, Object> prop : props.entrySet()) {
 					String key = prop.getKey();
-					if (!key.equals("account") && PropNames.names.get(key) != null && !prop.getValue().equals("")) {
+					if (!key.equals("account") && !key.equals("cost") && PropNames.names.get(key) != null && !prop.getValue().equals("")) {
 						regData.add("<dt>" + PropNames.names.get(key) + "</dt>\n<dd>" + prop.getValue() + "</dd>");
 					}
 				}
@@ -92,6 +99,7 @@ public class MainPage extends BaseHttpServlet {
 				context.put("price", infoAndCookie.x.getProperty("price"));
 				context.put("name", name);
 				context.put("user", user.getProperty("user-id"));
+				context.put("updated", req.getParameter("updated"));
 			}
 			else {
 				context.put("user", user.getProperty("user-id"));
@@ -127,8 +135,57 @@ public class MainPage extends BaseHttpServlet {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 		if (loggedIn && !userCookie.isAdmin()) {
+			Query query = new Query("registration").setFilter(new FilterPredicate("email", FilterOperator.EQUAL, user.getProperty("user-id")));
+			Entity registration = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 
-			resp.sendRedirect("/");
+			String studentData = req.getParameter("studentData");
+
+			JSONArray regData = null;
+			try {
+				regData = new JSONArray(studentData);
+			}
+			catch (JSONException e) {
+				e.printStackTrace();
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+				return;
+			}
+
+			long price = (Long) infoAndCookie.x.getProperty("price");
+			int cost = (int) (0 * price);
+
+			for (int i = 0; i < regData.length(); i++) {
+				try {
+					JSONObject studentRegData = regData.getJSONObject(i);
+					for (Subject subject : Subject.values()) {
+						cost += price * (studentRegData.getBoolean(subject.toString()) ? 1 : 0);
+					}
+				}
+				catch (JSONException e) {
+					e.printStackTrace();
+					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+					return;
+				}
+			}
+
+			registration.setProperty("cost", cost);
+			registration.setProperty("studentData", new Text(studentData));
+
+			Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
+			try {
+				datastore.put(registration);
+				txn.commit();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+			}
+			finally {
+				if (txn.isActive()) {
+					txn.rollback();
+				}
+			}
+
+			resp.sendRedirect("/?updated=1");
 		}
 		else {
 			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User account required for that operation");

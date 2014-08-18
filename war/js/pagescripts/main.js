@@ -55,25 +55,36 @@ $(document).ready(function() {
 					3: {sorter: 'checkbox'},
 					4: {sorter: 'checkbox'},
 					5: {sorter: 'checkbox'},
-					6: {sorter: 'checkbox'}
+					6: {sorter: 'checkbox'},
+					7: {sorter: false}
 				}
 			});
 
 		CalcCost();
 
-		$('.addStudentBtn').click(function() {
+		$('span.addStudentBtn').click(function() {
 			var numStudents = $(this).attr('data-numStudents');
 			for(var i = 0; i < numStudents; i++)
 				addStudent('', grades[0], [false, false, false, false]);
 		});
 
-		$(document).on('click', '.deleteBtn', function() {
+		$(document).on('click', 'span.deleteBtn', function() {
 			var tr = $(this).parents('tr');
 			tr.hide('fast', function() {
 				tr.remove();
 				$('#registrations').trigger('update');
 				CalcCost();
 			});
+		});
+
+		$(document).on('click', 'span.allBtn', function() {
+			$('input.testCheckbox', $(this).parents('tr')).attr("checked", true);
+			CalcCost();
+		});
+
+		$(document).on('click', 'span.noneBtn', function() {
+			$('input.testCheckbox', $(this).parents('tr')).attr("checked", false);
+			CalcCost();
 		});
 
 		$('input[type="number"]').change(CalcCost);
@@ -173,34 +184,14 @@ function addStudent(name, grade, subjects) {
 		tr.append(td);
 	}
 
+	tr.append('<td class="text-center visible-lg"><span class="btn btn-xs btn-default allBtn">All</span> <span class="btn btn-xs btn-default noneBtn">None</span></td>');
+
 	$('#registrations tbody').append(tr);
 	$('#registrations').trigger('update');
 	CalcCost();
 }
 
 function addFrozenStudent(name, grade, subjects) {
-	var tr = $('<tr class="student"></tr>');
-
-	tr.append($('<td class="text-center"></td>').text(name));
-	tr.append($('<td class="text-center"></td>').text(grade));
-
-	for(var j = 0; j < 4; j++) {
-		var td = $('<td class="text-center"></td>');
-		if(subjects[j]) {
-			td.html('<span class="hide">1</span><i class="glyphicon glyphicon-ok"></i>');
-			td.addClass('success');
-		}
-		else {
-			td.html('<span class="hide">0</span><i class="glyphicon glyphicon-remove"></i>');
-			td.addClass('danger');
-		}
-		tr.append(td);
-	}
-
-	$('#registrations tbody').append(tr);
-}
-
-function addStudentRow(name, grade, subjects) {
 	var tr = $('<tr class="student"></tr>');
 
 	tr.append($('<td class="text-center"></td>').text(name));

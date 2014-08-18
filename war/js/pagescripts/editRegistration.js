@@ -41,6 +41,8 @@ $(document).ready(function () {
 				tr.append(td);
 			}
 
+			tr.append('<td class="text-center visible-lg"><span class="btn btn-xs btn-default allBtn">All</span> <span class="btn btn-xs btn-default noneBtn">None</span></td>');
+
 			$('#registrations tbody').append(tr);
 		});
 	}
@@ -65,7 +67,8 @@ $(document).ready(function () {
 			3: {sorter: 'checkbox'},
 			4: {sorter: 'checkbox'},
 			5: {sorter: 'checkbox'},
-			6: {sorter: 'checkbox'}
+			6: {sorter: 'checkbox'},
+			7: {sorter: false }
 		}
 	});
 
@@ -80,7 +83,7 @@ $(document).ready(function () {
 
 	$('#schoolType1,#schoolType2').change(adjustGradeSelect);
 
-	$('.addStudentBtn').click(function() {
+	$('span.addStudentBtn').click(function() {
 		var numStudents = $(this).attr('data-numStudents');
 		for(var i = 0; i < numStudents; i++) {
 			var tr = $('<tr class="student"></tr>');
@@ -89,18 +92,29 @@ $(document).ready(function () {
 			tr.append($('<td class="text-center"><select class="midGrades"><option value="6">6</option><option value="7">7</option><option value="8">8</option></select><select class="highGrades"><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select></td>'));
 			for(var j = 0; j < 4; j++)
 				tr.append($('<td class="text-center"><input type="checkbox" class="testCheckbox"></td>'));
+			tr.append('<td class="text-center visible-lg"><span class="btn btn-xs btn-default allBtn">All</span> <span class="btn btn-xs btn-default noneBtn">None</span></td>');
 			$('#registrations tbody').append(tr);
 		}
 		$('#registrations').trigger('update');
 	});
 
-	$(document).on('click', '.deleteBtn', function() {
+	$(document).on('click', 'span.deleteBtn', function() {
 		var tr = $(this).parents('tr');
 		tr.hide('fast', function() {
 			tr.remove();
 			$('#registrations').trigger('update');
 			CalcCost();
 		});
+	});
+
+	$(document).on('click', 'span.allBtn', function() {
+		$('input.testCheckbox', $(this).parents('tr')).attr("checked", true);
+		CalcCost();
+	});
+
+	$(document).on('click', 'span.noneBtn', function() {
+		$('input.testCheckbox', $(this).parents('tr')).attr("checked", false);
+		CalcCost();
 	});
 
 	$('form').submit(function(ev) {

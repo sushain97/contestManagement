@@ -13,6 +13,8 @@
 		.carousel-caption { background-color:rgba(0, 0, 0, 0.75); }
 		.dl-horizontal dt { white-space: normal; }
 		.loading { margin-top: 25%; }
+		span.allBtn { position: absolute; }
+		span.noneBtn { position: relative; left: 2.5em; }
 	</style>
 	<link type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
 	<link type="text/css" href="/css/theme.bootstrap.css" rel="stylesheet">
@@ -69,6 +71,7 @@
 								<th class="col-xs-2 text-center">Calculator</th>
 								<th class="col-xs-2 text-center">Math</th>
 								<th class="col-xs-2 text-center">Science</th>
+								#if(!$regEditClosed) <th></th> #end
 							</tr>
 						</thead>
 						<tbody>

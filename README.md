@@ -172,15 +172,14 @@ Todo
 3. **HIGH** Improved tables/menus on mobile viewports
 4. **HIGH** Ability to specify NS/NG/DQ in tabulation spreadsheets
 5. **MEDIUM** Support for early/normal/late registration with different prices and date spans
-6. **LOW** All/None (clear) tests toggle button on the registration student tables
-7. **LOW** Send email to all users after competition ends with details on how to access scores
-8. **LOW** Better/updated documentation & comprehensive JavaDocs
-9. **LOW** More/improved graphs (can never really have too many)
-10. **LOW** Complete sorting when generating tabulation spreadsheet
-11. **LOW** Prevent CSRF
-12. **LOW** Optimize DB queries with limits
-13. **LOW** Allow undo of registration deletion
-14. **LOW** Display no-shows to admin
+6. **LOW** Send email to all users after competition ends with details on how to access scores
+7. **LOW** Better/updated documentation & comprehensive JavaDocs
+8. **LOW** More/improved graphs (can never really have too many)
+9. **LOW** Complete sorting when generating tabulation spreadsheet
+10. **LOW** Prevent CSRF
+11. **LOW** Optimize DB queries with limits
+12. **LOW** Allow undo of registration deletion
+13. **LOW** Display no-shows to admin
 
 ### Workflow ###
 

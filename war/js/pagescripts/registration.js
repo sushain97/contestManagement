@@ -48,7 +48,8 @@ $(document).ready(function() {
 				3: {sorter: 'checkbox'},
 				4: {sorter: 'checkbox'},
 				5: {sorter: 'checkbox'},
-				6: {sorter: 'checkbox'}
+				6: {sorter: 'checkbox'},
+				7: {sorter: false}
 			}
 		});
 	}
@@ -60,9 +61,9 @@ $(document).ready(function() {
 			});
 
 			$('#registrations').tablesorter({
-				theme : 'bootstrap',
-				headerTemplate : '{content} {icon}',
-				widgets : ['uitheme']
+				theme: 'bootstrap',
+				headerTemplate: '{content} {icon}',
+				widgets: ['uitheme']
 			});
 		}
 	}
@@ -81,19 +82,29 @@ $(document).ready(function() {
 		CalcCost();
 	});
 
-	$('.addStudentBtn').click(function() {
+	$('span.addStudentBtn').click(function() {
 		var numStudents = $(this).attr('data-numStudents');
 		for(var i = 0; i < numStudents; i++)
 			addStudent('', 6, [false, false, false, false]);
 	});
 
-	$(document).on('click', '.deleteBtn', function() {
+	$(document).on('click', 'span.deleteBtn', function() {
 		var tr = $(this).parents('tr');
 		tr.hide('fast', function() {
 			tr.remove();
 			$('#registrations').trigger('update');
 			CalcCost();
 		});
+	});
+
+	$(document).on('click', 'span.allBtn', function() {
+		$('input.testCheckbox', $(this).parents('tr')).attr("checked", true);
+		CalcCost();
+	});
+
+	$(document).on('click', 'span.noneBtn', function() {
+		$('input.testCheckbox', $(this).parents('tr')).attr("checked", false);
+		CalcCost();
 	});
 
 	$('button#import').click(function() {
@@ -206,6 +217,8 @@ function addStudent(name, grade, subjects) {
 		td.append($('<input type="checkbox" class="testCheckbox">').prop('checked', subjects[j]));
 		tr.append(td);
 	}
+
+	tr.append('<td class="text-center visible-lg"><span class="btn btn-xs btn-default allBtn">All</span> <span class="btn btn-xs btn-default noneBtn">None</span></td>');
 
 	$('#registrations tbody').append(tr);
 	$('#registrations').trigger('update');

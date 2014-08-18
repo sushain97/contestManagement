@@ -21,6 +21,8 @@
 			padding-top: 2px;
 		}
 		.tooltip { width: 300px !important; }
+		span.allBtn { position: absolute; }
+		span.noneBtn { position: relative; left: 2.5em; }
 	</style>
 	<link type="text/css" href="/css/theme.bootstrap.css" rel="stylesheet">
 </head>
@@ -35,7 +37,7 @@
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-6 control-label" for="delete">Delete Registration?</label>
 					<div class="input-group col-xs-6">
-						<label class="checkbox">
+						<label class="checkbox-inline">
 							<input type="checkbox" name="delete" id="delete">
 							This is a permanent deletion.
 						</label>
@@ -124,7 +126,7 @@
 						<label class="col-sm-2 col-xs-4 control-label" for="paid">Payment Comments</label>
 						<div class="input-group col-sm-5 col-xs-8">
 							<input type="text" name="paid" value="$paid" class="form-control" id="paid">
-							<span class="help-inline">Be concise and include your name</span>
+							<span class="help-block">Be concise and include your name</span>
 						</div>
 					</div>
 
@@ -140,6 +142,7 @@
 									<th class="col-xs-2 text-center">Calculator</th>
 									<th class="col-xs-2 text-center">Math</th>
 									<th class="col-xs-2 text-center">Science</th>
+									<th></th>
 								</tr>
 							</thead>
 							<tbody>

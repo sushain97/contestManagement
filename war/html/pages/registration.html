@@ -27,6 +27,8 @@
 			padding-top: 2px;
 		}
 		.tooltip { width: 300px !important; }
+		span.allBtn { position: absolute; }
+		span.noneBtn { position: relative; left: 2.5em; }
 	</style>
 	<link type="text/css" href="/css/theme.bootstrap.css" rel="stylesheet">
 </head>
@@ -219,6 +221,7 @@
 								<th class="col-xs-2 text-center">Calculator</th>
 								<th class="col-xs-2 text-center">Math</th>
 								<th class="col-xs-2 text-center">Science</th>
+								<th></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -244,6 +247,7 @@
 								<td class="text-center"><input type="checkbox" class="testCheckbox"></td>
 								<td class="text-center"><input type="checkbox" class="testCheckbox"></td>
 								<td class="text-center"><input type="checkbox" class="testCheckbox"></td>
+								<td class="text-center visible-lg"><span class="btn btn-xs btn-default allBtn">All</span> <span class="btn btn-xs btn-default noneBtn">None</span></td>
 							</tr>
 						</tbody>
 						<tfoot>

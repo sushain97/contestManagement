@@ -47,9 +47,9 @@ $(document).ready(function () {
 		});
 	}
 
-	EnableSubmit();
-	CalcCost();
-	CheckAccount();
+	enableSubmit();
+	calcCost();
+	checkAccount();
 	adjustGradeSelect();
 
 	$.extend($.tablesorter.themes.bootstrap, {
@@ -72,74 +72,17 @@ $(document).ready(function () {
 		}
 	});
 
-	$('input[type="number"]').change(CalcCost);
+	$('#regType1, #regType2').change(checkAccount);
+	$('#account').change(checkAccount);
 
-	$(document).on('change', 'table input[type=checkbox]', function() {
-		CalcCost();
-	});
-
-	$('#regType1,#regType2').change(CheckAccount);
-	$('#account').change(CheckAccount);
-
-	$('#schoolType1,#schoolType2').change(adjustGradeSelect);
-
-	$('span.addStudentBtn').click(function() {
-		var numStudents = $(this).attr('data-numStudents');
-		for(var i = 0; i < numStudents; i++) {
-			var tr = $('<tr class="student"></tr>');
-			tr.append($('<td class="text-center"><span class="btn btn-xs btn-default tableBtn deleteBtn"><i class="glyphicon glyphicon-remove"></i></span></td>'));
-			tr.append($('<td><input type="text" class="form-control input-sm" required></td>'));
-			tr.append($('<td class="text-center"><select class="midGrades"><option value="6">6</option><option value="7">7</option><option value="8">8</option></select><select class="highGrades"><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select></td>'));
-			for(var j = 0; j < 4; j++)
-				tr.append($('<td class="text-center"><input type="checkbox" class="testCheckbox"></td>'));
-			tr.append('<td class="text-center visible-lg"><span class="btn btn-xs btn-default allBtn">All</span> <span class="btn btn-xs btn-default noneBtn">None</span></td>');
-			$('#registrations tbody').append(tr);
-		}
-		$('#registrations').trigger('update');
-	});
-
-	$(document).on('click', 'span.deleteBtn', function() {
-		var tr = $(this).parents('tr');
-		tr.hide('fast', function() {
-			tr.remove();
-			$('#registrations').trigger('update');
-			CalcCost();
-		});
-	});
-
-	$(document).on('click', 'span.allBtn', function() {
-		$('input.testCheckbox', $(this).parents('tr')).attr("checked", true);
-		CalcCost();
-	});
-
-	$(document).on('click', 'span.noneBtn', function() {
-		$('input.testCheckbox', $(this).parents('tr')).attr("checked", false);
-		CalcCost();
-	});
-
-	$('form').submit(function(ev) {
-		var students = [];
-		$.each($('.student'), function() {
-			var td = $('td', this);
-			students.push({
-				"name": $(td[1]).find('input').val(),
-				"grade": parseInt($(td[2]).find('select:visible').val()),
-				"N": $(td[3]).find('input').prop('checked'),
-				"C": $(td[4]).find('input').prop('checked'),
-				"M": $(td[5]).find('input').prop('checked'),
-				"S": $(td[6]).find('input').prop('checked')
-			});
-		});
-		$('input[name=studentData]').remove();
-		$(this).append($('<input>').attr('type', 'hidden').attr('name', 'studentData').val(JSON.stringify(students)));
-	});
+	$('#schoolType1, #schoolType2').change(adjustGradeSelect);
 
 	$('#delete').change(function() {
 		$('#info').toggle('fast');
 	});
 });
 
-function CheckAccount() {
+function checkAccount() {
 	var account = $('#account').prop('checked') && $('#regType1').prop('checked');
 	$('#password').prop('required', account);
 	$('#confPassword').prop('required', account);
@@ -166,13 +109,13 @@ function adjustGradeSelect() {
 		$('<style id="gradeSelects"> .midGrades { display: none; } .highGrades { display: block; }</style>').appendTo('head');
 }
 
-function EnableSubmit() {
+function enableSubmit() {
 	$('#submit').prop('disabled', false);
 	$('#reset').prop('disabled', false);
 	$('#answerCaptcha').html('');
 }
 
-function CalcCost() {
-	var price = parseInt($('#price').val());
+function calcCost() {
+	var price = parseInt($('input#price').val());
 	$('#cost').val($('table input[type=checkbox]:checked').length * price);
 }

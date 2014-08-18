@@ -128,10 +128,10 @@
 
 			#if($slideshow)
 				<div class="loading center-block text-center"><i class="fa fa-spinner fa-spin fa-4x text-center" title="Loading..." alt="Loading..."></i></div>
-				<div id="myCarousel" class="carousel slide center-block">
+				<div id="carousel" class="carousel slide center-block">
 					<ol class="carousel-indicators">
 						#foreach($i in [1..$slideshow.size()])
-						<li data-target="#myCarousel" data-slide-to="$i"></li>
+						<li data-target="#carousel" data-slide-to="$i"></li>
 						#end
 					</ol>
 
@@ -139,7 +139,7 @@
 						#foreach($slide in $slideshow)
 							<div class="item">
 								<div class="carousel-pic">
-									<img src="$slide.get(0)" width="710px" class="img-thumbnail">
+									<img src="$slide.get(0)" class="img-thumbnail img-responsive">
 								</div>
 								<div class="carousel-caption">
 									<h4>$esc.html($slide.get(1))</h4>
@@ -149,10 +149,10 @@
 						#end
 					</div>
 
-					<a class="left carousel-control" href="#myCarousel" data-slide="prev">
+					<a class="left carousel-control" href="#carousel" data-slide="prev">
 						<span class="glyphicon glyphicon-chevron-left"></span>
 					</a>
-					<a class="right carousel-control" href="#myCarousel" data-slide="next">
+					<a class="right carousel-control" href="#carousel" data-slide="next">
 						<span class="glyphicon glyphicon-chevron-right"></span>
 					</a>
 				</div>

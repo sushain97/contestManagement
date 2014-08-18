@@ -139,15 +139,14 @@
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-5 control-label" for="levels">School Levels</label>
 					<div class="input-group col-sm-5 col-xs-7">
-						#set($levels = $contestInfo.getProperty("levels"))
 						<label class="radio-inline">
-							<input type="radio" name="levels" value="middle" #if($levels == "middle") checked #end> Middle
+							<input type="radio" name="levels" value="middle" #if($enabledLevels == "middle") checked #end> Middle
 						</label>
 						<label class="radio-inline">
-							<input type="radio" name="levels" value="high" #if($levels == "high") checked #end> High
+							<input type="radio" name="levels" value="high" #if($enabledLevels == "high") checked #end> High
 						</label>
 						<label class="radio-inline">
-							<input type="radio" name="levels" value="middle+high" #if($levels == "middle+high" || !$levels) checked #end> Middle &amp; High
+							<input type="radio" name="levels" value="middle+high" #if($enabledLevels == "middle+high" || !$levels) checked #end> Middle &amp; High
 						</label>
 					</div>
 				</div>
@@ -200,13 +199,13 @@
 					</div>
 				</div>
 
-				#if($levels.contains("middle"))
+				#if($enabledLevels.contains("middle"))
 				<div class="form-group">
 					<label class="col-sm-3 control-label" for="qualifying">Qualifying Scores</label>
 					#foreach($subject in $middleSubjects)
 						<div class="col-sm-1 control-label">$subject <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" title="$subject.getGrade()th $subject.getSubject().getName()"></span></div>
 						<div class="col-sm-1">
-							<input type="number" class="form-control" name="qualifying_$subject" value="#if($qualifyingCriteria.get($subject.toString()))$qualifyingCriteria.get($subject.toString())#end" required>
+							<input type="number" class="form-control" name="qualifying_$subject" value="#if($qualifyingCriteria.get($subject.toString()))$qualifyingCriteria.get($subject.toString())#end">
 						</div>
 						#if($foreach.count % 4 == 0)
 							<div class="col-sm-3"></div>
@@ -278,7 +277,7 @@
 				<div class="form-group">
 					<label class="col-sm-3 col-xs-5 control-label" for="siteVerification"><a href="https://support.google.com/webmasters/answer/35659" target="_blank">Google Site Verification</a></label>
 					<div class="col-sm-6 col-xs-7">
-						<input type="text" value='#if($contestInfo.getProperty("siteVerification"))$contestInfo.getProperty("siteVerification")#end' name="siteVerification" class="form-control" required>
+						<input type="text" value='#if($contestInfo.getProperty("siteVerification"))$contestInfo.getProperty("siteVerification")#end' name="siteVerification" class="form-control">
 					</div>
 				</div>
 

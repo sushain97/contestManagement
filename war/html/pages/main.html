@@ -6,7 +6,7 @@
 	<meta name="description" content="Learn about the $title">
 	<meta name="robots" content="index, follow">
 	#parse("head.html")
-	<meta name="google-site-verification" content="$siteVerification">
+	#if($siteVerification) <meta name="google-site-verification" content="$siteVerification"> #end
 	<style type="text/css">
 		.carousel { max-width: 700px; }
 		.carousel-indicators, .carousel-control, .carousel-inner { display: none; }
@@ -23,138 +23,137 @@
 
 	<div class="container">
 		#if($loggedIn)
-		<h1>Welcome, $name. #include("printButton.html")</h1>
+			<h1>Welcome, $name. #include("printButton.html")</h1>
 
-		#if($admin) To manage the competition and the admin account go to the <a href="/adminPanel">Admin Control Panel</a>.
-		<br> To view registrations, current scores and clarifications requested by coaches go to the
-		<a href="/data?choice=overview">Data Viewer</a>.
+			#if($admin)
+				To manage the competition and the admin account go to the <a href="/adminPanel">Admin Control Panel</a>.
+				<br> To view registrations, current scores and clarifications requested by coaches go to the
+				<a href="/data?choice=overview">Data Viewer</a>.
+			#else
+				To view the scores of your students, go to the <a href="/viewScores">Score Viewer</a>.
+				<h2>Your Registration Information</h2>
 
-		#else To view the scores of your students, go to the <a
-			href="/viewScores">Score Viewer</a>.
-		<h2>Your Registration Information</h2>
+				<h3>Identification</h3>
+				To make any changes to the following information, <a href="/contactUs">contact us</a>. <br><br>
+				<dl class="dl-horizontal">
+					#foreach($str in $regData) $str #end
+				</dl>
 
-		<h3>Identification</h3>
-		To make any changes to the following information, <a href="/contactUs">contact us</a>. <br><br>
-		<dl class="dl-horizontal">
-			#foreach($str in $regData) $str #end
-		</dl>
+				<input type="hidden" name="studentData" id="studentData" value='$studentData'>
+				<input type="hidden" name="level" id="level" value="$level">
+				<input type="hidden" name="price" id="price" value="$price">
+				<input type="hidden" name="regEditClosed" id="regEditClosed" value="$regEditClosed">
 
-		<input type="hidden" name="studentData" id="studentData" value='$studentData'>
-		<input type="hidden" name="level" id="level" value="$level">
-		<input type="hidden" name="price" id="price" value="$price">
-		<input type="hidden" name="regEditClosed" id="regEditClosed" value="$regEditClosed">
+				<h3>
+					Test Registrations
+					#if(!$regEditClosed) <button type="button" class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#importDataModal">Import Data</button> #end
+				</h3>
 
-		<h3>
-			Test Registrations
-			#if(!$regEditClosed) <button type="button" class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#importDataModal">Import Data</button> #end
-		</h3>
+				#if($regEditClosed) <h4>The deadline to edit registrations has passed, <a href="/contactUs">contact us</a> to make changes.</h4> #end
 
-		#if($regEditClosed) <h4>The deadline to edit registrations has passed, <a href="/contactUs">contact us</a> to make changes.</h4> #end
-
-		#if($updated)
-			<div class="alert alert-success">
-				<a class="close" data-dismiss="alert">&times;</a>
-				<strong>Success:</strong> Your registration has been updated!
-			</div>
-		#end
-
-		<form method="post">
-			<table class="table table-striped table-condensed table-hover table-responsive" id="registrations">
-				<thead>
-					<tr>
-						#if(!$regEditClosed) <th></th> #end
-						<th class="col-xs-3 text-center">Student Name</th>
-						<th class="col-xs-1 text-center" style="border-right: 2px solid #ddd;">Grade</th>
-						<th class="col-xs-2 text-center">Number Sense</th>
-						<th class="col-xs-2 text-center">Calculator</th>
-						<th class="col-xs-2 text-center">Math</th>
-						<th class="col-xs-2 text-center">Science</th>
-					</tr>
-				</thead>
-				<tbody>
-				</tbody>
-				<tfoot>
-					#if(!$regEditClosed)
-						<tr id="addOptions">
-							<td class="text-center" colspan=2>
-								<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="1">
-									<i class="glyphicon glyphicon-plus"></i>
-									Add a student
-								</span>
-							</td>
-							<td class="text-center" colspan=2>
-								<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="5">
-									<i class="glyphicon glyphicon-plus"></i>
-									Add 5 students
-								</span>
-							</td>
-							<td class="text-center" colspan=2>
-								<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="10">
-									<i class="glyphicon glyphicon-plus"></i>
-									Add 10 students
-								</span>
-							</td>
-						</tr>
-					#end
-				</tfoot>
-			</table>
-
-			<div class="pull-left lead" style="display: inline-block;">
-				<strong>Registration Charges:</strong> $<span id="cost"></span>
-			</div>
-
-			<div class="pull-right" style="display: inline-block;">
-				#if(!$regEditClosed) <button type="submit" id="makeChanges" class="btn btn-primary">Make Changes</button> #end
-			</div>
-		</form>
-
-		<br><br><br><br>
-
-		<div style="clear: both;">
-			<h3>Change Password</h3>
-			Go to the <a href="/changePass">Change Password</a> page to modify your account login password.
-		</div>
-
-		#end
-
-		<div class="col-md-offset-2 pull-right">
-			<a href="/signout?all" class="btn btn-sm btn-danger">Sign out of all sessions</a>
-		</div>
-
-		#else
-
-		<h1>About our Tournament</h1>
-		<p>$aboutText</p>
-
-		<div class="loading center-block text-center"><i class="fa fa-spinner fa-spin fa-4x text-center" title="Loading..." alt="Loading..."></i></div>
-		<div id="myCarousel" class="carousel slide center-block">
-			<ol class="carousel-indicators">
-				#foreach($i in [1..$slideshow.size()])
-				<li data-target="#myCarousel" data-slide-to="$i"></li>
-				#end
-			</ol>
-
-			<div class="carousel-inner text-center">
-				#foreach($slide in $slideshow)
-					<div class="item">
-						<div class="carousel-pic">
-							<img src="$slide.get(0)" width="710px" class="img-thumbnail">
-						</div>
-						<div class="carousel-caption">
-							<h4>$esc.html($slide.get(1))</h4>
-							<p>$esc.html($slide.get(2))</p>
-						</div>
+				#if($updated)
+					<div class="alert alert-success">
+						<a class="close" data-dismiss="alert">&times;</a>
+						<strong>Success:</strong> Your registration has been updated!
 					</div>
 				#end
-			</div>
 
-			<a class="left carousel-control" href="#myCarousel" data-slide="prev">
-				<span class="glyphicon glyphicon-chevron-left"></span>
-			</a>
-			<a class="right carousel-control" href="#myCarousel" data-slide="next">
-				<span class="glyphicon glyphicon-chevron-right"></span>
-			</a>
-		</div>
+				<form method="post">
+					<table class="table table-striped table-condensed table-hover table-responsive" id="registrations">
+						<thead>
+							<tr>
+								#if(!$regEditClosed) <th></th> #end
+								<th class="col-xs-3 text-center">Student Name</th>
+								<th class="col-xs-1 text-center" style="border-right: 2px solid #ddd;">Grade</th>
+								<th class="col-xs-2 text-center">Number Sense</th>
+								<th class="col-xs-2 text-center">Calculator</th>
+								<th class="col-xs-2 text-center">Math</th>
+								<th class="col-xs-2 text-center">Science</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+						<tfoot>
+							#if(!$regEditClosed)
+								<tr id="addOptions">
+									<td class="text-center" colspan=2>
+										<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="1">
+											<i class="glyphicon glyphicon-plus"></i>
+											Add a student
+										</span>
+									</td>
+									<td class="text-center" colspan=2>
+										<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="5">
+											<i class="glyphicon glyphicon-plus"></i>
+											Add 5 students
+										</span>
+									</td>
+									<td class="text-center" colspan=2>
+										<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="10">
+											<i class="glyphicon glyphicon-plus"></i>
+											Add 10 students
+										</span>
+									</td>
+								</tr>
+							#end
+						</tfoot>
+					</table>
+
+					<div class="pull-left lead" style="display: inline-block;">
+						<strong>Registration Charges:</strong> $<span id="cost"></span>
+					</div>
+
+					<div class="pull-right" style="display: inline-block;">
+						#if(!$regEditClosed) <button type="submit" id="makeChanges" class="btn btn-primary">Make Changes</button> #end
+					</div>
+				</form>
+
+				<br><br><br><br>
+
+				<div style="clear: both;">
+					<h3>Change Password</h3>
+					Go to the <a href="/changePass">Change Password</a> page to modify your account login password.
+				</div>
+			#end
+
+			<div class="col-md-offset-2 pull-right">
+				<a href="/signout?all" class="btn btn-sm btn-danger">Sign out of all sessions</a>
+			</div>
+		#else
+			<h1>About our Tournament</h1>
+			#if($aboutText) <p>$aboutText</p> #end
+
+			#if($slideshow)
+				<div class="loading center-block text-center"><i class="fa fa-spinner fa-spin fa-4x text-center" title="Loading..." alt="Loading..."></i></div>
+				<div id="myCarousel" class="carousel slide center-block">
+					<ol class="carousel-indicators">
+						#foreach($i in [1..$slideshow.size()])
+						<li data-target="#myCarousel" data-slide-to="$i"></li>
+						#end
+					</ol>
+
+					<div class="carousel-inner text-center">
+						#foreach($slide in $slideshow)
+							<div class="item">
+								<div class="carousel-pic">
+									<img src="$slide.get(0)" width="710px" class="img-thumbnail">
+								</div>
+								<div class="carousel-caption">
+									<h4>$esc.html($slide.get(1))</h4>
+									<p>$esc.html($slide.get(2))</p>
+								</div>
+							</div>
+						#end
+					</div>
+
+					<a class="left carousel-control" href="#myCarousel" data-slide="prev">
+						<span class="glyphicon glyphicon-chevron-left"></span>
+					</a>
+					<a class="right carousel-control" href="#myCarousel" data-slide="next">
+						<span class="glyphicon glyphicon-chevron-right"></span>
+					</a>
+				</div>
+			#end
 		#end
 	</div>
 

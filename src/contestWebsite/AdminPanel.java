@@ -88,10 +88,16 @@ public class AdminPanel extends BaseHttpServlet {
 			String passError = req.getParameter("passError");
 			context.put("passError", passError != null && passError.equals("1") ? "That password is incorrect, try again." : null);
 
-			context.put("awardCriteria", Retrieve.awardCriteria(contestInfo));
-			context.put("qualifyingCriteria", Retrieve.qualifyingCriteria(contestInfo));
-			context.put("clientId", contestInfo.getProperty("OAuth2ClientId"));
-			context.put("middleSubjects", Test.getTests(Level.MIDDLE));
+			try {
+				context.put("awardCriteria", Retrieve.awardCriteria(contestInfo));
+				context.put("qualifyingCriteria", Retrieve.qualifyingCriteria(contestInfo));
+				context.put("clientId", contestInfo.getProperty("OAuth2ClientId"));
+				context.put("middleSubjects", Test.getTests(Level.MIDDLE));
+			}
+			catch (Exception e) {
+				System.err.println("Surpressing exception while loading admin panel");
+				e.printStackTrace();
+			}
 
 			close(context, ve.getTemplate("adminPanel.html"), resp);
 		}
@@ -134,7 +140,9 @@ public class AdminPanel extends BaseHttpServlet {
 						awardCriteria.put(entry.getKey().replace("counts_", ""), Integer.parseInt(entry.getValue()[0]));
 					}
 					else if (entry.getKey().startsWith("qualifying_")) {
-						qualifyingCriteria.put(entry.getKey().replace("qualifying_", ""), Integer.parseInt(entry.getValue()[0]));
+						if (!entry.getValue()[0].isEmpty()) {
+							qualifyingCriteria.put(entry.getKey().replace("qualifying_", ""), Integer.parseInt(entry.getValue()[0]));
+						}
 					}
 				}
 				contestInfo.setProperty("awardCriteria", new Text(awardCriteria.toString()));

@@ -22,18 +22,20 @@
 			#include("printButton.html")
 		</h1>
 
-		<p>$aboutText</p>
+		#if($aboutText) <p>$aboutText</p> #end
 		<div class="row">
 			<div class="col-sm-6">
-				<h2>Schedule</h2>
-				<dl class="dl-horizontal"> <!-- TODO: Add FullCalendar JS Calendar -->
-					#foreach($entry in $schedule.entrySet())
-						<dt>$entry.key</dt>
-						<dd>$entry.value</dd>
-					#end
-				</dl>
+				#if($schedule)
+					<h2>Schedule</h2>
+					<dl class="dl-horizontal"> <!-- TODO: Add FullCalendar JS Calendar -->
+						#foreach($entry in $schedule.entrySet())
+							<dt>$entry.key</dt>
+							<dd>$entry.value</dd>
+						#end
+					</dl>
+				#end
 			</div>
-			#if($enabledLevels.contains("middle"))
+			#if($enabledLevels.contains("middle") && $qualifyingCriteria && $qualifyingCriteria != "{}")
 				<div class="col-sm-6">
 					<h2>Qualifying Scores</h2>
 
@@ -42,8 +44,10 @@
 						#foreach($subject in $Subject.values())
 							#set($testString = $grade.toString() + $subject.toString())
 							#set($test = $Test.fromString($testString))
-							<dt>$test.getGrade()th $test.getSubject().getName()</dt>
-							<dd>$qualifyingCriteria.get($testString)</dd>
+							#if($qualifyingCriteria.get($testString))
+								<dt>$test.getGrade()th $test.getSubject().getName()</dt>
+								<dd>$qualifyingCriteria.get($testString)</dd>
+							#end
 						#end
 					</dl>
 					#end

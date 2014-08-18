@@ -45,11 +45,15 @@
 				recorded. You will receive a confirmation e-mail soon.
 			</div>
 
-			<h3>Your Registration Information</h3>
-			To make any changes to the following information, go to the <a href="/contactUs">Contact Us</a> page. <br>
+			<h2>Your Registration Information</h2>
+			<h3>Identification</h3>
+			To make any changes to the following information, <a href="/contactUs">contact us</a>. <br><br>
 			<dl class="dl-horizontal">
 				#foreach($str in $regData) $str #end
 			</dl>
+
+			<h3>Test Registrations</h3>
+			To make any changes to your student registrations, <a href="/login">log in</a>. <br><br>
 
 			<table class="table table-striped table-condensed table-hover table-responsive" id="registrations">
 				<thead>
@@ -92,7 +96,7 @@
 						<label class="radio-inline">
 							<input type="radio" name="registrationType" id="regType2" value="student" #if($student) checked #end> Student
 						</label>
-						<span class="text-danger help-block" id="registerWarning">Do <strong>not</strong> register here if your coach will register for the school. Only register as a student
+						<span class="text-danger help-block" id="registerWarning" style="display: none;">Do <strong>not</strong> register here if your coach will register for the school. Only register as a student
 							here if you do <strong>not</strong> have a coach or will be paying us directly.</span>
 					</div>
 				</div>
@@ -110,6 +114,7 @@
 							<input type="radio" name="schoolLevel" id="schoolType2" value="high" #if($high || !$enabledLevels.contains("middle")) checked #end> High
 						</label>
 						#end
+						<span class="text-warning help-block">If your school contains both high school and middle school students, please make two separate registrations.</span>
 					</div>
 				</div>
 
@@ -165,7 +170,7 @@
 
 				<div class="form-group" id="makeAccount">
 					<p class="help-block">
-						An account allows you to check your scores <em>online</em> during and after the competition and review your registration.
+						An account allows you to check your scores <em>online</em> during and after the competition and edit/review your registration.
 					</p>
 					<label class="col-sm-2 col-xs-6 control-label" for="account">Create an Account?</label>
 

@@ -47,6 +47,7 @@ public class Score implements Comparable<Score>, java.io.Serializable {
 
 	Score(String score) {
 		score = Objects.requireNonNull(score).trim();
+
 		try {
 			Integer scoreNum, scoreMod;
 
@@ -55,17 +56,8 @@ public class Score implements Comparable<Score>, java.io.Serializable {
 				Matcher matcher = pattern.matcher(score);
 				matcher.matches();
 
-				String flagName = matcher.group(1);
-
-				if (flagName.equalsIgnoreCase("NS") || flagName.equalsIgnoreCase("NG")) {
-					scoreNum = NS_FLAG;
-				}
-				else if (flagName.equalsIgnoreCase("DQ")) {
-					scoreNum = DQ_FLAG;
-				}
-				else {
-					throw new IllegalArgumentException("Invalid score flag");
-				}
+				Flag flag = Flag.fromString(matcher.group(1));
+				scoreNum = flag.flagNum;
 				scoreMod = 0;
 				isNumeric = false;
 			}
@@ -172,6 +164,14 @@ public class Score implements Comparable<Score>, java.io.Serializable {
 		return score.x;
 	}
 
+	public int getScoreMod() {
+		return score.y;
+	}
+
+	public boolean isNumeric() {
+		return isNumeric;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -183,5 +183,41 @@ public class Score implements Comparable<Score>, java.io.Serializable {
 	@Override
 	public String toString() {
 		return score.x.toString() + (score.y != 0 ? (char) (score.y + 64) : "");
+	}
+
+	public enum Flag {
+		NS(-401), DQ(-402);
+
+		public static Flag fromString(String flagName) {
+			flagName = Objects.requireNonNull(flagName).trim();
+
+			if (flagName.equalsIgnoreCase("NS") || flagName.equalsIgnoreCase("NG")) {
+				return NS;
+			}
+			else if (flagName.equalsIgnoreCase("DQ")) {
+				return DQ;
+			}
+			else {
+				throw new IllegalArgumentException();
+			}
+		}
+
+		public final int flagNum;
+
+		private Flag(int flagNum) {
+			this.flagNum = flagNum;
+		}
+
+		@Override
+		public String toString() {
+			switch (flagNum) {
+				case -401:
+					return "NS";
+				case -402:
+					return "DQ";
+				default:
+					throw new UnsupportedOperationException();
+			}
+		}
 	}
 }

@@ -1,7 +1,7 @@
 Highcharts.theme = {
 	colors: ['#007fff', '#2f96b4', '#51a351', '#f89406', '#bd362f', '#222222', '#f5f5f5'],
 	credits: {
-	    text: 'Highcharts'
+		text: 'Highcharts'
 	},
 	chart: {
 		backgroundColor: 'transparent',

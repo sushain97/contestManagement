@@ -137,7 +137,7 @@
 					<h1>
 						Contest Results
 						#include("printButton.html")
-						#if($level == "middle" && ($type.equals("students") || $type.startsWith("school_")))
+						#if($level == "middle" && ($type.equals("students") || $type.startsWith("school_")) && $qualifyingCriteria && $qualifyingCriteria != "{}")
 							<button type="button" class="btn btn-default btn-sm hidden-print" id="qualButton">Mute Qualifying</button>
 						#end
 					</h1>

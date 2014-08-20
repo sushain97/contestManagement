@@ -77,6 +77,7 @@
 					},
 					legend: false,
 					tooltip: {
+						pointFormat: "Frequency: <b>{point.y}</b>",
 						useHTML: true
 					},
 					xAxis: {
@@ -87,8 +88,6 @@
 						],
 						labels: {
 							rotation: -90,
-							y: 50,
-							x: 40,
 							useHTML: true
 						},
 						title: {
@@ -190,7 +189,7 @@
 					tooltip: {
 						headerFormat: '<em>Grade {point.key}</em><br>'
 					}
-				},{
+				}, {
 					name: 'Outlier',
 					color: Highcharts.getOptions().colors[0],
 					type: 'scatter',

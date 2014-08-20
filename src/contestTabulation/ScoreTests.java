@@ -55,6 +55,13 @@ public class ScoreTests {
 	}
 
 	@Test
+	public void testFlags() {
+		assertEquals("NS must result in (-401, 0)", new Pair<Integer, Integer>(-401, 0), new Score("NS").getScore());
+		assertEquals("NG must result in (-401, 0)", new Pair<Integer, Integer>(-401, 0), new Score("NG").getScore());
+		assertEquals("DQ must result in (-402, 0)", new Pair<Integer, Integer>(-402, 0), new Score("DQ").getScore());
+	}
+
+	@Test
 	public void testTrim() {
 		assertEquals("-00400.012 must result in (-400, 12)", new Pair<Integer, Integer>(-400, 12), new Score("-00400.012").getScore());
 		assertEquals("-00400.0010 must result in (-400, 10)", new Pair<Integer, Integer>(-400, 10), new Score("-00400.0010").getScore());

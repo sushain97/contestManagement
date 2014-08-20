@@ -39,21 +39,24 @@ public class Score implements Comparable<Score>, java.io.Serializable {
 	public static final int DQ_FLAG = -402;
 
 	public static boolean isScore(String str) {
-		return str.matches(LETTER_FORMAT) || str.matches(DECIMAL_FORMAT);
+		return str.matches(LETTER_FORMAT) || str.matches(LETTER_FORMAT) || str.matches(DECIMAL_FORMAT);
 	}
 
 	@Persistent private Pair<Integer, Integer> score; // Number, Modifier
+	@Persistent private boolean isNumeric = true;
 
 	Score(String score) {
 		score = Objects.requireNonNull(score).trim();
 		try {
 			Integer scoreNum, scoreMod;
+
 			if (score.matches(FLAG_FORMAT)) {
 				Pattern pattern = Pattern.compile(FLAG_FORMAT);
 				Matcher matcher = pattern.matcher(score);
 				matcher.matches();
 
 				String flagName = matcher.group(1);
+
 				if (flagName.equalsIgnoreCase("NS") || flagName.equalsIgnoreCase("NG")) {
 					scoreNum = NS_FLAG;
 				}
@@ -64,8 +67,9 @@ public class Score implements Comparable<Score>, java.io.Serializable {
 					throw new IllegalArgumentException("Invalid score flag");
 				}
 				scoreMod = 0;
+				isNumeric = false;
 			}
-			if (score.matches(LETTER_FORMAT)) {
+			else if (score.matches(LETTER_FORMAT)) {
 				Pattern pattern = Pattern.compile(LETTER_FORMAT);
 				Matcher matcher = pattern.matcher(score);
 				matcher.matches();
@@ -103,15 +107,18 @@ public class Score implements Comparable<Score>, java.io.Serializable {
 
 			this.score = new Pair<Integer, Integer>(scoreNum, scoreMod);
 		}
+		catch (IllegalArgumentException e) {
+			throw e;
+		}
 		catch (Exception e) {
 			throw new IllegalArgumentException("Unable to parse score");
 		}
 
-		if (Math.abs(this.score.x) > 401) {
+		if (Math.abs(this.score.x) > 401 && isNumeric) {
 			throw new IllegalArgumentException("Score larger than expected: " + this.score.x);
 		}
 
-		if (this.score.y > 26) {
+		if (this.score.y > 26 && isNumeric) {
 			throw new IllegalArgumentException("Score modifier larger than expected: " + this.score.y);
 		}
 	}

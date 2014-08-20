@@ -1,4 +1,4 @@
-<h2><a class="anchor" id="scores"></a>Scores <small class="pull-right"><span class="text-success">Green</span> indicates qualifying</small></h2>
+<h2><a class="anchor" id="scores"></a>Scores #if($qualifyingCriteria && $qualifyingCriteria != "{}") <small class="pull-right"><span class="text-success">Green</span> indicates qualifying</small> #end</h2>
 
 <table class="table table-striped table-condensed table-hover">
 	<thead>
@@ -55,6 +55,15 @@
 					type: 'pie'
 				},
 				title: false,
+				tooltip: {
+					pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+				},
+				plotOptions: {
+					pie: {
+						allowPointSelect: true,
+						cursor: 'pointer'
+					}
+				},
 				series: [{
 					type: 'pie',
 					name: '$subject.getName() Score',

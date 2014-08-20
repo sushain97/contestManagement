@@ -146,7 +146,7 @@
 							<input type="radio" name="levels" value="high" #if($enabledLevels == "high") checked #end> High
 						</label>
 						<label class="radio-inline">
-							<input type="radio" name="levels" value="middle+high" #if($enabledLevels == "middle+high" || !$levels) checked #end> Middle &amp; High
+							<input type="radio" name="levels" value="middle+high" #if($enabledLevels == "middle+high" || !$enabledLevels) checked #end> Middle &amp; High
 						</label>
 					</div>
 				</div>
@@ -320,6 +320,7 @@
 						</div>
 					</div>
 
+					#if($enabledLevels.split("\+").contains("middle"))
 					<div class="form-group">
 						<label class="col-sm-3 control-label" for="schoolName">Middle School Doc</label>
 						<div class="col-sm-5">
@@ -330,8 +331,11 @@
 						<div class="col-sm-3" class="docButton" id="middleDocButton">
 							<button type="button" class="btn btn-default">Create Empty Spreadsheet</button>
 						</div>
-					</div>
 
+					</div>
+					#end
+
+					#if($enabledLevels.split("\+").contains("high"))
 					<div class="form-group">
 						<label class="col-sm-3 control-label" for="schoolName">High School Doc</label>
 						<div class="col-sm-5">
@@ -343,6 +347,7 @@
 							<button type="button" class="btn btn-default">Create Empty Spreadsheet</button>
 						</div>
 					</div>
+					#end
 				</div>
 
 				<div class="form-group">

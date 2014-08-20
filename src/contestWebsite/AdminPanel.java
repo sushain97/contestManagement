@@ -55,6 +55,7 @@ import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 import contestTabulation.Level;
@@ -178,14 +179,18 @@ public class AdminPanel extends BaseHttpServlet {
 				}
 
 				if (params.containsKey("update")) {
-					String docHigh = params.get("docHigh")[0];
-					String docMiddle = params.get("docMiddle")[0];
-
-					contestInfo.setProperty("docHigh", docHigh);
-					contestInfo.setProperty("docMiddle", docMiddle);
-
 					Queue queue = QueueFactory.getDefaultQueue();
-					queue.add(withUrl("/tabulate").param("docMiddle", docMiddle).param("docHigh", docHigh));
+					TaskOptions options = withUrl("/tabulate");
+
+					for (Level level : Level.values()) {
+						String[] docNames = params.get("doc" + level.getName());
+						if (docNames != null) {
+							contestInfo.setProperty("doc" + level.getName(), docNames[0]);
+							options.param("doc" + level.getName(), docNames[0]);
+						}
+					}
+
+					queue.add(options);
 				}
 
 				datastore.put(contestInfo);

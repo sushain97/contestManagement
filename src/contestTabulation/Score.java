@@ -35,9 +35,6 @@ public class Score implements Comparable<Score>, java.io.Serializable {
 	private static final String LETTER_FORMAT = "^((?:[\\+-])?[0-9]+)([A-z])?$";
 	private static final String DECIMAL_FORMAT = "^((?:[\\+-])?[0-9]+)(?:\\.([0-9]+))?$";
 
-	public static final int NS_FLAG = -401;
-	public static final int DQ_FLAG = -402;
-
 	public static boolean isScore(String str) {
 		return str.matches(LETTER_FORMAT) || str.matches(LETTER_FORMAT) || str.matches(DECIMAL_FORMAT);
 	}
@@ -182,7 +179,12 @@ public class Score implements Comparable<Score>, java.io.Serializable {
 
 	@Override
 	public String toString() {
-		return score.x.toString() + (score.y != 0 ? (char) (score.y + 64) : "");
+		if (isNumeric) {
+			return score.x.toString() + (score.y != 0 ? (char) (score.y + 64) : "");
+		}
+		else {
+			return Flag.fromFlagNum(score.x).toString();
+		}
 	}
 
 	public enum Flag {
@@ -199,6 +201,17 @@ public class Score implements Comparable<Score>, java.io.Serializable {
 			}
 			else {
 				throw new IllegalArgumentException();
+			}
+		}
+
+		public static Flag fromFlagNum(int flagNum) {
+			switch (flagNum) {
+				case -401:
+					return NS;
+				case -402:
+					return DQ;
+				default:
+					throw new IllegalArgumentException();
 			}
 		}
 

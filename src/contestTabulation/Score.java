@@ -31,8 +31,12 @@ import util.Pair;
 public class Score implements Comparable<Score>, java.io.Serializable {
 	private static final long serialVersionUID = 1631716116306090911L;
 
+	private static final String FLAG_FORMAT = "(?i)^(NS|NG|DQ)$";
 	private static final String LETTER_FORMAT = "^((?:[\\+-])?[0-9]+)([A-z])?$";
 	private static final String DECIMAL_FORMAT = "^((?:[\\+-])?[0-9]+)(?:\\.([0-9]+))?$";
+
+	public static final int NS_FLAG = -401;
+	public static final int DQ_FLAG = -402;
 
 	public static boolean isScore(String str) {
 		return str.matches(LETTER_FORMAT) || str.matches(DECIMAL_FORMAT);
@@ -44,6 +48,23 @@ public class Score implements Comparable<Score>, java.io.Serializable {
 		score = Objects.requireNonNull(score).trim();
 		try {
 			Integer scoreNum, scoreMod;
+			if (score.matches(FLAG_FORMAT)) {
+				Pattern pattern = Pattern.compile(FLAG_FORMAT);
+				Matcher matcher = pattern.matcher(score);
+				matcher.matches();
+
+				String flagName = matcher.group(1);
+				if (flagName.equalsIgnoreCase("NS") || flagName.equalsIgnoreCase("NG")) {
+					scoreNum = NS_FLAG;
+				}
+				else if (flagName.equalsIgnoreCase("DQ")) {
+					scoreNum = DQ_FLAG;
+				}
+				else {
+					throw new IllegalArgumentException("Invalid score flag");
+				}
+				scoreMod = 0;
+			}
 			if (score.matches(LETTER_FORMAT)) {
 				Pattern pattern = Pattern.compile(LETTER_FORMAT);
 				Matcher matcher = pattern.matcher(score);

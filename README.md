@@ -170,8 +170,8 @@ Todo
 1. **CRITICAL** Better database consistency for tabulation results
 2. **CRITICAL** Adding support for elementary school
 3. **HIGH** Improved tables/menus on mobile viewports
-4. **HIGH** Ability to specify NS/NG/DQ in tabulation spreadsheets
-5. **MEDIUM** Support for early/normal/late registration with different prices and date spans
+4. **MEDIUM** Support for early/normal/late registration with different prices and date spans
+5. **MEDIUM** Support Pagespeed plugin with modified minimal settings
 6. **LOW** Send email to all users after competition ends with details on how to access scores
 7. **LOW** Better/updated documentation & comprehensive JavaDocs
 8. **LOW** More/improved graphs (can never really have too many)

@@ -26,7 +26,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -111,6 +114,56 @@ public class Setup extends BaseHttpServlet {
 			return;
 		}
 
+		Query query = new Query("registration")
+			.setFilter(new FilterPredicate("schoolLevel", FilterOperator.EQUAL, level))
+			.addSort("schoolName", SortDirection.ASCENDING);
+		List<Entity> registrations = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
+
+		Map<String, List<JSONObject>> studentData = new HashMap<String, List<JSONObject>>();
+		for (Entity registration : registrations) {
+			String regSchoolName = ((String) registration.getProperty("schoolName")).trim();
+			String regStudentDataJSON = unescapeHtml4(((Text) registration.getProperty("studentData")).getValue());
+
+			JSONArray regStudentData = null;
+			try {
+				regStudentData = new JSONArray(regStudentDataJSON);
+			}
+			catch (JSONException e) {
+				e.printStackTrace();
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+				return;
+			}
+
+			for (int i = 0; i < regStudentData.length(); i++) {
+				if (!studentData.containsKey(regSchoolName)) {
+					studentData.put(regSchoolName, new ArrayList<JSONObject>());
+				}
+				try {
+					studentData.get(regSchoolName).add(regStudentData.getJSONObject(i));
+				}
+				catch (JSONException e) {
+					resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					e.printStackTrace();
+					return;
+				}
+			}
+		}
+
+		for (List<JSONObject> students : studentData.values()) {
+			Collections.sort(students, new Comparator<JSONObject>() {
+				@Override
+				public int compare(JSONObject a, JSONObject b) {
+					try {
+						return a.getString("name").compareTo(b.getString("name"));
+					}
+					catch (JSONException e) {
+						e.printStackTrace();
+						return 0;
+					}
+				}
+			});
+		}
+
 		Drive drive = new Drive.Builder(httpTransport, jsonFactory, credential).setApplicationName("contestTabulation").build();
 
 		File body = new File();
@@ -118,73 +171,31 @@ public class Setup extends BaseHttpServlet {
 		body.setMimeType("application/vnd.google-apps.spreadsheet");
 		File file = drive.files().insert(body).execute();
 
-		Query query = new Query("registration")
-			.setFilter(new FilterPredicate("schoolLevel", FilterOperator.EQUAL, level))
-			.addSort("schoolName", SortDirection.ASCENDING);
-		List<Entity> registrations = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-
 		SpreadsheetService service = new SpreadsheetService("contestTabulation");
 		service.setOAuth2Credentials(credential);
-		SpreadsheetEntry spreadsheet;
+
 		try {
-			spreadsheet = service.getEntry(new URL("https://spreadsheets.google.com/feeds/spreadsheets/" + file.getId()), SpreadsheetEntry.class);
+			SpreadsheetEntry spreadsheet = service.getEntry(new URL("https://spreadsheets.google.com/feeds/spreadsheets/" + file.getId()), SpreadsheetEntry.class);
 
-			String currentSchool = null;
-			WorksheetEntry worksheet = null;
-			URL listFeedUrl = null;
+			for (Entry<String, List<JSONObject>> studentDataEntry : studentData.entrySet()) {
+				WorksheetEntry worksheet = new WorksheetEntry();
+				worksheet.setColCount(6);
+				worksheet.setRowCount(1);
+				worksheet.setTitle(new PlainTextConstruct(studentDataEntry.getKey()));
+				URL worksheetFeedUrl = spreadsheet.getWorksheetFeedUrl();
+				worksheet = service.insert(worksheetFeedUrl, worksheet);
 
-			for (Entity registration : registrations) {
-				String schoolName = ((String) registration.getProperty("schoolName")).trim();
-				if (!schoolName.equals(currentSchool)) {
-					currentSchool = schoolName;
-					worksheet = new WorksheetEntry();
-					worksheet.setColCount(6);
-					worksheet.setRowCount(1);
-					worksheet.setTitle(new PlainTextConstruct(schoolName));
-					URL worksheetFeedUrl = spreadsheet.getWorksheetFeedUrl();
-					worksheet = service.insert(worksheetFeedUrl, worksheet);
+				URL cellFeedUrl = worksheet.getCellFeedUrl();
+				CellFeed cellFeed = service.getFeed(cellFeedUrl, CellFeed.class);
 
-					URL cellFeedUrl = worksheet.getCellFeedUrl();
-					CellFeed cellFeed = service.getFeed(cellFeedUrl, CellFeed.class);
-
-					String[] columnNames = {"Name", "Grade", "N", "C", "M", "S"};
-					for (int i = 0; i < columnNames.length; i++) {
-						cellFeed.insert(new CellEntry(1, i + 1, columnNames[i]));
-					}
-
-					listFeedUrl = worksheet.getListFeedUrl();
+				String[] columnNames = {"Name", "Grade", "N", "C", "M", "S"};
+				for (int i = 0; i < columnNames.length; i++) {
+					cellFeed.insert(new CellEntry(1, i + 1, columnNames[i]));
 				}
 
-				String studentDataJSON = unescapeHtml4(((Text) registration.getProperty("studentData")).getValue());
+				URL listFeedUrl = worksheet.getListFeedUrl();
 
-				JSONArray studentData = null;
-				try {
-					studentData = new JSONArray(studentDataJSON);
-				}
-				catch (JSONException e) {
-					e.printStackTrace();
-					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
-					return;
-				}
-
-				List<JSONObject> studentDataList = new ArrayList<JSONObject>(studentData.length());
-				for (int i = 0; i < studentData.length(); i++) {
-					studentDataList.add(studentData.getJSONObject(i));
-				}
-				Collections.sort(studentDataList, new Comparator<JSONObject>() {
-					@Override
-					public int compare(JSONObject a, JSONObject b) {
-						try {
-							return a.getString("name").compareTo(b.getString("name"));
-						}
-						catch (JSONException e) {
-							e.printStackTrace();
-							return 0;
-						}
-					}
-				});
-
-				for (JSONObject student : studentDataList) {
+				for (JSONObject student : studentDataEntry.getValue()) {
 					try {
 						ListEntry row = new ListEntry();
 						row.getCustomElements().setValueLocal("name", student.getString("name"));
@@ -207,7 +218,7 @@ public class Setup extends BaseHttpServlet {
 			WorksheetFeed worksheetFeed = service.getFeed(spreadsheet.getWorksheetFeedUrl(), WorksheetFeed.class);
 			worksheetFeed.getEntries().get(0).delete();
 		}
-		catch (ServiceException | JSONException e) {
+		catch (ServiceException e) {
 			resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			e.printStackTrace();
 			return;

@@ -175,11 +175,10 @@ Todo
 6. **LOW** Send email to all users after competition ends with details on how to access scores
 7. **LOW** Better/updated documentation & comprehensive JavaDocs
 8. **LOW** More/improved graphs (can never really have too many)
-9. **LOW** Complete sorting when generating tabulation spreadsheet
-10. **LOW** Prevent CSRF
-11. **LOW** Optimize DB queries with limits
-12. **LOW** Allow undo of registration deletion
-13. **LOW** Display no-shows to admin
+9. **LOW** Prevent CSRF
+10. **LOW** Optimize DB queries with limits
+11. **LOW** Allow undo of registration deletion
+12. **LOW** Display no-shows to admin
 
 ### Workflow ###
 

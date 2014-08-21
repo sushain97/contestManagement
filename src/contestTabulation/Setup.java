@@ -62,6 +62,7 @@ import com.google.gdata.data.spreadsheet.CellFeed;
 import com.google.gdata.data.spreadsheet.ListEntry;
 import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
 import com.google.gdata.data.spreadsheet.WorksheetEntry;
+import com.google.gdata.data.spreadsheet.WorksheetFeed;
 import com.google.gdata.util.ServiceException;
 
 @SuppressWarnings("serial")
@@ -202,6 +203,9 @@ public class Setup extends BaseHttpServlet {
 					}
 				}
 			}
+
+			WorksheetFeed worksheetFeed = service.getFeed(spreadsheet.getWorksheetFeedUrl(), WorksheetFeed.class);
+			worksheetFeed.getEntries().get(0).delete();
 		}
 		catch (ServiceException | JSONException e) {
 			resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

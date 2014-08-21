@@ -138,11 +138,13 @@ public class Retrieve {
 		for (Entry<Key, Entity> visualizationEntry : visualizationEntities.entrySet()) {
 			Test test = Test.fromString(visualizationEntry.getKey().getName());
 			List<Long> scores = (List<Long>) visualizationEntry.getValue().getProperty("scores");
-			List<Integer> scoreInts = new ArrayList<Integer>();
-			for (Long score : scores) {
-				scoreInts.add(score.intValue());
+			if (scores != null) {
+				List<Integer> scoreInts = new ArrayList<Integer>();
+				for (Long score : scores) {
+					scoreInts.add(score.intValue());
+				}
+				statistics.put(test, new Statistics(scoreInts));
 			}
-			statistics.put(test, new Statistics(scoreInts));
 		}
 
 		return statistics;

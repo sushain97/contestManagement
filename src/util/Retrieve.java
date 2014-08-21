@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
+import javax.jdo.JDOFatalUserException;
 import javax.jdo.PersistenceManager;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -93,9 +94,14 @@ public class Retrieve {
 			Entity categoryWinnersEntity = datastore.get(KeyFactory.createKey("CategoryWinners", category + "_" + level.toString()));
 			List<Key> categoryWinnersKeys = (List<Key>) categoryWinnersEntity.getProperty("students");
 			javax.jdo.Query q = pm.newQuery("select from " + Student.class.getName() + " where :keys.contains(key)");
-			return (List<Student>) q.execute(categoryWinnersKeys);
+			List<Student> students = (List<Student>) q.execute(categoryWinnersKeys);
+			students.isEmpty();
+			return students;
 		}
 		catch (EntityNotFoundException e) {
+			return null;
+		}
+		catch (JDOFatalUserException e) {
 			return null;
 		}
 	}

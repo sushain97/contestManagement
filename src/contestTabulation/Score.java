@@ -31,20 +31,34 @@ import util.Pair;
 public class Score implements Comparable<Score>, java.io.Serializable {
 	private static final long serialVersionUID = 1631716116306090911L;
 
+	private static final String FLAG_FORMAT = "(?i)^(NS|NG|DQ)$";
 	private static final String LETTER_FORMAT = "^((?:[\\+-])?[0-9]+)([A-z])?$";
 	private static final String DECIMAL_FORMAT = "^((?:[\\+-])?[0-9]+)(?:\\.([0-9]+))?$";
 
 	public static boolean isScore(String str) {
-		return str.matches(LETTER_FORMAT) || str.matches(DECIMAL_FORMAT);
+		return str.matches(FLAG_FORMAT) || str.matches(LETTER_FORMAT) || str.matches(DECIMAL_FORMAT);
 	}
 
 	@Persistent private Pair<Integer, Integer> score; // Number, Modifier
+	@Persistent private boolean isNumeric = true;
 
 	Score(String score) {
 		score = Objects.requireNonNull(score).trim();
+
 		try {
 			Integer scoreNum, scoreMod;
-			if (score.matches(LETTER_FORMAT)) {
+
+			if (score.matches(FLAG_FORMAT)) {
+				Pattern pattern = Pattern.compile(FLAG_FORMAT);
+				Matcher matcher = pattern.matcher(score);
+				matcher.matches();
+
+				Flag flag = Flag.fromString(matcher.group(1));
+				scoreNum = flag.flagNum;
+				scoreMod = 0;
+				isNumeric = false;
+			}
+			else if (score.matches(LETTER_FORMAT)) {
 				Pattern pattern = Pattern.compile(LETTER_FORMAT);
 				Matcher matcher = pattern.matcher(score);
 				matcher.matches();
@@ -82,15 +96,18 @@ public class Score implements Comparable<Score>, java.io.Serializable {
 
 			this.score = new Pair<Integer, Integer>(scoreNum, scoreMod);
 		}
+		catch (IllegalArgumentException e) {
+			throw e;
+		}
 		catch (Exception e) {
 			throw new IllegalArgumentException("Unable to parse score");
 		}
 
-		if (Math.abs(this.score.x) > 401) {
+		if (Math.abs(this.score.x) > 401 && isNumeric) {
 			throw new IllegalArgumentException("Score larger than expected: " + this.score.x);
 		}
 
-		if (this.score.y > 26) {
+		if (this.score.y > 26 && isNumeric) {
 			throw new IllegalArgumentException("Score modifier larger than expected: " + this.score.y);
 		}
 	}
@@ -144,6 +161,14 @@ public class Score implements Comparable<Score>, java.io.Serializable {
 		return score.x;
 	}
 
+	public int getScoreMod() {
+		return score.y;
+	}
+
+	public boolean isNumeric() {
+		return isNumeric;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -154,6 +179,58 @@ public class Score implements Comparable<Score>, java.io.Serializable {
 
 	@Override
 	public String toString() {
-		return score.x.toString() + (score.y != 0 ? (char) (score.y + 64) : "");
+		if (isNumeric) {
+			return score.x.toString() + (score.y != 0 ? (char) (score.y + 64) : "");
+		}
+		else {
+			return Flag.fromFlagNum(score.x).toString();
+		}
+	}
+
+	public enum Flag {
+		NS(-401), DQ(-402);
+
+		public static Flag fromString(String flagName) {
+			flagName = Objects.requireNonNull(flagName).trim();
+
+			if (flagName.equalsIgnoreCase("NS") || flagName.equalsIgnoreCase("NG")) {
+				return NS;
+			}
+			else if (flagName.equalsIgnoreCase("DQ")) {
+				return DQ;
+			}
+			else {
+				throw new IllegalArgumentException();
+			}
+		}
+
+		public static Flag fromFlagNum(int flagNum) {
+			switch (flagNum) {
+				case -401:
+					return NS;
+				case -402:
+					return DQ;
+				default:
+					throw new IllegalArgumentException();
+			}
+		}
+
+		public final int flagNum;
+
+		private Flag(int flagNum) {
+			this.flagNum = flagNum;
+		}
+
+		@Override
+		public String toString() {
+			switch (flagNum) {
+				case -401:
+					return "NS";
+				case -402:
+					return "DQ";
+				default:
+					throw new UnsupportedOperationException();
+			}
+		}
 	}
 }

@@ -233,8 +233,11 @@ public class Main extends HttpServlet {
 			final Subject subject = test.getSubject();
 
 			for (Student student : students) {
-				if (student.getGrade() == grade && student.getScore(subject) != null) {
-					winners.add(student);
+				if (student.getGrade() == grade) {
+					Score score = student.getScore(subject);
+					if (score != null && score.isNumeric() && score.getScoreNum() > 0) {
+						winners.add(student);
+					}
 				}
 			}
 
@@ -323,7 +326,9 @@ public class Main extends HttpServlet {
 		for (School school : schools) {
 			for (Student student : school.getStudents()) {
 				for (Entry<Subject, Score> scoreEntry : student.getScores().entrySet()) {
-					scores.get(Test.fromSubjectAndGrade(student.getGrade(), scoreEntry.getKey())).add(scoreEntry.getValue().getScoreNum());
+					if (scoreEntry.getValue().isNumeric()) {
+						scores.get(Test.fromSubjectAndGrade(student.getGrade(), scoreEntry.getKey())).add(scoreEntry.getValue().getScoreNum());
+					}
 				}
 			}
 		}

@@ -1,6 +1,7 @@
 package contestTabulation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
@@ -52,6 +53,16 @@ public class ScoreTests {
 		assertEquals("-025.12 must result in (-25, 12)", new Pair<Integer, Integer>(-25, 12), new Score("-025.12").getScore());
 		assertEquals("400.8 must result in (400, 8)", new Pair<Integer, Integer>(400, 8), new Score("400.8").getScore());
 		assertEquals("0400.12 must result in (400, 12)", new Pair<Integer, Integer>(400, 12), new Score("0400.12").getScore());
+	}
+
+	@Test
+	public void testFlags() {
+		assertEquals("NS must result in (-401, 0)", new Pair<Integer, Integer>(-401, 0), new Score("NS").getScore());
+		assertFalse(new Score("NS").isNumeric());
+		assertEquals("NG must result in (-401, 0)", new Pair<Integer, Integer>(-401, 0), new Score("NG").getScore());
+		assertFalse(new Score("NG").isNumeric());
+		assertEquals("DQ must result in (-402, 0)", new Pair<Integer, Integer>(-402, 0), new Score("DQ").getScore());
+		assertFalse(new Score("DQ").isNumeric());
 	}
 
 	@Test

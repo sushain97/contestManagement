@@ -36,7 +36,7 @@ public class Score implements Comparable<Score>, java.io.Serializable {
 	private static final String DECIMAL_FORMAT = "^((?:[\\+-])?[0-9]+)(?:\\.([0-9]+))?$";
 
 	public static boolean isScore(String str) {
-		return str.matches(LETTER_FORMAT) || str.matches(LETTER_FORMAT) || str.matches(DECIMAL_FORMAT);
+		return str.matches(FLAG_FORMAT) || str.matches(LETTER_FORMAT) || str.matches(DECIMAL_FORMAT);
 	}
 
 	@Persistent private Pair<Integer, Integer> score; // Number, Modifier

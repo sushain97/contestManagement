@@ -36,6 +36,7 @@ import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import javax.jdo.PersistenceManager;
+import javax.jdo.Transaction;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -269,11 +270,16 @@ public class Main extends HttpServlet {
 
 	private static void persistData(Level level, Collection<School> schools, Map<Test, List<Student>> categoryWinners, Map<Subject, List<School>> categorySweepstakesWinners, List<School> sweepstakesWinners) throws JSONException {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-
+		Transaction tx = pm.currentTransaction();
 		try {
+			tx.begin();
 			pm.makePersistentAll(schools);
+			tx.commit();
 		}
 		finally {
+			if (tx.isActive()) {
+				tx.rollback();
+			}
 			pm.close();
 		}
 

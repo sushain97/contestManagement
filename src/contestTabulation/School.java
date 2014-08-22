@@ -70,12 +70,12 @@ public class School implements Serializable {
 	@Deprecated @Persistent(serialized = "true") private Map<Test, ArrayList<Score>> anonScores = new HashMap<Test, ArrayList<Score>>();
 	@Persistent(serialized = "true") @Unowned private Map<Subject, Pair<Student[], Integer>> topScores = new HashMap<Subject, Pair<Student[], Integer>>();
 
-	@PrimaryKey private String key;
+	@PrimaryKey private Key key;
 
 	School(String name, Level level) {
 		this.name = Objects.requireNonNull(name);
 		this.level = Objects.requireNonNull(level);
-		this.key = name + "_" + level;
+		this.key = KeyFactory.createKey(KeyFactory.createKey("Level", level.getName()), this.getClass().getSimpleName(), name + "_" + level);;
 	}
 
 	@Deprecated
@@ -215,7 +215,7 @@ public class School implements Serializable {
 	}
 
 	public Key getKey() {
-		return KeyFactory.createKey(this.getClass().getSimpleName(), key);
+		return key;
 	}
 
 	public Level getLevel() {

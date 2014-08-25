@@ -161,30 +161,6 @@ Tabulation
 	updateContestInfo(Set<Test> testsGraded, Entity contestInfo)
 	```
 
-Todo
-----
-(Critical, High, Medium, or Low priority)
-
-### Website ###
-
-1. **CRITICAL** Better database consistency for tabulation results
-2. **CRITICAL** Adding support for elementary school
-3. **HIGH** Improved tables/menus on mobile viewports
-4. **MEDIUM** Support for early/normal/late registration with different prices and date spans
-5. **MEDIUM** Support Pagespeed plugin with modified minimal settings
-6. **LOW** Send email to all users after competition ends with details on how to access scores
-7. **LOW** Better/updated documentation & comprehensive JavaDocs
-8. **LOW** More/improved graphs (can never really have too many)
-9. **LOW** Prevent CSRF
-10. **LOW** Optimize DB queries with limits
-11. **LOW** Allow undo of registration deletion
-12. **LOW** Display no-shows to admin
-
-### Workflow ###
-
-1. **HIGH** Improved workflow for resolving ties
-2. **HIGH** Include coach powered verification in workflow
-
 License
 -------
 

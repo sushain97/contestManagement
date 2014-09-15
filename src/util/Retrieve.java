@@ -98,10 +98,7 @@ public class Retrieve {
 			students.isEmpty();
 			return students;
 		}
-		catch (EntityNotFoundException e) {
-			return null;
-		}
-		catch (JDOFatalUserException e) {
+		catch (EntityNotFoundException | JDOFatalUserException e) {
 			return null;
 		}
 	}

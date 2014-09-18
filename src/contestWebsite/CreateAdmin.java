@@ -54,9 +54,9 @@ public class CreateAdmin extends HttpServlet {
 
 		datastore.put(admin);
 
-		Entity info = Retrieve.contestInfo();
-		Entity contestInfo = info != null ? info : new Entity("contestInfo");
-		info.setProperty("testingMode", true);
+		Entity contestInfo = Retrieve.contestInfo();
+		contestInfo = contestInfo != null ? contestInfo : new Entity("contestInfo");
+		contestInfo.setProperty("testingMode", true);
 		datastore.put(contestInfo);
 	}
 }

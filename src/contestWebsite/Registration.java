@@ -72,6 +72,7 @@ import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
+import contestTabulation.Level;
 import contestTabulation.Subject;
 
 @SuppressWarnings("serial")
@@ -142,23 +143,16 @@ public class Registration extends BaseHttpServlet {
 				context.put("student", true);
 			}
 
-			if (((String) sess.getAttribute("schoolLevel")).equals("middle")) {
-				context.put("middle", true);
-			}
-			else {
-				context.put("high", true);
-			}
-
 			context.put("account", ((String) sess.getAttribute("account")).equals("yes"));
 
-			String[] propNames = {"schoolName", "name", "email", "updated", "division", "studentData"};
+			String[] propNames = {"schoolName", "name", "email", "updated", "division", "studentData", "schoolLevel"};
 			for (String propName : propNames) {
 				context.put(propName, sess.getAttribute(propName));
 			}
 		}
 		else {
 			context.put("coach", true);
-			context.put("middle", true);
+			context.put("schoolLevel", "middle");
 			context.put("account", true);
 			context.put("schoolName", "");
 			context.put("name", "");
@@ -194,6 +188,8 @@ public class Registration extends BaseHttpServlet {
 		if (userError != null || passwordError != null || captchaError != null) {
 			context.put("error", true);
 		}
+
+		context.put("Level", Level.class);
 
 		close(context, ve.getTemplate("registration.html"), resp);
 	}

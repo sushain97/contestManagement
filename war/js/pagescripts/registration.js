@@ -75,7 +75,7 @@ $(document).ready(function() {
 	$('#regType1, #regType2').change(checkAccount);
 	$('#account').change(checkAccount);
 
-	$('#schoolType1, #schoolType2').change(adjustGradeSelect);
+	$('input[name=schoolLevel]').change(adjustGradeSelect);
 
 	$('#passStrength').tooltip({placement: 'right', html: 'true'});
 
@@ -135,10 +135,12 @@ function checkAccount() {
 
 function adjustGradeSelect() {
 	$('#gradeSelects').remove();
-	if($('#schoolType1').prop('checked'))
-		$('<style id="gradeSelects"> .midGrades { display: block; } .highGrades { display: none; }</style>').appendTo('head');
-	else
-		$('<style id="gradeSelects"> .midGrades { display: none; } .highGrades { display: block; }</style>').appendTo('head');
+	if($('#schoolTypeElementary').prop('checked'))
+		$('<style id="gradeSelects"> .elemGrades { display: block; } .midGrades { display: none; } .highGrades { display: none; }</style>').appendTo('head');
+	else if($('#schoolTypeMiddle').prop('checked'))
+		$('<style id="gradeSelects"> .elemGrades { display: none; } .midGrades { display: block; } .highGrades { display: none; }</style>').appendTo('head');
+	else if($('#schoolTypeHigh').prop('checked'))
+		$('<style id="gradeSelects"> .elemGrades { display: none; } .midGrades { display: none; } .highGrades { display: block; }</style>').appendTo('head');
 }
 
 function enableSubmit() {

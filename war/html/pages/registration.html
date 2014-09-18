@@ -109,7 +109,7 @@
 						#foreach($level in $enabledLevels.split("\+"))
 						#set($level = $Level.fromString($level))
 						<label class="radio-inline">
-							<input type="radio" name="schoolLevel" id="schoolType$foreach.index" value="$level" #if($schoolLevel == $level.toString()) checked #end> $level.getName()
+							<input type="radio" name="schoolLevel" id="schoolType$level.getName()" value="$level" #if($schoolLevel == $level.toString() || (!$schoolLevel && $foreach.first)) checked #end> $level.getName()
 						</label>
 						#end
 						<span class="text-warning help-block">If your school contains both students from multiple levels (e.g. both middle and high school), please make two separate registrations.</span>
@@ -228,6 +228,10 @@
 								</td>
 								<td><input type="text" class="form-control input-sm" required></td>
 								<td class="text-center">
+									<select class="elemGrades">
+										<option value="4">4</option>
+										<option value="5">5</option>
+									</select>
 									<select class="midGrades">
 										<option value="6">6</option>
 										<option value="7">7</option>

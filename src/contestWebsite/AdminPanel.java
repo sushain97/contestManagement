@@ -31,6 +31,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
@@ -94,6 +95,7 @@ public class AdminPanel extends BaseHttpServlet {
 				context.put("qualifyingCriteria", Retrieve.qualifyingCriteria(contestInfo));
 				context.put("clientId", contestInfo.getProperty("OAuth2ClientId"));
 				context.put("middleSubjects", Test.getTests(Level.MIDDLE));
+				context.put("Level", Level.class);
 			}
 			catch (Exception e) {
 				System.err.println("Surpressing exception while loading admin panel");
@@ -121,7 +123,7 @@ public class AdminPanel extends BaseHttpServlet {
 				Entity info = Retrieve.contestInfo();
 				Entity contestInfo = info != null ? info : new Entity("contestInfo");
 
-				String[] stringPropNames = {"endDate", "startDate", "editStartDate", "editEndDate", "email", "account", "levels", "title", "publicKey",
+				String[] stringPropNames = {"endDate", "startDate", "editStartDate", "editEndDate", "email", "account", "title", "publicKey",
 						"privateKey", "school", "address",
 						"siteVerification", "OAuth2ClientSecret", "OAuth2ClientId"};
 				for (String propName : stringPropNames) {
@@ -134,6 +136,7 @@ public class AdminPanel extends BaseHttpServlet {
 				contestInfo.setProperty("price", Integer.parseInt(params.get("price")[0]));
 				contestInfo.setProperty("complete", params.get("complete") != null);
 				contestInfo.setProperty("hideFullNames", params.get("fullnames") != null);
+				contestInfo.setProperty("levels", StringUtils.join(params.get("levels"), "+"));
 
 				JSONObject awardCriteria = new JSONObject(), qualifyingCriteria = new JSONObject();;
 				for (Entry<String, String[]> entry : params.entrySet()) {

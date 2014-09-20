@@ -143,7 +143,7 @@ public class Registration extends BaseHttpServlet {
 				context.put("student", true);
 			}
 
-			context.put("account", ((String) sess.getAttribute("account")).equals("yes"));
+			context.put("account", "yes".equals(sess.getAttribute("account")));
 
 			String[] propNames = {"schoolName", "name", "email", "updated", "division", "studentData", "schoolLevel"};
 			for (String propName : propNames) {
@@ -152,7 +152,6 @@ public class Registration extends BaseHttpServlet {
 		}
 		else {
 			context.put("coach", true);
-			context.put("schoolLevel", "middle");
 			context.put("account", true);
 			context.put("schoolName", "");
 			context.put("name", "");

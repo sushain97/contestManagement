@@ -99,13 +99,21 @@ public class Data extends BaseHttpServlet {
 				context.put("price", infoAndCookie.x.getProperty("price"));
 				context.put("dateFormat", new SimpleDateFormat("MMM dd, yyyy hh:mm aa"));
 				context.put("Test", Test.class);
-				context.put("Subject", Subject.class);
+				context.put("subjects", Subject.values());
+				context.put("levels", Level.values());
 				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+				Map<Level, List<Entity>> registrations = new HashMap<Level, List<Entity>>();
 				for (Level level : Level.values()) {
 					Query query = new Query("registration").setFilter(new FilterPredicate("schoolLevel", FilterOperator.EQUAL, level.toString()));
 					List<Entity> regs = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-					context.put(level.toString() + "Regs", regs);
+					if (regs != null) {
+						registrations.put(level, regs);
+					}
 				}
+
+				context.put("registrations", registrations);
+
 				context.put("regJSONtoList", new Function<Text, List<Map<String, Object>>>() {
 					@Override
 					public List<Map<String, Object>> apply(Text textJSON) {

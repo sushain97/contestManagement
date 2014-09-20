@@ -31,7 +31,7 @@ $(document).ready(function() {
 		table: 'table'
 	});
 
-	$('table#middleReg, table#highReg').tablesorter({
+	$('table.regTable').tablesorter({
 		theme : 'bootstrap',
 		headerTemplate : '{content} {icon}',
 		widgets : ['uitheme', 'filter', 'zebra'],

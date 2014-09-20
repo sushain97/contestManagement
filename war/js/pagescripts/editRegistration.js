@@ -31,6 +31,7 @@ $(document).ready(function () {
 			tr.append(td);
 
 			var td = $('<td class="text-center"></td>');
+			td.append($('<select class="elemGrades"><option value="4">4</option><option value="5">5</option>').val(this["grade"]));
 			td.append($('<select class="midGrades"><option value="6">6</option><option value="7">7</option><option value="8">8</option></select>').val(this["grade"]));
 			td.append($('<select class="highGrades"><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select>').val(this["grade"]));
 			tr.append(td);
@@ -103,10 +104,12 @@ function checkAccount() {
 
 function adjustGradeSelect() {
 	$('#gradeSelects').remove();
-	if($('#schoolType1').prop('checked'))
-		$('<style id="gradeSelects"> .midGrades { display: block; } .highGrades { display: none; }</style>').appendTo('head');
-	else
-		$('<style id="gradeSelects"> .midGrades { display: none; } .highGrades { display: block; }</style>').appendTo('head');
+	if($('#schoolTypeElementary').prop('checked'))
+		$('<style id="gradeSelects"> .elemGrades { display: block; } .midGrades { display: none; } .highGrades { display: none; }</style>').appendTo('head');
+	else if($('#schoolTypeMiddle').prop('checked'))
+		$('<style id="gradeSelects"> .elemGrades { display: none; } .midGrades { display: block; } .highGrades { display: none; }</style>').appendTo('head');
+	else if($('#schoolTypeHigh').prop('checked'))
+		$('<style id="gradeSelects"> .elemGrades { display: none; } .midGrades { display: none; } .highGrades { display: block; }</style>').appendTo('head');
 }
 
 function enableSubmit() {

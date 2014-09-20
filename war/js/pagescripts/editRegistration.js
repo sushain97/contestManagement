@@ -76,7 +76,7 @@ $(document).ready(function () {
 	$('#regType1, #regType2').change(checkAccount);
 	$('#account').change(checkAccount);
 
-	$('#schoolType1, #schoolType2').change(adjustGradeSelect);
+	$('input[name=schoolLevel]').change(adjustGradeSelect);
 
 	$('#delete').change(function() {
 		$('#info').toggle('fast');

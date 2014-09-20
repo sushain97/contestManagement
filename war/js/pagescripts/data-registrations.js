@@ -60,7 +60,7 @@ $(document).ready(function() {
 			}
 		},
 		headers: {
-			0: {filter: false},
+			0: {filter: false, sorter: false},
 			1: {sorter: 'shortDate'}
 		}
 	});

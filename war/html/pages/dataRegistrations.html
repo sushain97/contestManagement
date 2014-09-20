@@ -82,7 +82,7 @@
 					<h3>$level.getName() School <button type="button" class="reset btn btn-sm btn-danger pull-right hidden-print"><i class="glyphicon glyphicon-refresh"></i> Reset</button></h3>
 					<table class="table table-condensed table-hover regTable">
 						<thead>
-							<tr data-eid="$reg.getKey().getId()">
+							<tr>
 								<th class="hidden-print">Edit</th>
 								<th>Name</th>
 								<th colspan="2" class="hidden-print">Email</th>
@@ -120,7 +120,7 @@
 
 										#if($reg.getProperty("email"))
 										<td data-type="email" class="email hidden-print" style="padding-right: 0px;">$reg.getProperty("email")</td>
-										<td class="uneditable hidden-print" style="padding-left: 0px;">
+										<td class="uneditable hidden-print text-center" style="padding-left: 0px">
 											<a href='mailto:$reg.getProperty("name")<$reg.getProperty("email")>' target="_blank"><i class="glyphicon glyphicon-envelope"></i></a>
 										</td>
 										#else

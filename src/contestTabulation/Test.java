@@ -21,9 +21,13 @@ package contestTabulation;
 import java.util.Objects;
 
 public enum Test {
+	N4(4, Subject.N), C4(4, Subject.C), M4(4, Subject.M), S4(4, Subject.S),
+	N5(5, Subject.N), C5(5, Subject.C), M5(5, Subject.M), S5(5, Subject.S),
+
 	N6(6, Subject.N), C6(6, Subject.C), M6(6, Subject.M), S6(6, Subject.S),
 	N7(7, Subject.N), C7(7, Subject.C), M7(7, Subject.M), S7(7, Subject.S),
 	N8(8, Subject.N), C8(8, Subject.C), M8(8, Subject.M), S8(8, Subject.S),
+
 	N9(9, Subject.N), C9(9, Subject.C), M9(9, Subject.M), S9(9, Subject.S),
 	N10(10, Subject.N), C10(10, Subject.C), M10(10, Subject.M), S10(10, Subject.S),
 	N11(11, Subject.N), C11(11, Subject.C), M11(11, Subject.M), S11(11, Subject.S),
@@ -50,8 +54,21 @@ public enum Test {
 		return new Test[] {N6, C6, M6, S6, N7, C7, M7, S7, N8, C8, M8, S8};
 	}
 
+	public static Test[] elementaryTests() {
+		return new Test[] {N4, C4, M4, S4, N5, C5, M5, S5};
+	}
+
 	public static Test[] getTests(Level level) {
-		return Objects.requireNonNull(level) == Level.MIDDLE ? middleTests() : highTests();
+		switch (Objects.requireNonNull(level)) {
+			case ELEMENTARY:
+				return elementaryTests();
+			case MIDDLE:
+				return middleTests();
+			case HIGH:
+				return highTests();
+		}
+
+		throw new IllegalArgumentException();
 	}
 
 	private final int grade;
@@ -73,6 +90,8 @@ public enum Test {
 				return 400;
 			case C:
 				switch (Level.fromGrade(grade)) {
+					case ELEMENTARY:
+						return 400;
 					case MIDDLE:
 						return 400;
 					case HIGH:
@@ -80,6 +99,8 @@ public enum Test {
 				}
 			case M:
 				switch (Level.fromGrade(grade)) {
+					case ELEMENTARY:
+						return 250;
 					case MIDDLE:
 						return 250;
 					case HIGH:
@@ -87,6 +108,8 @@ public enum Test {
 				}
 			case S:
 				switch (Level.fromGrade(grade)) {
+					case ELEMENTARY:
+						return 250;
 					case MIDDLE:
 						return 250;
 					case HIGH:

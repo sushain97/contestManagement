@@ -50,6 +50,8 @@ import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
 
+import contestTabulation.Level;
+
 @SuppressWarnings("serial")
 public class EditRegistration extends BaseHttpServlet {
 	@Override
@@ -78,33 +80,19 @@ public class EditRegistration extends BaseHttpServlet {
 					context.put("student", true);
 				}
 
-				String schoolLevel = (String) props.get("schoolLevel");
-				if (schoolLevel.equals("middle")) {
-					context.put("middle", true);
-				}
-				else {
-					context.put("high", true);
+				String[] propNames = {"schoolName", "name", "email", "paid", "division", "studentData", "schoolLevel"};
+				for (String propName : propNames) {
+					context.put(propName, props.get(propName));
 				}
 
-				String account = (String) props.get("account");
-				if (account.equals("yes")) {
-					context.put("account", true);
-				}
-				else {
-					context.put("account", false);
-				}
-
-				context.put("schoolName", props.get("schoolName"));
-				context.put("name", props.get("name"));
-				context.put("email", props.get("email"));
-				context.put("paid", props.get("paid"));
-				context.put("division", props.get("division"));
+				context.put("account", "yes".equals(props.get("account")));
 				context.put("studentData", ((Text) props.get("studentData")).getValue());
 
 				Entity contestInfo = infoAndCookie.x;
 				context.put("price", contestInfo.getProperty("price"));
 				context.put("key", key);
 				context.put("levels", contestInfo.getProperty("levels"));
+				context.put("Level", Level.class);
 
 				close(context, ve.getTemplate("editRegistration.html"), resp);
 			}

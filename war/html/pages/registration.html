@@ -107,17 +107,13 @@
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-5 control-label" for="schoolLevel">School Level</label>
 					<div class="input-group col-sm-5 col-xs-7">
-						#if($enabledLevels.contains("middle"))
+						#foreach($level in $enabledLevels.split("\+"))
+						#set($level = $Level.fromString($level))
 						<label class="radio-inline">
-							<input type="radio" name="schoolLevel" id="schoolType1" value="middle" #if($middle || !$enabledLevels.contains("high")) checked #end> Middle
+							<input type="radio" name="schoolLevel" id="schoolType$level.getName()" value="$level" #if($schoolLevel == $level.toString() || (!$schoolLevel && $foreach.first)) checked #end> $level.getName()
 						</label>
 						#end
-						#if($enabledLevels.contains("high"))
-						<label class="radio-inline">
-							<input type="radio" name="schoolLevel" id="schoolType2" value="high" #if($high || !$enabledLevels.contains("middle")) checked #end> High
-						</label>
-						#end
-						<span class="text-warning help-block">If your school contains both high school and middle school students, please make two separate registrations.</span>
+						<span class="text-warning help-block">If your school contains both students from multiple levels (e.g. both middle and high school), please make two separate registrations.</span>
 					</div>
 				</div>
 
@@ -146,7 +142,7 @@
 					<label class="col-sm-2 col-xs-4 control-label" for="schoolName">Official School Name</label>
 					<div class="input-group col-sm-5 col-xs-8">
 						<input type="text" name="schoolName" class="form-control"  id="schoolName" value="$schoolName" required>
-						<span class="help-block">Omit "Middle School", "High School", "Junior High School", etc.</span>
+						<span class="help-block"><strong>Omit</strong> "Middle School", "High School", "Junior High School", etc.</span>
 					</div>
 				</div>
 
@@ -233,6 +229,10 @@
 								</td>
 								<td><input type="text" class="form-control input-sm" required></td>
 								<td class="text-center">
+									<select class="elemGrades">
+										<option value="4">4</option>
+										<option value="5">5</option>
+									</select>
 									<select class="midGrades">
 										<option value="6">6</option>
 										<option value="7">7</option>

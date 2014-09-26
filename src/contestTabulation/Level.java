@@ -47,7 +47,7 @@ public enum Level {
 
 	public int[] getGrades() {
 		int[] grades = new int[highGrade - lowGrade + 1];
-		for (int i = lowGrade; i <= grades.length; i++) {
+		for (int i = lowGrade; i < grades.length + lowGrade; i++) {
 			grades[i - lowGrade] = i;
 		}
 		return grades;

@@ -67,82 +67,86 @@
 			#foreach($grade in $grades)
 				#set($bins = $statistics[$Test.fromSubjectAndGrade($grade, $subject)].getBins())
 
-				$('#${subject}${grade}-HistoGraph').highcharts({
-					chart: {
-						type: 'column',
-						width: $('.collapse.in').width() * .95
-					},
-					title: {
-						text: '${grade}th Grade $subject.getName()'
-					},
-					legend: false,
-					tooltip: {
-						pointFormat: "Frequency: <b>{point.y}</b>",
-						useHTML: true
-					},
-					xAxis: {
-						categories: [
-							#foreach($bin in $bins)
-								'<b>$bin.getX().getX().intValue()</b> &#8614; <b>$bin.getX().getY().intValue()</b>'#if(!$foreach.last),#end
-							#end
-						],
-						labels: {
-							rotation: -90,
+				console.log('$bins');
+
+				#if($bins)
+					$('#${subject}${grade}-HistoGraph').highcharts({
+						chart: {
+							type: 'column',
+							width: $('.collapse.in').width() * .95
+						},
+						title: {
+							text: '${grade}th Grade $subject.getName()'
+						},
+						legend: false,
+						tooltip: {
+							pointFormat: "Frequency: <b>{point.y}</b>",
 							useHTML: true
 						},
-						title: {
-							text: 'Score',
-							margin: 20
-						}
-					},
-					yAxis: {
-						title: {
-							text: 'Frequency'
-						}
-					},
-					plotOptions: {
-						column: {
-							groupPadding: 0,
-							pointPadding: 0,
-							borderWidth: 1.5,
-							borderColor: Highcharts.getOptions().colors[1]
+						xAxis: {
+							categories: [
+								#foreach($bin in $bins)
+									'<b>$bin.getX().getX().intValue()</b> &#8614; <b>$bin.getX().getY().intValue()</b>'#if(!$foreach.last),#end
+								#end
+							],
+							labels: {
+								rotation: -90,
+								useHTML: true
+							},
+							title: {
+								text: 'Score',
+								margin: 20
+							}
 						},
-					},
-					series: [{
-						name: 'Frequency',
-						data: [
-							#foreach($bin in $bins)
-								$bin.getY()#if(!$foreach.last),#end
-							#end
-						],
-					}]
-				}, function(chart) {
-					#set($testSummaryStats = $statistics[$Test.fromSubjectAndGrade($grade, $subject)].getSummary())
+						yAxis: {
+							title: {
+								text: 'Frequency'
+							}
+						},
+						plotOptions: {
+							column: {
+								groupPadding: 0,
+								pointPadding: 0,
+								borderWidth: 1.5,
+								borderColor: Highcharts.getOptions().colors[1]
+							},
+						},
+						series: [{
+							name: 'Frequency',
+							data: [
+								#foreach($bin in $bins)
+									$bin.getY()#if(!$foreach.last),#end
+								#end
+							],
+						}]
+					}, function(chart) {
+						#set($testSummaryStats = $statistics[$Test.fromSubjectAndGrade($grade, $subject)].getSummary())
 
-					var mean = $testSummaryStats.get("mean"), sd = $testSummaryStats.get("sd");
-					var min = $testSummaryStats.get("min"), max = $testSummaryStats.get("max");
-					var multiplierX = chart.plotWidth / (max - min);
-					var multiplierY = (chart.plotHeight / pdf(mean, mean, sd) * .9);
+						var mean = $testSummaryStats.get("mean"), sd = $testSummaryStats.get("sd");
+						var min = $testSummaryStats.get("min"), max = $testSummaryStats.get("max");
+						var multiplierX = chart.plotWidth / (max - min);
+						var multiplierY = (chart.plotHeight / pdf(mean, mean, sd) * .9);
 
-					var points = ['M', chart.plotLeft, (chart.plotTop + chart.plotHeight) - (pdf(min, mean, sd) * multiplierY)];
-					for(var i = min; (i - min) * multiplierX <= chart.plotWidth; i+=1) {
-						points.push('L');
-						points.push((i - min) * multiplierX + chart.plotLeft);
-						points.push((chart.plotTop + chart.plotHeight) - (pdf(i, mean, sd) * multiplierY));
-					}
+						var points = ['M', chart.plotLeft, (chart.plotTop + chart.plotHeight) - (pdf(min, mean, sd) * multiplierY)];
+						for(var i = min; (i - min) * multiplierX <= chart.plotWidth; i+=1) {
+							points.push('L');
+							points.push((i - min) * multiplierX + chart.plotLeft);
+							points.push((chart.plotTop + chart.plotHeight) - (pdf(i, mean, sd) * multiplierY));
+						}
 
-					chart.renderer.path(points).attr({
-						'stroke-width': 2,
-						stroke: Highcharts.getOptions().colors[3],
-						zIndex: 4
-					}).add();
+						chart.renderer.path(points).attr({
+							'stroke-width': 2,
+							stroke: Highcharts.getOptions().colors[3],
+							zIndex: 4
+						}).add();
 
-					function pdf(x, mean, sd) {
-						var term1 = Math.pow(sd * Math.sqrt(2 * Math.PI), -1);
-						var term2 = Math.pow(Math.E, -(Math.pow(x - mean, 2) / (2 * sd * sd)));
-						return term1 * term2;
-					}
-				});
+						function pdf(x, mean, sd) {
+							var term1 = Math.pow(sd * Math.sqrt(2 * Math.PI), -1);
+							var term2 = Math.pow(Math.E, -(Math.pow(x - mean, 2) / (2 * sd * sd)));
+							return term1 * term2;
+						}
+					});
+				#end
 			#end
 
 			$('#${subject}-BoxWhiskerGraph').highcharts({
@@ -183,7 +187,11 @@
 					data: [
 						#foreach($grade in $grades)
 							#set($testSummaryStats = $statistics[$Test.fromSubjectAndGrade($grade, $subject)].getSummary())
-							[$testSummaryStats.get("min"), $testSummaryStats.get("q1"), $testSummaryStats.get("q2"), $testSummaryStats.get("q3"), $testSummaryStats.get("max")]#if(!$foreach.last),#end
+							#if($testSummaryStats)
+								[$testSummaryStats.get("min"), $testSummaryStats.get("q1"), $testSummaryStats.get("q2"), $testSummaryStats.get("q3"), $testSummaryStats.get("max")]#if(!$foreach.last),#end
+							#else
+								[]#if(!$foreach.last),#end
+							#end
 						#end
 					],
 					tooltip: {
@@ -211,23 +219,25 @@
 				#foreach($grade in $grades)
 					#set($testSummaryStats = $statistics[$Test.fromSubjectAndGrade($grade, $subject)].getSummary())
 
-					var mean = $testSummaryStats.get("mean"), sd = $testSummaryStats.get("sd");
-					var multiplierX = chart.plotWidth / (chart.yAxis[0].max - chart.yAxis[0].min);
-					var multiplierY = chart.plotHeight / $grades.size() / pdf(mean, mean, sd) * .9;
-					var offsetY = ($grades.size() - $grades.indexOf($grade) - 1) * (chart.plotHeight / $grades.size());
+					#if($testSummaryStats)
+						var mean = $testSummaryStats.get("mean"), sd = $testSummaryStats.get("sd");
+						var multiplierX = chart.plotWidth / (chart.yAxis[0].max - chart.yAxis[0].min);
+						var multiplierY = chart.plotHeight / $grades.size() / pdf(mean, mean, sd) * .9;
+						var offsetY = ($grades.size() - $grades.indexOf($grade) - 1) * (chart.plotHeight / $grades.size());
 
-					var points = ['M', chart.plotLeft, (chart.plotTop + chart.plotHeight) - (pdf(chart.yAxis[0].min, mean, sd) * multiplierY + offsetY)];
-					for(var i = chart.yAxis[0].min; (i - chart.yAxis[0].min) * multiplierX <= chart.plotWidth; i+=1) {
-						points.push('L');
-						points.push((i - chart.yAxis[0].min) * multiplierX + chart.plotLeft);
-						points.push((chart.plotTop + chart.plotHeight) - (pdf(i, mean, sd) * multiplierY + offsetY));
-					}
+						var points = ['M', chart.plotLeft, (chart.plotTop + chart.plotHeight) - (pdf(chart.yAxis[0].min, mean, sd) * multiplierY + offsetY)];
+						for(var i = chart.yAxis[0].min; (i - chart.yAxis[0].min) * multiplierX <= chart.plotWidth; i+=1) {
+							points.push('L');
+							points.push((i - chart.yAxis[0].min) * multiplierX + chart.plotLeft);
+							points.push((chart.plotTop + chart.plotHeight) - (pdf(i, mean, sd) * multiplierY + offsetY));
+						}
 
-					chart.renderer.path(points).attr({
-						'stroke-width': 1,
-						stroke: Highcharts.getOptions().colors[$foreach.index],
-						zIndex: 3
-					}).add();
+						chart.renderer.path(points).attr({
+							'stroke-width': 1,
+							stroke: Highcharts.getOptions().colors[$foreach.index],
+							zIndex: 3
+						}).add();
+					#end
 				#end
 
 				function pdf(x, mean, sd) {

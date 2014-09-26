@@ -67,8 +67,6 @@
 			#foreach($grade in $grades)
 				#set($bins = $statistics[$Test.fromSubjectAndGrade($grade, $subject)].getBins())
 
-				console.log('$bins');
-
 				#if($bins)
 					$('#${subject}${grade}-HistoGraph').highcharts({
 						chart: {
@@ -162,11 +160,7 @@
 					enabled: false
 				},
 				xAxis: {
-					#if($level == "middle")
-						categories: ['6', '7', '8'],
-					#else
-						categories: ['9', '10', '11', '12'],
-					#end
+					categories: [#foreach($grade in $grades) '$grade'#if(!$foreach.last),#end #end],
 					title: {
 						text: 'Grade'
 					}

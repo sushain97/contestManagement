@@ -126,65 +126,56 @@
 					#if($type == "avail" || !$complete)
 						#if($complete) Choose an option at the left to view specific results. #end
 
-					<h2>Grading Progress (Tests Graded)</h2>
+						<h2>Grading Progress (Tests Graded)</h2>
 
-					#set($numTests = 0.0)
-					#if($enabledLevels.contains("middle")) #set($numTests = $numTests + 12) #end
-					#if($enabledLevels.contains("high")) #set($numTests = $numTests + 16) #end
-					#set($percentComplete = $testsGraded.size() / $numTests * 100)
-					<div class="progress progress-striped active" style="width: 65%; min-width: 300px;">
-						<div class="progress-bar" role="progressbar" aria-valuenow="$percentComplete" aria-valuemin="0" aria-valuemax="100" style="width: $percentComplete%;"></div>
-					</div>
+						#set($numTests = 0.0)
+						#foreach($level in $levels)
+							#if($enabledLevels.split("\+").contains($level.toString()))
+								#set($numTests = $numTests + $level.getGrades().size() * $subjects.size())
+							#end
+						#end
 
-					<table id="statusTable" class="table table-condensed">
-						<thead>
-							<tr>
-								<th>Grade</th>
-								#foreach($subject in $subjects)
-								<th>$subject.getName()</th>
-								#end
-							</tr>
-						</thead>
-						<tbody>
-							#if($enabledLevels.contains("middle"))
-								#foreach($grade in [6..8])
+						#set($percentComplete = $testsGraded.size() / $numTests * 100)
+						<div class="progress progress-striped active" style="width: 65%; min-width: 300px;">
+							<div class="progress-bar" role="progressbar" aria-valuenow="$percentComplete" aria-valuemin="0" aria-valuemax="100" style="width: $percentComplete%;"></div>
+						</div>
+
+						<table id="statusTable" class="table table-condensed">
+							<thead>
 								<tr>
-									<td class="row-header">${grade}th</td>
+									<th>Grade</th>
 									#foreach($subject in $subjects)
-										#if($testsGraded.contains("$grade$subject"))
-											<td class="success"><i class="glyphicon glyphicon-check"></i></td>
-										#else
-											<td class="warning"><i class="glyphicon glyphicon-remove"></i></td>
-										#end
+									<th>$subject.getName()</th>
 									#end
 								</tr>
-								#end
-							#end
-
-							#if($enabledLevels.contains("middle") && $enabledLevels.contains("high"))
-							<tr>
-								#foreach($i in [1..5])
-								<td></td>
-								#end
-							</tr>
-							#end
-
-							#if($enabledLevels.contains("high"))
-								#foreach($grade in [9..12])
-								<tr>
-									<td class="row-header">${grade}th</td>
-									#foreach($subject in $subjects)
-										#if($testsGraded.contains("$grade$subject"))
-											<td class="success"><i class="glyphicon glyphicon-check"></i></td>
-										#else
-											<td class="warning"><i class="glyphicon glyphicon-remove"></i></td>
+							</thead>
+							<tbody>
+								#foreach($level in $levels)
+									#if($enabledLevels.split("\+").contains($level.toString()))
+										#foreach($grade in $level.getGrades())
+											<tr>
+												<td class="row-header">${grade}th</td>
+												#foreach($subject in $subjects)
+													#if($testsGraded && $testsGraded.contains("$grade$subject"))
+														<td class="success btn" data-test="$grade$subject"><i class="glyphicon glyphicon-check"></i></td>
+													#else
+														<td class="warning" data-test="$grade$subject"><i class="glyphicon glyphicon-remove"></i></td>
+													#end
+												#end
+											</tr>
 										#end
 									#end
-								</tr>
+
+									#if(!$foreach.last)
+										<tr>
+										#foreach($i in [1..5])
+										<td></td>
+										#end
+									</tr>
+									#end
 								#end
-							#end
-						</tbody>
-					</table>
+							</tbody>
+						</table>
 					#end
 
 					<div class="visible-print well well-sm">

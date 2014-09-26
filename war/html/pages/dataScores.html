@@ -103,9 +103,7 @@
 										Schools<b class="caret"></b>
 									</a>
 									<ul class="dropdown-menu">
-										#if($level == "middle") #set($schools = $middleSchools) #else #set($schools = $highSchools) #end
-
-										#foreach($schoolName in $schools)
+										#foreach($schoolName in $schools[$level])
 											<li data-type="school_$schoolName$LEVEL" id="$schoolName.hashCode()">
 												<a href='/data?choice=scores&type=school_$esc.url($schoolName)&level=$level'>$schoolName</a>
 											</li>
@@ -114,7 +112,7 @@
 								</li>
 								<li class="divider"></li>
 
-								#foreach($num in [$level.getLowGrade()..$level.getHighGrade()])
+								#foreach($num in $level.getGrades())
 									<li id="${num}" class="dropdown">
 										<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 											${num}th Grade <b class="caret"></b>
@@ -148,8 +146,12 @@
 						<h2>Grading Progress (Tests Graded)</h2>
 
 						#set($numTests = 0.0)
-						#if($enabledLevels.contains("middle")) #set($numTests = $numTests + 12) #end
-						#if($enabledLevels.contains("high")) #set($numTests = $numTests + 16) #end
+						#foreach($level in $levels)
+							#if($enabledLevels.split("\+").contains($level.toString()))
+								#set($numTests = $numTests + $level.getGrades().size() * $subjects.size())
+							#end
+						#end
+
 						#set($percentComplete = $testsGraded.size() / $numTests * 100)
 						<div class="progress progress-striped active" style="width: 65%; min-width: 300px;">
 							<div class="progress-bar" role="progressbar" aria-valuenow="$percentComplete" aria-valuemin="0" aria-valuemax="100" style="width: $percentComplete%;"></div>
@@ -166,39 +168,26 @@
 								</tr>
 							</thead>
 							<tbody>
-								#if($enabledLevels.contains("middle"))
-									#foreach($grade in [6..8])
-									<tr>
-										<td class="row-header">${grade}th</td>
-										#foreach($subject in $subjects)
-											#if($testsGraded.contains("$grade$subject"))
-												<td class="success btn" data-test="$grade$subject"><i class="glyphicon glyphicon-check"></i></td>
-											#else
-												<td class="warning" data-test="$grade$subject"><i class="glyphicon glyphicon-remove"></i></td>
-											#end
+								#foreach($level in $levels)
+									#if($enabledLevels.split("\+").contains($level.toString()))
+										#foreach($grade in $level.getGrades())
+											<tr>
+												<td class="row-header">${grade}th</td>
+												#foreach($subject in $subjects)
+													#if($testsGraded && $testsGraded.contains("$grade$subject"))
+														<td class="success btn" data-test="$grade$subject"><i class="glyphicon glyphicon-check"></i></td>
+													#else
+														<td class="warning" data-test="$grade$subject"><i class="glyphicon glyphicon-remove"></i></td>
+													#end
+												#end
+											</tr>
 										#end
-									</tr>
 									#end
-								#end
 
-								#if($enabledLevels.contains("middle") && $enabledLevels.contains("high"))
-								<tr>
-									#foreach($i in [1..5])
-									<td></td>
-									#end
-								</tr>
-								#end
-
-								#if($enabledLevels.contains("high"))
-									#foreach($grade in [9..12])
-									<tr>
-										<td class="row-header">${grade}th</td>
-										#foreach($subject in $subjects)
-											#if($testsGraded.contains("$grade$subject"))
-												<td class="success" data-test="$grade$subject"><i class="glyphicon glyphicon-check"></i></td>
-											#else
-												<td class="warning" data-test="$grade$subject"><i class="glyphicon glyphicon-remove"></i></td>
-											#end
+									#if(!$foreach.last)
+										<tr>
+										#foreach($i in [1..5])
+										<td></td>
 										#end
 									</tr>
 									#end

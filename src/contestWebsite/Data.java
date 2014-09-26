@@ -233,9 +233,13 @@ public class Data extends BaseHttpServlet {
 				PersistenceManager pm = PMF.get().getPersistenceManager();
 				javax.jdo.Query q = pm.newQuery("select name from " + School.class.getName());
 				q.setFilter("level == :schoolLevel");
-				context.put("middleSchools", q.execute(Level.MIDDLE));
-				context.put("highSchools", q.execute(Level.HIGH));
 
+				Map<Level, Object> schools = new HashMap<Level, Object>();
+				for (Level level : Level.values()) {
+					schools.put(level, q.execute(level));
+				}
+
+				context.put("schools", schools);
 				context.put("qualifyingCriteria", Retrieve.qualifyingCriteria(infoAndCookie.x));
 				context.put("hideFullNames", false);
 				context.put("subjects", Subject.values());

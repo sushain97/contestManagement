@@ -74,7 +74,7 @@
 
 								<li class="divider"></li>
 
-								#foreach($num in [$level.getLowGrade()..$level.getHighGrade()])
+								#foreach($num in $level.getGrades())
 									<li id="${num}" class="dropdown">
 										<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 											${num}th Grade <b class="caret"></b>

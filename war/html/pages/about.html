@@ -9,6 +9,15 @@
 	#parse("head.html")
 	<style type="text/css">
 		.dl-horizontal dt { white-space: normal; }
+		@media(min-width: 768px) {
+			.dl-horizontal dd {
+				margin-left: 280px;
+				width: 100%;
+			}
+			.dl-horizontal dt {
+				width: 260px;
+			}
+		}
 		.row { padding-bottom: 10px; }
 	</style>
 	<link type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">

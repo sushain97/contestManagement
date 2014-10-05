@@ -1,7 +1,7 @@
 TMSCA Contest Management
 =================
 
-Google App Engine Project to manage TMSCA Tournaments at the Middle School and High School level with support for automatic tabulation, user accounts, contest result visualization, and much more.
+Google App Engine Project to administer TMSCA Tournaments at the Elementary, Middle and High School levels with support for automatic tabulation, user accounts, online registration, contest result visualization, a gallery and much more.
 
 Pages
 -----
@@ -33,8 +33,8 @@ In addition to access to all public pages, an administrator has access to a few 
 	* **Schedule**: Set the tournament schedule in the form of a YAML Associative Array displayed on the About page
 	* **Directions**: Set human-readable directions to the host school in the form of a YAML Associative Array displayed on the Directions page
 	* **Slideshow**: Set the image, title, and captions of the slideshow in the form of a YAML List of Lists displayed on the Main page
-	* **School Levels**: Set the school levels the tournament will host (a nonempty subset of `{middle, high}`)
-	* **Award Critiera**: Set the placings which entitle students of each level (middle, high) to each type of award (medal, trophy), used on the category winners pages, category sweepstakes winners pages, and the sweepstakes winners pages
+	* **School Levels**: Set the school levels the tournament will host (a nonempty subset of `{elementary, middle, high}`)
+	* **Award Critiera**: Set the placings which entitle students of each level (elementary, middle, high) to each type of award (medal, trophy), used on the category winners pages, category sweepstakes winners pages, and the sweepstakes winners pages
 	* **Qualifying Criteria**: Set the middle school state qualifying scores for each test, used on all student pages, school score pages, and the about page
 	* **Test Charges**: Set the dollar cost for each test used on the registration page
 	* **E-Mail Address**: Specify the email address to which questions submitted through the Contact Us page are sent to

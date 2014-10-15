@@ -21,7 +21,7 @@
 		#else
 		<form method="post" class="form-horizontal">
 			<fieldset>
-				<legend>Please contact us for any <em>clarifications</em> or <em>registration changes</em>.
+				<legend>Please contact us for any <em>clarifications</em> or <em>general questions</em>.
 				#if(!$loggedIn && !$admin)
 				Please <a href="/login">login</a> before submitting questions if you have an account. Thank you!
 				#end
@@ -63,15 +63,17 @@
 				</div>
 
 				#if(!$nocaptcha)
-				<div class="input-group col-md-offset-2">
-					<script type="text/javascript"> var RecaptchaOptions = { theme : 'clean' }; </script>
-					<script type="text/javascript" src="//www.google.com/recaptcha/api/challenge?k=$publicKey"></script>
-					<noscript>
-						<iframe src="http://www.google.com/recaptcha/api/noscript?k=$publicKey" height="300" width="500" frameborder="0"></iframe> <br>
-						<textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
-						<input type="hidden" name="recaptcha_response_field" value="manual_challenge">
-					</noscript>
-					#if($captchaError) <span class="help-block text-danger lead">Incorrect captcha, try again.</span> #end
+				<div class="form-group">
+					<div class="input-group col-md-offset-2">
+						<script type="text/javascript"> var RecaptchaOptions = { theme : 'clean' }; </script>
+						<script type="text/javascript" src="//www.google.com/recaptcha/api/challenge?k=$publicKey"></script>
+						<noscript>
+							<iframe src="http://www.google.com/recaptcha/api/noscript?k=$publicKey" height="300" width="500" frameborder="0"></iframe> <br>
+							<textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
+							<input type="hidden" name="recaptcha_response_field" value="manual_challenge">
+						</noscript>
+						#if($captchaError) <span class="help-block text-danger lead">Incorrect captcha, try again.</span> #end
+					</div>
 				</div>
 				#end
 

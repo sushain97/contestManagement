@@ -63,263 +63,283 @@
 				</div>
 			#end
 
-			<button type="button" class="btn btn-info" data-toggle="modal" data-target="#NSmodal">Number Sense</button>
-			<button type="button" class="btn btn-info" data-toggle="modal" data-target="#CAmodal">Calculator</button>
-			<button type="button" class="btn btn-info" data-toggle="modal" data-target="#MAmodal">General Math</button>
-			<button type="button" class="btn btn-info" data-toggle="modal" data-target="#SCmodal">Science</button>
-
-			<div class = "modal fade" id = "#NSmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-				<div class ="modal-dialog">
-					<div class = "modal-content">
-						<div class = "modal-header">
-							<h3>Number Sense</h3>
-							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-						</div>
-						<div class="modal-body">
-							<p>
-								Number Sense is a timed test in which the competitor has 10 minutes to answer 80 mental math problems (no calculator allowed) in the order in which they appear. Thus it is not always the best idea to skip around the test or start from the back. A pen must be used to solve the problems and absolutely no scratch work, overwrites, or crossing out is permitted. The score will be determined by the last problem attempted times 5 minus 9 times each problem skipped, missed, crossed out, or overwritten before it. Each answer can be expressed as a non-repeating rational number. Some problems will require the expression of the answer to be written out in a certain format (e.g. - improper fraction, decimal, etc.) There are a few problems on each test that call for a complex calculation to be approximated as an integer with 5% or less error from the actual value. Answers should not be written as decimals when the answer is clearly an integer. There are tricks that exist to solve most of the problems that would normally seem preposterous to calculate mentally. Number Sense teaches a great sense of mathematical intuition and reflex. Speed, tricks, and vigor are added to the student's repertoire of mathematical tools.
-							</p>
-							<br>
-							<p>
-								You can download a practice middle school and high school test at the bottom of the page.
-							</p>
-						</div>
-						<div class = "modal-footer">
-							<button type = "button" class = "glyphicon-download" href="/resources/examples/middle" download = "NS.pdf">MS Practice Test</button>
-							<button type = "button" class = "glyphicon-download" href="/resources/examples/high" download = "NS.pdf">HS Practice Test</button>
-						</div>
-					</div>
+			<a href="#NSmodal" role="button" class="btn btn-info" data-toggle="modal">Number Sense</a>
+			<a href="#CAmodal" role="button" class="btn btn-info" data-toggle="modal">Calculator</a>
+			<a href="#MAmodal" role="button" class="btn btn-info" data-toggle="modal">Mathematics</a>
+			<a href="#SCmodal" role="button" class="btn btn-info" data-toggle="modal">Science</a>
+			<br>
+			<div class="form-group">
+				<div class="col-sm-12">
+				<a href="#aboutModal" role="button" class="btn btn-primary" data-toggle="modal">About the Website</a>
 				</div>
 			</div>
+		</div>
 
-			<div class = "modal fade" id = "#CAmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-				<div class ="modal-dialog">
-					<div class = "modal-content">
-						<div class = "modal-header">
-							<h3>Calculator</h3>
-							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-						</div>
-						<div class="modal-body">
-							<p>
-								Calculator is a 30 minute test which, as evident in the name, requires a calculator. Two calculators are permitted. The test is composed of groups of pages with 10 questions. The first 5 questions on a page will be "number crunchers," or algebraic expressions consisting of multiple operatiors that require speed typing into the calculator. The next three problems are stated problems, or word problems. These problems present textual scenarios that require computation of a certain quantity. Sometimes a unit and a form (like dollars, integers, sig-figs, etc.) are presented next to the answer blank. Last, but not least, the remaining problems on the page are geometry problems, which depict a geometric arrangement of shapes or graphs and require the calculation of an unknown quantity when certain quantities, such as side length or volume, are given. Unlike number sense, work can be shown and write-overs and scratch-outs are acceptable. For middle schoolers, the scoring is the same as number sense. There are 80 questions and the same rules hold as far as the point system. For high schoolers, the scoring is similar, but there are only 70 questions and you lose 7 points for each question skipped or missed. Calculator teaches usage of effective problem solving skills under stressful scenarios.
-							</p>
-							<br>
-							<p>
-								You can download a practice middle school and high school test at the bottom of the page.
-							</p>
-						</div>
-						<div class = "modal-footer">
-							<button type = "button" class = "glyphicon-download" href="/resources/examples/middle" download = "CA.pdf">MS Practice Test</button>
-							<button type = "button" class = "glyphicon-download" href="/resources/examples/high" download = "CA.pdf">HS Practice Test</button>
-						</div>
+		<div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="aboutModal" aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h3 id="aboutModal">
+						About the Website
+						<small class="pull-right"><i class="glyphicon glyphicon-copyright-mark"></i> <a href="http://skc.name" target="_blank">Sushain Cherivirala</a></small>
+						</h3>
 					</div>
-				</div>
-			</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-sm-2">
+								<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US" target="_blank">
+								<img alt="Creative Commons License" style="border-width: 0" src="/img/aboutPage/by-nc-sa.eu.png" width="127px"></a>
+							</div>
+							<div class="col-sm-10">
+								<span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Content of TMSCA Tournament Management System (HTML, CSS, Static Assets, etc.)</span>
+								by <a xmlns:cc="http://creativecommons.org/ns#" href="http://www.skc.name" property="cc:attributionName" rel="cc:attributionURL" target="_blank">Sushain
+									Cherivirala</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US" target="_blank">Creative
+									Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>.
+							</div>
+						</div>
 
-			<div class = "modal fade" id = "#MAmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-				<div class ="modal-dialog">
-					<div class = "modal-content">
-						<div class = "modal-header">
-							<h3>General Math</h3>
-							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+						<div class="row">
+							<div class="col-sm-2">
+								<img alt="GNU General Public License" src="/img/aboutPage/gplv3.png">
+							</div>
+							<div class="col-sm-10">
+								Codebase of TMSCA Tournament Management System (Java, JS, etc.) is licensed under the <a href="http://www.gnu.org/licenses/gpl-3.0.html" target="_blank">GNU General Public License Version 3</a>.
+							</div>
 						</div>
-						<div class="modal-body">
-							<p>
-								General Math is a multiple choice exam that tests the student's knowledge of problem-solving skills and, as the name suggests, general mathematical knowledge and methods. The middle school topics usually range from basic arithmetic to rudimentary Algebra II while the high school tests cover information acquired from Algebra I to Calculus BC. For middle schoolers, no calculator is permitted. The test is 40 minutes long, has 50 questions, and, unlike Number Sense and Calculator, permits skipping around. Five points will be awarded per correct answer, and 2 points will be deducted for any wrong answer as a penalty for guessing or simple mistakes. No points will be taken or added for questions not answered. In high school, the rules are a bit different. The time limit is still 40 minutes, but there are now 60 questions to answer. Luckily, calculators are permitted. Each question answered correctly is now 6 points instead of 5. Other than that, the scoring rules for middle and high school general math tests are essentially the same. General math instills an arsenal of mathematical knowledge and problem solving ability in the student.
-							</p>
-							<br>
-							<p>
-								You can download a practice middle school and high school test at the bottom of the page.
-							</p>
+
+						<br>
+
+						<div class="row">
+							<div class="col-sm-6 text-center">
+								<img data-src="/img/aboutPage/java.png" alt="Java" height="80px">
+							</div>
+							<div class="col-sm-6 text-center">
+								<img data-src="/img/aboutPage/webtrifecta.png" alt="Web Trifecta (HTML, JS, CSS)" height="80px">
+							</div>
 						</div>
-						<div class = "modal-footer">
-							<button type = "button" class = "glyphicon-download" href="/resources/examples/middle" download = "MA.pdf">MS Practice Test</button>
-							<button type = "button" class = "glyphicon-download" href="/resources/examples/high" download = "MA.pdf">HS Practice Test</button>
+
+						<br>
+
+						<div class="row">
+							<div class="col-sm-6 text-center">
+								<a href="https://developers.google.com/appengine/" target="_blank"><img data-src="/img/aboutPage/appengine.gif" alt="Google App Engine"></a>
+								Powered by <a href="https://developers.google.com/appengine/" target="_blank">Google App Engine</a>
+							</div>
+							<div class="col-sm-6 text-center">
+								<a href="http://twitter.github.io/bootstrap" target="_blank"><img data-src="/img/aboutPage/bootstrap.png" width="40px" alt="Bootstrap"></a>
+								Built with <i class="fa fa-twitter"></i> <a href="http://twitter.github.io/bootstrap" target="_blank">Twitter Bootstrap</a>
+							</div>
 						</div>
+
+						<div class="row">
+							<div class="col-sm-6 text-center">
+								<a href="http://velocity.apache.org/" target="_blank"><img data-src="/img/aboutPage/apacheVelocity.gif" alt="Apache Velocity" height="35px"></a>
+								Templating with <a href="http://velocity.apache.org/" target="_blank">Apache Velocity</a>
+							</div>
+							<div class="col-sm-6 text-center">
+								<a href="http://jquery.com" target="_blank"><img data-src="/img/aboutPage/jquery.png" width="100px" alt="JQuery"></a>
+								Powered by <a href="http://jquery.com" target="_blank">JQuery</a>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-sm-6 text-center">
+								<a href="http://commons.apache.org/proper/commons-math" target="_blank"><img data-src="/img/aboutPage/commonsMath.gif" alt="Apache Commons Math" height="45px"></a>
+								Uses <a href="http://commons.apache.org/proper/commons-math" target="_blank">Apache Commons Math</a>
+							</div>
+							<div class="col-sm-6 text-center">
+								<a href="https://github.com/sushain97/contestManagement" target="_blank"><img data-src="/img/aboutPage/github.png" alt="Github" height="35px"></a>
+								Hosted on <i class="fa fa-github"></i> <a href="https://github.com/sushain97/contestManagement" target="_blank">Github</a>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-sm-6 text-center">
+								<a href="http://www.google.com/recaptcha"><img data-src="/img/aboutPage/recaptcha.gif" alt="reCAPTCHA" height="50px"></a>
+								Secured with <a href="http://www.google.com/recaptcha">reCAPTCHA</a>
+							</div>
+							<div class="col-sm-6 text-center">
+								<a href="http://highcharts.com"><img data-src="/img/aboutPage/highcharts.png" alt="Highcharts JS" height="50px"></a>
+								Charts generated with <a href="http://highcharts.com">Highcharts JS</a>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-sm-6 text-center">
+								<a href="http://oauth.net/" target="_blank"><img data-src="/img/aboutPage/oauth2.png" alt="OAuth" height="50px"></a>
+								Authentication with <a href="http://oauth.net/" target="_blank">OAuth 2.0</a>
+							</div>
+							<div class="col-sm-6 text-center">
+								Sortable tables use <a href="http://mottie.github.io/tablesorter" target="_blank" style="font-family: Georgia, Palatino, Times New Roman; font-size: 30px; font-weight: 400; text-decoration: none;">
+									<span style="color: black">table</span><span style="color: #6cf">sorter</span>
+								</a>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-sm-6 text-center">
+								<a href="https://db.apache.org/jdo/" target="_blank"><img data-src="/img/aboutPage/jdo.gif" alt="JDO" height="50px"></a>
+								Uses <a href="https://db.apache.org/jdo/" target="_blank">Java Data Objects</a>
+							</div>
+							<div class="col-sm-6 text-center">
+								<a href="https://developers.google.com/" target="_blank"><img data-src="/img/aboutPage/googleapis.gif" alt="JDO" height="50px"></a>
+								Uses <a href="https://developers.google.com/" target="_blank">Google APIs</a>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-sm-12 text-center">
+								<a href="http://pagekite.net/" target="_blank"><img data-src="/img/aboutPage/pagekite.png" alt="PageKite" height="50px"></a>
+								Uses <a href="http://pagekite.net/" target="_blank">PageKite</a> for staging
+							</div>
+						</div>
+
+						<br>
+
+						<div class="lead">CDN Service from</div>
+						<div class="row">
+							<div class="col-sm-3 text-center">
+								<a href="https://developers.google.com/speed/libraries" target="_blank"><img alt="Google Hosted Libraries" src="/img/aboutPage/googledev.png" height="50px"></a>
+							</div>
+							<div class="col-sm-3 text-center">
+								<a href="http://www.netdna.com/" target="_blank"><img alt="NetDNA CDN" src="/img/aboutPage/netdna.png" height="55px"></a>
+							</div>
+							<div class="col-sm-3 text-center">
+								<a href="http://www.maxcdn.com/" target="_blank"><img alt="MAXCDN" src="/img/aboutPage/maxcdn.png" height="35px"></a>
+							</div>
+							<div class="col-sm-3 text-center">
+								<a href="http://cdnjs.com/" target="_blank"><span class="lead">CDNJS</span></a>
+							</div>
+						</div>
+
+						<br>
+
+						<p>
+							Icons from <i class="glyphicon glyphicon-plus"></i> <a href="http://glyphicons.com" target="_blank">Glyphicons Free</a>,
+							<i class="fa fa-flag"></i> <a href="http://fortawesome.github.io/" target="_blank">Font Awesome</a>, and
+							<a href="http://thedesignoffice.org/project/modern-pictograms" target="_blank">Modern Pictograms</a>.
+						</p>
 					</div>
-				</div>
-			</div>
-
-			<div class = "modal fade" id = "#SCmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-				<div class ="modal-dialog">
-					<div class = "modal-content">
-						<div class = "modal-header">
-							<h3>Science</h3>
-							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-						</div>
-						<div class="modal-body">
-							<p>
-								Science is a multiple choice test which is considerably slower-paced than the other three. This is because it is mainly an exam of knowledge rather than ability. In middle school, the scoring and test appearance are very similar to that of general math, disregarding, naturally, the fact that these questions concern science. There are still 50 questions and 5 points per correct answer with a two point guessing penalty and a 40 minute time limit. Since this is the last exam of the competition, studnets may leave after 20 minutes The topics involved in middle school science range from 5th grade science to preliminary high school biology. Calculators are not allowed nor are they by any means required. High school science is even slower-paced than middle school science, with 60 questions and 2 whole hours to answer them, although the student may leave after 45 minutes are over. The test is divided into three explicit sections, biology, chemistry, and physics, in that order. A calculator is needed for the physics and chemistry sections of the test, as large numerical quantities are present. The scoring rules are the same as high school general math, and each section of 20 question gets a score out of 120. These scores are then added together and a cumulative score is calculated. This is important because there are awards for the top 10 cumulative scorers in each grade level as well as an award for the highest score in each of the three individual subjects in the entire competition. Practicing and studying for the science competition inspires a thirst for knowledge in the students which can be seen through success in school science courses.
-							</p>
-							<br>
-							<p>
-								You can download a practice middle school and high school test at the bottom of the page.
-							</p>
-						</div>
-						<div class = "modal-footer">
-							<button type = "button" class = "glyphicon-download" href="/resources/examples/middle" download = "SC.pdf">MS Practice Test</button>
-							<button type = "button" class = "glyphicon-download" href="/resources/examples/high" download = "SC.pdf">HS Practice Test</button>
-						</div>
+					<div class="modal-footer">
+						<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Close</button>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<br>
-		<div class="form-group">
-			<div class="col-sm-12">
-				<a href="#about" role="button" class="btn btn-default" data-toggle="modal">About the Website</a>
+		<div class="modal fade" id="NSmodal" tabindex="-1" role="dialog" aria-labelledby="NSModalHeader" aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h3 id="NSModalHeader">Number Sense</h3>
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<p>
+							Number Sense is a timed test in which the competitor has 10 minutes to answer 80 mental math problems (no calculator allowed) in the order in which they appear. Thus it is not always the
+							best idea to skip around the test or start from the back. A pen must be used to solve the problems and absolutely no scratch work, overwrites, or crossing out is permitted. The score will be
+							determined by the last problem attempted times 5 minus 9 times each problem skipped, missed, crossed out, or overwritten before it. Each answer can be expressed as a non-repeating rational
+							number. Some problems will require the expression of the answer to be written out in a certain format (e.g. - improper fraction, decimal, etc.) There are a few problems on each test that call
+							for a complex calculation to be approximated as an integer with 5% or less error from the actual value. Answers should not be written as decimals when the answer is clearly an integer. There
+							are tricks that exist to solve most of the problems that would normally seem preposterous to calculate mentally. Number Sense teaches a great sense of mathematical intuition and reflex. Speed,
+							tricks, and vigor are added to the student's repertoire of mathematical tools.
+						</p>
+						<br>
+						<p>You can download a practice middle school and high school test at the bottom of the page.</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="glyphicon-download" href="/resources/examples/middle" download="NS.pdf">MS Practice Test</button>
+						<button type="button" class="glyphicon-download" href="/resources/examples/high" download="NS.pdf">HS Practice Test</button>
+					</div>
+				</div>
 			</div>
 		</div>
-	</div>
-	<div id="about" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="aboutModal" aria-hidden="true">
-		<div class="modal-dialog modal-lg">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					<h3 id="aboutModal">
-					About the Website
-					<small class="pull-right"><i class="glyphicon glyphicon-copyright-mark"></i> <a href="http://skc.name" target="_blank">Sushain Cherivirala</a></small>
-					</h3>
+
+		<div class="modal fade" id="CAmodal" tabindex="-1" role="dialog" aria-labelledby="CAModalHeader" aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h3 id="CAModalHeader">Calculator</h3>
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<p>Calculator is a 30 minute test which, as evident in the name, requires a calculator. Two calculators are permitted. The test is composed of groups of pages with 10 questions. The first 5
+							questions on a page will be "number crunchers," or algebraic expressions consisting of multiple operatiors that require speed typing into the calculator. The next three problems are stated
+							problems, or word problems. These problems present textual scenarios that require computation of a certain quantity. Sometimes a unit and a form (like dollars, integers, sig-figs, etc.) are
+							presented next to the answer blank. Last, but not least, the remaining problems on the page are geometry problems, which depict a geometric arrangement of shapes or graphs and require the
+							calculation of an unknown quantity when certain quantities, such as side length or volume, are given. Unlike number sense, work can be shown and write-overs and scratch-outs are acceptable.
+							For middle schoolers, the scoring is the same as number sense. There are 80 questions and the same rules hold as far as the point system. For high schoolers, the scoring is similar, but there
+							are only 70 questions and you lose 7 points for each question skipped or missed. Calculator teaches usage of effective problem solving skills under stressful scenarios.</p>
+						<br>
+						<p>You can download a practice middle school and high school test at the bottom of the page.</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="glyphicon-download" href="/resources/examples/middle" download="CA.pdf">MS Practice Test</button>
+						<button type="button" class="glyphicon-download" href="/resources/examples/high" download="CA.pdf">HS Practice Test</button>
+					</div>
 				</div>
-				<div class="modal-body">
-					<div class="row">
-						<div class="col-sm-2">
-							<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US" target="_blank">
-							<img alt="Creative Commons License" style="border-width: 0" src="/img/aboutPage/by-nc-sa.eu.png" width="127px"></a>
-						</div>
-						<div class="col-sm-10">
-							<span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Content of TMSCA Tournament Management System (HTML, CSS, Static Assets, etc.)</span>
-							by <a xmlns:cc="http://creativecommons.org/ns#" href="http://www.skc.name" property="cc:attributionName" rel="cc:attributionURL" target="_blank">Sushain
-								Cherivirala</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US" target="_blank">Creative
-								Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>.
-						</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="MAmodal" tabindex="-1" role="dialog" aria-labelledby="MAModalHeader" aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h3 id="MAModalHeader">Mathematics</h3>
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+						</button>
 					</div>
-
-					<div class="row">
-						<div class="col-sm-2">
-							<img alt="GNU General Public License" src="/img/aboutPage/gplv3.png">
-						</div>
-						<div class="col-sm-10">
-							Codebase of TMSCA Tournament Management System (Java, JS, etc.) is licensed under the <a href="http://www.gnu.org/licenses/gpl-3.0.html" target="_blank">GNU General Public License Version 3</a>.
-						</div>
+					<div class="modal-body">
+						<p>General Math is a multiple choice exam that tests the student's knowledge of problem-solving skills and, as the name suggests, general mathematical knowledge and methods. The middle
+							school topics usually range from basic arithmetic to rudimentary Algebra II while the high school tests cover information acquired from Algebra I to Calculus BC. For middle schoolers, no
+							calculator is permitted. The test is 40 minutes long, has 50 questions, and, unlike Number Sense and Calculator, permits skipping around. Five points will be awarded per correct answer, and 2
+							points will be deducted for any wrong answer as a penalty for guessing or simple mistakes. No points will be taken or added for questions not answered. In high school, the rules are a bit
+							different. The time limit is still 40 minutes, but there are now 60 questions to answer. Luckily, calculators are permitted. Each question answered correctly is now 6 points instead of 5.
+							Other than that, the scoring rules for middle and high school general math tests are essentially the same. General math instills an arsenal of mathematical knowledge and problem solving
+							ability in the student.</p>
+						<br>
+						<p>You can download a practice middle school and high school test at the bottom of the page.</p>
 					</div>
-
-					<br>
-
-					<div class="row">
-						<div class="col-sm-6 text-center">
-							<img data-src="/img/aboutPage/java.png" alt="Java" height="80px">
-						</div>
-						<div class="col-sm-6 text-center">
-							<img data-src="/img/aboutPage/webtrifecta.png" alt="Web Trifecta (HTML, JS, CSS)" height="80px">
-						</div>
+					<div class="modal-footer">
+						<button type="button" class="glyphicon-download" href="/resources/examples/middle" download="MA.pdf">MS Practice Test</button>
+						<button type="button" class="glyphicon-download" href="/resources/examples/high" download="MA.pdf">HS Practice Test</button>
 					</div>
-
-					<br>
-
-					<div class="row">
-						<div class="col-sm-6 text-center">
-							<a href="https://developers.google.com/appengine/" target="_blank"><img data-src="/img/aboutPage/appengine.gif" alt="Google App Engine"></a>
-							Powered by <a href="https://developers.google.com/appengine/" target="_blank">Google App Engine</a>
-						</div>
-						<div class="col-sm-6 text-center">
-							<a href="http://twitter.github.io/bootstrap" target="_blank"><img data-src="/img/aboutPage/bootstrap.png" width="40px" alt="Bootstrap"></a>
-							Built with <i class="fa fa-twitter"></i> <a href="http://twitter.github.io/bootstrap" target="_blank">Twitter Bootstrap</a>
-						</div>
-					</div>
-
-					<div class="row">
-						<div class="col-sm-6 text-center">
-							<a href="http://velocity.apache.org/" target="_blank"><img data-src="/img/aboutPage/apacheVelocity.gif" alt="Apache Velocity" height="35px"></a>
-							Templating with <a href="http://velocity.apache.org/" target="_blank">Apache Velocity</a>
-						</div>
-						<div class="col-sm-6 text-center">
-							<a href="http://jquery.com" target="_blank"><img data-src="/img/aboutPage/jquery.png" width="100px" alt="JQuery"></a>
-							Powered by <a href="http://jquery.com" target="_blank">JQuery</a>
-						</div>
-					</div>
-
-					<div class="row">
-						<div class="col-sm-6 text-center">
-							<a href="http://commons.apache.org/proper/commons-math" target="_blank"><img data-src="/img/aboutPage/commonsMath.gif" alt="Apache Commons Math" height="45px"></a>
-							Uses <a href="http://commons.apache.org/proper/commons-math" target="_blank">Apache Commons Math</a>
-						</div>
-						<div class="col-sm-6 text-center">
-							<a href="https://github.com/sushain97/contestManagement" target="_blank"><img data-src="/img/aboutPage/github.png" alt="Github" height="35px"></a>
-							Hosted on <i class="fa fa-github"></i> <a href="https://github.com/sushain97/contestManagement" target="_blank">Github</a>
-						</div>
-					</div>
-
-					<div class="row">
-						<div class="col-sm-6 text-center">
-							<a href="http://www.google.com/recaptcha"><img data-src="/img/aboutPage/recaptcha.gif" alt="reCAPTCHA" height="50px"></a>
-							Secured with <a href="http://www.google.com/recaptcha">reCAPTCHA</a>
-						</div>
-						<div class="col-sm-6 text-center">
-							<a href="http://highcharts.com"><img data-src="/img/aboutPage/highcharts.png" alt="Highcharts JS" height="50px"></a>
-							Charts generated with <a href="http://highcharts.com">Highcharts JS</a>
-						</div>
-					</div>
-
-					<div class="row">
-						<div class="col-sm-6 text-center">
-							<a href="http://oauth.net/" target="_blank"><img data-src="/img/aboutPage/oauth2.png" alt="OAuth" height="50px"></a>
-							Authentication with <a href="http://oauth.net/" target="_blank">OAuth 2.0</a>
-						</div>
-						<div class="col-sm-6 text-center">
-							Sortable tables use <a href="http://mottie.github.io/tablesorter" target="_blank" style="font-family: Georgia, Palatino, Times New Roman; font-size: 30px; font-weight: 400; text-decoration: none;">
-								<span style="color: black">table</span><span style="color: #6cf">sorter</span>
-							</a>
-						</div>
-					</div>
-
-					<div class="row">
-						<div class="col-sm-6 text-center">
-							<a href="https://db.apache.org/jdo/" target="_blank"><img data-src="/img/aboutPage/jdo.gif" alt="JDO" height="50px"></a>
-							Uses <a href="https://db.apache.org/jdo/" target="_blank">Java Data Objects</a>
-						</div>
-						<div class="col-sm-6 text-center">
-							<a href="https://developers.google.com/" target="_blank"><img data-src="/img/aboutPage/googleapis.gif" alt="JDO" height="50px"></a>
-							Uses <a href="https://developers.google.com/" target="_blank">Google APIs</a>
-						</div>
-					</div>
-
-					<div class="row">
-						<div class="col-sm-12 text-center">
-							<a href="http://pagekite.net/" target="_blank"><img data-src="/img/aboutPage/pagekite.png" alt="PageKite" height="50px"></a>
-							Uses <a href="http://pagekite.net/" target="_blank">PageKite</a> for staging
-						</div>
-					</div>
-
-					<br>
-
-					<div class="lead">CDN Service from</div>
-					<div class="row">
-						<div class="col-sm-3 text-center">
-							<a href="https://developers.google.com/speed/libraries" target="_blank"><img alt="Google Hosted Libraries" src="/img/aboutPage/googledev.png" height="50px"></a>
-						</div>
-						<div class="col-sm-3 text-center">
-							<a href="http://www.netdna.com/" target="_blank"><img alt="NetDNA CDN" src="/img/aboutPage/netdna.png" height="55px"></a>
-						</div>
-						<div class="col-sm-3 text-center">
-							<a href="http://www.maxcdn.com/" target="_blank"><img alt="MAXCDN" src="/img/aboutPage/maxcdn.png" height="35px"></a>
-						</div>
-						<div class="col-sm-3 text-center">
-							<a href="http://cdnjs.com/" target="_blank"><span class="lead">CDNJS</span></a>
-						</div>
-					</div>
-
-					<br>
-
-					<p>
-						Icons from <i class="glyphicon glyphicon-plus"></i> <a href="http://glyphicons.com" target="_blank">Glyphicons Free</a>,
-						<i class="fa fa-flag"></i> <a href="http://fortawesome.github.io/" target="_blank">Font Awesome</a>, and
-						<a href="http://thedesignoffice.org/project/modern-pictograms" target="_blank">Modern Pictograms</a>.
-					</p>
 				</div>
-				<div class="modal-footer">
-					<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Close</button>
+			</div>
+		</div>
+
+		<div class="modal fade" id="SCmodal" tabindex="-1" role="dialog" aria-labelledby="SCModalHeader" aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h3 id="SCModalHeader">Science</h3>
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<p>Science is a multiple choice test which is considerably slower-paced than the other three. This is because it is mainly an exam of knowledge rather than ability. In middle school, the
+							scoring and test appearance are very similar to that of general math, disregarding, naturally, the fact that these questions concern science. There are still 50 questions and 5 points per
+							correct answer with a two point guessing penalty and a 40 minute time limit. Since this is the last exam of the competition, studnets may leave after 20 minutes The topics involved in middle
+							school science range from 5th grade science to preliminary high school biology. Calculators are not allowed nor are they by any means required. High school science is even slower-paced than
+							middle school science, with 60 questions and 2 whole hours to answer them, although the student may leave after 45 minutes are over. The test is divided into three explicit sections, biology,
+							chemistry, and physics, in that order. A calculator is needed for the physics and chemistry sections of the test, as large numerical quantities are present. The scoring rules are the same as
+							high school general math, and each section of 20 question gets a score out of 120. These scores are then added together and a cumulative score is calculated. This is important because there
+							are awards for the top 10 cumulative scorers in each grade level as well as an award for the highest score in each of the three individual subjects in the entire competition. Practicing and
+							studying for the science competition inspires a thirst for knowledge in the students which can be seen through success in school science courses.</p>
+						<br>
+						<p>You can download a practice middle school and high school test at the bottom of the page.</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="glyphicon-download" href="/resources/examples/middle" download="SC.pdf">MS Practice Test</button>
+						<button type="button" class="glyphicon-download" href="/resources/examples/high" download="SC.pdf">HS Practice Test</button>
+					</div>
 				</div>
 			</div>
 		</div>

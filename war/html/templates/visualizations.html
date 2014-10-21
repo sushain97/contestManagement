@@ -1,0 +1,249 @@
+<h2><a class="anchor" id="visualizations"></a>Visualizations</h2>
+
+<div class="panel-group" id="accordion">
+	#foreach($subject in $subjects)
+		#set($title = $subject.getName().concat(" Comparison"))
+
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<a class="panel-title" data-parent="#accordion" data-toggle="collapse" href="#collapse${subject}"> $title</a>
+			</div>
+			<div id="collapse$subject" class="panel-collapse collapse #if($foreach.first) in #end">
+				<div class="panel-body">
+					<ul class="nav nav-tabs ">
+						<li class="active"><a href="#${subject}Overview" data-toggle="tab">Overview</a></li>
+						#foreach($test in $tests)
+							#if($test.getSubject() == $subject && $statistics[$test])
+								<li><a href="#${test}" data-toggle="tab">$test.getGrade()th Grade</a></li>
+							#end
+						#end
+					</ul>
+
+					<div class="tab-content">
+						<div class="tab-pane fade in active" id="${subject}Overview">
+							<div id="${subject}-BoxWhiskerGraph" class="scoreGraph"></div>
+						</div>
+						#foreach($test in $tests)
+							#if($test.getSubject() == $subject && $statistics[$test])
+								<div class="tab-pane fade" id="${test}">
+									<div id="$subject$test.getGrade()-HistoGraph" class="scoreGraph"></div>
+								</div>
+							#end
+						#end
+					</div>
+				</div>
+			</div>
+		</div>
+	#end
+</div>
+
+<div class="well well-sm">
+	Outliers computed using <a href="https://en.wikipedia.org/wiki/Chauvenet's_criterion" target="_blank">Chauvenet's Criterion for Outliers</a>
+	with assumptions of Gaussian normality for sample populations of over 5 scores. Normal distribution curves idealized using the normal
+	probability density function with the relevant group of scores' mean and standard deviation (artificial vertical scaling applied).
+</div>
+
+#set($grades = $Level.fromString($level).getGrades())
+#set($minGrade = $Level.fromString($level).getLowGrade())
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		#foreach($subject in $subjects)
+			#set($title = $subject.getName().concat(" Scores"))
+
+			#set($outlierList = [])
+			#foreach($test in $tests)
+				#if($test.getSubject() == $subject)
+					#set($outliers = [])
+					#set($outliers = $statistics[$test].getOutliers())
+					#foreach($outlier in $outliers)
+						#set($marker = $test.getGrade() - $minGrade)
+						#set($outlierString = "[" + $marker + "," + $outlier + "]")
+						#set($dummy = $outlierList.add($outlierString))
+					#end
+				#end
+			#end
+
+			#foreach($grade in $grades)
+				#set($bins = $statistics[$Test.fromSubjectAndGrade($grade, $subject)].getBins())
+
+				#if($bins)
+					$('#${subject}${grade}-HistoGraph').highcharts({
+						chart: {
+							type: 'column',
+							width: $('.collapse.in').width() * .95
+						},
+						title: {
+							text: '${grade}th Grade $subject.getName()'
+						},
+						legend: false,
+						tooltip: {
+							pointFormat: "Frequency: <b>{point.y}</b>",
+							useHTML: true
+						},
+						xAxis: {
+							categories: [
+								#foreach($bin in $bins)
+									'<b>$bin.getX().getX().intValue()</b> &#8614; <b>$bin.getX().getY().intValue()</b>'#if(!$foreach.last),#end
+								#end
+							],
+							labels: {
+								rotation: -90,
+								useHTML: true
+							},
+							title: {
+								text: 'Score',
+								margin: 20
+							}
+						},
+						yAxis: {
+							title: {
+								text: 'Frequency'
+							}
+						},
+						plotOptions: {
+							column: {
+								groupPadding: 0,
+								pointPadding: 0,
+								borderWidth: 1.5,
+								borderColor: Highcharts.getOptions().colors[1]
+							},
+						},
+						series: [{
+							name: 'Frequency',
+							data: [
+								#foreach($bin in $bins)
+									$bin.getY()#if(!$foreach.last),#end
+								#end
+							],
+						}]
+					}, function(chart) {
+						#set($testSummaryStats = $statistics[$Test.fromSubjectAndGrade($grade, $subject)].getSummary())
+
+						var mean = $testSummaryStats.get("mean"), sd = $testSummaryStats.get("sd");
+						var min = $testSummaryStats.get("min"), max = $testSummaryStats.get("max");
+						var multiplierX = chart.plotWidth / (max - min);
+						var multiplierY = (chart.plotHeight / pdf(mean, mean, sd) * .9);
+
+						var points = ['M', chart.plotLeft, (chart.plotTop + chart.plotHeight) - (pdf(min, mean, sd) * multiplierY)];
+						for(var i = min; (i - min) * multiplierX <= chart.plotWidth; i+=1) {
+							points.push('L');
+							points.push((i - min) * multiplierX + chart.plotLeft);
+							points.push((chart.plotTop + chart.plotHeight) - (pdf(i, mean, sd) * multiplierY));
+						}
+
+						chart.renderer.path(points).attr({
+							'stroke-width': 2,
+							stroke: Highcharts.getOptions().colors[3],
+							zIndex: 4
+						}).add();
+
+						function pdf(x, mean, sd) {
+							var term1 = Math.pow(sd * Math.sqrt(2 * Math.PI), -1);
+							var term2 = Math.pow(Math.E, -(Math.pow(x - mean, 2) / (2 * sd * sd)));
+							return term1 * term2;
+						}
+					});
+				#end
+			#end
+
+			$('#${subject}-BoxWhiskerGraph').highcharts({
+				chart: {
+					type: 'boxplot',
+					inverted: true,
+					width: $('.collapse.in').width() * .95
+				},
+				title: {
+					text: '$title'
+				},
+				legend: {
+					enabled: false
+				},
+				xAxis: {
+					categories: [#foreach($grade in $grades) '$grade'#if(!$foreach.last),#end #end],
+					title: {
+						text: 'Grade'
+					}
+				},
+				yAxis: {
+					title: {
+						text: 'Score'
+					}
+				},
+				plotOptions: {
+					boxplot: {
+						colorByPoint: true
+					}
+				},
+				series: [{
+					name: 'Score',
+					color: Highcharts.getOptions().colors[0],
+					data: [
+						#foreach($grade in $grades)
+							#set($testSummaryStats = $statistics[$Test.fromSubjectAndGrade($grade, $subject)].getSummary())
+							#if($testSummaryStats)
+								[$testSummaryStats.get("min"), $testSummaryStats.get("q1"), $testSummaryStats.get("q2"), $testSummaryStats.get("q3"), $testSummaryStats.get("max")]#if(!$foreach.last),#end
+							#else
+								[]#if(!$foreach.last),#end
+							#end
+						#end
+					],
+					tooltip: {
+						headerFormat: '<em>Grade {point.key}</em><br>'
+					}
+				}, {
+					name: 'Outlier',
+					color: Highcharts.getOptions().colors[0],
+					type: 'scatter',
+					data: [
+						#foreach($outlier in $outlierList)
+							$outlier#if(!$foreach.last),#end
+						#end
+					],
+					marker: {
+						fillColor: 'white',
+						lineWidth: 1,
+						lineColor: Highcharts.getOptions().colors[0]
+					},
+					tooltip: {
+						pointFormat: 'Score: {point.y}'
+					}
+				}]
+			}, function(chart) {
+				#foreach($grade in $grades)
+					#set($testSummaryStats = $statistics[$Test.fromSubjectAndGrade($grade, $subject)].getSummary())
+
+					#if($testSummaryStats)
+						var mean = $testSummaryStats.get("mean"), sd = $testSummaryStats.get("sd");
+						var multiplierX = chart.plotWidth / (chart.yAxis[0].max - chart.yAxis[0].min);
+						var multiplierY = chart.plotHeight / $grades.size() / pdf(mean, mean, sd) * .9;
+						var offsetY = ($grades.size() - $grades.indexOf($grade) - 1) * (chart.plotHeight / $grades.size());
+
+						var points = ['M', chart.plotLeft, (chart.plotTop + chart.plotHeight) - (pdf(chart.yAxis[0].min, mean, sd) * multiplierY + offsetY)];
+						for(var i = chart.yAxis[0].min; (i - chart.yAxis[0].min) * multiplierX <= chart.plotWidth; i+=1) {
+							points.push('L');
+							points.push((i - chart.yAxis[0].min) * multiplierX + chart.plotLeft);
+							points.push((chart.plotTop + chart.plotHeight) - (pdf(i, mean, sd) * multiplierY + offsetY));
+						}
+
+						chart.renderer.path(points).attr({
+							'stroke-width': 1,
+							stroke: Highcharts.getOptions().colors[$foreach.index],
+							zIndex: 3
+						}).add();
+					#end
+				#end
+
+				function pdf(x, mean, sd) {
+					var term1 = Math.pow(sd * Math.sqrt(2 * Math.PI), -1);
+					var term2 = Math.pow(Math.E, -(Math.pow(x - mean, 2) / (2 * sd * sd)));
+					return term1 * term2;
+				}
+			});
+		#end
+	});
+
+	$(window).resize(function() {
+		$('.scoreGraph').setSize($('.collapse.in').width() * .95, 500);
+	});
+</script>

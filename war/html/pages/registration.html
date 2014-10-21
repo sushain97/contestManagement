@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+<head>
+	<title>Register | $title</title>
+	<meta name="description" content="Register for the $title">
+	<meta name="robots" content="index, follow">
+	<meta name="tab" content="Registration">
+	#parse("head.html")
+	<style type="text/css">
+		.dl-horizontal dt {
+			white-space: normal;
+			width: 300px;
+			margin-right: 8px;
+		}
+		#passHelp { display: none; }
+		div[class="tooltip-inner"] { max-width: 350px; }
+		.testCheckbox {
+			-ms-transform: scale(1.25);
+			-moz-transform: scale(1.25);
+			-webkit-transform: scale(1.25);
+			-o-transform: scale(1.25);
+			margin-top: 8px !important;
+		}
+		.tableBtn {
+			margin-top: 6px;
+			padding-top: 2px;
+		}
+		.tooltip { width: 300px !important; }
+		span.allBtn { position: absolute; }
+		span.noneBtn { position: relative; left: 2.5em; }
+	</style>
+	<link type="text/css" href="/css/theme.bootstrap.css" rel="stylesheet">
+</head>
+
+<body>
+	#parse("navbar.html")
+
+	<div class="container">
+		<h1>Contest Registration #if($updated) #include("printButton.html") #end</h1>
+
+		<input type="hidden" name="studentData" id="studentData" value='$studentData'>
+
+		#if($updated)
+			<div class="alert alert-success">
+				<a class="close" data-dismiss="alert">&times;</a> <strong>Success! </strong>Your registration has been
+				recorded. You will receive a confirmation e-mail soon.
+			</div>
+
+			<h2>Your Registration Information</h2>
+			<h3>Identification</h3>
+			To make any changes to the following information, <a href="/contactUs">contact us</a>. <br><br>
+			<dl class="dl-horizontal">
+				#foreach($str in $regData) $str #end
+			</dl>
+
+			<h3>Test Registrations</h3>
+			To make any changes to your student registrations, <a href="/login">log in</a>. <br><br>
+
+			<table class="table table-striped table-condensed table-hover table-responsive" id="registrations">
+				<thead>
+					<tr>
+						<th class="col-xs-3 text-center">Student Name</th>
+						<th class="col-xs-1 text-center" style="border-right: 2px solid #ddd;">Grade</th>
+						<th class="col-xs-2 text-center">Number Sense</th>
+						<th class="col-xs-2 text-center">Calculator</th>
+						<th class="col-xs-2 text-center">Math</th>
+						<th class="col-xs-2 text-center">Science</th>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+			</table>
+		#elseif(!$registrationError.equals(''))
+			<div class="alert alert-danger">
+				<a class="close" data-dismiss="alert">&times;</a> <strong>Oh no!</strong> $registrationError
+			</div>
+		#elseif($error)
+			<div class="alert alert-danger">
+				<strong>Oh no!</strong> There has been a problem with your registration, look below.
+			</div>
+		#else
+			<div class="alert alert-info">
+				<a class="close" data-dismiss="alert">&times;</a>
+				<strong>Remember! </strong>
+				Do not register multiple times, <a class="alert-link" href="/contactUs">contact us</a> or <a class="alert-link" href="/login">login</a> to make changes to your registration.
+			</div>
+		#end
+
+		#if(!$updated)
+		<form method="post" class="form-horizontal">
+			<fieldset>
+				<div class="form-group">
+					<label class="col-sm-2 col-xs-5 control-label" for="registration">Registration Type</label>
+					<div class="input-group col-sm-7 col-xs-7">
+						<label class="radio-inline">
+							<input type="radio" name="registrationType" id="regType1" value="coach" #if($coach) checked #end> Coach
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="registrationType" id="regType2" value="student" #if($student) checked #end> Student
+						</label>
+						<span class="text-danger help-block" id="registerWarning" style="display: none;">Do <strong>not</strong> register here if your coach will register for the school. Only register as a student
+							here if you do <strong>not</strong> have a coach or will be paying us directly.</span>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2 col-xs-5 control-label" for="schoolLevel">School Level</label>
+					<div class="input-group col-sm-5 col-xs-7">
+						#foreach($level in $enabledLevels.split("\+"))
+						#set($level = $Level.fromString($level))
+						<label class="radio-inline">
+							<input type="radio" name="schoolLevel" id="schoolType$level.getName()" value="$level" #if($schoolLevel == $level.toString() || (!$schoolLevel && $foreach.first)) checked #end> $level.getName()
+						</label>
+						#end
+						<span class="text-warning help-block">If your school contains both students from multiple levels (e.g. both middle and high school), please make two separate registrations.</span>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2 col-xs-5 control-label" for="division">Division</label>
+					<div class="input-group col-sm-5 col-xs-7">
+						<label class="radio-inline">
+							<input type="radio" name="division" value="1A" #if($division == "1A") checked #end> 1A
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="division" value="2A" #if($division == "2A") checked #end> 2A
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="division" value="3A" #if($division == "3A") checked #end> 3A
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="division" value="4A" #if($division == "4A") checked #end> 4A
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="division" value="5A" #if($division == "5A") checked #end> 5A
+						</label>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2 col-xs-4 control-label" for="schoolName">Official School Name</label>
+					<div class="input-group col-sm-5 col-xs-8">
+						<input type="text" name="schoolName" class="form-control"  id="schoolName" value="$schoolName" required>
+						<span class="help-block"><strong>Omit</strong> "Middle School", "High School", "Junior High School", etc.</span>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2 col-xs-4 control-label" for="name">Your Name</label>
+					<div class="input-prepend col-sm-5 col-xs-8">
+						<div class="input-group">
+							<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+							<input type="text" name="name" value="$name" class="form-control" id="name" required>
+						</div>
+					</div>
+				</div>
+
+				<div class=#if($userError) "form-group has-error" #else "form-group" #end>
+					<label class="col-sm-2 col-xs-4 control-label" for="email">Your E-Mail Address</label>
+					<div class="input-prepend col-sm-5 col-xs-8">
+						<div class="input-group">
+							<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+							<input type="email" name="email" value="$email" class="form-control" id="email" #if(!$admin) required #end>
+						</div>
+						#if($userError) <span class="help-block">A registration already exists for that E-Mail Address.</span> #end
+					</div>
+				</div>
+
+				<div class="form-group" id="makeAccount">
+					<p class="help-block">
+						An account allows you to check your scores <em>online</em> during and after the competition and edit/review your registration.
+					</p>
+					<label class="col-sm-2 col-xs-6 control-label" for="account">Create an Account?</label>
+
+					<div class="input-group col-sm-5 col-xs-1">
+						<label class="checkbox-inline">
+							<input type="checkbox" name="account" id="account" #if($account) checked #end>
+							&nbsp;
+						</label>
+					</div>
+				</div>
+
+				<div id="accountCreds">
+					<div class="form-group">
+						<label class="col-sm-2 col-xs-4 control-label" for="password">Password</label>
+						<div class="input-prepend col-sm-5 col-xs-8">
+							<div class="input-group">
+								<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+								<input type="password" class="form-control" pattern=".{8,}" title="Passwords must be at least 8 characters" id="password" name="password" value='' maxlength="32" required>
+							</div>
+							<div id="passHelp" class="help-block">Your password would be broken in <span class="text-info" data-toggle="tooltip" id="passStrength"></span></div>
+						</div>
+					</div>
+
+					<div class=#if($passwordError) "form-group has-error" #else "form-group" #end>
+						<label class="col-sm-2 col-xs-4 control-label" for="confPassword">Confirm Password</label>
+						<div class="input-prepend col-sm-5 col-xs-8">
+							<div class="input-group">
+								<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+								<input type="password" class="form-control" pattern=".{8,}" title="Passwords must be at least 8 characters" id="confPassword" name="confPassword" value='' maxlength="32" required>
+							</div>
+							#if($passwordError) <span class="help-block text-danger">Those passwords didn't match, try again.</span> #end
+						</div>
+					</div>
+				</div>
+				<div class="lead">
+					Registrations
+					<button type="button" class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#importDataModal">Import Data</button>
+				</div>
+				<div class="col-md-offset-1 col-md-10">
+					<table class="table table-striped table-condensed table-hover table-responsive" id="registrations">
+						<thead>
+							<tr>
+								<th></th>
+								<th class="col-xs-3 text-center">Student Name</th>
+								<th class="col-xs-1 text-center" style="border-right: 2px solid #ddd;">Grade</th>
+								<th class="col-xs-2 text-center">Number Sense</th>
+								<th class="col-xs-2 text-center">Calculator</th>
+								<th class="col-xs-2 text-center">Math</th>
+								<th class="col-xs-2 text-center">Science</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="student">
+								<td class="text-center">
+									<span class="btn btn-xs btn-default tableBtn deleteBtn"><i class="glyphicon glyphicon-remove"></i></span>
+								</td>
+								<td><input type="text" class="form-control input-sm" required></td>
+								<td class="text-center">
+									<select class="elemGrades">
+										<option value="4">4</option>
+										<option value="5">5</option>
+									</select>
+									<select class="midGrades">
+										<option value="6">6</option>
+										<option value="7">7</option>
+										<option value="8">8</option>
+									</select>
+									<select class="highGrades">
+										<option value="9">9</option>
+										<option value="10">10</option>
+										<option value="11">11</option>
+										<option value="12">12</option>
+									</select>
+								</td>
+								<td class="text-center"><input type="checkbox" class="testCheckbox"></td>
+								<td class="text-center"><input type="checkbox" class="testCheckbox"></td>
+								<td class="text-center"><input type="checkbox" class="testCheckbox"></td>
+								<td class="text-center"><input type="checkbox" class="testCheckbox"></td>
+								<td class="text-center visible-lg"><span class="btn btn-xs btn-default allBtn">All</span> <span class="btn btn-xs btn-default noneBtn">None</span></td>
+							</tr>
+						</tbody>
+						<tfoot>
+							<tr id="addOptions">
+								<td class="text-center" colspan=2>
+									<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="1">
+										<i class="glyphicon glyphicon-plus"></i>
+										Add a student
+									</span>
+								</td>
+								<td class="text-center" colspan=2>
+									<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="5">
+										<i class="glyphicon glyphicon-plus"></i>
+										Add 5 students
+									</span>
+								</td>
+								<td class="text-center" colspan=2>
+									<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="10">
+										<i class="glyphicon glyphicon-plus"></i>
+										Add 10 students
+									</span>
+								</td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2 col-xs-4 control-label" for="schoolName">Registration Charges</label>
+					<div class="input-prepend col-sm-3 col-xs-8">
+						<div class="input-group">
+							<span class="input-group-addon">$</span>
+							<input type="text" class="form-control" name="cost" id="cost" value="0" readonly>
+							<span class="input-group-addon">.00</span>
+						</div>
+					</div>
+				</div>
+
+				#if(!$nocaptcha)
+					<div class="form-group" id="reCaptchaGroup">
+						<div class="input-group col-md-offset-2">
+							<script type="text/javascript"> var RecaptchaOptions = { theme : 'clean' }; </script>
+							<script type="text/javascript" src="//www.google.com/recaptcha/api/challenge?k=$publicKey"></script>
+							<noscript>
+								<iframe src="http://www.google.com/recaptcha/api/noscript?k=$publicKey" height="300" width="500" frameborder="0"></iframe> <br>
+								<textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
+								<input type="hidden" name="recaptcha_response_field" value="manual_challenge">
+							</noscript>
+							#if($captchaError) <span class="help-block text-danger lead">Incorrect captcha, try again.</span> #end
+						</div>
+					</div>
+				#end
+
+				<input type="hidden" name="regError" id="regError" value="$registrationError">
+
+				<div class="form-group">
+					<div class="col-sm-offset-2 col-sm-10">
+						<button type="submit" id="submit" class="btn btn-primary" disabled>Submit Registration</button>
+						<button type="reset" id="reset" class="btn btn-danger" disabled>Reset</button>
+						<p class="help-block lead" id="answerCaptcha">Please enable JavaScript to continue.</p>
+					</div>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+
+	<div class="modal fade" id="importDataModal">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Import Registration Data</h4>
+				</div>
+				<div class="modal-body">
+					<div>
+						<p>
+							Here you can import data (TSV) from Excel or another spreadsheet program.
+							Ensure that you copy and paste only full rows with 6 columns (name, grade, NS, CA, MA, SC).
+							Do not include the column headings. For the exam rows, anything but a blank or whitespace will be
+							treated as a registration for that test. Following is an example:
+						</p>
+							<p><img src="/img/registrationImportExample.png"></p> <strong>when copied becomes</strong>
+							<pre>
+John Doe	6&#9;x&#9;x&#9;&#9;x
+Sarah Doe&#9;7&#9;&#9;&#9;&#9;x
+Bobby Doe	8&#9;x&#9;&#9;x&#9;x</pre>
+
+						<strong>Seperator (default: <kbd>TAB</kbd>, this is used by Excel):</strong>
+						<form class="form-inline" style="display: inline;">
+							<div class="form-group">
+								<input type="text" id="seperator" class="form-control input-sm" value="&#9;">
+							</div>
+						</form>
+					</div>
+
+					<br><br>
+
+					<div class="row">
+						<div class="col-md-6">
+							<textarea id="importData" class="form-control" placeholder="Copy and paste your data here." rows="10"></textarea>
+						</div>
+						<div class="col-md-6">
+							<table class="table table-striped table-condensed table-hover table-responsive text-center" id="importTable">
+								<thead>
+									<tr>
+										<th class="text-center">Name</th>
+										<th class="text-center">Grade</th>
+										<th class="text-center"><abbr title="Number Sense">N</abbr></th>
+										<th class="text-center"><abbr title="Calculator">C</abbr></th>
+										<th class="text-center"><abbr title="Mathematics">M</abbr></th>
+										<th class="text-center"><abbr title="Science">S</abbr></th>
+									</tr>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" id="import">Import Registrations</button>
+				</div>
+			</div>
+		</div>
+	</div>
+		#end
+
+	<input type="hidden" name="price" id="price" value="$price">
+
+	<script type="text/javascript" src="/js/registration-tables.js"></script>
+	<script type="text/javascript" src="/js/pagescripts/registration.js"></script>
+	<script type="text/javascript" src="/js/zxcvbn/zxcvbn-async.js"></script>
+	<script type="text/javascript" src="/js/jquery/jquery.tablesorter.min.js"></script>
+	<script type="text/javascript" src="/js/jquery/jquery.tablesorter.widgets.min.js"></script>
+	<script type="text/javascript" src="/js/parser-input-select.js"></script>
+	#include("noscript.html")
+</body>
+</html>

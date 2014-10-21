@@ -1,0 +1,28 @@
+<div id="noscript">
+	<div class="lead text-warning well well-sm">Please <a href="http://www.enable-javascript.com/" target="_blank">enable JavaScript</a>, otherwise areas of this website may be nonfunctional.</div>
+</div>
+
+<style type="text/css">
+	#main { display: none; }
+	#noscript {
+		position: fixed;
+		top: 5px;
+		right: 0px;
+		width: 100%;
+		text-align: center;
+		z-index: 10000000000000;
+	}
+	.navbar { margin-top: 4em; }
+	body > .container { margin-top: 4em; }
+	#wrap { margin-top: 4em; }
+</style>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#main').show();
+		$('#noscript').hide();
+		$('.navbar').css('margin-top', '0px');
+		$('body > .container').css('margin-top', '0px');
+		$('#wrap').css('margin-top', '0px');
+	});
+</script>

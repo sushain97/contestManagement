@@ -1,0 +1,115 @@
+application: tmscacontest
+version: 2
+runtime: java
+threadsafe: false
+sessions_enabled: true
+
+handlers:
+- url: /index.html
+  servlet: contestWebsite.MainPage
+  
+- url: /about
+  servlet: contestWebsite.About
+  
+- url: /registration
+  servlet: contestWebsite.Registration
+ 
+- url: /login
+  servlet: contestWebsite.Login
+ 
+- url: /directions
+  servlet: contestWebsite.Directions
+  
+- url: /signout
+  servlet: contestWebsite.Logout
+
+- url: /createAdmin
+  login: admin
+  servlet: contestWebsite.CreateAdmin
+
+- url: /adminPanel
+  servlet: contestWebsite.AdminPanel
+  
+- url: /data
+  servlet: contestWebsite.Data
+  
+- url: /contactUs
+  servlet: contestWebsite.ContactUs
+  
+- url: /viewScores
+  servlet: contestWebsite.ViewScores
+
+- url: /contestResults
+  servlet: contestWebsite.PublicResults
+
+- url: /editRegistration
+  servlet: contestWebsite.EditRegistration
+
+- url: /forgotPass
+  servlet: contestWebsite.ForgotPassword
+  
+- url: /changePass
+  servlet: contestWebsite.ChangePassword
+
+- url: /tabulate
+  login: admin
+  servlet: contestTabulation.Main
+  
+- url: /createSpreadsheet
+  servlet: contestTabulation.Setup
+  
+- url: /authToken
+  servlet: contestWebsite.OAuth
+  
+- url: /400
+  servlet: errors.BadRequest_400
+  
+- url: /401
+  servlet: errors.Unauthorized_401
+  
+- url: /403
+  servlet: errors.Prohibited_403
+
+- url: /404
+  servlet: errors.NotFound_404
+
+- url: /500
+  servlet: errors.ServerError_500
+  
+static_files:
+  - include: /favicon.ico
+    expiration: 14d
+  - include: /css/**.css
+    expiration: 7d
+  - include: /js/**.js
+    expiration: 7d
+  - include: /img/**
+    expiration: 7d
+  - include: /robots.txt
+    expiration: 7d
+  - include: /fonts/**
+    expiration: 28d
+  - include: /misc/**
+    expiration: 28d
+
+web_xml: |
+  <error-page>
+    <error-code>400</error-code>
+    <location>/400</location>
+  </error-page>
+  <error-page>
+    <error-code>401</error-code>
+    <location>/401</location>
+  </error-page>
+  <error-page>
+    <error-code>403</error-code>
+    <location>/403</location>
+  </error-page>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/404</location>
+  </error-page>
+  <error-page>
+    <error-code>500</error-code>
+    <location>/500</location>
+  </error-page>

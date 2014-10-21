@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+<head>
+	<title>Edit Registration for $name | $title</title>
+	<meta name="description" content="Edit a $title Tournament registration">
+	<meta name="robots" content="noindex, nofollow">
+	<meta name="tab" content="ContestData">
+	#parse("head.html")
+	<style type="text/css">
+		#hi { display: none; }
+		.testCheckbox {
+			-ms-transform: scale(1.25);
+			-moz-transform: scale(1.25);
+			-webkit-transform: scale(1.25);
+			-o-transform: scale(1.25);
+			margin-top: 8px !important;
+		}
+		.tableBtn {
+			margin-top: 6px;
+			padding-top: 2px;
+		}
+		.tooltip { width: 300px !important; }
+		span.allBtn { position: absolute; }
+		span.noneBtn { position: relative; left: 2.5em; }
+	</style>
+	<link type="text/css" href="/css/theme.bootstrap.css" rel="stylesheet">
+</head>
+
+<body>
+	#parse("navbar.html")
+
+	<div class="container">
+		<h1>Edit Registration for $name</h1>
+		<form method="post" class="form-horizontal">
+			<fieldset>
+				<div class="form-group">
+					<label class="col-sm-2 col-xs-6 control-label" for="delete">Delete Registration?</label>
+					<div class="input-group col-xs-6">
+						<label class="checkbox-inline">
+							<input type="checkbox" name="delete" id="delete">
+							This is a permanent deletion.
+						</label>
+					</div>
+				</div>
+
+				<div id="info">
+					<div class="form-group">
+						<label class="col-sm-2 col-xs-5 control-label" for="registration">Registration Type</label>
+						<div class="input-group col-sm-5 col-xs-7">
+							<label class="radio-inline">
+								<input type="radio" name="registrationType" id="regType1" value="coach" #if($coach) checked #end> Coach
+							</label>
+							<label class="radio-inline">
+								<input type="radio" name="registrationType" id="regType2" value="student" #if($student) checked #end> Student
+							</label>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-2 col-xs-5 control-label" for="schoolLevel">School Level</label>
+						<div class="input-group col-sm-5 col-xs-7">
+							#foreach($level in $enabledLevels.split("\+"))
+							#set($level = $Level.fromString($level))
+							<label class="radio-inline">
+								<input type="radio" name="schoolLevel" id="schoolType$level.getName()" value="$level" #if($schoolLevel == $level.toString() || (!$schoolLevel && $foreach.first)) checked #end> $level.getName()
+							</label>
+							#end
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-2 col-xs-5 control-label" for="division">Division</label>
+						<div class="input-group col-sm-5 col-xs-7">
+							<label class="radio-inline">
+								<input type="radio" name="division" value="1A" #if($division == "1A") checked #end> 1A
+							</label>
+							<label class="radio-inline">
+								<input type="radio" name="division" value="2A" #if($division == "2A") checked #end> 2A
+							</label>
+							<label class="radio-inline">
+								<input type="radio" name="division" value="3A" #if($division == "3A") checked #end> 3A
+							</label>
+							<label class="radio-inline">
+								<input type="radio" name="division" value="4A" #if($division == "4A") checked #end> 4A
+							</label>
+							<label class="radio-inline">
+								<input type="radio" name="division" value="5A" #if($division == "5A") checked #end> 5A
+							</label>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-2 col-xs-4 control-label" for="schoolName">Official School Name</label>
+						<div class="input-group col-sm-5 col-xs-8">
+							<input type="text" name="schoolName" class="form-control"  id="schoolName" value="$schoolName" required>
+							<span class="help-block">Omit "Middle School", "High School", "Junior High School", etc.</span>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-2 col-xs-4 control-label" for="name">Name</label>
+						<div class="input-prepend col-sm-5 col-xs-8">
+							<div class="input-group">
+								<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+								<input type="text" name="name" value="$name" class="form-control" id="name" required>
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-2 col-xs-4 control-label" for="email">E-Mail Address</label>
+						<div class="input-prepend col-sm-5 col-xs-8">
+							<div class="input-group">
+								<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+								<input type="email" name="email" value="$email" class="form-control" id="email">
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-2 col-xs-4 control-label" for="paid">Payment Comments</label>
+						<div class="input-group col-sm-5 col-xs-8">
+							<input type="text" name="paid" value="$paid" class="form-control" id="paid">
+							<span class="help-block">Be concise and include your name</span>
+						</div>
+					</div>
+
+					<div class="lead">Registrations</div>
+					<div class="col-md-offset-1 col-md-10">
+						<table class="table table-striped table-condensed table-hover table-responsive" id="registrations">
+							<thead>
+								<tr>
+									<th></th>
+									<th class="col-xs-3 text-center">Student Name</th>
+									<th class="col-xs-1 text-center" style="border-right: 2px solid #ddd;">Grade</th>
+									<th class="col-xs-2 text-center">Number Sense</th>
+									<th class="col-xs-2 text-center">Calculator</th>
+									<th class="col-xs-2 text-center">Math</th>
+									<th class="col-xs-2 text-center">Science</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="student">
+									<td class="text-center">
+										<span class="btn btn-xs btn-default tableBtn deleteBtn"><i class="glyphicon glyphicon-remove"></i></span>
+									</td>
+									<td><input type="text" class="form-control input-sm" required></td>
+									<td class="text-center">
+										<select class="elemGrades">
+											<option value="4">4</option>
+											<option value="5">5</option>
+										</select>
+										<select class="midGrades">
+											<option value="6">6</option>
+											<option value="7">7</option>
+											<option value="8">8</option>
+										</select>
+										<select class="highGrades">
+											<option value="9">9</option>
+											<option value="10">10</option>
+											<option value="11">11</option>
+											<option value="12">12</option>
+										</select>
+									</td>
+									<td class="text-center"><input type="checkbox" class="testCheckbox"></td>
+									<td class="text-center"><input type="checkbox" class="testCheckbox"></td>
+									<td class="text-center"><input type="checkbox" class="testCheckbox"></td>
+									<td class="text-center"><input type="checkbox" class="testCheckbox"></td>
+								</tr>
+							</tbody>
+							<tfoot>
+								<tr id="addOptions">
+									<td class="text-center" colspan=2>
+										<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="1">
+											<i class="glyphicon glyphicon-plus"></i>
+											Add a student
+										</span>
+									</td>
+									<td class="text-center" colspan=2>
+										<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="5">
+											<i class="glyphicon glyphicon-plus"></i>
+											Add 5 students
+										</span>
+									</td>
+									<td class="text-center" colspan=2>
+										<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="10">
+											<i class="glyphicon glyphicon-plus"></i>
+											Add 10 students
+										</span>
+									</td>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-2 col-xs-4 control-label" for="schoolName">Registration Charges</label>
+						<div class="input-prepend col-sm-3 col-xs-8">
+							<div class="input-group">
+								<span class="input-group-addon">$</span>
+								<input type="text" class="form-control" name="cost" id="cost" value="0" readonly>
+								<span class="input-group-addon">.00</span>
+							</div>
+						</div>
+					</div>
+
+					#if($account)
+					<div class="form-group">
+						<label class="col-sm-2 col-xs-6 control-label" for="level">Create an Account?</label>
+
+						<div class="input-group col-sm-5 col-xs-6">
+							<label class="radio-inline">
+								<input type="radio" id="account1" name="account" value="yes" #if($account) checked #end> Yes
+							</label>
+							<label class="radio-inline">
+								<input type="radio" id="account2" name="account" value="no" #if(!$account) checked #end> No
+							</label>
+							<p class="help-block">Selecting "No" if "Yes" is currently selected will delete this registration's respective user.</p>
+						</div>
+					</div>
+					#else
+					<input type="hidden" name="account" id="account" value="no">
+					#end
+				</div>
+
+				<input type="hidden" name="studentData" id="studentData" value='$studentData'>
+
+				<div class="form-group">
+					<div class="col-sm-offset-2 col-sm-10">
+						<button type="submit" id="submit" class="btn btn-primary" disabled><i class="icon-pencil"></i>Apply Changes</button>
+						<button type="reset" id="reset" class="btn btn-danger" disabled>Reset</button>
+						<p class="help-block lead" id="answerCaptcha">Please enable JavaScript to continue.</p>
+					</div>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+
+	<input type="hidden" name="key" id="key" value="$key">
+	<input type="hidden" name="price" id="price" value="$price">
+
+	<script type="text/javascript" src="/js/registration-tables.js"></script>
+	<script type="text/javascript" src="/js/pagescripts/editRegistration.js"></script>
+	<script type="text/javascript" src="/js/jquery/jquery.tablesorter.min.js"></script>
+	<script type="text/javascript" src="/js/jquery/jquery.tablesorter.widgets.min.js"></script>
+	<script type="text/javascript" src="/js/parser-input-select.js"></script>
+	#include("noscript.html")
+</body>
+</html>
+
+
+

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+<head>
+	<title>Login | $title</title>
+	<meta name="description" content="Login to the $title website to view school specific scores and request clarifications">
+	<meta name="robots" content="index, follow">
+	<meta name="tab" content="Login">
+	#parse("head.html")
+	<style type="text/css">
+		.popover-title { font-size: 1.5em; }
+		.popover-content p { font-weight: normal; }
+	</style>
+</head>
+<body>
+	#parse("navbar.html")
+
+	<div class="container">
+		<h1>Login</h1>
+		<form method="post" class="form-horizontal">
+			<fieldset>
+				<div class="form-group">
+					<label class="col-sm-2 col-xs-4 control-label" for="username">E-Mail Address</label>
+					<div class="input-prepend col-sm-5 col-xs-8">
+						<div class="input-group">
+							<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+							<input type="text" class="form-control" id="username" name="username" value="$username" required autofocus>
+						</div>
+					</div>
+				</div>
+
+				<div class=#if($error) "form-group has-error" #else "form-group" #end>
+					<label class="col-sm-2 col-xs-4 control-label" for="password">Password</label>
+					<div class="input-prepend col-sm-5 col-xs-8">
+						<div class="input-group">
+							<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+							<input type="password" id="password" name="password" class="form-control" value="" required>
+						</div>
+						<span class="help-block pull-left">
+							<a href="/forgotPass">Forgot your Password?</a>
+						</span>
+						#if($error) <span class="help-block pull-right">$error</span> #end
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-sm-offset-2 col-sm-10">
+						<div class="checkbox">
+							<label for="signedIn">
+								<input type="checkbox" id="signedIn" name="signedIn" value="stay"> Stay signed in?
+							</label>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-sm-offset-2 col-sm-10">
+						<button type="submit" class="btn btn-primary">Login</button>
+						<span style="padding-left: 15px">
+							#if($testingMode)
+							<strong>
+								<a href="#" id="testingMode" data-toggle="popover" data-content="&lt;p&gt;During Testing Mode,
+									the contest administrator account can be easily accessed with the credentials &quot;admin&quot;
+									and &quot;password&quot;.&lt;/p&gt;
+									&lt;p&gt;Click &lt;a href=&quot;#&quot; id=&quot;fillCreds&quot;&gt;here&lt;/a&gt; to login as the admin.&lt;/p&gt"
+									data-original-title="Testing Mode">Testing Mode</a>
+								is currently enabled
+							</strong>
+							#end
+						</span>
+					</div>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+	<script type="text/javascript" src="/js/pagescripts/login.js"></script>
+	#include("noscript.html")
+</body>
+</html>

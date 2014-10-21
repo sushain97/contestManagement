@@ -88,7 +88,9 @@ static_files:
   - include: /robots.txt
     expiration: 7d
   - include: /fonts/**
-    expiration: 14d
+    expiration: 28d
+  - include: /misc/**
+    expiration: 28d
 
 web_xml: |
   <error-page>

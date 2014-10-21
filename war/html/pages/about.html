@@ -19,6 +19,7 @@
 			}
 		}
 		.row { padding-bottom: 10px; }
+		.btn-block { display: block; }
 	</style>
 	<link type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
 </head>
@@ -31,7 +32,17 @@
 			#include("printButton.html")
 		</h1>
 
-		#if($aboutText) <p>$aboutText</p> #end
+		<div class="row">
+			<div class="col-sm-8">
+				#if($aboutText) <p>$aboutText</p> #end
+			</div>
+			<div class="col-sm-4">
+				<a href="#NSmodal" role="button" class="btn btn-sm btn-info btn-block" data-toggle="modal">Number Sense Test Information</a>
+				<a href="#CAmodal" role="button" class="btn btn-sm btn-info btn-block" data-toggle="modal">Calculator Test Information</a>
+				<a href="#MAmodal" role="button" class="btn btn-sm btn-info btn-block" data-toggle="modal">Mathematics Test Information</a>
+				<a href="#SCmodal" role="button" class="btn btn-sm btn-info btn-block" data-toggle="modal">Science Test Information</a>
+			</div>
+		</div>
 		<div class="row">
 			<div class="col-sm-6">
 				#if($schedule)
@@ -63,10 +74,6 @@
 				</div>
 			#end
 
-			<a href="#NSmodal" role="button" class="btn btn-info" data-toggle="modal">Number Sense</a>
-			<a href="#CAmodal" role="button" class="btn btn-info" data-toggle="modal">Calculator</a>
-			<a href="#MAmodal" role="button" class="btn btn-info" data-toggle="modal">Mathematics</a>
-			<a href="#SCmodal" role="button" class="btn btn-info" data-toggle="modal">Science</a>
 			<br>
 			<div class="form-group">
 				<div class="col-sm-12">

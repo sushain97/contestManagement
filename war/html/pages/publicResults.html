@@ -45,6 +45,7 @@
 		@media screen and (min-width: 768px) and (max-width: 992px) {
 			body { padding-top: 110px; }
 		}
+		table#statusTable td { display: table-cell !important; }
 		table#statusTable { table-layout: fixed; width: 75% !important; }
 	</style>
 	<link type="text/css" href="/css/footer.css" rel="stylesheet">
@@ -157,7 +158,7 @@
 												<td class="row-header">${grade}th</td>
 												#foreach($subject in $subjects)
 													#if($testsGraded && $testsGraded.contains("$grade$subject"))
-														<td class="success btn" data-test="$grade$subject"><i class="glyphicon glyphicon-check"></i></td>
+														<td class="success" data-test="$grade$subject"><i class="glyphicon glyphicon-check"></i></td>
 													#else
 														<td class="warning" data-test="$grade$subject"><i class="glyphicon glyphicon-remove"></i></td>
 													#end

@@ -182,20 +182,19 @@
 												#end
 											</tr>
 										#end
-									#end
 
-									#if(!$foreach.last)
-										<tr>
-										#foreach($i in [1..5])
-										<td></td>
+										#if(!$foreach.last)
+											<tr>
+												#foreach($i in [1..5])
+												<td></td>
+												#end
+											</tr>
 										#end
-									</tr>
 									#end
 								#end
 							</tbody>
 						</table>
 						<button class="btn btn-default" id="updateAvailability" style="display: none;">Update</button>
-
 					#elseif($type.equals("students"))
 						#parse("studentsOverview.html")
 					#elseif($type.startsWith("school_"))

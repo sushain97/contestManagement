@@ -126,6 +126,6 @@ function sendAJAXReq(elem, value)
 			'modified': $(elem).data('type')
 		}
 	}).done(function() {
-		window.location = '/data?choice=registrations&updated=1';
+		window.location = '/data/registrations?updated=1';
 	});
 }

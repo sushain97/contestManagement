@@ -85,15 +85,15 @@ public class Data extends BaseHttpServlet {
 			resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Contest Administrator privileges required for that operation");
 		}
 		else {
-			String choice = req.getParameter("choice");
+			String choice = req.getPathInfo();
 			if (choice == null) {
-				resp.sendRedirect("/data?choice=overview");
+				resp.sendRedirect("/data/overview");
 				return;
 			}
-			else if (choice.equals("overview")) {
+			else if (choice.equals("/overview")) {
 				template = "data.html";
 			}
-			else if (choice.equals("registrations")) {
+			else if (choice.equals("/registrations")) {
 				template = "dataRegistrations.html";
 				context.put("updated", req.getParameter("updated"));
 				context.put("price", infoAndCookie.x.getProperty("price"));
@@ -145,7 +145,7 @@ public class Data extends BaseHttpServlet {
 					}
 				});
 			}
-			else if (choice.equals("questions")) {
+			else if (choice.equals("/questions")) {
 				template = "dataQuestions.html";
 				context.put("updated", req.getParameter("updated"));
 				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -156,7 +156,7 @@ public class Data extends BaseHttpServlet {
 				context.put("resolvedQs", resolvedQs);
 				context.put("unresolvedQs", unresolvedQs);
 			}
-			else if (choice.equals("scores")) {
+			else if (choice.equals("/scores")) {
 				template = "dataScores.html";
 
 				Map<String, Integer> awardCriteria = Retrieve.awardCriteria(infoAndCookie.x);
@@ -261,23 +261,23 @@ public class Data extends BaseHttpServlet {
 		UserCookie userCookie = UserCookie.getCookie(req);
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
 		if (loggedIn && userCookie.isAdmin()) {
-			String choice = req.getParameter("choice");
+			String choice = req.getPathInfo();
 			if (choice == null) {
-				resp.sendRedirect("/data?choice=overview");
+				resp.sendRedirect("/data/overview");
 			}
-			else if (choice.equals("overview")) {
-				resp.sendRedirect("/data?choice=overview");
+			else if (choice.equals("/overview")) {
+				resp.sendRedirect("/data/overview");
 			}
-			else if (choice.equals("registrations")) {
+			else if (choice.equals("/registrations")) {
 				String edit = req.getParameter("edit");
 				if (edit != null) {
 					resp.sendRedirect("/editRegistration?key=" + req.getParameter("edit"));
 				}
 				else {
-					resp.sendRedirect("/data?choice=registrations");
+					resp.sendRedirect("/data/registrations");
 				}
 			}
-			else if (choice.equals("questions")) {
+			else if (choice.equals("/questions")) {
 				Map<String, String[]> params = req.getParameterMap();
 				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 				Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
@@ -312,9 +312,9 @@ public class Data extends BaseHttpServlet {
 					}
 				}
 
-				resp.sendRedirect("/data?choice=questions&updated=1");
+				resp.sendRedirect("/data/questions?updated=1");
 			}
-			else if (choice.equals("scores")) {
+			else if (choice.equals("/scores")) {
 				try {
 					JSONArray testsGradedJSON = new JSONArray(req.getParameter("testsGraded"));
 					ArrayList<String> testsGraded = new ArrayList<String>();
@@ -346,7 +346,7 @@ public class Data extends BaseHttpServlet {
 				}
 			}
 			else {
-				resp.sendRedirect("/data?choice=overview");
+				resp.sendRedirect("/data/overview");
 			}
 		}
 		else {

@@ -47,7 +47,7 @@ $(document).ready(function () {
 		});
 
 		$.ajax({
-			'url': '/data?choice=scores',
+			'url': '/data/scores',
 			'type': 'post',
 			'data': {
 				'testsGraded': JSON.stringify(testsGraded)

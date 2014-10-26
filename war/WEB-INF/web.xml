@@ -135,7 +135,7 @@
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>contestWebsite.Data</servlet-name>
-    <url-pattern>/data</url-pattern>
+    <url-pattern>/data/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>contestWebsite.ContactUs</servlet-name>

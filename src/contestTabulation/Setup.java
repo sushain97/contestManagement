@@ -55,6 +55,7 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
@@ -74,14 +75,21 @@ public class Setup extends BaseHttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		Queue queue = QueueFactory.getDefaultQueue();
 
-		if (req.getParameterMap().containsKey("docMiddle")) {
-			queue.add(withUrl("/createSpreadsheet").param("docMiddle", req.getParameter("docMiddle")));
+		TaskOptions options = null;
+
+		for (Level level : Level.values()) {
+			String docName = req.getParameter("doc" + level.getName());
+			if (docName != null) {
+				options = withUrl("/createSpreadsheet").param("doc" + level.getName(), docName);
+				break;
+			}
 		}
-		else if (req.getParameterMap().containsKey("docHigh")) {
-			queue.add(withUrl("/createSpreadsheet").param("docHigh", req.getParameter("docHigh")));
+
+		if (options != null) {
+			queue.add(options);
 		}
 		else {
-			resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Spreadsheet creation request must have paramater 'docMiddle' or 'docHigh' set");
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Spreadsheet creation request must have document name parameter set");
 		}
 	}
 
@@ -100,22 +108,22 @@ public class Setup extends BaseHttpServlet {
 			.build()
 			.setFromTokenResponse(new JacksonFactory().fromString(((Text) contestInfo.getProperty("OAuth2Token")).getValue(), GoogleTokenResponse.class));
 
-		String docName, level;
-		if (req.getParameterMap().containsKey("docMiddle")) {
-			docName = req.getParameter("docMiddle");
-			level = Level.MIDDLE.toString();
+		String docName = null, docLevel = null;
+		for (Level level : Level.values()) {
+			docName = req.getParameter("doc" + level.getName());
+			if (docName != null) {
+				docLevel = level.toString();
+				break;
+			}
 		}
-		else if (req.getParameterMap().containsKey("docHigh")) {
-			docName = req.getParameter("docHigh");
-			level = Level.HIGH.toString();
-		}
-		else {
-			resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Spreadsheet creation request must have paramater 'docMiddle' or 'docHigh' set");
+
+		if (docLevel == null) {
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Spreadsheet creation request must have paramater document name parameter set");
 			return;
 		}
 
 		Query query = new Query("registration")
-			.setFilter(new FilterPredicate("schoolLevel", FilterOperator.EQUAL, level))
+			.setFilter(new FilterPredicate("schoolLevel", FilterOperator.EQUAL, docLevel))
 			.addSort("schoolName", SortDirection.ASCENDING);
 		List<Entity> registrations = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
 

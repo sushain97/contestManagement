@@ -30,7 +30,7 @@ handlers:
 - url: /adminPanel
   servlet: contestWebsite.AdminPanel
   
-- url: /data
+- url: /data/*
   servlet: contestWebsite.Data
   
 - url: /contactUs

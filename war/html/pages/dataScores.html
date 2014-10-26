@@ -88,16 +88,16 @@
 			<div class="row">
 				<div class="col-md-3 col-xs-6 hidden-print">
 					<ul class="nav nav-pills nav-stacked" style="margin-bottom: 1em;">
-						<li data-type="overview"><a href="/data?choice=scores">Overview</a></li>
+						<li data-type="overview"><a href="/data/scores">Overview</a></li>
 
 						#foreach($level in $levels)
 							#if($enabledLevels.contains($level.toString()))
 								#set($LEVEL = $level.toString().toUpperCase())
 								<li class="nav-header"><h4>$level.getName() School</h4></li>
-								<li data-type="students$LEVEL"><a href="/data?choice=scores&type=students&level=$level">All Students</a></li>
-								<li data-type="sweep$LEVEL"><a href="/data?choice=scores&type=sweep&level=$level">Sweepstakes</a></li>
-								<li data-type="categorySweep$LEVEL"><a href="/data?choice=scores&type=categorySweep&level=$level">Category Sweepstakes</a></li>
-								<li data-type="visualizations$LEVEL"><a href="/data?choice=scores&type=visualizations&level=$level">Visualizations</a></li>
+								<li data-type="students$LEVEL"><a href="/data/scores?type=students&level=$level">All Students</a></li>
+								<li data-type="sweep$LEVEL"><a href="/data/scores?type=sweep&level=$level">Sweepstakes</a></li>
+								<li data-type="categorySweep$LEVEL"><a href="/data/scores?type=categorySweep&level=$level">Category Sweepstakes</a></li>
+								<li data-type="visualizations$LEVEL"><a href="/data/scores?type=visualizations&level=$level">Visualizations</a></li>
 								<li class="dropdown">
 									<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 										Schools<b class="caret"></b>
@@ -105,7 +105,7 @@
 									<ul class="dropdown-menu">
 										#foreach($schoolName in $schools[$level])
 											<li data-type="school_$schoolName$LEVEL" id="$schoolName.hashCode()">
-												<a href='/data?choice=scores&type=school_$esc.url($schoolName)&level=$level'>$schoolName</a>
+												<a href='/data/scores?type=school_$esc.url($schoolName)&level=$level'>$schoolName</a>
 											</li>
 										#end
 									</ul>
@@ -119,7 +119,7 @@
 										</a>
 										<ul class="dropdown-menu">
 											#foreach($subject in $subjects)
-												<li data-type="category_${num}${subject}$LEVEL"><a href="/data?choice=scores&type=category_${num}${subject}&level=$level">$subject.getName()</a></li>
+												<li data-type="category_${num}${subject}$LEVEL"><a href="/data/scores?type=category_${num}${subject}&level=$level">$subject.getName()</a></li>
 											#end
 										</ul>
 									</li>
@@ -182,20 +182,19 @@
 												#end
 											</tr>
 										#end
-									#end
 
-									#if(!$foreach.last)
-										<tr>
-										#foreach($i in [1..5])
-										<td></td>
+										#if(!$foreach.last)
+											<tr>
+												#foreach($i in [1..5])
+												<td></td>
+												#end
+											</tr>
 										#end
-									</tr>
 									#end
 								#end
 							</tbody>
 						</table>
 						<button class="btn btn-default" id="updateAvailability" style="display: none;">Update</button>
-
 					#elseif($type.equals("students"))
 						#parse("studentsOverview.html")
 					#elseif($type.startsWith("school_"))

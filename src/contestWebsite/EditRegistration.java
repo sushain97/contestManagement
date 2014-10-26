@@ -156,7 +156,7 @@ public class EditRegistration extends BaseHttpServlet {
 						}
 						datastore.delete(registration.getKey()); // TODO: Do not completely delete
 						txn.commit();
-						resp.sendRedirect("/data?choice=registrations&updated=1");
+						resp.sendRedirect("/data/registrations?updated=1");
 					}
 					else {
 						String schoolLevel = params.get("schoolLevel")[0];
@@ -195,7 +195,7 @@ public class EditRegistration extends BaseHttpServlet {
 						txn.commit();
 					}
 
-					resp.sendRedirect("/data?choice=registrations&updated=1");
+					resp.sendRedirect("/data/registrations?updated=1");
 				}
 			}
 			catch (Exception e) {

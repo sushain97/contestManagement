@@ -120,6 +120,7 @@ public class Registration extends BaseHttpServlet {
 			}
 
 			context.put("price", contestInfo.getProperty("price"));
+			context.put("classificationQuestion", contestInfo.getProperty("classificationQuestion"));
 			context.put("publicKey", contestInfo.getProperty("publicKey"));
 		}
 		else {
@@ -151,7 +152,6 @@ public class Registration extends BaseHttpServlet {
 			}
 		}
 		else {
-			context.put("coach", true);
 			context.put("account", true);
 			context.put("schoolName", "");
 			context.put("name", "");

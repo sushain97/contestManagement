@@ -80,7 +80,7 @@ public class EditRegistration extends BaseHttpServlet {
 					context.put("student", true);
 				}
 
-				String[] propNames = {"schoolName", "name", "email", "paid", "division", "studentData", "schoolLevel"};
+				String[] propNames = {"schoolName", "name", "email", "paid", "classification", "studentData", "schoolLevel"};
 				for (String propName : propNames) {
 					context.put(propName, props.get(propName));
 				}
@@ -188,7 +188,7 @@ public class EditRegistration extends BaseHttpServlet {
 						registration.setProperty("email", email);
 						registration.setProperty("cost", Integer.parseInt(params.get("cost")[0]));
 						registration.setProperty("paid", params.get("paid")[0]);
-						registration.setProperty("division", params.containsKey("division") ? params.get("division")[0] : "");
+						registration.setProperty("classification", params.containsKey("classification") ? params.get("classification")[0] : "");
 						registration.setProperty("studentData", new Text(params.get("studentData")[0]));
 
 						datastore.put(registration);

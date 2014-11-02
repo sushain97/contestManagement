@@ -145,7 +145,7 @@ public class Registration extends BaseHttpServlet {
 
 			context.put("account", "yes".equals(sess.getAttribute("account")));
 
-			String[] propNames = {"schoolName", "name", "email", "updated", "division", "studentData", "schoolLevel"};
+			String[] propNames = {"schoolName", "name", "email", "updated", "classification", "studentData", "schoolLevel"};
 			for (String propName : propNames) {
 				context.put(propName, sess.getAttribute(propName));
 			}
@@ -212,7 +212,7 @@ public class Registration extends BaseHttpServlet {
 		String schoolLevel = params.get("schoolLevel")[0];
 		String schoolName = params.get("schoolName")[0].trim();
 		String name = params.get("name")[0].trim();
-		String division = params.containsKey("division") ? params.get("division")[0] : "";
+		String classification = params.containsKey("classification") ? params.get("classification")[0] : "";
 		String studentData = req.getParameter("studentData");
 		String password = null;
 		String confPassword = null;
@@ -229,7 +229,7 @@ public class Registration extends BaseHttpServlet {
 		sess.setAttribute("account", account);
 		sess.setAttribute("account", account);
 		sess.setAttribute("name", name);
-		sess.setAttribute("division", division);
+		sess.setAttribute("classification", classification);
 		sess.setAttribute("schoolName", schoolName);
 		sess.setAttribute("schoolLevel", schoolLevel);
 		sess.setAttribute("email", email);
@@ -276,7 +276,7 @@ public class Registration extends BaseHttpServlet {
 				registration.setProperty("schoolName", schoolName);
 				registration.setProperty("schoolLevel", schoolLevel);
 				registration.setProperty("name", name);
-				registration.setProperty("division", division);
+				registration.setProperty("classification", classification);
 				registration.setProperty("studentData", new Text(studentData));
 				registration.setProperty("email", email);
 				registration.setProperty("paid", "");

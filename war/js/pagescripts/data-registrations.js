@@ -47,6 +47,7 @@ $(document).ready(function() {
 					"Student": function(e, n, f, i, $r) { return n === 'student'; }
 				},
 				6: {
+					"6A": function(e, n, f, i, $r) { return n === '6a'; },
 					"5A": function(e, n, f, i, $r) { return n === '5a'; },
 					"4A": function(e, n, f, i, $r) { return n === '4a'; },
 					"3A": function(e, n, f, i, $r) { return n === '3a'; },
@@ -96,10 +97,10 @@ $(document).ready(function() {
 		submit: 'OK'
 	});
 
-	$('.division').editable(function(value, settings) {
+	$('.classification').editable(function(value, settings) {
 		sendAJAXReq(this, value);
 	}, {
-		data: "{'1A':'1A','2A':'2A','3A':'3A','4A':'4A','5A':'5A'}",
+		data: "{'1A':'1A','2A':'2A','3A':'3A','4A':'4A','5A':'5A','6A':'6A'}",
 		type: 'select',
 		submit: 'OK'
 	});
@@ -113,8 +114,7 @@ $(document).ready(function() {
 	});
 });
 
-function sendAJAXReq(elem, value)
-{
+function sendAJAXReq(elem, value) {
 	$.ajax({
 		'url': '/editRegistration',
 		'type': 'post',

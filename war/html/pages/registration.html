@@ -118,23 +118,13 @@
 				</div>
 
 				<div class="form-group">
-					<label class="col-sm-2 col-xs-5 control-label" for="division">Division</label>
+					<label class="col-sm-2 col-xs-5 control-label" for="classification">Classification</label>
 					<div class="input-group col-sm-5 col-xs-7">
-						<label class="radio-inline">
-							<input type="radio" name="division" value="1A" #if($division == "1A") checked #end> 1A
-						</label>
-						<label class="radio-inline">
-							<input type="radio" name="division" value="2A" #if($division == "2A") checked #end> 2A
-						</label>
-						<label class="radio-inline">
-							<input type="radio" name="division" value="3A" #if($division == "3A") checked #end> 3A
-						</label>
-						<label class="radio-inline">
-							<input type="radio" name="division" value="4A" #if($division == "4A") checked #end> 4A
-						</label>
-						<label class="radio-inline">
-							<input type="radio" name="division" value="5A" #if($division == "5A") checked #end> 5A
-						</label>
+						#foreach($i in [1..6])
+							<label class="radio-inline">
+								<input type="radio" name="classification" value="${i}A" #if($classification == $i + "A") checked #end> ${i}A
+							</label>
+						#end
 					</div>
 				</div>
 

@@ -31,6 +31,38 @@ $(document).ready(function() {
 		table: 'table'
 	});
 
+	var filter_functions;
+	if($('#classificationQuestion').val() === 'no')
+		filter_functions = {
+			4: {
+				"Coach": function(e, n, f, i, $r) { return n === 'coach'; },
+				"Student": function(e, n, f, i, $r) { return n === 'student'; }
+			},
+			6: {
+				"Yes": function(e, n, f, i, $r) { return n === 'yes'; },
+				"No": function(e, n, f, i, $r) { return n === 'no'; }
+			}
+		};
+	else
+		filter_functions = {
+			4: {
+				"Coach": function(e, n, f, i, $r) { return n === 'coach'; },
+				"Student": function(e, n, f, i, $r) { return n === 'student'; }
+			},
+			6: {
+				"6A": function(e, n, f, i, $r) { return n === '6a'; },
+				"5A": function(e, n, f, i, $r) { return n === '5a'; },
+				"4A": function(e, n, f, i, $r) { return n === '4a'; },
+				"3A": function(e, n, f, i, $r) { return n === '3a'; },
+				"2A": function(e, n, f, i, $r) { return n === '2a'; },
+				"1A": function(e, n, f, i, $r) { return n === '1a'; }
+			},
+			7: {
+				"Yes": function(e, n, f, i, $r) { return n === 'yes'; },
+				"No": function(e, n, f, i, $r) { return n === 'no'; }
+			}
+		};
+
 	$('table.regTable').tablesorter({
 		theme : 'bootstrap',
 		headerTemplate : '{content} {icon}',
@@ -41,24 +73,7 @@ $(document).ready(function() {
 			filter_saveFilters : true,
 			filter_reset : '.reset',
 			zebra : ["even", "odd"],
-			filter_functions : {
-				4: {
-					"Coach": function(e, n, f, i, $r) { return n === 'coach'; },
-					"Student": function(e, n, f, i, $r) { return n === 'student'; }
-				},
-				6: {
-					"6A": function(e, n, f, i, $r) { return n === '6a'; },
-					"5A": function(e, n, f, i, $r) { return n === '5a'; },
-					"4A": function(e, n, f, i, $r) { return n === '4a'; },
-					"3A": function(e, n, f, i, $r) { return n === '3a'; },
-					"2A": function(e, n, f, i, $r) { return n === '2a'; },
-					"1A": function(e, n, f, i, $r) { return n === '1a'; }
-				},
-				7: {
-					"Yes": function(e, n, f, i, $r) { return n === 'yes'; },
-					"No": function(e, n, f, i, $r) { return n === 'no'; }
-				}
-			}
+			filter_functions : filter_functions
 		},
 		headers: {
 			0: {filter: false, sorter: false},

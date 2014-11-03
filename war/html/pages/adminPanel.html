@@ -415,6 +415,18 @@
 				</div>
 
 				<div class="form-group">
+					<label class="col-sm-3 control-label" for="classificationQuestion">Ask for School Classification?</label>
+					<div class="input-group col-sm-5 col-xs-offset-1">
+						#foreach($choice in ['no', 'optional', 'required'])
+							<label class="checkbox-inline" #if($foreach.first) style="padding-left: 0" #end>
+								<input type="radio" name="classificationQuestion" value="$choice" #if($contestInfo.getProperty("classificationQuestion") == $choice) checked #end required>
+								$choice.substring(0, 1).toUpperCase()$choice.substring(1)
+							</label>
+						#end
+					</div>
+				</div>
+
+				<div class="form-group">
 					<label class="col-sm-3 control-label" for="fullnames">Hide Full Names?</label>
 					<div class="input-group col-sm-5 col-xs-offset-1">
 						<label class="checkbox-inline">

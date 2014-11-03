@@ -124,8 +124,7 @@ public class AdminPanel extends BaseHttpServlet {
 				Entity contestInfo = info != null ? info : new Entity("contestInfo");
 
 				String[] stringPropNames = {"endDate", "startDate", "editStartDate", "editEndDate", "email", "account", "title", "publicKey",
-						"privateKey", "school", "address",
-						"siteVerification", "OAuth2ClientSecret", "OAuth2ClientId"};
+						"privateKey", "school", "address", "classificationQuestion", "siteVerification", "OAuth2ClientSecret", "OAuth2ClientId"};
 				for (String propName : stringPropNames) {
 					contestInfo.setProperty(propName, params.get(propName)[0]);
 				}

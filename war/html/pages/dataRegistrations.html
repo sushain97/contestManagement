@@ -87,7 +87,7 @@
 								<th>Name</th>
 								<th colspan="2" class="hidden-print">Email</th>
 								<th><abbr title="Registration Type">Reg.</abbr></th>
-								<th colspan="2">School</th>
+								<th #if($classificationQuestion != 'no') colspan="2" #else colspan="1" #end>School</th>
 								<!-- <th>Payment</th>  -->
 								<th><abbr title="Account">Acct.</abbr></th>
 								#foreach($test in $Test.getTests($level))
@@ -129,7 +129,7 @@
 
 										<td data-type="registrationType" class="regType uneditable">$reg.getProperty("registrationType")</td>
 										<td data-type="schoolName">$reg.getProperty("schoolName")</td>
-										<td data-type="division" class="division uneditable">$reg.getProperty("division")</td>
+										#if($classificationQuestion != 'no') <td data-type="classification" class="classification uneditable">$reg.getProperty("classification")</td> #end
 										<!-- <td data-type="paid" class="paidComments">$reg.getProperty("paid")</td>  -->
 										<td class="account uneditable">$reg.getProperty("account")</td>
 
@@ -194,9 +194,9 @@
 						</tbody>
 						<tfoot>
 							<tr>
-								<td></td>
 								<td><strong>Total</strong></td>
-								#foreach($i in [1..6]) <td #if($i <= 3) class="hidden-print" #end></td> #end
+								#if($classificationQuestion == 'no') #set($end = 6) #else #set($end = 7) #end
+								#foreach($i in [1..$end]) <td #if($i <= 3) class="hidden-print" #end></td> #end
 								#foreach($test in $Test.getTests($level))
 									<td colspan="2"><strong>$testTotals.get($test)</strong></td>
 								#end
@@ -220,6 +220,8 @@
 				</div>
 			</div>
 		</form>
+
+		<input type="hidden" name="classificationQuestion" id="classificationQuestion" value="$classificationQuestion">
 	</div>
 
 	<script type="text/javascript" src="/js/jquery/jquery.jeditable.mini.js"></script>

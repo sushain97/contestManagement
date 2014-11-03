@@ -97,6 +97,7 @@ public class Data extends BaseHttpServlet {
 				template = "dataRegistrations.html";
 				context.put("updated", req.getParameter("updated"));
 				context.put("price", infoAndCookie.x.getProperty("price"));
+				context.put("classificationQuestion", infoAndCookie.x.getProperty("classificationQuestion"));
 				context.put("dateFormat", new SimpleDateFormat("MMM dd, yyyy hh:mm aa"));
 				context.put("Test", Test.class);
 				context.put("subjects", Subject.values());

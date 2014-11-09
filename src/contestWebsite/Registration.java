@@ -137,13 +137,7 @@ public class Registration extends BaseHttpServlet {
 		String captchaError = req.getParameter("captchaError");
 
 		if (sess != null && (userError + passwordError + captchaError).contains("1")) {
-			if (((String) sess.getAttribute("registrationType")).equals("coach")) {
-				context.put("coach", true);
-			}
-			else {
-				context.put("student", true);
-			}
-
+			context.put("coach".equals(sess.getAttribute("registrationType")) ? "coach" : "student", true);
 			context.put("account", "yes".equals(sess.getAttribute("account")));
 
 			String[] propNames = {"schoolName", "name", "email", "updated", "classification", "studentData", "schoolLevel"};

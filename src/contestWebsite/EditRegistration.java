@@ -72,14 +72,6 @@ public class EditRegistration extends BaseHttpServlet {
 				Entity registration = datastore.get(key);
 				Map<String, Object> props = registration.getProperties();
 
-				String registrationType = (String) props.get("registrationType");
-				if (registrationType.equals("coach")) {
-					context.put("coach", true);
-				}
-				else {
-					context.put("student", true);
-				}
-
 				String[] propNames = {"schoolName", "name", "email", "paid", "classification", "studentData", "schoolLevel"};
 				for (String propName : propNames) {
 					context.put(propName, props.get(propName));
@@ -87,6 +79,7 @@ public class EditRegistration extends BaseHttpServlet {
 
 				context.put("account", "yes".equals(props.get("account")));
 				context.put("studentData", ((Text) props.get("studentData")).getValue());
+				context.put("coach".equals(props.get("registrationType")) ? "coach" : "student", true);
 
 				Entity contestInfo = infoAndCookie.x;
 				context.put("price", contestInfo.getProperty("price"));
@@ -98,7 +91,7 @@ public class EditRegistration extends BaseHttpServlet {
 			}
 			catch (EntityNotFoundException e) {
 				e.printStackTrace();
-				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+				resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid registration entity key " + key.toString());
 			}
 		}
 		else {

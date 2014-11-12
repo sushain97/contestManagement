@@ -194,7 +194,9 @@ public class Registration extends BaseHttpServlet {
 
 		Map<String, String[]> params = new HashMap<String, String[]>(req.getParameterMap());
 		for (Entry<String, String[]> param : params.entrySet()) {
-			params.put(param.getKey(), new String[] {escapeHtml4(param.getValue()[0])});
+			if (!"studentData".equals(param.getKey())) {
+				params.put(param.getKey(), new String[] {escapeHtml4(param.getValue()[0])});
+			}
 		}
 
 		String registrationType = params.get("registrationType")[0];

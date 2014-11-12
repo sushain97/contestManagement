@@ -39,8 +39,6 @@
 	<div class="container">
 		<h1>Contest Registration #if($updated) #include("printButton.html") #end</h1>
 
-		<input type="hidden" name="studentData" id="studentData" value='$studentData'>
-
 		#if($updated)
 			<div class="alert alert-success">
 				<a class="close" data-dismiss="alert">&times;</a> <strong>Success! </strong>Your registration has been
@@ -295,8 +293,6 @@
 					</div>
 				#end
 
-				<input type="hidden" name="regError" id="regError" value="$registrationError">
-
 				<div class="form-group">
 					<div class="col-sm-offset-2 col-sm-10">
 						<button type="submit" id="submit" class="btn btn-primary" disabled>Submit Registration</button>
@@ -370,8 +366,11 @@ Bobby Doe	8&#9;x&#9;&#9;x&#9;x</pre>
 	</div>
 		#end
 
-	<input type="hidden" name="price" id="price" value="$price">
-
+	<script type="text/javascript">
+		var price = $price,
+			regError = '$registrationError',
+			studentData = $studentData;
+	</script>
 	<script type="text/javascript" src="/js/registration-tables.js"></script>
 	<script type="text/javascript" src="/js/pagescripts/registration.js"></script>
 	<script type="text/javascript" src="/js/zxcvbn/zxcvbn-async.js"></script>

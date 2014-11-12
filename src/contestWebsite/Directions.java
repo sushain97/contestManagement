@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.tools.generic.EscapeTool;
 import org.yaml.snakeyaml.Yaml;
 
 import util.BaseHttpServlet;
@@ -54,6 +55,7 @@ public class Directions extends BaseHttpServlet {
 		context.put("school", infoAndCookie.x.getProperty("school"));
 		context.put("location", infoAndCookie.x.getProperty("location"));
 		context.put("address", infoAndCookie.x.getProperty("address"));
+		context.put("esc", new EscapeTool());
 
 		close(context, ve.getTemplate("directions.html"), resp);
 	}

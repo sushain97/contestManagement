@@ -210,12 +210,8 @@
 							<p class="help-block">Selecting "No" if "Yes" is currently selected will delete this registration's respective user.</p>
 						</div>
 					</div>
-					#else
-					<input type="hidden" name="account" id="account" value="no">
 					#end
 				</div>
-
-				<input type="hidden" name="studentData" id="studentData" value='$studentData'>
 
 				<div class="form-group">
 					<div class="col-sm-offset-2 col-sm-10">
@@ -228,9 +224,11 @@
 		</form>
 	</div>
 
-	<input type="hidden" name="key" id="key" value="$key">
-	<input type="hidden" name="price" id="price" value="$price">
-
+	<script type="text/javascript">
+		var key = "$key",
+			price = $price,
+			studentData = $studentData;
+	</script>
 	<script type="text/javascript" src="/js/registration-tables.js"></script>
 	<script type="text/javascript" src="/js/pagescripts/editRegistration.js"></script>
 	<script type="text/javascript" src="/js/jquery/jquery.tablesorter.min.js"></script>

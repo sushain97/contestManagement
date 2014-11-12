@@ -24,12 +24,16 @@ $(document).ready(function() {
 		var studentData = JSON.parse($('#studentData').val());
 
 		var grades;
-		if($("#level").val() === "middle") {
-			$('<style id="gradeSelects"> .midGrades { display: block; } .highGrades { display: none; }</style>').appendTo('head');
+		if($('#level').val() === 'elementary') {
+			$('<style id="gradeSelects"> .elemGrades { display: block; } .midGrades { display: none; } .highGrades { display: none; }</style>').appendTo('head');
+			grades = [4, 5];
+		}
+		else if($('#level').val() === 'middle') {
+			$('<style id="gradeSelects"> .elemGrades { display: none; } .midGrades { display: block; } .highGrades { display: none; }</style>').appendTo('head');
 			grades = [6, 7, 8];
 		}
 		else {
-			$('<style id="gradeSelects"> .midGrades { display: none; } .highGrades { display: block; }</style>').appendTo('head');
+			$('<style id="gradeSelects"> .elemGrades { display: none; } .midGrades { display: none; } .highGrades { display: block; }</style>').appendTo('head');
 			grades = [9, 10, 11, 12];
 		}
 

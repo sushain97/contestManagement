@@ -145,6 +145,8 @@ public class Data extends BaseHttpServlet {
 						return null;
 					}
 				});
+
+				context.put("esc", new EscapeTool());
 			}
 			else if (choice.equals("/questions")) {
 				template = "dataQuestions.html";

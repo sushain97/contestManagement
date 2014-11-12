@@ -16,8 +16,7 @@
  */
 
 $(document).ready(function () {
-	if($('input[name=studentData]').length) {
-		var studentData = JSON.parse($('input[name=studentData]').val());
+	if(studentData && studentData.length) {
 		var subjects = ['N', 'C', 'M', 'S'];
 		if(studentData.length > 0)
 			$('.student').remove();
@@ -119,6 +118,5 @@ function enableSubmit() {
 }
 
 function calcCost() {
-	var price = parseInt($('input#price').val());
 	$('#cost').val($('table input[type=checkbox]:checked').length * price);
 }

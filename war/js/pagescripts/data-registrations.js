@@ -32,7 +32,7 @@ $(document).ready(function() {
 	});
 
 	var filter_functions;
-	if($('#classificationQuestion').val() === 'no')
+	if(classificationQuestion === 'no')
 		filter_functions = {
 			4: {
 				"Coach": function(e, n, f, i, $r) { return n === 'coach'; },

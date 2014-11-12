@@ -30,7 +30,7 @@ $(window).load(function() {
 function initialize() {
 	google.maps.visualRefresh = true;
 	var directionsDisplay = new google.maps.DirectionsRenderer();
-	var school = new google.maps.LatLng($('#location_lat').val(),$('#location_long').val());
+	var school = new google.maps.LatLng(location_lat, location_long);
 	var mapOptions = {
 		zoom: 13,
 		center: school,
@@ -40,8 +40,6 @@ function initialize() {
 	};
 	var map = new google.maps.Map($('#map')[0], mapOptions);
 	directionsDisplay.setMap(map);
-
-	var name = $('#name').val(), address = $('#address').val();
 
 	var marker = new google.maps.Marker({
 		position: school,

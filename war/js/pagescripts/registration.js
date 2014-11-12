@@ -27,8 +27,7 @@ $(document).ready(function() {
 		adjustGradeSelect();
 		$('input[name=recaptcha_response_field]').prop('required', true);
 
-		if($('input[name=studentData]').length) {
-			var studentData = JSON.parse($('input[name=studentData]').val());
+		if(studentData) {
 			if(studentData.length > 0)
 				$('.student').remove();
 
@@ -54,8 +53,7 @@ $(document).ready(function() {
 		});
 	}
 	else {
-		if($('#studentData').val()) {
-			var studentData = JSON.parse($('#studentData').val());
+		if(studentData) {
 			$.each(studentData, function() {
 				addFrozenStudent(this["name"], this["grade"], [this['N'], this['C'], this['M'], this['S']]);
 			});
@@ -144,7 +142,7 @@ function adjustGradeSelect() {
 }
 
 function enableSubmit() {
-	if ($('#regError').val() === '') {
+	if (regError === '') {
 		$('#submit').prop('disabled', false);
 		$('#reset').prop('disabled', false);
 	}
@@ -152,6 +150,5 @@ function enableSubmit() {
 }
 
 function calcCost() {
-	var price = parseInt($('input#price').val());
 	$('#cost').val($('table input[type=checkbox]:checked').length * price);
 }

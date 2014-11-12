@@ -111,7 +111,9 @@ public class EditRegistration extends BaseHttpServlet {
 				Entity registration = datastore.get(key);
 				Map<String, String[]> params = new HashMap<String, String[]>(req.getParameterMap());
 				for (Entry<String, String[]> param : params.entrySet()) {
-					param.setValue(new String[] {escapeHtml4(param.getValue()[0])});
+					if (!"studentData".equals(param.getKey())) {
+						param.setValue(new String[] {escapeHtml4(param.getValue()[0])});
+					}
 				}
 
 				if (params.get("ajax") != null && "1".equals(params.get("ajax")[0])) {

@@ -179,7 +179,7 @@
 													#end
 												#end
 
-												<a class="popovers" href="#" data-toggle="popover" data-html="true" data-placement="bottom" data-title="$title">
+												<a class="popovers" href="#" data-toggle="popover" data-html="false" data-placement="bottom" data-title="$esc.html($title)">
 													#if($students) $students.size() #else 0 #end
 												</a>
 											</td>
@@ -220,10 +220,11 @@
 				</div>
 			</div>
 		</form>
-
-		<input type="hidden" name="classificationQuestion" id="classificationQuestion" value="$classificationQuestion">
 	</div>
 
+	<script type="text/javascript">
+		var classificationQuestion = '$classificationQuestion';
+	</script>
 	<script type="text/javascript" src="/js/jquery/jquery.jeditable.mini.js"></script>
 	<script type="text/javascript" src="/js/jquery/jquery.tablesorter.min.js"></script>
 	<script type="text/javascript" src="/js/jquery/jquery.tablesorter.widgets.min.js"></script>

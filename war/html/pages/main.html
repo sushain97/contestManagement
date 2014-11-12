@@ -41,11 +41,6 @@
 					#foreach($str in $regData) $str #end
 				</dl>
 
-				<input type="hidden" name="studentData" id="studentData" value='$studentData'>
-				<input type="hidden" name="level" id="level" value="$level">
-				<input type="hidden" name="price" id="price" value="$price">
-				<input type="hidden" name="regEditClosed" id="regEditClosed" value="$regEditClosed">
-
 				<h3>
 					Test Registrations
 					#if(!$regEditClosed) <button type="button" class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#importDataModal">Import Data</button> #end
@@ -223,6 +218,12 @@ Bobby Doe	8&#9;x&#9;&#9;x&#9;x</pre>
 		</div>
 	</div>
 
+	<script type="text/javascript">
+		var price = $price,
+			level = '$level',
+			regEditClosed = '$regEditClosed' === 'true',
+			studentData = $studentData;
+	</script>
 	<script type="text/javascript" src="/js/registration-tables.js"></script>
 	<script type="text/javascript" src="/js/pagescripts/main.js"></script>
 	#if($loggedIn)

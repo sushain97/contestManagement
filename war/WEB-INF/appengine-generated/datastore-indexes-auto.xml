@@ -1,17 +1,11 @@
-<!-- Indices written at Sat, 1 Nov 2014 19:05:03 UTC -->
+<!-- Indices written at Wed, 12 Nov 2014 02:06:53 CST -->
 
 <datastore-indexes>
 
-    <!-- Used 46 times in query history -->
+    <!-- Used 18 times in query history -->
     <datastore-index kind="authToken" ancestor="false" source="auto">
         <property name="token" direction="asc"/>
         <property name="expires" direction="asc"/>
-    </datastore-index>
-
-    <!-- Used 1 time in query history -->
-    <datastore-index kind="School" ancestor="false" source="auto">
-        <property name="level" direction="asc"/>
-        <property name="totalScore" direction="desc"/>
     </datastore-index>
 
 </datastore-indexes>

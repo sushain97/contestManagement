@@ -64,7 +64,11 @@
 			#include("printButton.html")
 			</h1>
 			#if($coach)
-				#parse("schoolOverview.html")
+				#if($school)
+					#parse("schoolOverview.html")
+				#else
+					Results for your school haven't started being tabulated yet.
+				#end
 			#else
 				<p> Your account does not have sufficient permissions to view your school's scores (probably because you are a student).
 				If you believe that this is incorrect, please <a href="/contactUs">contact us</a>.</p>

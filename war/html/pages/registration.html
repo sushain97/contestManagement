@@ -53,7 +53,7 @@
 			</dl>
 
 			<h3>Test Registrations</h3>
-			To make any changes to your student registrations, <a href="/login">log in</a>. <br><br>
+			To make any changes to your student registrations, <a href="/login">log in</a> if you have an account and <a href="/contactUs">contact us</a> if you don't. <br><br>
 
 			<table class="table table-striped table-condensed table-hover table-responsive" id="registrations">
 				<thead>
@@ -97,8 +97,10 @@
 						<label class="radio-inline">
 							<input type="radio" name="registrationType" id="regType2" value="student" #if($student) checked #end> Student
 						</label>
-						<span class="text-danger help-block" id="registerWarning" style="display: none;">Do <strong>not</strong> register here if your coach will register for the school. Only register as a student
-							here if you do <strong>not</strong> have a coach or will be paying us directly.</span>
+						<span class="text-danger help-block" id="registerWarning" style="display: none;">
+							Do <strong>not</strong> register here if your coach will register for the school. Only register as a student
+							here if you do <strong>not</strong> have a coach or will be paying us directly.
+						</span>
 					</div>
 				</div>
 
@@ -111,7 +113,9 @@
 								<input type="radio" name="schoolLevel" id="schoolType$level.getName()" value="$level" #if($schoolLevel == $level.toString()) checked #end required> $level.getName()
 							</label>
 						#end
-						<span class="text-warning help-block">If your school contains both students from multiple levels (e.g. both middle and high school), please make two separate registrations.</span>
+						<span class="text-warning help-block">
+							If your school contains both students from multiple levels (e.g. both middle and high school), please make separate registrations for each level.
+						</span>
 					</div>
 				</div>
 
@@ -194,10 +198,14 @@
 						</div>
 					</div>
 				</div>
+
 				<div class="lead">
 					Registrations
 					<button type="button" class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#importDataModal">Import Data</button>
 				</div>
+				<span class="text-warning help-block">
+					Please type student names in a <b>First Last</b> format. For example, type <b>John Doe</b> instead of <b>Doe, John</b> or <b>JOHN DOE</b>.
+				</span>
 				<div class="col-md-offset-1 col-md-10">
 					<table class="table table-striped table-condensed table-hover table-responsive" id="registrations">
 						<thead>

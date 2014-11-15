@@ -106,7 +106,7 @@ $(document).ready(function() {
 });
 
 function checkAccount() {
-	var account = $('#account').prop('checked') && $('#regType1').prop('checked');
+	var account = ($('#account').prop('checked') && $('#regType1').prop('checked')) || $('input[name="registrationType"]:checked').val() === undefined;
 	$('#password').prop('required', account);
 	$('#confPassword').prop('required', account);
 

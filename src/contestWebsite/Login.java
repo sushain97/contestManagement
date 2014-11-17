@@ -113,13 +113,13 @@ public class Login extends BaseHttpServlet {
 			Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
 			try {
 				if (Password.check(password, salt + "$" + hash)) {
-
 					SecureRandom random = new SecureRandom();
 					String authToken = new BigInteger(130, random).toString(32);
 
 					Entity token = new Entity("authToken");
 					token.setProperty("user-id", username);
 					token.setProperty("token", authToken);
+					user.setProperty("loginAttempts", 0);
 
 					boolean persistent = "stay".equals(req.getParameter("signedIn"));
 					Calendar calendar = Calendar.getInstance();

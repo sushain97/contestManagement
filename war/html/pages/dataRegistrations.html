@@ -218,18 +218,28 @@
 					<div class="row">
 						<div class="col-sm-3">
 							<dl class="dl-horizontal">
+								#set($total = 0)
 								#foreach($subject in $subjects)
 									<dt>$subject.getName()</dt>
 									<dd class="subjectTotal">$subjectTotals.get($subject)</dd>
+									#set($total = $total + $subjectTotals.get($subject))
 								#end
+
+								<dt>&nbsp;</dt>
+								<dd><b>$total</b></dd>
 							</dl>
 						</div>
 						<div class="col-sm-3">
 							<dl class="dl-horizontal">
+								#set($total = 0)
 								#foreach($grade in $level.getGrades())
 									<dt>Grade $grade</dt>
 									<dd class="gradeTotal">$gradeTotals.get($grade)</dd>
+									#set($total = $total + $gradeTotals.get($grade))
 								#end
+
+								<dt>&nbsp;</dt>
+								<dd><b>$total</b></dd>
 							</dl>
 						</div>
 					</div>

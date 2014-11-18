@@ -74,8 +74,10 @@
 		#end
 
 		<h2>Recorded Registrations</h2>
-		<em>Note:</em> first number indicates number of registrations and second the number of tests actually taken
-		<br><strong class="hidden-print">Click a cell to edit its registration</strong>
+
+		The first number for each test indicates number of registrations and second the number of tests actually taken.
+		Click a cell to edit its corresponding registration.
+
 		<form method="get" class="form-horizontal" action="/editRegistration">
 			#foreach($level in $levels)
 				#if($enabledLevels.split("\+").contains($level.toString().toLowerCase()))
@@ -107,6 +109,11 @@
 							#set($subjectTotals = {})
 							#foreach($subject in $subjects)
 								$!subjectTotals.put($subject, 0)
+							#end
+
+							#set($gradeTotals = {})
+							#foreach($grade in $level.getGrades())
+								$!gradeTotals.put($grade, 0)
 							#end
 
 							#foreach($reg in $registrations.get($level))
@@ -157,6 +164,9 @@
 													#set($_ = $subjectTotals.put($subject, $newTotal))
 												#end
 											#end
+
+											#set($newTotal = $!gradeTotals.get($studentGrade) + 1)
+											#set($_= $!gradeTotals.put($studentGrade, $newTotal))
 										#end
 
 										#foreach($test in $Test.getTests($level))
@@ -204,12 +214,25 @@
 							</tr>
 						</tfoot>
 					</table>
-					<dl class="dl-horizontal">
-						#foreach($subject in $subjects)
-							<dt>$subject.getName()</dt>
-							<dd class="subjectTotal">$subjectTotals.get($subject)</dd>
-						#end
-					</dl>
+
+					<div class="row">
+						<div class="col-sm-3">
+							<dl class="dl-horizontal">
+								#foreach($subject in $subjects)
+									<dt>$subject.getName()</dt>
+									<dd class="subjectTotal">$subjectTotals.get($subject)</dd>
+								#end
+							</dl>
+						</div>
+						<div class="col-sm-3">
+							<dl class="dl-horizontal">
+								#foreach($grade in $level.getGrades())
+									<dt>Grade $grade</dt>
+									<dd class="gradeTotal">$gradeTotals.get($grade)</dd>
+								#end
+							</dl>
+						</div>
+					</div>
 				#end
 			#end
 

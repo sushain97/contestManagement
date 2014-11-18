@@ -43,7 +43,7 @@ $(document).ready(function() {
 			headers: {
 				0: {sorter: false},
 				1: {sorter: 'inputs'},
-				2: {sorter: 'select'},
+				2: {sorter: 'selectNum'},
 				3: {sorter: 'checkbox'},
 				4: {sorter: 'checkbox'},
 				5: {sorter: 'checkbox'},

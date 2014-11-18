@@ -51,9 +51,20 @@
 			return false;
 		},
 		format: function(s, table, cell) {
-			return $(cell).find('select').val() || s;
+			return $(cell).find('select:visible').val() || s;
 		},
 		type: "text"
+	});
+
+	$.tablesorter.addParser({
+		id: "selectNum",
+		is: function(){
+			return false;
+		},
+		format: function(s, table, cell) {
+			return $(cell).find('select:visible').val() || s;
+		},
+		type: "numeric"
 	});
 
 	// update select and all input types in the tablesorter cache when the change event fires.

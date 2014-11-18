@@ -3,6 +3,7 @@ $(document).ready(function() {
 		var numStudents = $(this).attr('data-numStudents');
 		for(var i = 0; i < numStudents; i++)
 			addStudent('', 6, [false, false, false, false]);
+		$('#registrations').trigger('update');
 	});
 
 	$(document).on('click', 'span.deleteBtn', function() {
@@ -24,9 +25,12 @@ $(document).ready(function() {
 		calcCost();
 	});
 
-	$('input[type="number"]').change(calcCost);
 	$(document).on('change', 'table input[type=checkbox]', function() {
 		calcCost();
+	});
+
+	$(document).on('change', 'select', function() {
+		$('#registrations').trigger('update');
 	});
 
 	$('button#import').click(function() {

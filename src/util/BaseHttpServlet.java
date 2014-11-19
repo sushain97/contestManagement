@@ -61,7 +61,7 @@ public class BaseHttpServlet extends HttpServlet {
 		StringWriter sw = new StringWriter();
 		template.merge(context, sw);
 		sw.close();
-		resp.setContentType("text/html");
+		resp.setContentType("text/html; charset=utf-8");
 		resp.setHeader("X-Frame-Options", "SAMEORIGIN");
 		resp.getWriter().print(HTMLCompressor.customCompress(sw));
 	}

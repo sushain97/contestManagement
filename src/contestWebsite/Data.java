@@ -255,7 +255,7 @@ public class Data extends BaseHttpServlet {
 				return;
 			}
 
-			close(context, ve.getTemplate(template), resp);
+			close(context, ve.getTemplate(template, "UTF-8"), resp);
 		}
 	}
 

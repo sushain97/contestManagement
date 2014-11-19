@@ -149,7 +149,7 @@ public class EditRegistration extends BaseHttpServlet {
 							Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 							datastore.delete(user.getKey());
 						}
-						datastore.delete(registration.getKey()); // TODO: Do not completely delete
+						datastore.delete(registration.getKey());
 						txn.commit();
 						resp.sendRedirect("/data/registrations?updated=1");
 					}
@@ -158,15 +158,15 @@ public class EditRegistration extends BaseHttpServlet {
 						String name = params.get("name")[0].trim();
 						String schoolName = params.get("schoolName")[0].trim();
 						String email = params.containsKey("email") && params.get("email")[0].length() > 0 ? params.get("email")[0].toLowerCase().trim() : null;
-						String account = params.get("account")[0];
+						String account = params.containsKey("account") ? params.get("account")[0] : null;
 
-						if (registration.getProperty("account").equals("yes") && account.equals("no")) {
+						if ("yes".equals(registration.getProperty("account")) && "no".equals(account)) {
 							registration.setProperty("account", "no");
 							Query query = new Query("user").setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, registration.getProperty("email")));
 							Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 							datastore.delete(user.getKey());
 						}
-						else if (registration.getProperty("account").equals("yes")) {
+						else if ("yes".equals(registration.getProperty("account"))) {
 							Query query = new Query("user").setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, registration.getProperty("email")));
 							Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 							user.setProperty("name", name);

@@ -96,7 +96,7 @@ $(document).ready(function() {
 		$(this).prop('checked', $(this).data('chk'));
 	});
 
-	$('tbody td:not(.uneditable)').editable(function(value, settings) {
+	$('table:not(.overviewTable) tbody td:not(.uneditable)').editable(function(value, settings) {
 		sendAJAXReq(this, value);
 	}, {
 		type: 'text',

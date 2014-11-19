@@ -76,8 +76,7 @@ $(document).ready(function() {
 			filter_functions : filter_functions
 		},
 		headers: {
-			0: {filter: false, sorter: false},
-			1: {sorter: 'shortDate'}
+			0: {sorter: 'shortDate'}
 		}
 	});
 

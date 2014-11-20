@@ -168,6 +168,7 @@ pip-log.txt
 
 # App Engine generated
 war/WEB-INF/appengine-generated/
+war/WEB-INF/classes/**/*.class
 
 # Boilerplate generated classes
 .apt_generated/

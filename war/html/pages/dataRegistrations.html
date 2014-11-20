@@ -283,93 +283,233 @@
 			#end
 
 			<div class="tab-pane #if($enabledLevels.split("\+").size() != 1) active #end" id="overview">
-				<h3>Registered Students and Fees by Level</h3>
-				<table class="table text-center overviewTable" style="width: auto;">
-					<thead>
-						<tr>
-							<th></th>
-							#foreach($level in $levels)
-								#if($enabledLevels.split("\+").contains($level.toString()))
-									<th class="text-center">$level.getName() School</th>
-								#end
-							#end
-							<th class="text-center">Σ</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td class="table-vertical-header">Students</td>
-							#set($total = 0)
-							#foreach($level in $levels)
-								#if($enabledLevels.split("\+").contains($level.toString()))
-									<td>$allStudentsTotal.get($level)</td>
-									#set($total = $total + $allStudentsTotal.get($level))
-								#end
-							#end
-							<td><b>$total</b></td>
-						</tr>
-						<tr>
-							<td class="table-vertical-header">Fees</td>
-							#set($total = 0)
-							#foreach($level in $levels)
-								#if($enabledLevels.split("\+").contains($level.toString()))
-									<td>$$allTotalCosts.get($level)</td>
-									#set($total = $total + $allTotalCosts.get($level))
-								#end
-							#end
-							<td><b>$$total</b></td>
-						</tr>
-					</tbody>
-				</table>
-
-				<h3>Test Registrations by Subject and Level</h3>
-				<table class="table text-center overviewTable" style="width: auto;">
-					<thead>
-						<tr>
-							<th></th>
-							#foreach($subject in $subjects)
-								<th class="text-center">$subject.getName()</th>
-							#end
-							<th class="text-center">Σ</th>
-						</tr>
-					</thead>
-					<tbody>
-						#set($totals = {})
-						#foreach($subject in $subjects)
-							$!totals.put($subject, 0)
-						#end
-
-						#foreach($level in $levels)
-							#if($enabledLevels.split("\+").contains($level.toString()))
+				<div class="row">
+					<div class="col-md-6">
+						<h3>Registered Students and Fees by Level</h3>
+						<table class="table text-center overviewTable" style="width: auto;">
+							<thead>
 								<tr>
-									<td class="table-vertical-header">$level.getName() School</td>
-									#foreach($subject in $subjects)
-										<td>$allSubjectTotals.get($level).get($subject)</td>
-
-										#set($newTotal = $totals.get($subject) + $allSubjectTotals.get($level).get($subject))
-										#set($_ = $totals.put($subject, $newTotal))
+									<th></th>
+									#foreach($level in $levels)
+										#if($enabledLevels.split("\+").contains($level.toString()))
+											<th class="text-center">$level.getName() School</th>
+										#end
 									#end
-									<td><b>$allTestsTotal.get($level)</b></td>
+									<th class="text-center">Σ</th>
 								</tr>
-							#end
-						#end
-						<tr>
-							<td class="table-vertical-header text-center">Σ</td>
-							#set($total = 0)
-							#foreach($subject in $subjects)
-								<td><b>$totals.get($subject)</b></td>
-								#set($total = $total + $totals.get($subject))
-							#end
-							<td><b>$total</b></td>
-						</tr>
-					</tbody>
-				</table>
+							</thead>
+							<tbody>
+								<tr>
+									<td class="table-vertical-header">Students</td>
+									#set($total = 0)
+									#foreach($level in $levels)
+										#if($enabledLevels.split("\+").contains($level.toString()))
+											<td>$allStudentsTotal.get($level)</td>
+											#set($total = $total + $allStudentsTotal.get($level))
+										#end
+									#end
+									<td><b>$total</b></td>
+								</tr>
+								<tr>
+									<td class="table-vertical-header">Fees</td>
+									#set($total = 0)
+									#foreach($level in $levels)
+										#if($enabledLevels.split("\+").contains($level.toString()))
+											<td>$$allTotalCosts.get($level)</td>
+											#set($total = $total + $allTotalCosts.get($level))
+										#end
+									#end
+									<td><b>$$total</b></td>
+								</tr>
+							</tbody>
+						</table>
+						<div id="studentsPieGraph"></div>
+					</div>
+					<div class="col-md-6">
+						<h3>Test Registrations by Subject and Level</h3>
+						<table class="table text-center overviewTable" style="width: auto;">
+							<thead>
+								<tr>
+									<th></th>
+									#foreach($subject in $subjects)
+										<th class="text-center">$subject.getName()</th>
+									#end
+									<th class="text-center">Σ</th>
+								</tr>
+							</thead>
+							<tbody>
+								#set($totals = {})
+								#foreach($subject in $subjects)
+									$!totals.put($subject, 0)
+								#end
+
+								#foreach($level in $levels)
+									#if($enabledLevels.split("\+").contains($level.toString()))
+										<tr>
+											<td class="table-vertical-header">$level.getName() School</td>
+											#foreach($subject in $subjects)
+												<td>$allSubjectTotals.get($level).get($subject)</td>
+
+												#set($newTotal = $totals.get($subject) + $allSubjectTotals.get($level).get($subject))
+												#set($_ = $totals.put($subject, $newTotal))
+											#end
+											<td><b>$allTestsTotal.get($level)</b></td>
+										</tr>
+									#end
+								#end
+								<tr>
+									<td class="table-vertical-header text-center">Σ</td>
+									#set($total = 0)
+									#foreach($subject in $subjects)
+										<td><b>$totals.get($subject)</b></td>
+										#set($total = $total + $totals.get($subject))
+									#end
+									<td><b>$total</b></td>
+								</tr>
+							</tbody>
+						</table>
+						<div id="subjectPieGraph"></div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 
+	<script type="text/javascript" src="/js/highcharts/highcharts.js"></script>
+	<script type="text/javascript" src="/js/highcharts/highcharts-more.js"></script>
+	<script type="text/javascript" src="/js/highcharts/exporting.js"></script>
+	<script type="text/javascript" src="/js/highcharts/theme.js"></script>
 	<script type="text/javascript">
 		var classificationQuestion = '$classificationQuestion';
+
+		$('#subjectPieGraph').highcharts({
+			chart: {
+				type: 'pie'
+			},
+			title: {
+				text: null
+			},
+			plotOptions: {
+				pie: {
+					center: ['50%', '50%']
+				}
+			},
+			tooltip: {
+				valueSuffix: ' students',
+				pointFormat: '<b>{point.percentage:.1f}%</b>'
+			},
+			series: [{
+				name: 'Subject',
+				data: [
+					#set($totals = {})
+					#foreach($level in $levels)
+						$!totals.put($level, 0)
+					#end
+
+					#foreach($level in $levels)
+						#if($enabledLevels.split("\+").contains($level.toString()))
+							#foreach($subject in $subjects)
+								{
+									name: '$subject.getName()',
+									y: $allSubjectTotals.get($level).get($subject),
+									color: Highcharts.getOptions().colors[$foreach.index + 3]
+								},
+								#set($newTotal = $totals.get($level) + $allSubjectTotals.get($level).get($subject))
+								#set($_ = $totals.put($level, $newTotal))
+							#end
+						#end
+					#end
+				],
+				size: '80%',
+				innerSize: '60%',
+				dataLabels: {
+					formatter: function () {
+						return '<b>' + this.point.name + '</b><br> ' + this.y + (this.y !== 1 ? ' students' : ' student');
+					}
+				}
+			}, {
+				name: 'School Level',
+				data: [
+					#foreach($level in $levels)
+						#if($enabledLevels.split("\+").contains($level.toString()))
+							{
+								name: '$level.getName()',
+								y: $totals.get($level)
+							},
+						#end
+					#end
+				],
+				size: '60%',
+				dataLabels: {
+					formatter: function () {
+						return '<b>' + this.point.name + '</b> (' + this.y + ')';
+					},
+					distance: -40,
+					shadow: true
+				}
+			}]
+		});
+
+		$('#studentsPieGraph').highcharts({
+			chart: {
+				type: 'pie'
+			},
+			title: {
+				text: null
+			},
+			plotOptions: {
+				pie: {
+					center: ['50%', '50%']
+				}
+			},
+			tooltip: {
+				valueSuffix: ' students',
+				pointFormat: '<b>{point.percentage:.1f}%</b>'
+			},
+			series: [{
+				name: 'Subject',
+				data: [
+					#foreach($level in $levels)
+						#if($enabledLevels.split("\+").contains($level.toString()))
+							#foreach($grade in $level.getGrades())
+								{
+									name: '${grade}th Grade',
+									y: $allGradeTotals.get($level).get($grade),
+									color: Highcharts.getOptions().colors[$foreach.index + 3]
+								},
+							#end
+						#end
+					#end
+				],
+				size: '80%',
+				innerSize: '60%',
+				dataLabels: {
+					formatter: function () {
+						return '<b>' + this.point.name + '</b><br> ' + this.y + (this.y !== 1 ? ' students' : ' student');
+					}
+				}
+			}, {
+				name: 'School Level',
+				data: [
+					#foreach($level in $levels)
+						#if($enabledLevels.split("\+").contains($level.toString()))
+							{
+								name: '$level.getName()',
+								y: $allStudentsTotal.get($level)
+							},
+						#end
+					#end
+				],
+				size: '60%',
+				dataLabels: {
+					formatter: function () {
+						return '<b>' + this.point.name + '</b> (' + this.y + ')';
+					},
+					distance: -40,
+					shadow: true
+				}
+			}]
+		});
 	</script>
 	<script type="text/javascript" src="/js/jquery/jquery.jeditable.mini.js"></script>
 	<script type="text/javascript" src="/js/jquery/jquery.tablesorter.min.js"></script>

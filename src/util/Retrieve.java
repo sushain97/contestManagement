@@ -91,7 +91,8 @@ public class Retrieve {
 
 	public static List<Student> categoryWinners(String category, Level level) {
 		try {
-			Entity categoryWinnersEntity = datastore.get(KeyFactory.createKey("CategoryWinners", category + "_" + level.toString()));
+			Key key = KeyFactory.createKey(KeyFactory.createKey("Level", level.getName()), "CategoryWinners", category + "_" + level.toString());
+			Entity categoryWinnersEntity = datastore.get(key);
 			List<Key> categoryWinnersKeys = (List<Key>) categoryWinnersEntity.getProperty("students");
 			javax.jdo.Query q = pm.newQuery("select from " + Student.class.getName() + " where :keys.contains(key)");
 			List<Student> students = (List<Student>) q.execute(categoryWinnersKeys);
@@ -106,7 +107,8 @@ public class Retrieve {
 	public static Map<Subject, List<School>> categorySweepstakesWinners(Level level) {
 		List<Key> categorySweepstakesWinnersEntityKeys = new ArrayList<Key>();
 		for (Subject subject : Subject.values()) {
-			categorySweepstakesWinnersEntityKeys.add(KeyFactory.createKey("CategorySweepstakesWinners", subject + "_" + level.toString()));
+			Key key = KeyFactory.createKey(KeyFactory.createKey("Level", level.getName()), "CategorySweepstakesWinners", subject + "_" + level.toString());
+			categorySweepstakesWinnersEntityKeys.add(key);
 		}
 
 		Map<Key, Entity> categorySweepstakesWinnersEntityMap = datastore.get(categorySweepstakesWinnersEntityKeys);
@@ -132,7 +134,8 @@ public class Retrieve {
 	public static Map<Test, Statistics> visualizations(Level level) throws JSONException {
 		List<Key> visualizationKeys = new ArrayList<Key>();
 		for (Test test : Test.getTests(level)) {
-			visualizationKeys.add(KeyFactory.createKey("Visualization", test.toString()));
+			Key key = KeyFactory.createKey(KeyFactory.createKey("Level", level.getName()), "Visualization", test.toString());
+			visualizationKeys.add(key);
 		}
 		Map<Key, Entity> visualizationEntities = datastore.get(visualizationKeys);
 

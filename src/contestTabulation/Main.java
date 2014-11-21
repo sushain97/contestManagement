@@ -36,6 +36,7 @@ import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import javax.jdo.PersistenceManager;
+import javax.jdo.Transaction;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -53,6 +54,7 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
@@ -269,18 +271,23 @@ public class Main extends HttpServlet {
 
 	private static void persistData(Level level, Collection<School> schools, Map<Test, List<Student>> categoryWinners, Map<Subject, List<School>> categorySweepstakesWinners, List<School> sweepstakesWinners) throws JSONException {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-
+		Transaction tx = pm.currentTransaction();
 		try {
+			tx.begin();
 			pm.makePersistentAll(schools);
+			tx.commit();
 		}
 		finally {
+			if (tx.isActive()) {
+				tx.rollback();
+			}
 			pm.close();
 		}
 
 		List<Entity> categoryWinnersEntities = new ArrayList<Entity>();
 		for (Entry<Test, List<Student>> categoryWinnerEntry : categoryWinners.entrySet()) {
 			String entityKey = categoryWinnerEntry.getKey().toString() + "_" + level.toString();
-			Entity categoryWinnersEntity = new Entity("CategoryWinners", entityKey);
+			Entity categoryWinnersEntity = new Entity("CategoryWinners", entityKey, KeyFactory.createKey("Level", level.getName()));
 
 			List<Key> studentKeys = new ArrayList<Key>();
 			for (Student student : categoryWinnerEntry.getValue()) {
@@ -295,7 +302,7 @@ public class Main extends HttpServlet {
 		List<Entity> categorySweepstakesWinnersEntities = new ArrayList<Entity>();
 		for (Entry<Subject, List<School>> categorySweepstakesWinnerEntry : categorySweepstakesWinners.entrySet()) {
 			String entityKey = categorySweepstakesWinnerEntry.getKey().toString() + "_" + level.toString();
-			Entity categoryWinnersEntity = new Entity("CategorySweepstakesWinners", entityKey);
+			Entity categoryWinnersEntity = new Entity("CategorySweepstakesWinners", entityKey, KeyFactory.createKey("Level", level.getName()));
 
 			List<Key> schoolKeys = new ArrayList<Key>();
 			for (School school : categorySweepstakesWinnerEntry.getValue()) {
@@ -309,7 +316,7 @@ public class Main extends HttpServlet {
 
 		List<Entity> visualizationEntities = new ArrayList<Entity>();
 
-		Entity sweepstakesWinnerEntity = new Entity("SweepstakesWinners", level.toString());
+		Entity sweepstakesWinnerEntity = new Entity("SweepstakesWinners", level.toString(), KeyFactory.createKey("Level", level.getName()));
 		List<Key> schoolKeys = new ArrayList<Key>();
 		for (School school : sweepstakesWinners) {
 			schoolKeys.add(school.getKey());
@@ -334,7 +341,7 @@ public class Main extends HttpServlet {
 		}
 
 		for (Test test : tests) {
-			Entity visualizationsEntity = new Entity("Visualization", test.toString());
+			Entity visualizationsEntity = new Entity("Visualization", test.toString(), KeyFactory.createKey("Level", level.getName()));
 			visualizationsEntity.setProperty("scores", scores.get(test));
 			visualizationEntities.add(visualizationsEntity);
 		}

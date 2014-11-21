@@ -144,9 +144,6 @@ public class ContactUs extends BaseHttpServlet {
 			datastore.put(feedback);
 			txn.commit();
 
-			resp.sendRedirect("/contactUs?updated=1");
-			sess.invalidate();
-
 			Session session = Session.getDefaultInstance(new Properties(), null);
 			String appEngineEmail = (String) contestInfo.getProperty("account");
 
@@ -155,6 +152,10 @@ public class ContactUs extends BaseHttpServlet {
 				msg.setFrom(new InternetAddress(appEngineEmail, "Tournament Website Admin"));
 				msg.addRecipient(Message.RecipientType.TO, new InternetAddress((String) contestInfo.getProperty("email"), "Contest Administrator"));
 				msg.setSubject("Question about Tournament from " + name);
+				msg.setReplyTo(new InternetAddress[] {
+						new InternetAddress(req.getParameter("email"), name),
+						new InternetAddress(appEngineEmail, "Tournament Website Admin")
+				});
 
 				VelocityEngine ve = new VelocityEngine();
 				ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/email");
@@ -174,7 +175,11 @@ public class ContactUs extends BaseHttpServlet {
 			catch (MessagingException e) {
 				e.printStackTrace();
 				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+				return;
 			}
+
+			resp.sendRedirect("/contactUs?updated=1");
+			sess.invalidate();
 		}
 		catch (Exception e) {
 			e.printStackTrace();

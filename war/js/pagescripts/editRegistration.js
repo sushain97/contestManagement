@@ -16,8 +16,7 @@
  */
 
 $(document).ready(function () {
-	if($('input[name=studentData]').length) {
-		var studentData = JSON.parse($('input[name=studentData]').val());
+	if(studentData && studentData.length) {
 		var subjects = ['N', 'C', 'M', 'S'];
 		if(studentData.length > 0)
 			$('.student').remove();
@@ -31,6 +30,7 @@ $(document).ready(function () {
 			tr.append(td);
 
 			var td = $('<td class="text-center"></td>');
+			td.append($('<select class="elemGrades"><option value="4">4</option><option value="5">5</option>').val(this["grade"]));
 			td.append($('<select class="midGrades"><option value="6">6</option><option value="7">7</option><option value="8">8</option></select>').val(this["grade"]));
 			td.append($('<select class="highGrades"><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select>').val(this["grade"]));
 			tr.append(td);
@@ -63,7 +63,7 @@ $(document).ready(function () {
 		headers: {
 			0: {sorter: false},
 			1: {sorter: 'inputs'},
-			2: {sorter: 'select'},
+			2: {sorter: 'selectNum'},
 			3: {sorter: 'checkbox'},
 			4: {sorter: 'checkbox'},
 			5: {sorter: 'checkbox'},
@@ -75,7 +75,7 @@ $(document).ready(function () {
 	$('#regType1, #regType2').change(checkAccount);
 	$('#account').change(checkAccount);
 
-	$('#schoolType1, #schoolType2').change(adjustGradeSelect);
+	$('input[name=schoolLevel]').change(adjustGradeSelect);
 
 	$('#delete').change(function() {
 		$('#info').toggle('fast');
@@ -103,10 +103,12 @@ function checkAccount() {
 
 function adjustGradeSelect() {
 	$('#gradeSelects').remove();
-	if($('#schoolType1').prop('checked'))
-		$('<style id="gradeSelects"> .midGrades { display: block; } .highGrades { display: none; }</style>').appendTo('head');
-	else
-		$('<style id="gradeSelects"> .midGrades { display: none; } .highGrades { display: block; }</style>').appendTo('head');
+	if($('#schoolTypeElementary').prop('checked'))
+		$('<style id="gradeSelects"> .elemGrades { display: block; } .midGrades { display: none; } .highGrades { display: none; }</style>').appendTo('head');
+	else if($('#schoolTypeMiddle').prop('checked'))
+		$('<style id="gradeSelects"> .elemGrades { display: none; } .midGrades { display: block; } .highGrades { display: none; }</style>').appendTo('head');
+	else if($('#schoolTypeHigh').prop('checked'))
+		$('<style id="gradeSelects"> .elemGrades { display: none; } .midGrades { display: none; } .highGrades { display: block; }</style>').appendTo('head');
 }
 
 function enableSubmit() {
@@ -116,6 +118,5 @@ function enableSubmit() {
 }
 
 function calcCost() {
-	var price = parseInt($('input#price').val());
 	$('#cost').val($('table input[type=checkbox]:checked').length * price);
 }

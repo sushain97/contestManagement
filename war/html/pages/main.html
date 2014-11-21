@@ -30,7 +30,27 @@
 			#if($admin)
 				To manage the competition and the admin account go to the <a href="/adminPanel">Admin Control Panel</a>.
 				<br> To view registrations, current scores and clarifications requested by coaches go to the
-				<a href="/data?choice=overview">Data Viewer</a>.
+				<a href="/data/overview">Data Viewer</a>.
+
+				<h3>Login as a Coach</h3>
+				<form method="post" class="form-horizontal">
+					<div class="form-group #if($error) has-error #end">
+						<label class="col-sm-2 col-xs-4 control-label" for="email">E-Mail Address</label>
+						<div class="input-prepend col-sm-5 col-xs-8">
+							<div class="input-group">
+								<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+								<input type="email" name="email" class="form-control" id="email" required>
+							</div>
+							#if($error) <span class="help-block">That account doesn't exist.</span> #end
+						</div>
+					</div>
+
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<button type="submit" id="submit" class="btn btn-warning">Switch Account</button>
+						</div>
+					</div>
+				</form>
 			#else
 				To view the scores of your students, go to the <a href="/viewScores">Score Viewer</a>.
 				<h2>Your Registration Information</h2>
@@ -40,11 +60,6 @@
 				<dl class="dl-horizontal">
 					#foreach($str in $regData) $str #end
 				</dl>
-
-				<input type="hidden" name="studentData" id="studentData" value='$studentData'>
-				<input type="hidden" name="level" id="level" value="$level">
-				<input type="hidden" name="price" id="price" value="$price">
-				<input type="hidden" name="regEditClosed" id="regEditClosed" value="$regEditClosed">
 
 				<h3>
 					Test Registrations
@@ -127,6 +142,8 @@
 			#if($aboutText) <p>$aboutText</p> #end
 
 			#if($slideshow)
+				<hr>
+
 				<div class="loading center-block text-center"><i class="fa fa-spinner fa-spin fa-4x text-center" title="Loading..." alt="Loading..."></i></div>
 				<div id="carousel" class="carousel slide center-block">
 					<ol class="carousel-indicators">
@@ -175,7 +192,7 @@
 							Do not include the column headings. For the exam rows, anything but a blank or whitespace will be
 							treated as a registration for that test. Following is an example:
 						</p>
-							<p><img src="http://skc.name/l?Ukt.direct"></p> <strong>when copied becomes</strong>
+							<p><img src="/img/registrationImportExample.png"></p> <strong>when copied becomes</strong>
 							<pre>
 John Doe	6&#9;x&#9;x&#9;&#9;x
 Sarah Doe&#9;7&#9;&#9;&#9;&#9;x
@@ -221,6 +238,12 @@ Bobby Doe	8&#9;x&#9;&#9;x&#9;x</pre>
 		</div>
 	</div>
 
+	<script type="text/javascript">
+		var price = $price,
+			level = '$level',
+			regEditClosed = '$regEditClosed' === 'true',
+			studentData = $studentData;
+	</script>
 	<script type="text/javascript" src="/js/registration-tables.js"></script>
 	<script type="text/javascript" src="/js/pagescripts/main.js"></script>
 	#if($loggedIn)

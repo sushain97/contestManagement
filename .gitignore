@@ -161,3 +161,14 @@ pip-log.txt
 
 # Mac crap
 .DS_Store
+
+#############
+## App Engine
+#############
+
+# App Engine generated
+war/WEB-INF/appengine-generated/
+war/WEB-INF/classes/**/*.class
+
+# Boilerplate generated classes
+.apt_generated/

@@ -41,6 +41,15 @@ $(document).ready(function() {
 		CheckPassChange();
 	});
 
+	$('#elementaryDocButton').click(function() {
+		$('#elementaryDocButton').addClass('blurred');
+		$.get('/createSpreadsheet', {
+			'docElementary': $('input[name=docElementary]').val()
+		}).done(function() {
+			$('#elementaryDocButton').removeClass('blurred');
+		});
+	});
+
 	$('#middleDocButton').click(function() {
 		$('#middleDocButton').addClass('blurred');
 		$.get('/createSpreadsheet', {
@@ -66,6 +75,7 @@ function CheckUpdate() {
 	$('#docPassword').prop('required', update);
 	$('#docHigh').prop('required', update);
 	$('#docMiddle').prop('required', update);
+	$('#docElementary').prop('required', update);
 	if(update)
 		$('#updateScores').show();
 }

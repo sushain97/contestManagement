@@ -31,7 +31,39 @@ $(document).ready(function() {
 		table: 'table'
 	});
 
-	$('table#middleReg, table#highReg').tablesorter({
+	var filter_functions;
+	if(classificationQuestion === 'no')
+		filter_functions = {
+			4: {
+				"Coach": function(e, n, f, i, $r) { return n === 'coach'; },
+				"Student": function(e, n, f, i, $r) { return n === 'student'; }
+			},
+			6: {
+				"Yes": function(e, n, f, i, $r) { return n === 'yes'; },
+				"No": function(e, n, f, i, $r) { return n === 'no'; }
+			}
+		};
+	else
+		filter_functions = {
+			4: {
+				"Coach": function(e, n, f, i, $r) { return n === 'coach'; },
+				"Student": function(e, n, f, i, $r) { return n === 'student'; }
+			},
+			6: {
+				"6A": function(e, n, f, i, $r) { return n === '6a'; },
+				"5A": function(e, n, f, i, $r) { return n === '5a'; },
+				"4A": function(e, n, f, i, $r) { return n === '4a'; },
+				"3A": function(e, n, f, i, $r) { return n === '3a'; },
+				"2A": function(e, n, f, i, $r) { return n === '2a'; },
+				"1A": function(e, n, f, i, $r) { return n === '1a'; }
+			},
+			7: {
+				"Yes": function(e, n, f, i, $r) { return n === 'yes'; },
+				"No": function(e, n, f, i, $r) { return n === 'no'; }
+			}
+		};
+
+	$('table.regTable').tablesorter({
 		theme : 'bootstrap',
 		headerTemplate : '{content} {icon}',
 		widgets : ['uitheme', 'filter', 'zebra'],
@@ -41,27 +73,10 @@ $(document).ready(function() {
 			filter_saveFilters : true,
 			filter_reset : '.reset',
 			zebra : ["even", "odd"],
-			filter_functions : {
-				4: {
-					"Coach": function(e, n, f, i, $r) { return n === 'coach'; },
-					"Student": function(e, n, f, i, $r) { return n === 'student'; }
-				},
-				6: {
-					"5A": function(e, n, f, i, $r) { return n === '5a'; },
-					"4A": function(e, n, f, i, $r) { return n === '4a'; },
-					"3A": function(e, n, f, i, $r) { return n === '3a'; },
-					"2A": function(e, n, f, i, $r) { return n === '2a'; },
-					"1A": function(e, n, f, i, $r) { return n === '1a'; }
-				},
-				7: {
-					"Yes": function(e, n, f, i, $r) { return n === 'yes'; },
-					"No": function(e, n, f, i, $r) { return n === 'no'; }
-				}
-			}
+			filter_functions : filter_functions
 		},
 		headers: {
-			0: {filter: false},
-			1: {sorter: 'shortDate'}
+			0: {sorter: 'shortDate'}
 		}
 	});
 
@@ -80,7 +95,7 @@ $(document).ready(function() {
 		$(this).prop('checked', $(this).data('chk'));
 	});
 
-	$('tbody td:not(.uneditable)').editable(function(value, settings) {
+	$('table:not(.overviewTable) tbody td:not(.uneditable)').editable(function(value, settings) {
 		sendAJAXReq(this, value);
 	}, {
 		type: 'text',
@@ -96,10 +111,10 @@ $(document).ready(function() {
 		submit: 'OK'
 	});
 
-	$('.division').editable(function(value, settings) {
+	$('.classification').editable(function(value, settings) {
 		sendAJAXReq(this, value);
 	}, {
-		data: "{'1A':'1A','2A':'2A','3A':'3A','4A':'4A','5A':'5A'}",
+		data: "{'1A':'1A','2A':'2A','3A':'3A','4A':'4A','5A':'5A','6A':'6A'}",
 		type: 'select',
 		submit: 'OK'
 	});
@@ -113,8 +128,7 @@ $(document).ready(function() {
 	});
 });
 
-function sendAJAXReq(elem, value)
-{
+function sendAJAXReq(elem, value) {
 	$.ajax({
 		'url': '/editRegistration',
 		'type': 'post',
@@ -126,6 +140,6 @@ function sendAJAXReq(elem, value)
 			'modified': $(elem).data('type')
 		}
 	}).done(function() {
-		window.location = '/data?choice=registrations&updated=1';
+		window.location = '/data/registrations?updated=1';
 	});
 }

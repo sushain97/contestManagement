@@ -139,35 +139,41 @@
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-5 control-label" for="levels">School Levels</label>
 					<div class="input-group col-sm-5 col-xs-7">
-						<label class="radio-inline">
-							<input type="radio" name="levels" value="middle" #if($enabledLevels == "middle") checked #end> Middle
+						#foreach($level in $Level.values())
+						<label class="checkbox-inline">
+							<input type="checkbox" name="levels" value="$level" #if($enabledLevels.split("\+").contains($level.toString())) checked #end> $level.getName()
 						</label>
-						<label class="radio-inline">
-							<input type="radio" name="levels" value="high" #if($enabledLevels == "high") checked #end> High
-						</label>
-						<label class="radio-inline">
-							<input type="radio" name="levels" value="middle+high" #if($enabledLevels == "middle+high" || !$enabledLevels) checked #end> Middle &amp; High
-						</label>
+						#end
 					</div>
 				</div>
 
 				<div class="form-group">
 					<label class="col-sm-2 control-label" for="category">Category Winners</label>
 
-					<div class="col-sm-1 control-label">Middle <i class="iconfontello-medal"></i></div>
+					<div class="col-sm-2 control-label">Elementary <i class="iconfontello-medal"></i></div>
+					<div class="col-sm-1">
+						<input type="number" class="form-control" name="counts_category_elementary_medal" value="#if($awardCriteria.category_elementary_medal)$awardCriteria.category_elementary_medal#end" required>
+					</div>
+					<div class="col-sm-2 control-label">Middle <i class="iconfontello-medal"></i></div>
 					<div class="col-sm-1">
 						<input type="number" class="form-control" name="counts_category_middle_medal" value="#if($awardCriteria.category_middle_medal)$awardCriteria.category_middle_medal#end" required>
 					</div>
-					<div class="col-sm-1 control-label">High <i class="iconfontello-medal"></i></div>
+					<div class="col-sm-2 control-label">High <i class="iconfontello-medal"></i></div>
 					<div class="col-sm-1">
 						<input type="number" class="form-control" name="counts_category_high_medal" value="#if($awardCriteria.category_high_medal)$awardCriteria.category_high_medal#end" required>
 					</div>
 
-					<div class="col-sm-1 control-label">Middle <i class="fa fa-trophy"></i></div>
+					<br><br><br>
+
+					<div class="col-sm-2 col-sm-offset-2 control-label">Elementary <i class="fa fa-trophy"></i></div>
+					<div class="col-sm-1">
+						<input type="number" class="form-control" name="counts_category_elementary_trophy" value="#if($awardCriteria.category_elementary_trophy)$awardCriteria.category_elementary_trophy#end"  required>
+					</div>
+					<div class="col-sm-2 control-label">Middle <i class="fa fa-trophy"></i></div>
 					<div class="col-sm-1">
 						<input type="number" class="form-control" name="counts_category_middle_trophy" value="#if($awardCriteria.category_middle_trophy)$awardCriteria.category_middle_trophy#end"  required>
 					</div>
-					<div class="col-sm-1 control-label">High <i class="fa fa-trophy"></i></div>
+					<div class="col-sm-2 control-label">High <i class="fa fa-trophy"></i></div>
 					<div class="col-sm-1">
 						<input type="number" class="form-control" name="counts_category_high_trophy" value="#if($awardCriteria.category_high_trophy)$awardCriteria.category_high_trophy#end" required>
 					</div>
@@ -176,11 +182,15 @@
 				<div class="form-group">
 					<label class="col-sm-3 control-label" for="categorySweep">Category Sweepstakes Winners</label>
 
-					<div class="col-sm-1 control-label">Middle <i class="fa fa-trophy"></i></div>
+					<div class="col-sm-2 control-label">Elementary <i class="fa fa-trophy"></i></div>
+					<div class="col-sm-1">
+						<input type="number" class="form-control" name="counts_categorySweep_elementary" value="#if($awardCriteria.categorySweep_elementary)$awardCriteria.categorySweep_elementary#end" required>
+					</div>
+					<div class="col-sm-2 control-label">Middle <i class="fa fa-trophy"></i></div>
 					<div class="col-sm-1">
 						<input type="number" class="form-control" name="counts_categorySweep_middle" value="#if($awardCriteria.categorySweep_middle)$awardCriteria.categorySweep_middle#end" required>
 					</div>
-					<div class="col-sm-1 control-label">High <i class="fa fa-trophy"></i></div>
+					<div class="col-sm-2 control-label">High <i class="fa fa-trophy"></i></div>
 					<div class="col-sm-1">
 						<input type="number" class="form-control" name ="counts_categorySweep_high" value="#if($awardCriteria.categorySweep_high)$awardCriteria.categorySweep_high#end" required>
 					</div>
@@ -189,11 +199,15 @@
 				<div class="form-group">
 					<label class="col-sm-3 control-label" for="sweepstakes">Sweepstakes Winners</label>
 
-					<div class="col-sm-1 control-label">Middle <i class="fa fa-trophy"></i></div>
+					<div class="col-sm-2 control-label">Elementary <i class="fa fa-trophy"></i></div>
+					<div class="col-sm-1">
+						<input type="number" class="form-control" name="counts_sweepstakes_elementary" value="#if($awardCriteria.sweepstakes_elementary)$awardCriteria.sweepstakes_elementary#end" required>
+					</div>
+					<div class="col-sm-2 control-label">Middle <i class="fa fa-trophy"></i></div>
 					<div class="col-sm-1">
 						<input type="number" class="form-control" name="counts_sweepstakes_middle" value="#if($awardCriteria.sweepstakes_middle)$awardCriteria.sweepstakes_middle#end" required>
 					</div>
-					<div class="col-sm-1 control-label">High <i class="fa fa-trophy"></i></div>
+					<div class="col-sm-2 control-label">High <i class="fa fa-trophy"></i></div>
 					<div class="col-sm-1">
 						<input type="number" class="form-control" name="counts_sweepstakes_high" value="#if($awardCriteria.sweepstakes_high)$awardCriteria.sweepstakes_high#end" required>
 					</div>
@@ -320,33 +334,21 @@
 						</div>
 					</div>
 
-					#if($enabledLevels.split("\+").contains("middle"))
-					<div class="form-group">
-						<label class="col-sm-3 control-label" for="schoolName">Middle School Doc</label>
-						<div class="col-sm-5">
-							<input type="text" name="docMiddle" class="form-control" id="docMiddle"
-								value='#if($contestInfo.getProperty("docMiddle"))$contestInfo.getProperty("docMiddle")#end'>
-							<span class="help-block">Name of Google Spreadsheet with Middle School Scores</span>
+					#foreach($level in $Level.values())
+						#if($enabledLevels.split("\+").contains($level.toString()))
+						<div class="form-group">
+							<label class="col-sm-3 control-label">$level.getName() School Doc</label>
+							<div class="col-sm-5">
+								#set($docName = "doc$level.getName()")
+								<input type="text" name="$docName" class="form-control" id="$docName"
+									value='#if($contestInfo.getProperty($docName))$contestInfo.getProperty($docName)#end'>
+								<span class="help-block">Name of Google Spreadsheet with $level.getName() School Scores</span>
+							</div>
+							<div class="col-sm-3" class="docButton" id="$level.toString()DocButton">
+								<button type="button" class="btn btn-default">Create Empty Spreadsheet</button>
+							</div>
 						</div>
-						<div class="col-sm-3" class="docButton" id="middleDocButton">
-							<button type="button" class="btn btn-default">Create Empty Spreadsheet</button>
-						</div>
-
-					</div>
-					#end
-
-					#if($enabledLevels.split("\+").contains("high"))
-					<div class="form-group">
-						<label class="col-sm-3 control-label" for="schoolName">High School Doc</label>
-						<div class="col-sm-5">
-							<input type="text" name="docHigh" class="form-control" id="docHigh"
-								value='#if($contestInfo.getProperty("docHigh"))$contestInfo.getProperty("docHigh")#end'>
-							<span class="help-block">Name of Google Spreadsheet with High School Scores</span>
-						</div>
-						<div class="col-sm-3" class="docButton" id="highDocButton">
-							<button type="button" class="btn btn-default">Create Empty Spreadsheet</button>
-						</div>
-					</div>
+						#end
 					#end
 				</div>
 
@@ -409,6 +411,18 @@
 							<input type="checkbox" name="testing" id="testing" value="yes" id="testing" #if($contestInfo.getProperty("testingMode")) checked #end>
 							Testing mode force defaults the admin password to "password" and displays it on the login page.
 						</label>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-3 control-label" for="classificationQuestion">Ask for School Classification?</label>
+					<div class="input-group col-sm-5 col-xs-offset-1">
+						#foreach($choice in ['no', 'optional', 'required'])
+							<label class="checkbox-inline" #if($foreach.first) style="padding-left: 0" #end>
+								<input type="radio" name="classificationQuestion" value="$choice" #if($contestInfo.getProperty("classificationQuestion") == $choice) checked #end required>
+								$choice.substring(0, 1).toUpperCase()$choice.substring(1)
+							</label>
+						#end
 					</div>
 				</div>
 

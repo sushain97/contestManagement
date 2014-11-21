@@ -21,14 +21,20 @@ package contestWebsite;
 import static org.apache.commons.lang3.StringEscapeUtils.unescapeHtml4;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.net.URLDecoder;
+import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -48,6 +54,8 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
+import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Text;
@@ -124,6 +132,7 @@ public class MainPage extends BaseHttpServlet {
 				context.put("updated", req.getParameter("updated"));
 			}
 			else {
+				context.put("error", req.getParameter("error"));
 				context.put("user", user.getProperty("user-id"));
 				context.put("name", "Contest Administrator");
 				context.put("admin", true);
@@ -227,6 +236,57 @@ public class MainPage extends BaseHttpServlet {
 				}
 
 				resp.sendRedirect("/?updated=1");
+			}
+		}
+		else if (loggedIn && userCookie.isAdmin()) {
+			String username = req.getParameter("email").toLowerCase();
+			Query query = new Query("user").setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, username));
+			List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
+			if (users.size() >= 1) {
+				Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
+				try {
+					query = new Query("authToken").setKeysOnly();
+					Filter tokenFilter = new FilterPredicate("token", FilterOperator.EQUAL, URLDecoder.decode(userCookie.getValue(), "UTF-8"));
+					Filter expiredFilter = new FilterPredicate("expires", FilterOperator.LESS_THAN, new Date());
+					query.setFilter(CompositeFilterOperator.or(tokenFilter, expiredFilter));
+					datastore.delete(datastore.prepare(query).asList(FetchOptions.Builder.withDefaults()).get(0).getKey());
+
+					userCookie.setMaxAge(0);
+					userCookie.setValue("");
+					resp.addCookie(userCookie);
+
+					SecureRandom random = new SecureRandom();
+					String authToken = new BigInteger(130, random).toString(32);
+					Entity token = new Entity("authToken");
+					token.setProperty("user-id", username);
+					token.setProperty("token", authToken);
+
+					Calendar calendar = Calendar.getInstance();
+					calendar.add(Calendar.MINUTE, 60);
+					token.setProperty("expires", new Date(calendar.getTimeInMillis()));
+
+					Cookie cookie = new Cookie("authToken", authToken);
+					cookie.setValue(authToken);
+					resp.addCookie(cookie);
+
+					datastore.put(token);
+					datastore.put(user);
+					resp.sendRedirect("/");
+
+					txn.commit();
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+				}
+				finally {
+					if (txn.isActive()) {
+						txn.rollback();
+					}
+				}
+			}
+			else {
+				resp.sendRedirect("/?error=1");
 			}
 		}
 		else {

@@ -21,7 +21,7 @@ package contestTabulation;
 import java.util.Objects;
 
 public enum Level {
-	MIDDLE("middle", 6, 8), HIGH("high", 9, 12);
+	ELEMENTARY("elementary", 4, 5), MIDDLE("middle", 6, 8), HIGH("high", 9, 12);
 
 	private final int lowGrade, highGrade;
 	private final String stringLevel;
@@ -33,15 +33,7 @@ public enum Level {
 	}
 
 	public static Level fromString(String level) {
-		if ("middle".compareToIgnoreCase(Objects.requireNonNull(level)) == 0) {
-			return Level.MIDDLE;
-		}
-		else if ("high".compareToIgnoreCase(level) == 0) {
-			return Level.HIGH;
-		}
-		else {
-			throw new IllegalArgumentException();
-		}
+		return Level.valueOf(Objects.requireNonNull(level).toUpperCase());
 	}
 
 	public static Level fromGrade(int grade) {
@@ -54,12 +46,11 @@ public enum Level {
 	}
 
 	public int[] getGrades() {
-		if (this == MIDDLE) {
-			return new int[] {6, 7, 8};
+		int[] grades = new int[highGrade - lowGrade + 1];
+		for (int i = lowGrade; i < grades.length + lowGrade; i++) {
+			grades[i - lowGrade] = i;
 		}
-		else {
-			return new int[] {9, 10, 11, 12};
-		}
+		return grades;
 	}
 
 	public int getHighGrade() {

@@ -20,7 +20,7 @@
 			<td> $foreach.count #if($foreach.count <= $trophy) <i class="fa fa-trophy"></i> #end</td>
 
 			#if($admin)
-				<td><a href="/data?choice=scores&type=school_$esc.url($school.getName())&level=$level">$school.getName()</a></td>
+				<td><a href="/data/scores?type=school_$esc.url($school.getName())&level=$level">$school.getName()</a></td>
 			#else
 				<td>$school.getName()</td>
 			#end

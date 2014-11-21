@@ -72,6 +72,7 @@ import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
+import contestTabulation.Level;
 import contestTabulation.Subject;
 
 @SuppressWarnings("serial")
@@ -119,6 +120,7 @@ public class Registration extends BaseHttpServlet {
 			}
 
 			context.put("price", contestInfo.getProperty("price"));
+			context.put("classificationQuestion", contestInfo.getProperty("classificationQuestion"));
 			context.put("publicKey", contestInfo.getProperty("publicKey"));
 		}
 		else {
@@ -135,30 +137,15 @@ public class Registration extends BaseHttpServlet {
 		String captchaError = req.getParameter("captchaError");
 
 		if (sess != null && (userError + passwordError + captchaError).contains("1")) {
-			if (((String) sess.getAttribute("registrationType")).equals("coach")) {
-				context.put("coach", true);
-			}
-			else {
-				context.put("student", true);
-			}
+			context.put("coach".equals(sess.getAttribute("registrationType")) ? "coach" : "student", true);
+			context.put("account", "yes".equals(sess.getAttribute("account")));
 
-			if (((String) sess.getAttribute("schoolLevel")).equals("middle")) {
-				context.put("middle", true);
-			}
-			else {
-				context.put("high", true);
-			}
-
-			context.put("account", ((String) sess.getAttribute("account")).equals("yes"));
-
-			String[] propNames = {"schoolName", "name", "email", "updated", "division", "studentData"};
+			String[] propNames = {"schoolName", "name", "email", "updated", "classification", "studentData", "schoolLevel"};
 			for (String propName : propNames) {
 				context.put(propName, sess.getAttribute(propName));
 			}
 		}
 		else {
-			context.put("coach", true);
-			context.put("middle", true);
 			context.put("account", true);
 			context.put("schoolName", "");
 			context.put("name", "");
@@ -195,6 +182,8 @@ public class Registration extends BaseHttpServlet {
 			context.put("error", true);
 		}
 
+		context.put("Level", Level.class);
+
 		close(context, ve.getTemplate("registration.html"), resp);
 	}
 
@@ -205,7 +194,9 @@ public class Registration extends BaseHttpServlet {
 
 		Map<String, String[]> params = new HashMap<String, String[]>(req.getParameterMap());
 		for (Entry<String, String[]> param : params.entrySet()) {
-			params.put(param.getKey(), new String[] {escapeHtml4(param.getValue()[0])});
+			if (!"studentData".equals(param.getKey())) {
+				params.put(param.getKey(), new String[] {escapeHtml4(param.getValue()[0])});
+			}
 		}
 
 		String registrationType = params.get("registrationType")[0];
@@ -217,7 +208,7 @@ public class Registration extends BaseHttpServlet {
 		String schoolLevel = params.get("schoolLevel")[0];
 		String schoolName = params.get("schoolName")[0].trim();
 		String name = params.get("name")[0].trim();
-		String division = params.containsKey("division") ? params.get("division")[0] : "";
+		String classification = params.containsKey("classification") ? params.get("classification")[0] : "";
 		String studentData = req.getParameter("studentData");
 		String password = null;
 		String confPassword = null;
@@ -234,7 +225,7 @@ public class Registration extends BaseHttpServlet {
 		sess.setAttribute("account", account);
 		sess.setAttribute("account", account);
 		sess.setAttribute("name", name);
-		sess.setAttribute("division", division);
+		sess.setAttribute("classification", classification);
 		sess.setAttribute("schoolName", schoolName);
 		sess.setAttribute("schoolLevel", schoolLevel);
 		sess.setAttribute("email", email);
@@ -281,7 +272,7 @@ public class Registration extends BaseHttpServlet {
 				registration.setProperty("schoolName", schoolName);
 				registration.setProperty("schoolLevel", schoolLevel);
 				registration.setProperty("name", name);
-				registration.setProperty("division", division);
+				registration.setProperty("classification", classification);
 				registration.setProperty("studentData", new Text(studentData));
 				registration.setProperty("email", email);
 				registration.setProperty("paid", "");

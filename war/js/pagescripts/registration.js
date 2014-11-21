@@ -27,8 +27,7 @@ $(document).ready(function() {
 		adjustGradeSelect();
 		$('input[name=recaptcha_response_field]').prop('required', true);
 
-		if($('input[name=studentData]').length) {
-			var studentData = JSON.parse($('input[name=studentData]').val());
+		if(studentData) {
 			if(studentData.length > 0)
 				$('.student').remove();
 
@@ -44,7 +43,7 @@ $(document).ready(function() {
 			headers: {
 				0: {sorter: false},
 				1: {sorter: 'inputs'},
-				2: {sorter: 'select'},
+				2: {sorter: 'selectNum'},
 				3: {sorter: 'checkbox'},
 				4: {sorter: 'checkbox'},
 				5: {sorter: 'checkbox'},
@@ -54,8 +53,7 @@ $(document).ready(function() {
 		});
 	}
 	else {
-		if($('#studentData').val()) {
-			var studentData = JSON.parse($('#studentData').val());
+		if(studentData) {
 			$.each(studentData, function() {
 				addFrozenStudent(this["name"], this["grade"], [this['N'], this['C'], this['M'], this['S']]);
 			});
@@ -75,7 +73,7 @@ $(document).ready(function() {
 	$('#regType1, #regType2').change(checkAccount);
 	$('#account').change(checkAccount);
 
-	$('#schoolType1, #schoolType2').change(adjustGradeSelect);
+	$('input[name=schoolLevel]').change(adjustGradeSelect);
 
 	$('#passStrength').tooltip({placement: 'right', html: 'true'});
 
@@ -108,7 +106,7 @@ $(document).ready(function() {
 });
 
 function checkAccount() {
-	var account = $('#account').prop('checked') && $('#regType1').prop('checked');
+	var account = ($('#account').prop('checked') && $('#regType1').prop('checked')) || $('input[name="registrationType"]:checked').val() === undefined;
 	$('#password').prop('required', account);
 	$('#confPassword').prop('required', account);
 
@@ -135,14 +133,16 @@ function checkAccount() {
 
 function adjustGradeSelect() {
 	$('#gradeSelects').remove();
-	if($('#schoolType1').prop('checked'))
-		$('<style id="gradeSelects"> .midGrades { display: block; } .highGrades { display: none; }</style>').appendTo('head');
-	else
-		$('<style id="gradeSelects"> .midGrades { display: none; } .highGrades { display: block; }</style>').appendTo('head');
+	if($('#schoolTypeElementary').prop('checked'))
+		$('<style id="gradeSelects"> .elemGrades { display: block; } .midGrades { display: none; } .highGrades { display: none; }</style>').appendTo('head');
+	else if($('#schoolTypeMiddle').prop('checked'))
+		$('<style id="gradeSelects"> .elemGrades { display: none; } .midGrades { display: block; } .highGrades { display: none; }</style>').appendTo('head');
+	else if($('#schoolTypeHigh').prop('checked'))
+		$('<style id="gradeSelects"> .elemGrades { display: none; } .midGrades { display: none; } .highGrades { display: block; }</style>').appendTo('head');
 }
 
 function enableSubmit() {
-	if ($('#regError').val() === '') {
+	if (regError === '') {
 		$('#submit').prop('disabled', false);
 		$('#reset').prop('disabled', false);
 	}
@@ -150,6 +150,5 @@ function enableSubmit() {
 }
 
 function calcCost() {
-	var price = parseInt($('input#price').val());
 	$('#cost').val($('table input[type=checkbox]:checked').length * price);
 }

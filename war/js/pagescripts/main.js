@@ -20,20 +20,22 @@ $(document).ready(function() {
 	$('.item').eq(activeNum).addClass('active');
 	$('.carousel-indicators li').eq(activeNum).addClass('active');
 
-	if($('#studentData').val()) {
-		var studentData = JSON.parse($('#studentData').val());
-
+	if(studentData) {
 		var grades;
-		if($("#level").val() === "middle") {
-			$('<style id="gradeSelects"> .midGrades { display: block; } .highGrades { display: none; }</style>').appendTo('head');
+		if(level === 'elementary') {
+			$('<style id="gradeSelects"> .elemGrades { display: block; } .midGrades { display: none; } .highGrades { display: none; }</style>').appendTo('head');
+			grades = [4, 5];
+		}
+		else if(level === 'middle') {
+			$('<style id="gradeSelects"> .elemGrades { display: none; } .midGrades { display: block; } .highGrades { display: none; }</style>').appendTo('head');
 			grades = [6, 7, 8];
 		}
 		else {
-			$('<style id="gradeSelects"> .midGrades { display: none; } .highGrades { display: block; }</style>').appendTo('head');
+			$('<style id="gradeSelects"> .elemGrades { display: none; } .midGrades { display: none; } .highGrades { display: block; }</style>').appendTo('head');
 			grades = [9, 10, 11, 12];
 		}
 
-		if($('#regEditClosed').val() === 'true')
+		if(regEditClosed)
 			$.each(studentData, function() {
 				addFrozenStudent(this["name"], this["grade"], [this['N'], this['C'], this['M'], this['S']]);
 			});
@@ -46,7 +48,7 @@ $(document).ready(function() {
 			table: 'table'
 		});
 
-		if($('#regEditClosed').val() === 'true')
+		if(regEditClosed)
 			$('#registrations').tablesorter({
 				theme: 'bootstrap',
 				headerTemplate: '{content} {icon}',
@@ -60,7 +62,7 @@ $(document).ready(function() {
 				headers: {
 					0: {sorter: false},
 					1: {sorter: 'inputs'},
-					2: {sorter: 'select'},
+					2: {sorter: 'selectNum'},
 					3: {sorter: 'checkbox'},
 					4: {sorter: 'checkbox'},
 					5: {sorter: 'checkbox'},
@@ -81,7 +83,6 @@ $(window).load(function() {
 });
 
 function calcCost() {
-	var price = parseInt($('input#price').val());
 	if($('table input[type=checkbox]:checked').length)
 		$('#cost').text(($('table input[type=checkbox]:checked').length * price).toFixed(2));
 	else if($('.student .glyphicon-ok').length)

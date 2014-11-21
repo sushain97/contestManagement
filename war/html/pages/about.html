@@ -9,7 +9,17 @@
 	#parse("head.html")
 	<style type="text/css">
 		.dl-horizontal dt { white-space: normal; }
+		@media(min-width: 768px) {
+			.dl-horizontal dd {
+				margin-left: 280px;
+				width: 100%;
+			}
+			.dl-horizontal dt {
+				width: 260px;
+			}
+		}
 		.row { padding-bottom: 10px; }
+		.btn-block { display: block; }
 	</style>
 	<link type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
 </head>
@@ -22,7 +32,17 @@
 			#include("printButton.html")
 		</h1>
 
-		#if($aboutText) <p>$aboutText</p> #end
+		<div class="row">
+			<div class="col-sm-8">
+				#if($aboutText) <p>$aboutText</p> #end
+			</div>
+			<div class="col-sm-4">
+				<a href="#NSmodal" role="button" class="btn btn-sm btn-info btn-block" data-toggle="modal">Number Sense Test Information</a>
+				<a href="#CAmodal" role="button" class="btn btn-sm btn-info btn-block" data-toggle="modal">Calculator Applications Test Information</a>
+				<a href="#MAmodal" role="button" class="btn btn-sm btn-info btn-block" data-toggle="modal">Mathematics Test Information</a>
+				<a href="#SCmodal" role="button" class="btn btn-sm btn-info btn-block" data-toggle="modal">Science Test Information</a>
+			</div>
+		</div>
 		<div class="row">
 			<div class="col-sm-6">
 				#if($schedule)
@@ -53,164 +73,343 @@
 					#end
 				</div>
 			#end
-		</div>
 
-		<br>
-		<div class="form-group">
-			<div class="col-sm-12">
-				<a href="#about" role="button" class="btn btn-default" data-toggle="modal">About the Website</a>
+			<br>
+			<div class="form-group">
+				<div class="col-sm-12">
+				<a href="#aboutModal" role="button" class="btn btn-primary" data-toggle="modal">About the Website</a>
+				</div>
 			</div>
 		</div>
-	</div>
 
-	<div id="about" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="aboutModal" aria-hidden="true">
-		<div class="modal-dialog modal-lg">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					<h3 id="aboutModal">
-					About the Website
-					<small class="pull-right"><i class="glyphicon glyphicon-copyright-mark"></i> <a href="http://skc.name" target="_blank">Sushain Cherivirala</a></small>
-					</h3>
+		<div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="aboutModal" aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h3 id="aboutModal">
+						About the Website
+						<small class="pull-right"><i class="glyphicon glyphicon-copyright-mark"></i> <a href="http://skc.name" target="_blank">Sushain Cherivirala</a></small>
+						</h3>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-sm-2">
+								<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US" target="_blank">
+								<img alt="Creative Commons License" style="border-width: 0" src="/img/aboutPage/by-nc-sa.eu.png" width="127px"></a>
+							</div>
+							<div class="col-sm-10">
+								<span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Content of TMSCA Tournament Management System (HTML, CSS, Static Assets, etc.)</span>
+								by <a xmlns:cc="http://creativecommons.org/ns#" href="http://www.skc.name" property="cc:attributionName" rel="cc:attributionURL" target="_blank">Sushain
+									Cherivirala</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US" target="_blank">Creative
+									Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>.
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-sm-2">
+								<img alt="GNU General Public License" src="/img/aboutPage/gplv3.png">
+							</div>
+							<div class="col-sm-10">
+								Codebase of TMSCA Tournament Management System (Java, JS, etc.) is licensed under the <a href="http://www.gnu.org/licenses/gpl-3.0.html" target="_blank">GNU General Public License Version 3</a>.
+							</div>
+						</div>
+
+						<br>
+
+						<div class="row">
+							<div class="col-sm-6 text-center">
+								<img data-src="/img/aboutPage/java.png" alt="Java" height="80px">
+							</div>
+							<div class="col-sm-6 text-center">
+								<img data-src="/img/aboutPage/webtrifecta.png" alt="Web Trifecta (HTML, JS, CSS)" height="80px">
+							</div>
+						</div>
+
+						<br>
+
+						<div class="row">
+							<div class="col-sm-6 text-center">
+								<a href="https://developers.google.com/appengine/" target="_blank"><img data-src="/img/aboutPage/appengine.gif" alt="Google App Engine"></a>
+								Powered by <a href="https://developers.google.com/appengine/" target="_blank">Google App Engine</a>
+							</div>
+							<div class="col-sm-6 text-center">
+								<a href="http://twitter.github.io/bootstrap" target="_blank"><img data-src="/img/aboutPage/bootstrap.png" width="40px" alt="Bootstrap"></a>
+								Built with <i class="fa fa-twitter"></i> <a href="http://twitter.github.io/bootstrap" target="_blank">Twitter Bootstrap</a>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-sm-6 text-center">
+								<a href="http://velocity.apache.org/" target="_blank"><img data-src="/img/aboutPage/apacheVelocity.gif" alt="Apache Velocity" height="35px"></a>
+								Templating with <a href="http://velocity.apache.org/" target="_blank">Apache Velocity</a>
+							</div>
+							<div class="col-sm-6 text-center">
+								<a href="http://jquery.com" target="_blank"><img data-src="/img/aboutPage/jquery.png" width="100px" alt="JQuery"></a>
+								Powered by <a href="http://jquery.com" target="_blank">JQuery</a>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-sm-6 text-center">
+								<a href="http://commons.apache.org/proper/commons-math" target="_blank"><img data-src="/img/aboutPage/commonsMath.gif" alt="Apache Commons Math" height="45px"></a>
+								Uses <a href="http://commons.apache.org/proper/commons-math" target="_blank">Apache Commons Math</a>
+							</div>
+							<div class="col-sm-6 text-center">
+								<a href="https://github.com/sushain97/contestManagement" target="_blank"><img data-src="/img/aboutPage/github.png" alt="Github" height="35px"></a>
+								Hosted on <i class="fa fa-github"></i> <a href="https://github.com/sushain97/contestManagement" target="_blank">Github</a>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-sm-6 text-center">
+								<a href="http://www.google.com/recaptcha"><img data-src="/img/aboutPage/recaptcha.gif" alt="reCAPTCHA" height="50px"></a>
+								Secured with <a href="http://www.google.com/recaptcha">reCAPTCHA</a>
+							</div>
+							<div class="col-sm-6 text-center">
+								<a href="http://highcharts.com"><img data-src="/img/aboutPage/highcharts.png" alt="Highcharts JS" height="50px"></a>
+								Charts generated with <a href="http://highcharts.com">Highcharts JS</a>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-sm-6 text-center">
+								<a href="http://oauth.net/" target="_blank"><img data-src="/img/aboutPage/oauth2.png" alt="OAuth" height="50px"></a>
+								Authentication with <a href="http://oauth.net/" target="_blank">OAuth 2.0</a>
+							</div>
+							<div class="col-sm-6 text-center">
+								Sortable tables use <a href="http://mottie.github.io/tablesorter" target="_blank" style="font-family: Georgia, Palatino, Times New Roman; font-size: 30px; font-weight: 400; text-decoration: none;">
+									<span style="color: black">table</span><span style="color: #6cf">sorter</span>
+								</a>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-sm-6 text-center">
+								<a href="https://db.apache.org/jdo/" target="_blank"><img data-src="/img/aboutPage/jdo.gif" alt="JDO" height="50px"></a>
+								Uses <a href="https://db.apache.org/jdo/" target="_blank">Java Data Objects</a>
+							</div>
+							<div class="col-sm-6 text-center">
+								<a href="https://developers.google.com/" target="_blank"><img data-src="/img/aboutPage/googleapis.gif" alt="JDO" height="50px"></a>
+								Uses <a href="https://developers.google.com/" target="_blank">Google APIs</a>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-sm-12 text-center">
+								<a href="http://pagekite.net/" target="_blank"><img data-src="/img/aboutPage/pagekite.png" alt="PageKite" height="50px"></a>
+								Uses <a href="http://pagekite.net/" target="_blank">PageKite</a> for staging
+							</div>
+						</div>
+
+						<br>
+
+						<div class="lead">CDN Service from</div>
+						<div class="row">
+							<div class="col-sm-3 text-center">
+								<a href="https://developers.google.com/speed/libraries" target="_blank"><img alt="Google Hosted Libraries" src="/img/aboutPage/googledev.png" height="50px"></a>
+							</div>
+							<div class="col-sm-3 text-center">
+								<a href="http://www.netdna.com/" target="_blank"><img alt="NetDNA CDN" src="/img/aboutPage/netdna.png" height="55px"></a>
+							</div>
+							<div class="col-sm-3 text-center">
+								<a href="http://www.maxcdn.com/" target="_blank"><img alt="MAXCDN" src="/img/aboutPage/maxcdn.png" height="35px"></a>
+							</div>
+							<div class="col-sm-3 text-center">
+								<a href="http://cdnjs.com/" target="_blank"><span class="lead">CDNJS</span></a>
+							</div>
+						</div>
+
+						<br>
+
+						<p>
+							Icons from <i class="glyphicon glyphicon-plus"></i> <a href="http://glyphicons.com" target="_blank">Glyphicons Free</a>,
+							<i class="fa fa-flag"></i> <a href="http://fortawesome.github.io/" target="_blank">Font Awesome</a>, and
+							<a href="http://thedesignoffice.org/project/modern-pictograms" target="_blank">Modern Pictograms</a>.
+						</p>
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Close</button>
+					</div>
 				</div>
-				<div class="modal-body">
-					<div class="row">
-						<div class="col-sm-2">
-							<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US" target="_blank"> <img alt="Creative Commons License"
-						style="border-width: 0" src="http://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-sa.eu.png" width="127px"></a>
-						</div>
-						<div class="col-sm-10">
-							<span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Content of TMSCA Tournament Management System (HTML, CSS, Static Assets, etc.)</span>
-							by <a xmlns:cc="http://creativecommons.org/ns#" href="http://www.skc.name" property="cc:attributionName" rel="cc:attributionURL" target="_blank">Sushain
-								Cherivirala</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US" target="_blank">Creative
-								Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>.
-						</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="NSmodal" tabindex="-1" role="dialog" aria-labelledby="NSModalHeader" aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h3 id="NSModalHeader">Number Sense</h3>
 					</div>
+					<div class="modal-body">
+						<p>
+							Number Sense is a <b>short-answer 10 minute</b> test in which the competitor must answer <b>80 mental math problems</b> (no calculator allowed) in the order in which they appear. There are
+							tricks that exist to solve most of the problems that would normally seem preposterous to calculate mentally. Number Sense teaches a great sense of mathematical intuition and reflex. Speed,
+							techniques, and the ability to work effectively under a time crunch are added to the student's repertoire of mathematical tools.
+						</p>
 
-					<div class="row">
-						<div class="col-sm-2">
-							<img alt="GNU General Public License" src="http://www.gnu.org/graphics/gplv3-127x51.png">
-						</div>
-						<div class="col-sm-10">
-							Codebase of TMSCA Tournament Management System (Java, JS, etc.) is licensed under the <a href="http://www.gnu.org/licenses/gpl-3.0.html" target="_blank">GNU General Public License Version 3</a>.
-						</div>
+						<p>
+							A pen must be used to solve the problems and absolutely no scratch work, overwrites, or crossing out is permitted. The score will be determined by the <b>last problem attempted times 5
+							minus 9 times each problem skipped, missed, crossed out, or overwritten before it</b>. Thus, it is not always the best idea to skip around the test or start from the back. Each answer can be
+							expressed as a non-repeating rational number. There are a few problems on each test that call for a complex calculation to be approximated as an integer with 5% or less error from the actual
+							value.
+						</p>
+
+						<p>
+
+							<div class="btn-group">
+								<a class="btn btn-info" href="/misc/examples/middle/NS.pdf" target="_blank">Middle School Practice Test <i class="glyphicon glyphicon-file"></i></a>
+							</div>
+							<div class="btn-group">
+								<a class="btn btn-info" href="/misc/examples/high/NS.pdf" target="_blank">High School Practice Test <i class="glyphicon glyphicon-file"></i></a>
+							</div>
+						</p>
+
+						<small>
+							All tests provided are the sole property of <a href="http://www.tmsca.org/" target="_blank" class="text-muted">TMSCA</a> (Texas Math and Science Coaches Association)
+							or <a href="http://www.uiltexas.org/" target="_blank" class="text-muted">UIL</a> (University Interscholastic League) and are presented for illustrative purposes only.
+						</small>
 					</div>
-
-					<br>
-
-					<div class="row">
-						<div class="col-sm-6 text-center">
-							<img data-src="/img/java.png" alt="Java" height="80px">
-						</div>
-						<div class="col-sm-6 text-center">
-							<img data-src="/img/webtrifecta.png" alt="Web Trifecta (HTML, JS, CSS)" height="80px">
-						</div>
+					<div class="modal-footer">
+						<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Close</button>
 					</div>
-
-					<br>
-
-					<div class="row">
-						<div class="col-sm-6 text-center">
-							<a href="https://developers.google.com/appengine/" target="_blank"><img data-src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" alt="Google App Engine"></a>
-							Powered by <a href="https://developers.google.com/appengine/" target="_blank">Google App Engine</a>
-						</div>
-						<div class="col-sm-6 text-center">
-							<a href="http://twitter.github.io/bootstrap" target="_blank"><img data-src="/img/bootstrap.png" width="40px" alt="Bootstrap"></a>
-							Built with <i class="fa fa-twitter"></i> <a href="http://twitter.github.io/bootstrap" target="_blank">Twitter Bootstrap</a>
-						</div>
-					</div>
-
-					<div class="row">
-						<div class="col-sm-6 text-center">
-							<a href="http://velocity.apache.org/" target="_blank"><img data-src="http://velocity.apache.org/engine/releases/velocity-1.4/images/powered-by-logo.gif" alt="Apache Velocity" height="35px"></a>
-							Templating with <a href="http://velocity.apache.org/" target="_blank">Apache Velocity</a>
-						</div>
-						<div class="col-sm-6 text-center">
-							<a href="http://jquery.com" target="_blank"><img data-src="/img/jquery.png" width="100px" alt="JQuery"></a>
-							Powered by <a href="http://jquery.com" target="_blank">JQuery</a>
-						</div>
-					</div>
-
-					<div class="row">
-						<div class="col-sm-6 text-center">
-							<a href="http://commons.apache.org/proper/commons-math" target="_blank"><img data-src="/img/commonsMath.gif" alt="Apache Commons Math" height="45px"></a>
-							Uses <a href="http://commons.apache.org/proper/commons-math" target="_blank">Apache Commons Math</a>
-						</div>
-						<div class="col-sm-6 text-center">
-							<a href="https://github.com/sushain97/contestManagement" target="_blank"><img data-src="/img/github.png" alt="Github" height="35px"></a>
-							Hosted on <i class="fa fa-github"></i> <a href="https://github.com/sushain97/contestManagement" target="_blank">Github</a>
-						</div>
-					</div>
-
-					<div class="row">
-						<div class="col-sm-6 text-center">
-							<a href="http://www.google.com/recaptcha"><img data-src="http://www.google.com/recaptcha/shared-media/logo2.gif" alt="reCAPTCHA" height="50px"></a>
-							Secured with <a href="http://www.google.com/recaptcha">reCAPTCHA</a>
-						</div>
-						<div class="col-sm-6 text-center">
-							<a href="http://highcharts.com"><img data-src="/img/highcharts.png" alt="Highcharts JS" height="50px"></a>
-							Charts generated with <a href="http://highcharts.com">Highcharts JS</a>
-						</div>
-					</div>
-
-					<div class="row">
-						<div class="col-sm-6 text-center">
-							<a href="http://oauth.net/" target="_blank"><img data-src="http://oauth.net/images/oauth-2-sm.png" alt="OAuth" height="50px"></a>
-							Authentication with <a href="http://oauth.net/" target="_blank">OAuth 2.0</a>
-						</div>
-						<div class="col-sm-6 text-center">
-							Sortable tables use <a href="http://mottie.github.io/tablesorter" target="_blank" style="font-family: Georgia, Palatino, Times New Roman; font-size: 30px; font-weight: 400; text-decoration: none;">
-								<span style="color: black">table</span><span style="color: #6cf">sorter</span>
-							</a>
-						</div>
-					</div>
-
-					<div class="row">
-						<div class="col-sm-6 text-center">
-							<a href="https://db.apache.org/jdo/" target="_blank"><img data-src="https://db.apache.org/jdo/images/JDOx150.gif" alt="JDO" height="50px"></a>
-							Uses <a href="https://db.apache.org/jdo/" target="_blank">Java Data Objects</a>
-						</div>
-						<div class="col-sm-6 text-center">
-							<a href="https://developers.google.com/" target="_blank"><img data-src="https://developers.google.com/google-apps/images/apidownload128.gif" alt="JDO" height="50px"></a>
-							Uses <a href="https://developers.google.com/" target="_blank">Google APIs</a>
-						</div>
-					</div>
-
-					<div class="row">
-						<div class="col-sm-12 text-center">
-							<a href="http://pagekite.net/" target="_blank"><img data-src="https://pagekite.net/static/skin/i/pagekite-logo.png" alt="PageKite" height="50px"></a>
-							Uses <a href="http://pagekite.net/" target="_blank">PageKite</a> for staging
-						</div>
-					</div>
-
-					<br>
-
-					<div class="lead">CDN Service from</div>
-					<div class="row">
-						<div class="col-sm-3 text-center">
-							<a href="https://developers.google.com/speed/libraries" target="_blank"><img alt="Google Hosted Libraries" src="/img/googdev.png" height="50px"></a>
-						</div>
-						<div class="col-sm-3 text-center">
-							<a href="http://www.netdna.com/" target="_blank"><img alt="NetDNA CDN" src="/img/netdna.png" height="55px"></a>
-						</div>
-						<div class="col-sm-3 text-center">
-							<a href="http://www.maxcdn.com/" target="_blank"><img alt="MAXCDN" src="http://www.maxcdn.com/wp-content/themes/maxcdnv4/img/png/maxcdn-colored-logo.png" height="35px"></a>
-						</div>
-						<div class="col-sm-3 text-center">
-							<a href="http://cdnjs.com/" target="_blank"><span class="lead">CDNJS</span></a>
-						</div>
-					</div>
-
-					<br>
-
-					<p>
-						Icons from <i class="glyphicon glyphicon-plus"></i> <a href="http://glyphicons.com" target="_blank">Glyphicons Free</a>,
-						<i class="fa fa-flag"></i> <a href="http://fortawesome.github.io/" target="_blank">Font Awesome</a>, and
-						<a href="http://thedesignoffice.org/project/modern-pictograms" target="_blank">Modern Pictograms</a>.
-					</p>
 				</div>
-				<div class="modal-footer">
-					<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Close</button>
+			</div>
+		</div>
+
+		<div class="modal fade" id="CAmodal" tabindex="-1" role="dialog" aria-labelledby="CAModalHeader" aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h3 id="CAModalHeader">Calculator Applications</h3>
+					</div>
+					<div class="modal-body">
+						<p>
+							Calculator Applications is a <b>30 minute short-answer</b> test which, as evident in its name, requires a calculator. Calculator Applications teaches usage of effective problem solving skills under stressful
+							scenarios and tests mechanical aptitude, similar to the Slide Rule contest which preceded it.
+						</p>
+
+						<p>
+							The test is composed of groups composed of pages each with 10 questions. The <b>first 5 questions on a page will be "number crunchers,"</b> or algebraic expressions consisting of multiple
+							operators that require speed typing into the calculator. The <b>next three problems are stated problems, or word problems</b>. These problems present textual scenarios that require computation
+							of a certain quantity. Last, but not least, the <b>remaining problems on the page are geometry problems</b>, which depict a geometric arrangement of shapes or graphs and require the calculation
+							of an unknown quantity when certain quantities, such as side length or volume, are given. Unlike Number Sense, work can be shown and write-overs and scratch-outs are acceptable.
+						</p>
+
+						<p>
+							For middle school students, the scoring is the same as number sense. There are <b>80 questions</b> and the same rules hold as far as the point system. For high school students, the scoring is similar, but there are only <b>70 questions</b> and 7 points are deducted for each question skipped or missed.
+						</p>
+
+						<p>
+							<div class="btn-group">
+								<a class="btn btn-info" href="/misc/examples/middle/CA.pdf" target="_blank">Middle School Practice Test <i class="glyphicon glyphicon-file"></i></a>
+							</div>
+							<div class="btn-group">
+								<a class="btn btn-info" href="/misc/examples/high/CA.pdf" target="_blank">High School Practice Test <i class="glyphicon glyphicon-file"></i></a>
+							</div>
+						</p>
+
+						<small>
+							All tests provided are the sole property of <a href="http://www.tmsca.org/" target="_blank" class="text-muted">TMSCA</a> (Texas Math and Science Coaches Association)
+							or <a href="http://www.uiltexas.org/" target="_blank" class="text-muted">UIL</a> (University Interscholastic League) and are presented for illustrative purposes only.
+						</small>
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="MAmodal" tabindex="-1" role="dialog" aria-labelledby="MAModalHeader" aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h3 id="MAModalHeader">Mathematics</h3>
+					</div>
+					<div class="modal-body">
+						<p>
+							Mathematics is a <b>multiple choice</b> exam that tests the student's knowledge of problem-solving skills and, as the name suggests, general mathematical knowledge and methods. The Mathematics exam
+							instills an arsenal of mathematical knowledge and problem solving ability in the student.
+						</p>
+
+						<p>
+							The middle school topics usually range from basic arithmetic to rudimentary Algebra II while the high school tests cover information acquired from Algebra I to Calculus BC. For middle
+							school students, no calculator is permitted. The test is <b>40 minutes long, has 50 questions</b>, and, unlike Number Sense and Calculator Applications, permits skipping around. <b>Five points are awarded per correct answer, and 2 points deducted for each wrong answer</b>. No points are subtracted or added for questions omitted.
+						</p>
+
+						<p>
+							In high school, the rules are a bit different. The time limit is still 40 minutes, but there are now <b>60 questions</b> to answer. Luckily, <b>calculators are permitted</b>. Each question answered
+							correctly is now 6 points instead of 5. Other than that, the scoring rules for middle and high school general Mathematics are essentially the same.
+						</p>
+
+						<p>
+							<div class="btn-group">
+								<a class="btn btn-info" href="/misc/examples/middle/MA.pdf" target="_blank">Middle School Practice Test <i class="glyphicon glyphicon-file"></i></a>
+							</div>
+							<div class="btn-group">
+								<a class="btn btn-info" href="/misc/examples/high/MA.pdf" target="_blank">High School Practice Test <i class="glyphicon glyphicon-file"></i></a>
+							</div>
+						</p>
+
+						<small>
+							All tests provided are the sole property of <a href="http://www.tmsca.org/" target="_blank" class="text-muted">TMSCA</a> (Texas Math and Science Coaches Association)
+							or <a href="http://www.uiltexas.org/" target="_blank" class="text-muted">UIL</a> (University Interscholastic League) and are presented for illustrative purposes only.
+						</small>
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="SCmodal" tabindex="-1" role="dialog" aria-labelledby="SCModalHeader" aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h3 id="SCModalHeader">Science</h3>
+					</div>
+					<div class="modal-body">
+						<p>
+							Science is a <b>multiple choice</b> test and is considerably <b>slower-paced</b> than the other three. This is because it is mainly an exam of knowledge rather than ability. Practicing and
+							studying for the science competition inspires a thirst for knowledge in the students which can be seen through success in school science courses.
+						</p>
+
+						<p>
+							In middle school, the scoring and test appearance are very similar to that of the Mathematics test, disregarding, naturally, the fact that these questions concern science. There are still <b>50
+							questions</b> and 5 points per correct answer with a 2 point guessing penalty and a <b>40 minute time limit</b>. Since this is the last exam of the competition, students may leave after 20 minutes. The
+							topics involved in middle school science range from 5th grade science to preliminary high school biology. Calculators are not allowed nor are they by any means required.
+						</p>
+
+						<p>
+							High school science is even slower-paced than middle school science, with <b>60 questions and 2 hours</b> to answer them, although the student may leave after 45 minutes are over. The test is
+							divided into three explicit sections: <b>biology, chemistry, and physics</b>. A calculator is allowed since precise numerical calculations may be necessary. The scoring rules are the same as
+							high school Mathematics test, and <b>each section of 20 question receives a score out of 120</b>. These scores are then added together and a cumulative score is calculated. The top cumulative
+							scorers in each grade level as well as the highest scorer(s) in each of the three individual subjects in the entire competition are usually awarded.
+						</p>
+
+						<p>
+							<div class="btn-group">
+								<a class="btn btn-info" href="/misc/examples/middle/SC.pdf" target="_blank">Middle School Practice Test <i class="glyphicon glyphicon-file"></i></a>
+							</div>
+							<div class="btn-group">
+								<a class="btn btn-info" href="/misc/examples/high/SC.pdf" target="_blank">High School Practice Test <i class="glyphicon glyphicon-file"></i></a>
+							</div>
+						</p>
+
+						<small>
+							All tests provided are the sole property of <a href="http://www.tmsca.org/" target="_blank" class="text-muted">TMSCA</a> (Texas Math and Science Coaches Association)
+							or <a href="http://www.uiltexas.org/" target="_blank" class="text-muted">UIL</a> (University Interscholastic League) and are presented for illustrative purposes only.
+						</small>
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Close</button>
+					</div>
 				</div>
 			</div>
 		</div>

@@ -52,11 +52,12 @@
 		</div>
 	</div>
 
-	<input type="hidden" value="$location.getLatitude()" id="location_lat">
-	<input type="hidden" value="$location.getLongitude()" id="location_long">
-	<input type="hidden" value="$address" id="address">
-	<input type="hidden" value="$school" id="name">
-
+	<script type="text/javascript">
+		var location_lat = $location.getLatitude(),
+			location_long = $location.getLongitude(),
+			address = '$esc.javascript($address)',
+			name = '$esc.javascript($school)';
+	</script>
 	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false&amp;key=AIzaSyDTHsvGAIvfvTuafbKYIpFpXSEClsMmkl8"></script>
 	<script type="text/javascript" src="/js/pagescripts/directions.js"></script>
 	#include("noscript.html")

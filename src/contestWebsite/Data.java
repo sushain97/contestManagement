@@ -85,27 +85,36 @@ public class Data extends BaseHttpServlet {
 			resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Contest Administrator privileges required for that operation");
 		}
 		else {
-			String choice = req.getParameter("choice");
+			String choice = req.getPathInfo();
 			if (choice == null) {
-				resp.sendRedirect("/data?choice=overview");
+				resp.sendRedirect("/data/overview");
 				return;
 			}
-			else if (choice.equals("overview")) {
+			else if (choice.equals("/overview")) {
 				template = "data.html";
 			}
-			else if (choice.equals("registrations")) {
+			else if (choice.equals("/registrations")) {
 				template = "dataRegistrations.html";
 				context.put("updated", req.getParameter("updated"));
 				context.put("price", infoAndCookie.x.getProperty("price"));
+				context.put("classificationQuestion", infoAndCookie.x.getProperty("classificationQuestion"));
 				context.put("dateFormat", new SimpleDateFormat("MMM dd, yyyy hh:mm aa"));
 				context.put("Test", Test.class);
-				context.put("Subject", Subject.class);
+				context.put("subjects", Subject.values());
+				context.put("levels", Level.values());
 				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+				Map<Level, List<Entity>> registrations = new HashMap<Level, List<Entity>>();
 				for (Level level : Level.values()) {
 					Query query = new Query("registration").setFilter(new FilterPredicate("schoolLevel", FilterOperator.EQUAL, level.toString()));
 					List<Entity> regs = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-					context.put(level.toString() + "Regs", regs);
+					if (regs != null) {
+						registrations.put(level, regs);
+					}
 				}
+
+				context.put("registrations", registrations);
+
 				context.put("regJSONtoList", new Function<Text, List<Map<String, Object>>>() {
 					@Override
 					public List<Map<String, Object>> apply(Text textJSON) {
@@ -136,8 +145,10 @@ public class Data extends BaseHttpServlet {
 						return null;
 					}
 				});
+
+				context.put("esc", new EscapeTool());
 			}
-			else if (choice.equals("questions")) {
+			else if (choice.equals("/questions")) {
 				template = "dataQuestions.html";
 				context.put("updated", req.getParameter("updated"));
 				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -148,7 +159,7 @@ public class Data extends BaseHttpServlet {
 				context.put("resolvedQs", resolvedQs);
 				context.put("unresolvedQs", unresolvedQs);
 			}
-			else if (choice.equals("scores")) {
+			else if (choice.equals("/scores")) {
 				template = "dataScores.html";
 
 				Map<String, Integer> awardCriteria = Retrieve.awardCriteria(infoAndCookie.x);
@@ -225,9 +236,13 @@ public class Data extends BaseHttpServlet {
 				PersistenceManager pm = PMF.get().getPersistenceManager();
 				javax.jdo.Query q = pm.newQuery("select name from " + School.class.getName());
 				q.setFilter("level == :schoolLevel");
-				context.put("middleSchools", q.execute(Level.MIDDLE));
-				context.put("highSchools", q.execute(Level.HIGH));
 
+				Map<Level, Object> schools = new HashMap<Level, Object>();
+				for (Level level : Level.values()) {
+					schools.put(level, q.execute(level));
+				}
+
+				context.put("schools", schools);
 				context.put("qualifyingCriteria", Retrieve.qualifyingCriteria(infoAndCookie.x));
 				context.put("hideFullNames", false);
 				context.put("subjects", Subject.values());
@@ -240,7 +255,7 @@ public class Data extends BaseHttpServlet {
 				return;
 			}
 
-			close(context, ve.getTemplate(template), resp);
+			close(context, ve.getTemplate(template, "UTF-8"), resp);
 		}
 	}
 
@@ -249,23 +264,23 @@ public class Data extends BaseHttpServlet {
 		UserCookie userCookie = UserCookie.getCookie(req);
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
 		if (loggedIn && userCookie.isAdmin()) {
-			String choice = req.getParameter("choice");
+			String choice = req.getPathInfo();
 			if (choice == null) {
-				resp.sendRedirect("/data?choice=overview");
+				resp.sendRedirect("/data/overview");
 			}
-			else if (choice.equals("overview")) {
-				resp.sendRedirect("/data?choice=overview");
+			else if (choice.equals("/overview")) {
+				resp.sendRedirect("/data/overview");
 			}
-			else if (choice.equals("registrations")) {
+			else if (choice.equals("/registrations")) {
 				String edit = req.getParameter("edit");
 				if (edit != null) {
 					resp.sendRedirect("/editRegistration?key=" + req.getParameter("edit"));
 				}
 				else {
-					resp.sendRedirect("/data?choice=registrations");
+					resp.sendRedirect("/data/registrations");
 				}
 			}
-			else if (choice.equals("questions")) {
+			else if (choice.equals("/questions")) {
 				Map<String, String[]> params = req.getParameterMap();
 				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 				Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
@@ -300,9 +315,9 @@ public class Data extends BaseHttpServlet {
 					}
 				}
 
-				resp.sendRedirect("/data?choice=questions&updated=1");
+				resp.sendRedirect("/data/questions?updated=1");
 			}
-			else if (choice.equals("scores")) {
+			else if (choice.equals("/scores")) {
 				try {
 					JSONArray testsGradedJSON = new JSONArray(req.getParameter("testsGraded"));
 					ArrayList<String> testsGraded = new ArrayList<String>();
@@ -334,7 +349,7 @@ public class Data extends BaseHttpServlet {
 				}
 			}
 			else {
-				resp.sendRedirect("/data?choice=overview");
+				resp.sendRedirect("/data/overview");
 			}
 		}
 		else {

@@ -39,8 +39,6 @@
 	<div class="container">
 		<h1>Contest Registration #if($updated) #include("printButton.html") #end</h1>
 
-		<input type="hidden" name="studentData" id="studentData" value='$studentData'>
-
 		#if($updated)
 			<div class="alert alert-success">
 				<a class="close" data-dismiss="alert">&times;</a> <strong>Success! </strong>Your registration has been
@@ -55,7 +53,7 @@
 			</dl>
 
 			<h3>Test Registrations</h3>
-			To make any changes to your student registrations, <a href="/login">log in</a>. <br><br>
+			To make any changes to your student registrations, <a href="/login">log in</a> if you have an account and <a href="/contactUs">contact us</a> if you don't. <br><br>
 
 			<table class="table table-striped table-condensed table-hover table-responsive" id="registrations">
 				<thead>
@@ -81,8 +79,9 @@
 			</div>
 		#else
 			<div class="alert alert-info">
-				<a class="close" data-dismiss="alert">&times;</a> <strong>Remember! </strong>Do not register multiple
-				times, <a class="alert-link" href="/contactUs">contact us</a> to make changes to your registration.
+				<a class="close" data-dismiss="alert">&times;</a>
+				<strong>Remember! </strong>
+				Do not register multiple times, <a class="alert-link" href="/contactUs">contact us</a> or <a class="alert-link" href="/login">login</a> to make changes to your registration.
 			</div>
 		#end
 
@@ -93,59 +92,51 @@
 					<label class="col-sm-2 col-xs-5 control-label" for="registration">Registration Type</label>
 					<div class="input-group col-sm-7 col-xs-7">
 						<label class="radio-inline">
-							<input type="radio" name="registrationType" id="regType1" value="coach" #if($coach) checked #end> Coach
+							<input type="radio" name="registrationType" id="regType1" value="coach" #if($coach) checked #end required> Coach
 						</label>
 						<label class="radio-inline">
 							<input type="radio" name="registrationType" id="regType2" value="student" #if($student) checked #end> Student
 						</label>
-						<span class="text-danger help-block" id="registerWarning" style="display: none;">Do <strong>not</strong> register here if your coach will register for the school. Only register as a student
-							here if you do <strong>not</strong> have a coach or will be paying us directly.</span>
+						<span class="text-danger help-block" id="registerWarning" style="display: none;">
+							Do <strong>not</strong> register here if your coach will register for the school. Only register as a student
+							here if you do <strong>not</strong> have a coach or will be paying us directly.
+						</span>
 					</div>
 				</div>
 
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-5 control-label" for="schoolLevel">School Level</label>
 					<div class="input-group col-sm-5 col-xs-7">
-						#if($enabledLevels.contains("middle"))
-						<label class="radio-inline">
-							<input type="radio" name="schoolLevel" id="schoolType1" value="middle" #if($middle || !$enabledLevels.contains("high")) checked #end> Middle
-						</label>
+						#foreach($level in $enabledLevels.split("\+"))
+							#set($level = $Level.fromString($level))
+							<label class="radio-inline">
+								<input type="radio" name="schoolLevel" id="schoolType$level.getName()" value="$level" #if($schoolLevel == $level.toString()) checked #end required> $level.getName()
+							</label>
 						#end
-						#if($enabledLevels.contains("high"))
-						<label class="radio-inline">
-							<input type="radio" name="schoolLevel" id="schoolType2" value="high" #if($high || !$enabledLevels.contains("middle")) checked #end> High
-						</label>
-						#end
-						<span class="text-warning help-block">If your school contains both high school and middle school students, please make two separate registrations.</span>
+						<span class="text-warning help-block">
+							If your school contains both students from multiple levels (e.g. both middle and high school), please make separate registrations for each level.
+						</span>
 					</div>
 				</div>
 
-				<div class="form-group">
-					<label class="col-sm-2 col-xs-5 control-label" for="division">Division</label>
-					<div class="input-group col-sm-5 col-xs-7">
-						<label class="radio-inline">
-							<input type="radio" name="division" value="1A" #if($division == "1A") checked #end> 1A
-						</label>
-						<label class="radio-inline">
-							<input type="radio" name="division" value="2A" #if($division == "2A") checked #end> 2A
-						</label>
-						<label class="radio-inline">
-							<input type="radio" name="division" value="3A" #if($division == "3A") checked #end> 3A
-						</label>
-						<label class="radio-inline">
-							<input type="radio" name="division" value="4A" #if($division == "4A") checked #end> 4A
-						</label>
-						<label class="radio-inline">
-							<input type="radio" name="division" value="5A" #if($division == "5A") checked #end> 5A
-						</label>
+				#if($classificationQuestion != 'no')
+					<div class="form-group">
+						<label class="col-sm-2 col-xs-5 control-label" for="classification">School Classification</label>
+						<div class="input-group col-sm-5 col-xs-7">
+							#foreach($i in [1..6])
+								<label class="radio-inline">
+									<input type="radio" name="classification" value="${i}A" #if($classification == $i + "A") checked #end #if($classificationQuestion == 'required') required #end> ${i}A
+								</label>
+							#end
+						</div>
 					</div>
-				</div>
+				#end
 
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-4 control-label" for="schoolName">Official School Name</label>
 					<div class="input-group col-sm-5 col-xs-8">
 						<input type="text" name="schoolName" class="form-control"  id="schoolName" value="$schoolName" required>
-						<span class="help-block">Omit "Middle School", "High School", "Junior High School", etc.</span>
+						<span class="help-block"><strong>Omit</strong> "Middle School", "High School", "Junior High School", etc.</span>
 					</div>
 				</div>
 
@@ -207,10 +198,14 @@
 						</div>
 					</div>
 				</div>
+
 				<div class="lead">
 					Registrations
 					<button type="button" class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#importDataModal">Import Data</button>
 				</div>
+				<span class="text-warning help-block">
+					Please type student names in a <b>First Last</b> format. For example, type <b>John Doe</b> instead of <b>Doe, John</b> or <b>JOHN DOE</b>.
+				</span>
 				<div class="col-md-offset-1 col-md-10">
 					<table class="table table-striped table-condensed table-hover table-responsive" id="registrations">
 						<thead>
@@ -232,6 +227,10 @@
 								</td>
 								<td><input type="text" class="form-control input-sm" required></td>
 								<td class="text-center">
+									<select class="elemGrades">
+										<option value="4">4</option>
+										<option value="5">5</option>
+									</select>
 									<select class="midGrades">
 										<option value="6">6</option>
 										<option value="7">7</option>
@@ -302,8 +301,6 @@
 					</div>
 				#end
 
-				<input type="hidden" name="regError" id="regError" value="$registrationError">
-
 				<div class="form-group">
 					<div class="col-sm-offset-2 col-sm-10">
 						<button type="submit" id="submit" class="btn btn-primary" disabled>Submit Registration</button>
@@ -330,7 +327,7 @@
 							Do not include the column headings. For the exam rows, anything but a blank or whitespace will be
 							treated as a registration for that test. Following is an example:
 						</p>
-							<p><img src="http://skc.name/l?Ukt.direct"></p> <strong>when copied becomes</strong>
+							<p><img src="/img/registrationImportExample.png"></p> <strong>when copied becomes</strong>
 							<pre>
 John Doe	6&#9;x&#9;x&#9;&#9;x
 Sarah Doe&#9;7&#9;&#9;&#9;&#9;x
@@ -377,8 +374,11 @@ Bobby Doe	8&#9;x&#9;&#9;x&#9;x</pre>
 	</div>
 		#end
 
-	<input type="hidden" name="price" id="price" value="$price">
-
+	<script type="text/javascript">
+		var price = $price,
+			regError = '$registrationError',
+			studentData = $studentData;
+	</script>
 	<script type="text/javascript" src="/js/registration-tables.js"></script>
 	<script type="text/javascript" src="/js/pagescripts/registration.js"></script>
 	<script type="text/javascript" src="/js/zxcvbn/zxcvbn-async.js"></script>

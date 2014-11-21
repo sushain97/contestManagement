@@ -30,7 +30,7 @@
 
 			#set($schoolName = $student.getSchool().getName())
 			#if($admin)
-				<td><a href="/data?choice=scores&type=school_$esc.url($schoolName)&level=$level">$schoolName</a></td>
+				<td><a href="/data/scores?type=school_$esc.url($schoolName)&level=$level">$schoolName</a></td>
 			#else
 				<td>$schoolName</td>
 			#end

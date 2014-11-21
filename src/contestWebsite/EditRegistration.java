@@ -50,6 +50,8 @@ import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
 
+import contestTabulation.Level;
+
 @SuppressWarnings("serial")
 public class EditRegistration extends BaseHttpServlet {
 	@Override
@@ -70,47 +72,26 @@ public class EditRegistration extends BaseHttpServlet {
 				Entity registration = datastore.get(key);
 				Map<String, Object> props = registration.getProperties();
 
-				String registrationType = (String) props.get("registrationType");
-				if (registrationType.equals("coach")) {
-					context.put("coach", true);
-				}
-				else {
-					context.put("student", true);
+				String[] propNames = {"schoolName", "name", "email", "paid", "classification", "studentData", "schoolLevel"};
+				for (String propName : propNames) {
+					context.put(propName, props.get(propName));
 				}
 
-				String schoolLevel = (String) props.get("schoolLevel");
-				if (schoolLevel.equals("middle")) {
-					context.put("middle", true);
-				}
-				else {
-					context.put("high", true);
-				}
-
-				String account = (String) props.get("account");
-				if (account.equals("yes")) {
-					context.put("account", true);
-				}
-				else {
-					context.put("account", false);
-				}
-
-				context.put("schoolName", props.get("schoolName"));
-				context.put("name", props.get("name"));
-				context.put("email", props.get("email"));
-				context.put("paid", props.get("paid"));
-				context.put("division", props.get("division"));
+				context.put("account", "yes".equals(props.get("account")));
 				context.put("studentData", ((Text) props.get("studentData")).getValue());
+				context.put("coach".equals(props.get("registrationType")) ? "coach" : "student", true);
 
 				Entity contestInfo = infoAndCookie.x;
 				context.put("price", contestInfo.getProperty("price"));
 				context.put("key", key);
 				context.put("levels", contestInfo.getProperty("levels"));
+				context.put("Level", Level.class);
 
 				close(context, ve.getTemplate("editRegistration.html"), resp);
 			}
 			catch (EntityNotFoundException e) {
 				e.printStackTrace();
-				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+				resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid registration entity key " + key.toString());
 			}
 		}
 		else {
@@ -130,7 +111,9 @@ public class EditRegistration extends BaseHttpServlet {
 				Entity registration = datastore.get(key);
 				Map<String, String[]> params = new HashMap<String, String[]>(req.getParameterMap());
 				for (Entry<String, String[]> param : params.entrySet()) {
-					param.setValue(new String[] {escapeHtml4(param.getValue()[0])});
+					if (!"studentData".equals(param.getKey())) {
+						param.setValue(new String[] {escapeHtml4(param.getValue()[0])});
+					}
 				}
 
 				if (params.get("ajax") != null && "1".equals(params.get("ajax")[0])) {
@@ -166,24 +149,24 @@ public class EditRegistration extends BaseHttpServlet {
 							Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 							datastore.delete(user.getKey());
 						}
-						datastore.delete(registration.getKey()); // TODO: Do not completely delete
+						datastore.delete(registration.getKey());
 						txn.commit();
-						resp.sendRedirect("/data?choice=registrations&updated=1");
+						resp.sendRedirect("/data/registrations?updated=1");
 					}
 					else {
 						String schoolLevel = params.get("schoolLevel")[0];
 						String name = params.get("name")[0].trim();
 						String schoolName = params.get("schoolName")[0].trim();
 						String email = params.containsKey("email") && params.get("email")[0].length() > 0 ? params.get("email")[0].toLowerCase().trim() : null;
-						String account = params.get("account")[0];
+						String account = params.containsKey("account") ? params.get("account")[0] : null;
 
-						if (registration.getProperty("account").equals("yes") && account.equals("no")) {
+						if ("yes".equals(registration.getProperty("account")) && "no".equals(account)) {
 							registration.setProperty("account", "no");
 							Query query = new Query("user").setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, registration.getProperty("email")));
 							Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 							datastore.delete(user.getKey());
 						}
-						else if (registration.getProperty("account").equals("yes")) {
+						else if ("yes".equals(registration.getProperty("account"))) {
 							Query query = new Query("user").setFilter(new FilterPredicate("user-id", FilterOperator.EQUAL, registration.getProperty("email")));
 							Entity user = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1)).get(0);
 							user.setProperty("name", name);
@@ -200,14 +183,14 @@ public class EditRegistration extends BaseHttpServlet {
 						registration.setProperty("email", email);
 						registration.setProperty("cost", Integer.parseInt(params.get("cost")[0]));
 						registration.setProperty("paid", params.get("paid")[0]);
-						registration.setProperty("division", params.containsKey("division") ? params.get("division")[0] : "");
+						registration.setProperty("classification", params.containsKey("classification") ? params.get("classification")[0] : "");
 						registration.setProperty("studentData", new Text(params.get("studentData")[0]));
 
 						datastore.put(registration);
 						txn.commit();
 					}
 
-					resp.sendRedirect("/data?choice=registrations&updated=1");
+					resp.sendRedirect("/data/registrations?updated=1");
 				}
 			}
 			catch (Exception e) {

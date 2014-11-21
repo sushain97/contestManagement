@@ -3,6 +3,7 @@ $(document).ready(function() {
 		var numStudents = $(this).attr('data-numStudents');
 		for(var i = 0; i < numStudents; i++)
 			addStudent('', 6, [false, false, false, false]);
+		$('#registrations').trigger('update');
 	});
 
 	$(document).on('click', 'span.deleteBtn', function() {
@@ -24,9 +25,12 @@ $(document).ready(function() {
 		calcCost();
 	});
 
-	$('input[type="number"]').change(calcCost);
 	$(document).on('change', 'table input[type=checkbox]', function() {
 		calcCost();
+	});
+
+	$(document).on('change', 'select', function() {
+		$('#registrations').trigger('update');
 	});
 
 	$('button#import').click(function() {
@@ -123,6 +127,7 @@ function addStudent(name, grade, subjects) {
 	tr.append(td);
 
 	var td = $('<td class="text-center"></td>');
+	td.append($('<select class="elemGrades"><option value="4">4</option><option value="5">5</option>').val(grade));
 	td.append($('<select class="midGrades"><option value="6">6</option><option value="7">7</option><option value="8">8</option></select>').val(grade));
 	td.append($('<select class="highGrades"><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select>').val(grade));
 	tr.append(td);

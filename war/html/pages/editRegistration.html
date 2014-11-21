@@ -60,37 +60,23 @@
 					<div class="form-group">
 						<label class="col-sm-2 col-xs-5 control-label" for="schoolLevel">School Level</label>
 						<div class="input-group col-sm-5 col-xs-7">
-							#if($enabledLevels.contains("middle"))
+							#foreach($level in $enabledLevels.split("\+"))
+							#set($level = $Level.fromString($level))
 							<label class="radio-inline">
-								<input type="radio" name="schoolLevel" id="schoolType1" value="middle" #if($middle || !$enabledLevels.contains("high")) checked #end> Middle
-							</label>
-							#end
-							#if($enabledLevels.contains("high"))
-							<label class="radio-inline">
-								<input type="radio" name="schoolLevel" id="schoolType2" value="high" #if($high || !$enabledLevels.contains("middle")) checked #end> High
+								<input type="radio" name="schoolLevel" id="schoolType$level.getName()" value="$level" #if($schoolLevel == $level.toString() || (!$schoolLevel && $foreach.first)) checked #end> $level.getName()
 							</label>
 							#end
 						</div>
 					</div>
 
 					<div class="form-group">
-						<label class="col-sm-2 col-xs-5 control-label" for="division">Division</label>
+						<label class="col-sm-2 col-xs-5 control-label" for="classification">Classification</label>
 						<div class="input-group col-sm-5 col-xs-7">
-							<label class="radio-inline">
-								<input type="radio" name="division" value="1A" #if($division == "1A") checked #end> 1A
-							</label>
-							<label class="radio-inline">
-								<input type="radio" name="division" value="2A" #if($division == "2A") checked #end> 2A
-							</label>
-							<label class="radio-inline">
-								<input type="radio" name="division" value="3A" #if($division == "3A") checked #end> 3A
-							</label>
-							<label class="radio-inline">
-								<input type="radio" name="division" value="4A" #if($division == "4A") checked #end> 4A
-							</label>
-							<label class="radio-inline">
-								<input type="radio" name="division" value="5A" #if($division == "5A") checked #end> 5A
-							</label>
+							#foreach($i in [1..6])
+								<label class="radio-inline">
+									<input type="radio" name="classification" value="${i}A" #if($classification == $i + "A") checked #end> ${i}A
+								</label>
+							#end
 						</div>
 					</div>
 
@@ -117,7 +103,7 @@
 						<div class="input-prepend col-sm-5 col-xs-8">
 							<div class="input-group">
 								<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
-								<input type="email" name="email" value="$email" class="form-control" id="email">
+								<input type="email" name="email" value="#if($email) $email #end" class="form-control" id="email">
 							</div>
 						</div>
 					</div>
@@ -152,6 +138,10 @@
 									</td>
 									<td><input type="text" class="form-control input-sm" required></td>
 									<td class="text-center">
+										<select class="elemGrades">
+											<option value="4">4</option>
+											<option value="5">5</option>
+										</select>
 										<select class="midGrades">
 											<option value="6">6</option>
 											<option value="7">7</option>
@@ -220,12 +210,8 @@
 							<p class="help-block">Selecting "No" if "Yes" is currently selected will delete this registration's respective user.</p>
 						</div>
 					</div>
-					#else
-					<input type="hidden" name="account" id="account" value="no">
 					#end
 				</div>
-
-				<input type="hidden" name="studentData" id="studentData" value='$studentData'>
 
 				<div class="form-group">
 					<div class="col-sm-offset-2 col-sm-10">
@@ -238,9 +224,11 @@
 		</form>
 	</div>
 
-	<input type="hidden" name="key" id="key" value="$key">
-	<input type="hidden" name="price" id="price" value="$price">
-
+	<script type="text/javascript">
+		var key = "$key",
+			price = $price,
+			studentData = $studentData;
+	</script>
 	<script type="text/javascript" src="/js/registration-tables.js"></script>
 	<script type="text/javascript" src="/js/pagescripts/editRegistration.js"></script>
 	<script type="text/javascript" src="/js/jquery/jquery.tablesorter.min.js"></script>

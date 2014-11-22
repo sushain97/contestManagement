@@ -24,6 +24,7 @@ import static org.apache.commons.lang3.StringEscapeUtils.unescapeHtml4;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -187,7 +188,15 @@ public class Setup extends BaseHttpServlet {
 		try {
 			SpreadsheetEntry spreadsheet = service.getEntry(new URL("https://spreadsheets.google.com/feeds/spreadsheets/" + file.getId()), SpreadsheetEntry.class);
 
-			for (Entry<String, List<JSONObject>> studentDataEntry : studentData.entrySet()) {
+			Entry<String, List<JSONObject>>[] studentDataEntries = studentData.entrySet().toArray(new Entry[] {});
+			Arrays.sort(studentDataEntries, Collections.reverseOrder(new Comparator<Entry<String, List<JSONObject>>>() {
+				@Override
+				public int compare(Entry<String, List<JSONObject>> arg0, Entry<String, List<JSONObject>> arg1) {
+					return Integer.compare(arg0.getValue().size(), arg1.getValue().size());
+				}
+			}));
+
+			for (Entry<String, List<JSONObject>> studentDataEntry : studentDataEntries) {
 				WorksheetEntry worksheet = new WorksheetEntry();
 				worksheet.setColCount(6);
 				worksheet.setRowCount(1);

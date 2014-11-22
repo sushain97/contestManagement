@@ -76,7 +76,9 @@ public class Retrieve {
 
 			for (Student student : school.getStudents()) {
 				for (Entry<Subject, Score> scoreEntry : student.getScores().entrySet()) {
-					scores.get(Test.fromSubjectAndGrade(student.getGrade(), scoreEntry.getKey())).add(scoreEntry.getValue().getScoreNum());
+					if (scoreEntry.getValue().isNumeric()) {
+						scores.get(Test.fromSubjectAndGrade(student.getGrade(), scoreEntry.getKey())).add(scoreEntry.getValue().getScoreNum());
+					}
 				}
 			}
 

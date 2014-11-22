@@ -182,8 +182,8 @@ public class Setup extends BaseHttpServlet {
 
 		SpreadsheetService service = new SpreadsheetService("contestTabulation");
 		service.setOAuth2Credentials(credential);
-		service.setReadTimeout(120000);
-		service.setConnectTimeout(120000);
+		service.setReadTimeout(480000);
+		service.setConnectTimeout(480000);
 
 		try {
 			SpreadsheetEntry spreadsheet = service.getEntry(new URL("https://spreadsheets.google.com/feeds/spreadsheets/" + file.getId()), SpreadsheetEntry.class);

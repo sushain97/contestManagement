@@ -189,6 +189,8 @@ public class Main extends HttpServlet {
 
 	private static void updateDatabase(Level level, SpreadsheetEntry spreadsheet, Set<Student> students, Map<String, School> schools, Set<Test> testsGraded, Service service) throws IOException, ServiceException {
 		WorksheetFeed worksheetFeed = service.getFeed(spreadsheet.getWorksheetFeedUrl(), WorksheetFeed.class);
+		service.setReadTimeout(60000);
+		service.setConnectTimeout(60000);
 		List<WorksheetEntry> worksheets = worksheetFeed.getEntries();
 
 		for (WorksheetEntry worksheet : worksheets) {

@@ -61,10 +61,11 @@ public class Retrieve {
 		return students;
 	}
 
-	public static Pair<School, Map<Test, Statistics>> schoolOverview(String schoolName) {
+	public static Pair<School, Map<Test, Statistics>> schoolOverview(String schoolName, Level level) {
 		javax.jdo.Query q = pm.newQuery(School.class);
-		q.setFilter("name == :schoolName");
-		List<School> schools = (List<School>) q.execute(schoolName);
+		q.setFilter("name == :schoolName && level == :schoolLevel");
+		List<School> schools = (List<School>) q.execute(schoolName, level);
+
 		if (!schools.isEmpty()) {
 			School school = schools.get(0);
 

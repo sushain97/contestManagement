@@ -189,7 +189,7 @@ public class Data extends BaseHttpServlet {
 						context.put("students", Retrieve.allStudents(level));
 					}
 					else if (type.startsWith("school_")) {
-						Pair<School, Map<Test, Statistics>> schoolAndStats = Retrieve.schoolOverview(types[1]);
+						Pair<School, Map<Test, Statistics>> schoolAndStats = Retrieve.schoolOverview(types[1], level);
 						context.put("school", schoolAndStats.x);
 						context.put("statistics", schoolAndStats.y);
 					}

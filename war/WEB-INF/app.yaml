@@ -92,6 +92,9 @@ static_files:
   - include: /misc/**
     expiration: 28d
 
+resource_files:
+  - include: /html/email/*.html
+
 web_xml: |
   <error-page>
     <error-code>400</error-code>

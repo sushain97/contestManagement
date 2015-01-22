@@ -12,6 +12,7 @@
     <include path='/misc/**' expiration='28d'/>
   </static-files>
   <resource-files>
+    <include path='/html/email/*.html'/>
   </resource-files>
   <ssl-enabled>true</ssl-enabled>
   <precompilation-enabled>true</precompilation-enabled>

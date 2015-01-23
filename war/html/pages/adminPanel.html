@@ -10,6 +10,7 @@
 	<link type="text/css" href="/css/datepicker3.min.css" rel="stylesheet">
 	<link type="text/css" href="/css/slider.css" rel="stylesheet">
 	<link type="text/css" href="/css/fontello.css" rel="stylesheet">
+	<link type="text/css" href="/css/bootstrap3-wysihtml5.min.css" rel="stylesheet">
 	<link type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
 	<style type="text/css">
 		#updateScores { display: none; }
@@ -472,6 +473,11 @@
 
 	<script type="text/javascript" src="/js/bootstrap/bootstrap-datepicker.min.js"></script>
 	<script type="text/javascript" src="/js/bootstrap/bootstrap-slider.js"></script>
+	<script type="text/javascript" src="/js/bootstrap/bootstrap3-wysihtml5.all.min.js"></script>
 	#include("noscript.html")
+
+	<script type="text/javascript">
+		$('textarea[name=questionEmail], textarea[name=forgotPassEmail], textarea[name=registrationEmail], textarea[name=aboutText]').wysihtml5({toolbar: {'size': 'xs', 'fa': true, 'html': true}});
+	</script>
 </body>
 </html>

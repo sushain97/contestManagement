@@ -38,8 +38,8 @@ import javax.servlet.http.HttpSession;
 import net.tanesha.recaptcha.ReCaptchaImpl;
 import net.tanesha.recaptcha.ReCaptchaResponse;
 
-import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
@@ -151,24 +151,22 @@ public class ContactUs extends BaseHttpServlet {
 				Message msg = new MimeMessage(session);
 				msg.setFrom(new InternetAddress(appEngineEmail, "Tournament Website Admin"));
 				msg.addRecipient(Message.RecipientType.TO, new InternetAddress((String) contestInfo.getProperty("email"), "Contest Administrator"));
-				msg.setSubject("Question about Tournament from " + name);
+				msg.setSubject("Question about tournament from " + name);
 				msg.setReplyTo(new InternetAddress[] {
 						new InternetAddress(req.getParameter("email"), name),
 						new InternetAddress(appEngineEmail, "Tournament Website Admin")
 				});
 
 				VelocityEngine ve = new VelocityEngine();
-				ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/email");
 				ve.init();
-				Template t = ve.getTemplate("question.html");
-				VelocityContext context = new VelocityContext();
 
+				VelocityContext context = new VelocityContext();
 				context.put("name", name);
 				context.put("email", email);
 				context.put("message", comment);
 
 				StringWriter sw = new StringWriter();
-				t.merge(context, sw);
+				Velocity.evaluate(context, sw, "questionEmail", ((Text) contestInfo.getProperty("questionEmail")).getValue());
 				msg.setContent(sw.toString(), "text/html");
 				Transport.send(msg);
 			}

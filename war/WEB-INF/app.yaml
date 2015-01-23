@@ -1,5 +1,5 @@
 application: tmscacontest
-version: 2
+version: 12
 runtime: java
 threadsafe: false
 sessions_enabled: true
@@ -93,7 +93,7 @@ static_files:
     expiration: 28d
 
 resource_files:
-  - include: /html/email/*.html
+  - include: /html/**.html
 
 web_xml: |
   <error-page>

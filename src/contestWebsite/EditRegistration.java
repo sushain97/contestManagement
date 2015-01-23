@@ -150,8 +150,6 @@ public class EditRegistration extends BaseHttpServlet {
 							datastore.delete(user.getKey());
 						}
 						datastore.delete(registration.getKey());
-						txn.commit();
-						resp.sendRedirect("/data/registrations?updated=1");
 					}
 					else {
 						String schoolLevel = params.get("schoolLevel")[0];
@@ -187,9 +185,9 @@ public class EditRegistration extends BaseHttpServlet {
 						registration.setProperty("studentData", new Text(params.get("studentData")[0]));
 
 						datastore.put(registration);
-						txn.commit();
 					}
 
+					txn.commit();
 					resp.sendRedirect("/data/registrations?updated=1");
 				}
 			}

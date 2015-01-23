@@ -46,8 +46,8 @@ import javax.servlet.http.HttpSession;
 import net.tanesha.recaptcha.ReCaptchaImpl;
 import net.tanesha.recaptcha.ReCaptchaResponse;
 
-import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
@@ -326,7 +326,6 @@ public class Registration extends BaseHttpServlet {
 					txn.commit();
 
 					sess.setAttribute("props", registration.getProperties());
-					resp.sendRedirect("/registration?updated=1");
 
 					if (email != null) {
 						Session session = Session.getDefaultInstance(new Properties(), null);
@@ -342,11 +341,9 @@ public class Registration extends BaseHttpServlet {
 							msg.setSubject("Thank you for your registration!");
 
 							VelocityEngine ve = new VelocityEngine();
-							ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/email");
 							ve.init();
-							Template t = ve.getTemplate("registration.html");
-							VelocityContext context = new VelocityContext();
 
+							VelocityContext context = new VelocityContext();
 							context.put("name", name);
 							context.put("url", url);
 							context.put("cost", cost);
@@ -354,15 +351,18 @@ public class Registration extends BaseHttpServlet {
 							context.put("account", account.equals("yes"));
 
 							StringWriter sw = new StringWriter();
-							t.merge(context, sw);
+							Velocity.evaluate(context, sw, "registrationEmail", ((Text) contestInfo.getProperty("registrationEmail")).getValue());
 							msg.setContent(sw.toString(), "text/html");
 							Transport.send(msg);
 						}
 						catch (MessagingException e) {
 							e.printStackTrace();
 							resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+							return;
 						}
 					}
+
+					resp.sendRedirect("/registration?updated=1");
 				}
 				catch (Exception e) {
 					e.printStackTrace();

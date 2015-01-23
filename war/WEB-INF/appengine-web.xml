@@ -1,7 +1,7 @@
 <!-- Generated from app.yaml. Do not edit. -->
 <appengine-web-app xmlns='http://appengine.google.com/ns/1.0'>
   <application>tmscacontest</application>
-  <version>3</version>
+  <version>12</version>
   <static-files>
     <include path='/favicon.ico' expiration='14d'/>
     <include path='/css/**.css' expiration='7d'/>
@@ -12,7 +12,7 @@
     <include path='/misc/**' expiration='28d'/>
   </static-files>
   <resource-files>
-    <include path='/html/email/*.html'/>
+    <include path='/html/**.html'/>
   </resource-files>
   <ssl-enabled>true</ssl-enabled>
   <precompilation-enabled>true</precompilation-enabled>

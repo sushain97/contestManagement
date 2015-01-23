@@ -21,6 +21,8 @@ package contestWebsite;
 import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,6 +45,7 @@ import util.Password;
 import util.Retrieve;
 import util.UserCookie;
 
+import com.google.api.client.util.Charsets;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -58,6 +61,7 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
+import com.google.common.io.CharStreams;
 
 import contestTabulation.Level;
 import contestTabulation.Test;
@@ -90,12 +94,27 @@ public class AdminPanel extends BaseHttpServlet {
 			String passError = req.getParameter("passError");
 			context.put("passError", passError != null && passError.equals("1") ? "That password is incorrect, try again." : null);
 
+			context.put("middleSubjects", Test.getTests(Level.MIDDLE));
+			context.put("Level", Level.class);
+
+			String[] defaultEmails = {"forgotPass", "question", "registration"};
+			for (String defaultEmail : defaultEmails) {
+				String email;
+				if (contestInfo.hasProperty(defaultEmail + "Email")) {
+					email = ((Text) contestInfo.getProperty(defaultEmail + "Email")).getValue();
+				}
+				else {
+					InputStream emailStream = getServletContext().getResourceAsStream("/html/email/" + defaultEmail + ".html");
+					email = CharStreams.toString(new InputStreamReader(emailStream, Charsets.UTF_8));
+					emailStream.close();
+				}
+				context.put(defaultEmail + "Email", email);
+			}
+
 			try {
 				context.put("awardCriteria", Retrieve.awardCriteria(contestInfo));
 				context.put("qualifyingCriteria", Retrieve.qualifyingCriteria(contestInfo));
 				context.put("clientId", contestInfo.getProperty("OAuth2ClientId"));
-				context.put("middleSubjects", Test.getTests(Level.MIDDLE));
-				context.put("Level", Level.class);
 			}
 			catch (Exception e) {
 				System.err.println("Surpressing exception while loading admin panel");
@@ -128,9 +147,13 @@ public class AdminPanel extends BaseHttpServlet {
 				for (String propName : stringPropNames) {
 					contestInfo.setProperty(propName, params.get(propName)[0]);
 				}
+
+				String[] textPropNames = {"aboutText", "googleAnalytics", "forgotPassEmail", "questionEmail", "registrationEmail"};
+				for (String propName : textPropNames) {
+					contestInfo.setProperty(propName, new Text(params.get(propName)[0]));
+				}
+
 				contestInfo.setProperty("testingMode", testingMode);
-				contestInfo.setProperty("aboutText", new Text(params.get("aboutText")[0]));
-				contestInfo.setProperty("googleAnalytics", new Text(params.get("googleAnalytics")[0]));
 				contestInfo.setProperty("location", new GeoPt(Float.parseFloat(params.get("location_lat")[0]), Float.parseFloat(params.get("location_long")[0])));
 				contestInfo.setProperty("price", Integer.parseInt(params.get("price")[0]));
 				contestInfo.setProperty("complete", params.get("complete") != null);

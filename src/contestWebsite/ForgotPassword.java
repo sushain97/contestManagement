@@ -35,8 +35,8 @@ import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
@@ -53,6 +53,7 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
 
 @SuppressWarnings("serial")
@@ -131,20 +132,18 @@ public class ForgotPassword extends BaseHttpServlet {
 					Message msg = new MimeMessage(session);
 					msg.setFrom(new InternetAddress(appEngineEmail, "Tournament Website Admin"));
 					msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email, (String) user.getProperty("name")));
-					msg.setSubject("Password Reset for the " + contestInfo.getProperty("title") + " Website");
+					msg.setSubject("Reset your password for the " + contestInfo.getProperty("title") + " website");
 
 					VelocityEngine ve = new VelocityEngine();
-					ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, "html/email");
 					ve.init();
-					Template t = ve.getTemplate("forgotPass.html");
-					VelocityContext context = new VelocityContext();
 
+					VelocityContext context = new VelocityContext();
 					context.put("user", user.getProperty("user-id"));
 					context.put("title", contestInfo.getProperty("title"));
 					context.put("url", url);
 
 					StringWriter sw = new StringWriter();
-					t.merge(context, sw);
+					Velocity.evaluate(context, sw, "forgotPassEmail", ((Text) contestInfo.getProperty("forgotPassEmail")).getValue());
 					msg.setContent(sw.toString(), "text/html");
 					Transport.send(msg);
 				}

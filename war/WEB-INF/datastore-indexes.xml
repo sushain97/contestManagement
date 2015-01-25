@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <datastore-indexes autoGenerate="true">
-  <datastore-index kind="authToken" ancestor="false" source="manual">
-    <property name="token" direction="asc"/>
-    <property name="expires" direction="asc"/>
-  </datastore-index>
+	<datastore-index kind="authToken" ancestor="false" source="manual">
+		<property name="token" direction="asc"/>
+		<property name="expires" direction="asc"/>
+	</datastore-index>
+	<datastore-index kind="School" ancestor="false" source="manual">
+		<property name="level" direction="asc"/>
+		<property name="totalScore" direction="desc"/>
+	</datastore-index>
 </datastore-indexes>

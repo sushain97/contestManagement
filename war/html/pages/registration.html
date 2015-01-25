@@ -110,7 +110,7 @@
 						#foreach($level in $enabledLevels.split("\+"))
 							#set($level = $Level.fromString($level))
 							<label class="radio-inline">
-								<input type="radio" name="schoolLevel" id="schoolType$level.getName()" value="$level" #if($numberOfLevels < 2) checked #end required> $level.getName()
+								<input type="radio" name="schoolLevel" id="schoolType$level.getName()" value="$level" #if($schoolLevel == $level.toString() || $numberOfLevels < 2) checked #end required> $level.getName()
 							</label>
 						#end
 						#if ($numberOfLevels > 1)

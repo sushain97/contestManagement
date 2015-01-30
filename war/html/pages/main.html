@@ -239,10 +239,10 @@ Bobby Doe	8&#9;x&#9;&#9;x&#9;x</pre>
 	</div>
 
 	<script type="text/javascript">
-		var price = $price,
+		var price = #if($price) $price #else null #end,
 			level = '$level',
 			regEditClosed = '$regEditClosed' === 'true',
-			studentData = $studentData;
+			studentData = #if($studentData && $studentData.length > 0) $studentData #else null #end;
 	</script>
 	<script type="text/javascript" src="/js/registration-tables.js"></script>
 	<script type="text/javascript" src="/js/pagescripts/main.js"></script>

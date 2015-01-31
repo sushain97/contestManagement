@@ -21,8 +21,9 @@ package contestTabulation;
 import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
 import static org.apache.commons.lang3.StringEscapeUtils.unescapeHtml4;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,12 +36,23 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellUtil;
+import org.apache.poi.ss.util.WorkbookUtil;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import util.BaseHttpServlet;
 import util.Retrieve;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
@@ -60,15 +72,6 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
-import com.google.gdata.client.spreadsheet.SpreadsheetService;
-import com.google.gdata.data.PlainTextConstruct;
-import com.google.gdata.data.spreadsheet.CellEntry;
-import com.google.gdata.data.spreadsheet.CellFeed;
-import com.google.gdata.data.spreadsheet.ListEntry;
-import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
-import com.google.gdata.data.spreadsheet.WorksheetEntry;
-import com.google.gdata.data.spreadsheet.WorksheetFeed;
-import com.google.gdata.util.ServiceException;
 
 @SuppressWarnings("serial")
 public class Setup extends BaseHttpServlet {
@@ -173,74 +176,75 @@ public class Setup extends BaseHttpServlet {
 			});
 		}
 
+		Workbook workbook = new XSSFWorkbook();
+
+		CellStyle boldStyle = workbook.createCellStyle();
+		Font font = workbook.createFont();
+		font.setBoldweight(Font.BOLDWEIGHT_BOLD);
+		boldStyle.setFont(font);
+
+		Entry<String, List<JSONObject>>[] studentDataEntries = studentData.entrySet().toArray(new Entry[] {});
+		Arrays.sort(studentDataEntries, Collections.reverseOrder(new Comparator<Entry<String, List<JSONObject>>>() {
+			@Override
+			public int compare(Entry<String, List<JSONObject>> arg0, Entry<String, List<JSONObject>> arg1) {
+				return Integer.compare(arg0.getValue().size(), arg1.getValue().size());
+			}
+		}));
+
+		for (Entry<String, List<JSONObject>> studentDataEntry : studentDataEntries) {
+			Sheet sheet = workbook.createSheet(WorkbookUtil.createSafeSheetName(studentDataEntry.getKey()));
+			Row row = sheet.createRow((short) 0);
+
+			String[] columnNames = {"Name", "Grade", "N", "C", "M", "S"};
+			for (int i = 0; i < columnNames.length; i++) {
+				Cell cell = row.createCell(i);
+				cell.setCellValue(columnNames[i]);
+				cell.setCellStyle(boldStyle);
+				CellUtil.setAlignment(cell, workbook, CellStyle.ALIGN_CENTER);
+			}
+
+			int longestNameLength = 7;
+			int rowNum = 1;
+			for (JSONObject student : studentDataEntry.getValue()) {
+				try {
+					row = sheet.createRow((short) rowNum);
+					row.createCell(0).setCellValue(student.getString("name"));
+					row.createCell(1).setCellValue(student.getInt("grade"));
+					for (Subject subject : Subject.values()) {
+						String value = student.getBoolean(subject.toString()) ? "" : "X";
+						row.createCell(Arrays.asList(columnNames).indexOf(subject.toString())).setCellValue(value);
+					}
+
+					if (student.getString("name").length() > longestNameLength) {
+						longestNameLength = student.getString("name").length();
+					}
+
+					rowNum++;
+				}
+				catch (JSONException e) {
+					e.printStackTrace();
+					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+					return;
+				}
+			}
+
+			sheet.createFreezePane(0, 1, 0, 1);
+			// sheet.autoSizeColumn((short) 0); Not supported by App Engine
+			sheet.setColumnWidth((short) 0, (int) (256 * longestNameLength * 1.1));
+		}
+
 		Drive drive = new Drive.Builder(httpTransport, jsonFactory, credential).setApplicationName("contestTabulation").build();
 
 		File body = new File();
 		body.setTitle(docName);
 		body.setMimeType("application/vnd.google-apps.spreadsheet");
-		File file = drive.files().insert(body).execute();
 
-		SpreadsheetService service = new SpreadsheetService("contestTabulation");
-		service.setOAuth2Credentials(credential);
-		service.setReadTimeout(480000);
-		service.setConnectTimeout(480000);
+		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+		workbook.write(outStream);
+		ByteArrayInputStream inStream = new ByteArrayInputStream(outStream.toByteArray());
+		InputStreamContent content = new InputStreamContent("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", inStream);
 
-		try {
-			SpreadsheetEntry spreadsheet = service.getEntry(new URL("https://spreadsheets.google.com/feeds/spreadsheets/" + file.getId()), SpreadsheetEntry.class);
-
-			Entry<String, List<JSONObject>>[] studentDataEntries = studentData.entrySet().toArray(new Entry[] {});
-			Arrays.sort(studentDataEntries, Collections.reverseOrder(new Comparator<Entry<String, List<JSONObject>>>() {
-				@Override
-				public int compare(Entry<String, List<JSONObject>> arg0, Entry<String, List<JSONObject>> arg1) {
-					return Integer.compare(arg0.getValue().size(), arg1.getValue().size());
-				}
-			}));
-
-			for (Entry<String, List<JSONObject>> studentDataEntry : studentDataEntries) {
-				WorksheetEntry worksheet = new WorksheetEntry();
-				worksheet.setColCount(6);
-				worksheet.setRowCount(1);
-				worksheet.setTitle(new PlainTextConstruct(studentDataEntry.getKey()));
-				URL worksheetFeedUrl = spreadsheet.getWorksheetFeedUrl();
-				worksheet = service.insert(worksheetFeedUrl, worksheet);
-
-				URL cellFeedUrl = worksheet.getCellFeedUrl();
-				CellFeed cellFeed = service.getFeed(cellFeedUrl, CellFeed.class);
-
-				String[] columnNames = {"Name", "Grade", "N", "C", "M", "S"};
-				for (int i = 0; i < columnNames.length; i++) {
-					cellFeed.insert(new CellEntry(1, i + 1, columnNames[i]));
-				}
-
-				URL listFeedUrl = worksheet.getListFeedUrl();
-
-				for (JSONObject student : studentDataEntry.getValue()) {
-					try {
-						ListEntry row = new ListEntry();
-						row.getCustomElements().setValueLocal("name", student.getString("name"));
-						row.getCustomElements().setValueLocal("grade", Integer.toString(student.getInt("grade")));
-
-						for (Subject subject : Subject.values()) {
-							row.getCustomElements().setValueLocal(subject.toString(), student.getBoolean(subject.toString()) ? "" : "X");
-						}
-
-						row = service.insert(listFeedUrl, row);
-					}
-					catch (JSONException e) {
-						e.printStackTrace();
-						resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
-						return;
-					}
-				}
-			}
-
-			WorksheetFeed worksheetFeed = service.getFeed(spreadsheet.getWorksheetFeedUrl(), WorksheetFeed.class);
-			worksheetFeed.getEntries().get(0).delete();
-		}
-		catch (ServiceException e) {
-			resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			e.printStackTrace();
-			return;
-		}
+		drive.files().insert(body, content).execute();
+		workbook.close();
 	}
 }

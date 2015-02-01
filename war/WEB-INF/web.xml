@@ -73,6 +73,10 @@
     <servlet-class>contestWebsite.OAuth</servlet-class>
   </servlet>
   <servlet>
+    <servlet-name>contestWebsite.ClearScores</servlet-name>
+    <servlet-class>contestWebsite.ClearScores</servlet-class>
+  </servlet>
+  <servlet>
     <servlet-name>errors.BadRequest_400</servlet-name>
     <servlet-class>errors.BadRequest_400</servlet-class>
   </servlet>
@@ -181,6 +185,10 @@
   <servlet-mapping>
     <servlet-name>contestWebsite.OAuth</servlet-name>
     <url-pattern>/authToken</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>contestWebsite.ClearScores</servlet-name>
+    <url-pattern>/clearScores</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>errors.BadRequest_400</servlet-name>

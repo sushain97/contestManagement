@@ -1,3 +1,19 @@
+# Component of GAE Project for TMSCA Contest Automation
+# Copyright (C) 2015 Sushain Cherivirala
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see [http://www.gnu.org/licenses/].
+
 application: tmscacontest
 version: 12
 runtime: java
@@ -7,19 +23,19 @@ sessions_enabled: true
 handlers:
 - url: /index.html
   servlet: contestWebsite.MainPage
-  
+
 - url: /about
   servlet: contestWebsite.About
-  
+
 - url: /registration
   servlet: contestWebsite.Registration
- 
+
 - url: /login
   servlet: contestWebsite.Login
- 
+
 - url: /directions
   servlet: contestWebsite.Directions
-  
+
 - url: /signout
   servlet: contestWebsite.Logout
 
@@ -29,13 +45,13 @@ handlers:
 
 - url: /adminPanel
   servlet: contestWebsite.AdminPanel
-  
+
 - url: /data/*
   servlet: contestWebsite.Data
-  
+
 - url: /contactUs
   servlet: contestWebsite.ContactUs
-  
+
 - url: /viewScores
   servlet: contestWebsite.ViewScores
 
@@ -54,19 +70,22 @@ handlers:
 - url: /tabulate
   login: admin
   servlet: contestTabulation.Main
-  
+
 - url: /createSpreadsheet
   servlet: contestTabulation.Setup
-  
+
 - url: /authToken
   servlet: contestWebsite.OAuth
-  
+
+- url: /clearScores
+  servlet: contestWebsite.ClearScores
+
 - url: /400
   servlet: errors.BadRequest_400
-  
+
 - url: /401
   servlet: errors.Unauthorized_401
-  
+
 - url: /403
   servlet: errors.Prohibited_403
 
@@ -75,7 +94,7 @@ handlers:
 
 - url: /500
   servlet: errors.ServerError_500
-  
+
 static_files:
   - include: /favicon.ico
     expiration: 14d

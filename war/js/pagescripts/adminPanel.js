@@ -64,7 +64,19 @@ $(document).ready(function() {
 		$.get('/createSpreadsheet', {
 			'docHigh': $('input[name=docHigh]').val()
 		}).done(function() {
-			$('#middleDocButton').removeClass('blurred');
+			$('#highDocButton').removeClass('blurred');
+		});
+	});
+
+	$('button#enableDeleteScores').click(function() {
+		$('#deleteScoresButton').prop('disabled', false);
+		$('button#enableDeleteScores').prop('disabled', true);
+	});
+
+	$('#deleteScoresButton').click(function() {
+		$('#deleteScoresButton').addClass('blurred');
+		$.get('/clearScores').done(function() {
+			$('#deleteScoresButton').removeClass('blurred');
 		});
 	});
 });

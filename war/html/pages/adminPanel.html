@@ -346,11 +346,21 @@
 								<span class="help-block">Name of Google Spreadsheet with $level.getName() School Scores</span>
 							</div>
 							<div class="col-sm-3" class="docButton" id="$level.toString()DocButton">
-								<button type="button" class="btn btn-default">Create Empty Spreadsheet</button>
+								<button type="button" class="btn btn-default">Create Tabulation Spreadsheet</button>
 							</div>
 						</div>
 						#end
 					#end
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-3 control-label text-danger"><i class="fa fa-exclamation-triangle"></i> Scrub Datastore</label>
+					<div class="col-sm-3">
+						<button type="button" class="btn btn-danger" id="enableDeleteScores"><i class="fa fa-unlock"></i> Enable delete button</button>
+					</div>
+					<div class="col-sm-3">
+						<button type="button" class="btn btn-danger"  id="deleteScoresButton" disabled><i class="fa fa-eraser"></i> Erase scores, rankings, visualizations</button>
+					</div>
 				</div>
 
 				<div class="form-group">

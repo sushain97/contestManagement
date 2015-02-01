@@ -4,7 +4,7 @@
 <meta name="author" content="Sushain Cherivirala">
 <link rel="shortcut icon" href="/favicon.ico">
 
-#set($bootstrapURL = "//netdna.bootstrapcdn.com/bootswatch/3.2.0/cosmo/bootstrap.min.css")
+#set($bootstrapURL = "//netdna.bootstrapcdn.com/bootswatch/3.3.2/cosmo/bootstrap.min.css")
 <link type="text/css" href="$bootstrapURL" rel="stylesheet">
 <script type="text/javascript">
 	var styleSheets = document.styleSheets;
@@ -35,16 +35,33 @@
 		body { padding-top: 90px; }
 	}
 	*/
+	@-webkit-viewport   { width: device-width; }
+	@-moz-viewport      { width: device-width; }
+	@-ms-viewport       { width: device-width; }
+	@-o-viewport        { width: device-width; }
+	@viewport           { width: device-width; }
 </style>
 
-<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript">
 	window.jQuery || document.write('<script type="text/javascript" src="/js/jquery/jquery.min.js"><\/script>')
 </script>
 
-<script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 	$.fn.modal || document.write('<script type="text/javascript" src="/js/bootstrap/bootstrap.min.js"><\/script>')
+</script>
+
+<script type="text/javascript">
+	if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
+		var msViewportStyle = document.createElement('style')
+		msViewportStyle.appendChild(
+			document.createTextNode(
+					'@-ms-viewport{width:auto!important}'
+				)
+		)
+		document.querySelector('head').appendChild(msViewportStyle)
+	}
 </script>
 
 <!--[if lt IE 9]>

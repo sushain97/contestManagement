@@ -16,8 +16,8 @@
  */
 
 $(document).ready(function() {
-	ChangeActive()
-	$('button').on('click', function() {
+	ChangeActive();
+	$('button#printButton').on('click', function() {
 		window.print();
 	});
 
@@ -50,6 +50,11 @@ $(document).ready(function() {
 	});
 	$('html').click(function(e) {
 		$('.popovers').popover('hide');
+	});
+
+	$('[data-toggle="offcanvas"]').click(function () {
+		$('.row-offcanvas').toggleClass('active');
+		$('.sidebar-offcanvas').toggleClass('hidden-xs');
 	});
 });
 

@@ -78,6 +78,11 @@ $(document).ready(function () {
 		var t = parseInt($(this).index()) + 1;
 		$('td:nth-child(' + t + ')', $(this).closest('table')).removeClass('highlighted');
 	});
+
+	$('[data-toggle="offcanvas"]').click(function () {
+		$('.row-offcanvas').toggleClass('active');
+		$('.sidebar-offcanvas').toggleClass('hidden-xs');
+	});
 });
 
 function ChangeActive() {

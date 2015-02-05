@@ -84,10 +84,10 @@
 		<div>
 			<h2 style="display: inline-block; margin-top: 5px;">Recorded Registrations</h2>
 			<ul class="nav nav-pills pull-right lead">
-				<li #if($enabledLevels.split("\+").size() != 1) class="active" #end><a href="#overview" data-toggle="tab">Overview</a></li>
+				<li class="active"><a href="#overview" data-toggle="tab">Overview</a></li>
 				#foreach($level in $levels)
 					#if($enabledLevels.split("\+").contains($level.toString().toLowerCase()))
-						<li #if($enabledLevels.split("\+").size() == 1) class="active" #end><a href="#$level" data-toggle="tab">$level.getName()</a></li>
+						<li><a href="#$level" data-toggle="tab">$level.getName()</a></li>
 					#end
 				#end
 			</ul>
@@ -104,7 +104,7 @@
 
 			#foreach($level in $levels)
 				#if($enabledLevels.split("\+").contains($level.toString().toLowerCase()))
-					<div class="tab-pane #if($enabledLevels.split("\+").size() == 1) active #end" id="$level">
+					<div class="tab-pane" id="$level">
 						<h3>$level.getName() School <button type="button" class="reset btn btn-sm btn-danger pull-right hidden-print"><i class="glyphicon glyphicon-refresh"></i> Reset</button></h3>
 
 						<p>
@@ -282,7 +282,7 @@
 				#end
 			#end
 
-			<div class="tab-pane #if($enabledLevels.split("\+").size() != 1) active #end" id="overview">
+			<div class="tab-pane active" id="overview">
 				<div class="row">
 					<div class="col-md-6">
 						<h3>Registered Students and Fees by Level</h3>

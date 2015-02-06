@@ -167,7 +167,7 @@
 											<td data-type="schoolName">$reg.getProperty("schoolName")</td>
 											#if($classificationQuestion != 'no') <td data-type="classification" class="classification uneditable">$reg.getProperty("classification")</td> #end
 											<!-- <td data-type="paid" class="paidComments">$reg.getProperty("paid")</td>  -->
-											<td class="account uneditable"><i class="glyphicon #if($reg.getProperty("account") == "yes") glyphicon-ok #else glyphicon-remove #end"></i></td>
+											<td class="account uneditable text-center"><i class="glyphicon #if($reg.getProperty("account") == "yes") glyphicon-ok #else glyphicon-remove #end"></i></td>
 
 											#set($studentData = $regJSONtoList.apply($reg.getProperty("studentData")))
 											#set($testStudents = {})

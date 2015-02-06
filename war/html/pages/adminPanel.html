@@ -42,7 +42,17 @@
 	#parse("navbar.html")
 
 	<div class="container">
-		<h1>Admin Control Panel</h1>
+		<h1>
+			Admin Control Panel
+			<ul class="nav nav-pills pull-right lead">
+				<li class="active"><a href="#general" data-toggle="tab">General</a></li>
+				<li><a href="#content" data-toggle="tab">Content</a></li>
+				<li><a href="#awards" data-toggle="tab">Awards</a></li>
+				<li><a href="#emails" data-toggle="tab">Emails</a></li>
+				<li><a href="#apis" data-toggle="tab">APIs</a></li>
+			</ul>
+		</h1>
+
 		#if($updated)
 		<div class="alert alert-success">
 			<a class="close" data-dismiss="alert">&times;</a> <strong>Success!</strong> Changes have been committed to
@@ -50,435 +60,507 @@
 		</div>
 		#end
 
-		<form method="post" class="form-horizontal">
-			<fieldset>
-				<div class="form-group">
-					<label class="col-sm-2 col-xs-5 control-label" for="title">Contest Title</label>
-					<div class="col-sm-6 col-xs-7">
-						<input type="text" value='#if($contestInfo.getProperty("title"))$contestInfo.getProperty("title")#end' name="title" class="form-control" required>
-					</div>
-				</div>
+		<hr>
 
-				<div class="form-group">
-					<label class="col-sm-2 col-xs-5 control-label" for="school">School Name</label>
-					<div class="col-sm-6 col-xs-7">
-						<input type="text" value='#if($contestInfo.getProperty("school"))$contestInfo.getProperty("school")#end' name="school" class="form-control" required>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-2 col-xs-5 control-label" for="address">Address</label>
-					<div class="col-sm-6 col-xs-7">
-						<input type="text" value='#if($contestInfo.getProperty("address"))$contestInfo.getProperty("address")#end' name="address" class="form-control" required>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-2 col-xs-5 control-label" for="location">Absolute Location</label>
-					<div class="col-xs-3">
-						<input type="text" value='#if($contestInfo.getProperty("location"))$contestInfo.getProperty("location").getLatitude()#end' name="location_lat" class="form-control" required>
-					</div>
-					<div class="col-xs-3">
-						<input type="text" value='#if($contestInfo.getProperty("location"))$contestInfo.getProperty("location").getLongitude()#end' name="location_long" class="form-control" required>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-2 control-label" for="datepicker">Registration Dates</label>
-					<div class="col-sm-6 col-xs-9">
-						<div class="input-daterange input-group" id="datepicker" data-date-format="mm/dd/yyyy">
-							<input type="text" class="col-sm-3 form-control" name="startDate"
-								value='#if($contestInfo.getProperty("startDate"))$contestInfo.getProperty("startDate")#end' required>
-							<span class="input-group-addon"><strong>to</strong></span>
-							<input type="text" class="col-sm-3 form-control" name="endDate"
-								value='#if($contestInfo.getProperty("endDate"))$contestInfo.getProperty("endDate")#end' required>
-						</div>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-2 control-label" for="datepicker">Registration Editing Dates</label>
-					<div class="col-sm-6 col-xs-9">
-						<div class="input-daterange input-group" id="datepicker" data-date-format="mm/dd/yyyy">
-							<input type="text" class="col-sm-3 form-control" name="editStartDate"
-								value='#if($contestInfo.getProperty("editStartDate"))$contestInfo.getProperty("editStartDate")#end' required>
-							<span class="input-group-addon"><strong>to</strong></span>
-							<input type="text" class="col-sm-3 form-control" name="editEndDate"
-								value='#if($contestInfo.getProperty("editEndDate"))$contestInfo.getProperty("editEndDate")#end' required>
-						</div>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-2 col-xs-5 control-label" for="aboutText">About Text</label>
-					<div class="col-xs-7">
-						<textarea class="form-control" name="aboutText" rows="6">#if($contestInfo.getProperty("aboutText").getValue())$contestInfo.getProperty("aboutText").getValue()#end</textarea>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-2 col-xs-5 control-label" for="schedule">Schedule (<a href="https://en.wikipedia.org/wiki/YAML#Associative_arrays" target="_blank">YAML Associative Array</a>)</label>
-					<div class="col-xs-7">
-						<textarea class="form-control" name="schedule" rows="6">#if($contestInfo.getProperty("schedule").getValue())$contestInfo.getProperty("schedule").getValue()#end</textarea>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-2 col-xs-5 control-label" for="directions">Directions (<a href="https://en.wikipedia.org/wiki/YAML#Associative_arrays" target="_blank">YAML Associative Array</a>)</label>
-					<div class="col-xs-7">
-						<textarea class="form-control" name="directions" rows="6">#if($contestInfo.getProperty("directions").getValue())$contestInfo.getProperty("directions").getValue()#end</textarea>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-2 col-xs-5 control-label" for="slideshow">Slideshow (<a href="https://en.wikipedia.org/wiki/YAML#Lists" target="_blank">YAML List of Inline Lists</a>) <code>[URL, Title, Caption]</code></label>
-					<div class="col-xs-7">
-						<textarea class="form-control" name="slideshow" rows="6">#if($contestInfo.getProperty("slideshow").getValue())$contestInfo.getProperty("slideshow").getValue()#end</textarea>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-2 col-xs-5 control-label" for="levels">School Levels</label>
-					<div class="input-group col-sm-5 col-xs-7">
-						#foreach($level in $Level.values())
-						<label class="checkbox-inline">
-							<input type="checkbox" name="levels" value="$level" #if($enabledLevels.contains($level)) checked #end> $level.getName()
-						</label>
-						#end
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-2 control-label" for="category">Category Winners</label>
-
-					<div class="col-sm-2 control-label">Elementary <i class="iconfontello-medal"></i></div>
-					<div class="col-sm-1">
-						<input type="number" class="form-control" name="counts_category_elementary_medal" value="#if($awardCriteria.category_elementary_medal)$awardCriteria.category_elementary_medal#end" required>
-					</div>
-					<div class="col-sm-2 control-label">Middle <i class="iconfontello-medal"></i></div>
-					<div class="col-sm-1">
-						<input type="number" class="form-control" name="counts_category_middle_medal" value="#if($awardCriteria.category_middle_medal)$awardCriteria.category_middle_medal#end" required>
-					</div>
-					<div class="col-sm-2 control-label">High <i class="iconfontello-medal"></i></div>
-					<div class="col-sm-1">
-						<input type="number" class="form-control" name="counts_category_high_medal" value="#if($awardCriteria.category_high_medal)$awardCriteria.category_high_medal#end" required>
-					</div>
-
-					<br><br><br>
-
-					<div class="col-sm-2 col-sm-offset-2 control-label">Elementary <i class="fa fa-trophy"></i></div>
-					<div class="col-sm-1">
-						<input type="number" class="form-control" name="counts_category_elementary_trophy" value="#if($awardCriteria.category_elementary_trophy)$awardCriteria.category_elementary_trophy#end"  required>
-					</div>
-					<div class="col-sm-2 control-label">Middle <i class="fa fa-trophy"></i></div>
-					<div class="col-sm-1">
-						<input type="number" class="form-control" name="counts_category_middle_trophy" value="#if($awardCriteria.category_middle_trophy)$awardCriteria.category_middle_trophy#end"  required>
-					</div>
-					<div class="col-sm-2 control-label">High <i class="fa fa-trophy"></i></div>
-					<div class="col-sm-1">
-						<input type="number" class="form-control" name="counts_category_high_trophy" value="#if($awardCriteria.category_high_trophy)$awardCriteria.category_high_trophy#end" required>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-3 control-label" for="categorySweep">Category Sweepstakes Winners</label>
-
-					<div class="col-sm-2 control-label">Elementary <i class="fa fa-trophy"></i></div>
-					<div class="col-sm-1">
-						<input type="number" class="form-control" name="counts_categorySweep_elementary" value="#if($awardCriteria.categorySweep_elementary)$awardCriteria.categorySweep_elementary#end" required>
-					</div>
-					<div class="col-sm-2 control-label">Middle <i class="fa fa-trophy"></i></div>
-					<div class="col-sm-1">
-						<input type="number" class="form-control" name="counts_categorySweep_middle" value="#if($awardCriteria.categorySweep_middle)$awardCriteria.categorySweep_middle#end" required>
-					</div>
-					<div class="col-sm-2 control-label">High <i class="fa fa-trophy"></i></div>
-					<div class="col-sm-1">
-						<input type="number" class="form-control" name ="counts_categorySweep_high" value="#if($awardCriteria.categorySweep_high)$awardCriteria.categorySweep_high#end" required>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-3 control-label" for="sweepstakes">Sweepstakes Winners</label>
-
-					<div class="col-sm-2 control-label">Elementary <i class="fa fa-trophy"></i></div>
-					<div class="col-sm-1">
-						<input type="number" class="form-control" name="counts_sweepstakes_elementary" value="#if($awardCriteria.sweepstakes_elementary)$awardCriteria.sweepstakes_elementary#end" required>
-					</div>
-					<div class="col-sm-2 control-label">Middle <i class="fa fa-trophy"></i></div>
-					<div class="col-sm-1">
-						<input type="number" class="form-control" name="counts_sweepstakes_middle" value="#if($awardCriteria.sweepstakes_middle)$awardCriteria.sweepstakes_middle#end" required>
-					</div>
-					<div class="col-sm-2 control-label">High <i class="fa fa-trophy"></i></div>
-					<div class="col-sm-1">
-						<input type="number" class="form-control" name="counts_sweepstakes_high" value="#if($awardCriteria.sweepstakes_high)$awardCriteria.sweepstakes_high#end" required>
-					</div>
-				</div>
-
-				#if($enabledLevels.contains($Level.valueOf("MIDDLE")))
-				<div class="form-group">
-					<label class="col-sm-3 control-label" for="qualifying">Qualifying Scores</label>
-					#foreach($subject in $middleSubjects)
-						<div class="col-sm-1 control-label">$subject <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" title="$subject.getGrade()th $subject.getSubject().getName()"></span></div>
-						<div class="col-sm-1">
-							<input type="number" class="form-control" name="qualifying_$subject" value="#if($qualifyingCriteria.get($subject.toString()))$qualifyingCriteria.get($subject.toString())#end">
-						</div>
-						#if($foreach.count % 4 == 0)
-							<div class="col-sm-3"></div>
-						#end
-					#end
-				</div>
-				#end
-
-				<div class="form-group">
-					<label class="col-sm-2 control-label" for="price">Test Charges</label>
-					<div class="col-sm-5" style="padding-top: 10px;">
-						#set($price = $contestInfo.getProperty("price"))
-						#if(!$price) #set($price = 5) #end
-						<b id="priceText">$$price</b>
-						<input type="text" class="span2 price" id="price" name="price" data-slider-min="0" data-slider-max="15" data-slider-step="1" data-slider-value="$price" value="$price" required>
-					<p class="help-block">How much should each test registration cost in dollars?</p>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-2 control-label" for="email">E-Mail Address</label>
-					<div class="input-prepend col-sm-6">
-						<div class="input-group">
-							<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
-							<input type="email" name="email" id="email" class="form-control" value='#if($contestInfo.getProperty("email"))$contestInfo.getProperty("email")#end' required>
-						</div>
-						<span class="help-block">Where should questions submitted through the <a href="/contactUs">contact us</a> page be sent?</span>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-2 control-label" for="email">Google E-Mail</label>
-					<div class="input-prepend col-sm-6">
-						<div class="input-group">
-							<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
-							<input type="email" name="account" id="account" class="form-control"
-								value='#if($contestInfo.getProperty("account"))$contestInfo.getProperty("account")#end' required>
-						</div>
-						<span class="help-block">Whose Google App Engine Account is this website currently deployed on?</span>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-2 control-label" for="recaptcha"><a href="https://www.google.com/recaptcha" target="_blank">ReCaptcha API Keys</a></label>
-					<div class="col-sm-1 control-label"><strong>Public</strong></div>
-					<div class="col-sm-4">
-						<input type="text" name="publicKey" class="form-control" value='#if($contestInfo.getProperty("publicKey"))$contestInfo.getProperty("publicKey")#end' required>
-					</div>
-					<div class="col-sm-1 control-label"><strong>Private</strong></div>
-					<div class="col-sm-4">
-						<input type="text" name="privateKey" class="form-control" value='#if($contestInfo.getProperty("privateKey"))$contestInfo.getProperty("privateKey")#end'  required>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-2 control-label" for="oath2"><a href="https://developers.google.com/console/help/new/#generatingoauth2" target="_blank">Google OAuth 2.0 Credentials</a></label>
-					<div class="col-sm-1 control-label"><strong>Client Id</strong></div>
-					<div class="col-sm-4">
-						<input type="text" name="OAuth2ClientId" class="form-control"
-							value='#if($contestInfo.getProperty("OAuth2ClientId"))$contestInfo.getProperty("OAuth2ClientId")#end' required>
-					</div>
-					<div class="col-sm-1 control-label"><strong>Client Secret</strong></div>
-					<div class="col-sm-4">
-						<input type="text" name="OAuth2ClientSecret" class="form-control"
-							value='#if($contestInfo.getProperty("OAuth2ClientSecret"))$contestInfo.getProperty("OAuth2ClientSecret")#end'  required>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-3 col-xs-5 control-label" for="siteVerification"><a href="https://support.google.com/webmasters/answer/35659" target="_blank">Google Site Verification</a></label>
-					<div class="col-sm-6 col-xs-7">
-						<input type="text" value='#if($contestInfo.getProperty("siteVerification"))$contestInfo.getProperty("siteVerification")#end' name="siteVerification" class="form-control">
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-2 col-xs-5 control-label" for="googleAnalytics"><a href="https://support.google.com/webmasters/answer/185871" target="_blank">Google Analytics Tracking JS</a></label>
-					<div class="col-xs-7">
-						<textarea class="form-control" name="googleAnalytics" rows="6">#if($contestInfo.getProperty("googleAnalytics").getValue())$contestInfo.getProperty("googleAnalytics").getValue()#end</textarea>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-3 col-xs-6 control-label" for="update">
-						Update Online Scores?
-
-					</label>
-					<div class="input-group col-sm-7 col-xs-6">
-						<label class="checkbox-inline">
-							<input type="checkbox" name="update" id="update">
-							<strong>Last generated#if($contestInfo.getProperty("updated")) $contestInfo.getProperty("updated")#else never#end</strong>
-						</label>
-					</div>
-				</div>
-
-				<div id="updateScores">
-					<div class="form-group">
-						<div class="col-sm-2 col-sm-offset-2">
-							<div id="signinButton">
-								<span class="g-signin"
-									data-scope="https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/drive https://spreadsheets.google.com/feeds https://docs.google.com/feeds"
-									data-clientid="$clientId"
-									data-redirecturi="postmessage"
-									data-accesstype="offline"
-									data-cookiepolicy="single_host_origin"
-									data-callback="signInCallback">
-								</span>
-							</div>
-						</div>
-						<div class="col-sm-8 lead">
-							<div id="oAuthResult"></div>
-						</div>
-					</div>
-
-					#foreach($level in $Level.values())
-						#if($enabledLevels.contains($level))
+		<div class="tab-content">
+			<div class="tab-pane active fade in" id="general">
+				<form method="post" class="form-horizontal">
+					<fieldset>
 						<div class="form-group">
-							<label class="col-sm-3 control-label">$level.getName() School Doc</label>
-							<div class="col-sm-5">
-								#set($docName = "doc$level.getName()")
-								<input type="text" name="$docName" class="form-control" id="$docName"
-									value='#if($contestInfo.getProperty($docName))$contestInfo.getProperty($docName)#end'>
-								<span class="help-block">Name of Google Spreadsheet with $level.getName() School Scores</span>
-							</div>
-							<div class="col-sm-3" class="docButton" id="$level.toString()DocButton">
-								<button type="button" class="btn btn-default">Create Tabulation Spreadsheet</button>
+							<label class="col-sm-2 col-xs-5 control-label" for="title">Contest Title</label>
+							<div class="col-sm-6 col-xs-7">
+								<input type="text" value='#if($contestInfo.getProperty("title"))$contestInfo.getProperty("title")#end' name="title" class="form-control" required>
 							</div>
 						</div>
-						#end
-					#end
-				</div>
 
-				<div class="form-group">
-					<label class="col-sm-3 control-label text-danger"><i class="fa fa-exclamation-triangle"></i> Scrub Datastore</label>
-					<div class="col-sm-3">
-						<button type="button" class="btn btn-danger" id="enableDeleteScores"><i class="fa fa-unlock"></i> Enable delete button</button>
-					</div>
-					<div class="col-sm-3">
-						<button type="button" class="btn btn-danger"  id="deleteScoresButton" disabled><i class="fa fa-eraser"></i> Erase scores, rankings, visualizations</button>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-3 col-xs-7 control-label" for="complete">Make results public</label>
-					<div class="input-group col-sm-5 col-xs-1">
-						<label class="checkbox-inline">
-							<input type="checkbox" name="complete" value="yes" id="complete" #if($contestInfo.getProperty("complete")) checked #end>
-						</label>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-3 col-xs-7 control-label" for="changePass">Change Admin Password?</label>
-					<div class="input-group col-sm-5 col-xs-1">
-						<label class="checkbox-inline">
-							<input type="checkbox" name="changePass" id="changePass" #if($passError || $confPassError) checked #end>
-						</label>
-					</div>
-				</div>
-
-				<div id="changePassword">
-					<div class=#if($passError) "form-group has-error" #else "form-group" #end>
-						<label class="control-label col-sm-3" for="password">Current Password</label>
-						<div class="input-prepend col-sm-5">
-							<div class="input-group">
-								<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-								<input type="password" id="curPassword" name="curPassword" class="form-control" value="" maxlength="32">
-							</div>
-							#if($passError) <span class="help-block">$passError</span> #end
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label class="control-label col-sm-3" for="password">New Password</label>
-						<div class="input-prepend col-sm-5">
-							<div class="input-group">
-								<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-								<input type="password" id="newPassword" name="newPassword" class="form-control" pattern=".{8,}" title="Passwords must be at least 8 characters" value="" maxlength="32">
+						<div class="form-group">
+							<label class="col-sm-2 col-xs-5 control-label" for="levels">School Levels</label>
+							<div class="input-group col-sm-5 col-xs-7">
+								#foreach($level in $Level.values())
+								<label class="checkbox-inline">
+									<input type="checkbox" name="levels" value="$level" #if($enabledLevels.contains($level)) checked #end> $level.getName()
+								</label>
+								#end
 							</div>
 						</div>
-					</div>
 
-					<div class=#if($confPassError) "form-group has-error" #else "form-group" #end>
-						<label class="control-label col-sm-3" for="password">Confirm New Password</label>
-						<div class="input-prepend col-sm-5">
-							<div class="input-group">
-								<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-								<input type="password" id="confPassword" name="confPassword" class="form-control" pattern=".{8,}" title="Passwords must be at least 8 characters" value="" maxlength="32">
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="datepicker">Registration Dates</label>
+							<div class="col-sm-6 col-xs-9">
+								<div class="input-daterange input-group" id="datepicker" data-date-format="mm/dd/yyyy">
+									<input type="text" class="col-sm-3 form-control" name="startDate"
+										value='#if($contestInfo.getProperty("startDate"))$contestInfo.getProperty("startDate")#end' required>
+									<span class="input-group-addon"><strong>to</strong></span>
+									<input type="text" class="col-sm-3 form-control" name="endDate"
+										value='#if($contestInfo.getProperty("endDate"))$contestInfo.getProperty("endDate")#end' required>
+								</div>
 							</div>
-							#if($confPassError) <span class="help-block">$confPassError</span> #end
 						</div>
-					</div>
-				</div>
+		
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="datepicker">Registration Editing Dates</label>
+							<div class="col-sm-6 col-xs-9">
+								<div class="input-daterange input-group" id="datepicker" data-date-format="mm/dd/yyyy">
+									<input type="text" class="col-sm-3 form-control" name="editStartDate"
+										value='#if($contestInfo.getProperty("editStartDate"))$contestInfo.getProperty("editStartDate")#end' required>
+									<span class="input-group-addon"><strong>to</strong></span>
+									<input type="text" class="col-sm-3 form-control" name="editEndDate"
+										value='#if($contestInfo.getProperty("editEndDate"))$contestInfo.getProperty("editEndDate")#end' required>
+								</div>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="price">Test Charges</label>
+							<div class="col-sm-5" style="padding-top: 10px;">
+								#set($price = $contestInfo.getProperty("price"))
+								#if(!$price) #set($price = 5) #end
+								<b id="priceText">$$price</b>
+								<input type="text" class="span2 price" id="price" name="price" data-slider-min="0" data-slider-max="15" data-slider-step="1" data-slider-value="$price" value="$price" required>
+							<p class="help-block">How much should each test registration cost in dollars?</p>
+							</div>
+						</div>
 
-				<div class="form-group">
-					<label class="col-sm-3 control-label" for="testing">Enable Testing Mode?</label>
-					<div class="input-group col-sm-5 col-xs-offset-1">
-						<label class="checkbox-inline">
-							<input type="checkbox" name="testing" id="testing" value="yes" id="testing" #if($contestInfo.getProperty("testingMode")) checked #end>
-							Testing mode force defaults the admin password to "password" and displays it on the login page.
-						</label>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-3 control-label" for="classificationQuestion">Ask for School Classification?</label>
-					<div class="input-group col-sm-5 col-xs-offset-1">
-						#foreach($choice in ['no', 'optional', 'required'])
-							<label class="checkbox-inline" #if($foreach.first) style="padding-left: 0" #end>
-								<input type="radio" name="classificationQuestion" value="$choice" #if($contestInfo.getProperty("classificationQuestion") == $choice) checked #end required>
-								$choice.substring(0, 1).toUpperCase()$choice.substring(1)
+						#if($contestInfo.getProperty("OAuth2ClientId") && $contestInfo.getProperty("OAuth2ClientSecret"))
+						<div class="form-group">
+							<label class="col-sm-3 col-xs-6 control-label" for="update">
+								Update Online Scores?
+		
 							</label>
+							<div class="input-group col-sm-7 col-xs-6">
+								<label class="checkbox-inline">
+									<input type="checkbox" name="update" id="update">
+									<strong>Last generated#if($contestInfo.getProperty("updated")) $contestInfo.getProperty("updated")#else never#end</strong>
+								</label>
+							</div>
+						</div>
+		
+						<div id="updateScores">
+							<div class="form-group">
+								<div class="col-sm-2 col-sm-offset-2">
+									<div id="signinButton">
+										<span class="g-signin"
+											data-scope="https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/drive https://spreadsheets.google.com/feeds https://docs.google.com/feeds"
+											data-clientid="$clientId"
+											data-redirecturi="postmessage"
+											data-accesstype="offline"
+											data-cookiepolicy="single_host_origin"
+											data-callback="signInCallback">
+										</span>
+									</div>
+								</div>
+								<div class="col-sm-8 lead">
+									<div id="oAuthResult"></div>
+								</div>
+							</div>
+		
+							#foreach($level in $Level.values())
+								#if($enabledLevels.contains($level))
+								<div class="form-group">
+									<label class="col-sm-3 control-label">$level.getName() School Doc</label>
+									<div class="col-sm-5">
+										#set($docName = "doc$level.getName()")
+										<input type="text" name="$docName" class="form-control" id="$docName"
+											value='#if($contestInfo.getProperty($docName))$contestInfo.getProperty($docName)#end'>
+										<span class="help-block">Name of Google Spreadsheet with $level.getName() School Scores</span>
+									</div>
+									<div class="col-sm-3" class="docButton" id="$level.toString()DocButton">
+										<button type="button" class="btn btn-default">Create Tabulation Spreadsheet</button>
+									</div>
+								</div>
+								#end
+							#end
+						</div>
+						#else
+						<div class="lead text-danger">Google OAuth Credentials must be set to enable tabulation.</div>
 						#end
-					</div>
-				</div>
+		
+						<div class="form-group">
+							<label class="col-sm-3 control-label text-danger"><i class="fa fa-exclamation-triangle"></i> Scrub Datastore</label>
+							<div class="col-sm-3">
+								<button type="button" class="btn btn-danger" id="enableDeleteScores"><i class="fa fa-unlock"></i> Enable delete button</button>
+							</div>
+							<div class="col-sm-3">
+								<button type="button" class="btn btn-danger"  id="deleteScoresButton" disabled><i class="fa fa-eraser"></i> Erase scores, rankings, visualizations</button>
+							</div>
+						</div>
+		
+						<div class="form-group">
+							<label class="col-sm-3 col-xs-7 control-label" for="complete">Make results public</label>
+							<div class="input-group col-sm-5 col-xs-1">
+								<label class="checkbox-inline">
+									<input type="checkbox" name="complete" value="yes" id="complete" #if($contestInfo.getProperty("complete")) checked #end>
+								</label>
+							</div>
+						</div>
+		
+						<div class="form-group">
+							<label class="col-sm-3 col-xs-7 control-label" for="changePass">Change Admin Password?</label>
+							<div class="input-group col-sm-5 col-xs-1">
+								<label class="checkbox-inline">
+									<input type="checkbox" name="changePass" id="changePass" #if($passError || $confPassError) checked #end>
+								</label>
+							</div>
+						</div>
+		
+						<div id="changePassword">
+							<div class=#if($passError) "form-group has-error" #else "form-group" #end>
+								<label class="control-label col-sm-3" for="password">Current Password</label>
+								<div class="input-prepend col-sm-5">
+									<div class="input-group">
+										<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+										<input type="password" id="curPassword" name="curPassword" class="form-control" value="" maxlength="32">
+									</div>
+									#if($passError) <span class="help-block">$passError</span> #end
+								</div>
+							</div>
+		
+							<div class="form-group">
+								<label class="control-label col-sm-3" for="password">New Password</label>
+								<div class="input-prepend col-sm-5">
+									<div class="input-group">
+										<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+										<input type="password" id="newPassword" name="newPassword" class="form-control" pattern=".{8,}" title="Passwords must be at least 8 characters" value="" maxlength="32">
+									</div>
+								</div>
+							</div>
+		
+							<div class=#if($confPassError) "form-group has-error" #else "form-group" #end>
+								<label class="control-label col-sm-3" for="password">Confirm New Password</label>
+								<div class="input-prepend col-sm-5">
+									<div class="input-group">
+										<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+										<input type="password" id="confPassword" name="confPassword" class="form-control" pattern=".{8,}" title="Passwords must be at least 8 characters" value="" maxlength="32">
+									</div>
+									#if($confPassError) <span class="help-block">$confPassError</span> #end
+								</div>
+							</div>
+						</div>
+		
+						<div class="form-group">
+							<label class="col-sm-3 control-label" for="testing">Enable Testing Mode?</label>
+							<div class="input-group col-sm-5 col-xs-offset-1">
+								<label class="checkbox-inline">
+									<input type="checkbox" name="testing" id="testing" value="yes" id="testing" #if($contestInfo.getProperty("testingMode")) checked #end>
+									Testing mode force defaults the admin password to "password" and displays it on the login page.
+								</label>
+							</div>
+						</div>
+		
+						<div class="form-group">
+							<label class="col-sm-3 control-label" for="classificationQuestion">Ask for School Classification?</label>
+							<div class="input-group col-sm-5 col-xs-offset-1">
+								#foreach($choice in ['no', 'optional', 'required'])
+									<label class="checkbox-inline" #if($foreach.first) style="padding-left: 0" #end>
+										<input type="radio" name="classificationQuestion" value="$choice" #if($contestInfo.getProperty("classificationQuestion") == $choice) checked #end required>
+										$choice.substring(0, 1).toUpperCase()$choice.substring(1)
+									</label>
+								#end
+							</div>
+						</div>
+		
+						<div class="form-group">
+							<label class="col-sm-3 control-label" for="fullnames">Hide Full Names?</label>
+							<div class="input-group col-sm-5 col-xs-offset-1">
+								<label class="checkbox-inline">
+									<input type="checkbox" name="fullnames" id="fullnames" value="yes" id="fullnames" #if($contestInfo.getProperty("hideFullNames")) checked #end>
+									Full names will be hidden in public results (e.g. John Doe will be displayed as John D.).
+								</label>
+							</div>
+						</div>
 
-				<div class="form-group">
-					<label class="col-sm-3 control-label" for="fullnames">Hide Full Names?</label>
-					<div class="input-group col-sm-5 col-xs-offset-1">
-						<label class="checkbox-inline">
-							<input type="checkbox" name="fullnames" id="fullnames" value="yes" id="fullnames" #if($contestInfo.getProperty("hideFullNames")) checked #end>
-							Full names will be hidden in public results (e.g. John Doe will be displayed as John D.).
-						</label>
-					</div>
-				</div>
+						<input type="hidden" name="view" value="general">
 
-				<div class="form-group">
-					<label class="col-sm-2 col-xs-5 control-label" for="registrationEmail">Registration Email</label>
-					<div class="col-xs-7">
-						<textarea class="form-control" name="registrationEmail" rows="6">$registrationEmail</textarea>
-						<span class="help-block">Available variables: $account (bool), $name, \$title, $cost, $url</span>
-					</div>
-				</div>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-10">
+								<button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i> Apply Changes</button>
+								<button type="reset" class="btn btn-danger"><i class="glyphicon glyphicon-backward"></i> Reset to Last Settings</button>
+							</div>
+						</div>
+					</fieldset>
+				</form>
+			</div>
 
-				<div class="form-group">
-					<label class="col-sm-2 col-xs-5 control-label" for="forgotPassEmail">Forgot Password Email</label>
-					<div class="col-xs-7">
-						<textarea class="form-control" name="forgotPassEmail" rows="6">$forgotPassEmail</textarea>
-						<span class="help-block">Available variables: \$title, \$user, $url</span>
-					</div>
-				</div>
+			<div class="tab-pane fade" id="content">
+				<form method="post" class="form-horizontal">
+					<fieldset>
+						<div class="form-group">
+							<label class="col-sm-2 col-xs-5 control-label" for="school">School Name</label>
+							<div class="col-sm-6 col-xs-7">
+								<input type="text" value='#if($contestInfo.getProperty("school"))$contestInfo.getProperty("school")#end' name="school" class="form-control" required>
+							</div>
+						</div>
+		
+						<div class="form-group">
+							<label class="col-sm-2 col-xs-5 control-label" for="address">School Address</label>
+							<div class="col-sm-6 col-xs-7">
+								<input type="text" value='#if($contestInfo.getProperty("address"))$contestInfo.getProperty("address")#end' name="address" class="form-control" required>
+							</div>
+						</div>
+		
+						<div class="form-group">
+							<label class="col-sm-2 col-xs-5 control-label" for="location">Absolute Location</label>
+							<div class="col-xs-3">
+								<input type="text" value='#if($contestInfo.getProperty("location"))$contestInfo.getProperty("location").getLatitude()#end' name="location_lat" class="form-control" required>
+							</div>
+							<div class="col-xs-3">
+								<input type="text" value='#if($contestInfo.getProperty("location"))$contestInfo.getProperty("location").getLongitude()#end' name="location_long" class="form-control" required>
+							</div>
+						</div>
 
-				<div class="form-group">
-					<label class="col-sm-2 col-xs-5 control-label" for="questionEmail">Question Email</label>
-					<div class="col-xs-7">
-						<textarea class="form-control" name="questionEmail" rows="6">$questionEmail</textarea>
-						<span class="help-block">Available variables: $name, $email, $message</span>
-					</div>
-				</div>
+						<div class="form-group">
+							<label class="col-sm-2 col-xs-5 control-label" for="aboutText">About Text</label>
+							<div class="col-xs-7">
+								<textarea class="form-control" name="aboutText" rows="6">#if($contestInfo.getProperty("aboutText").getValue())$contestInfo.getProperty("aboutText").getValue()#end</textarea>
+							</div>
+						</div>
+		
+						<div class="form-group">
+							<label class="col-sm-2 col-xs-5 control-label" for="schedule">Schedule (<a href="https://en.wikipedia.org/wiki/YAML#Associative_arrays" target="_blank">YAML Associative Array</a>)</label>
+							<div class="col-xs-7">
+								<textarea class="form-control" name="schedule" rows="6">#if($contestInfo.getProperty("schedule").getValue())$contestInfo.getProperty("schedule").getValue()#end</textarea>
+							</div>
+						</div>
+		
+						<div class="form-group">
+							<label class="col-sm-2 col-xs-5 control-label" for="directions">Directions (<a href="https://en.wikipedia.org/wiki/YAML#Associative_arrays" target="_blank">YAML Associative Array</a>)</label>
+							<div class="col-xs-7">
+								<textarea class="form-control" name="directions" rows="6">#if($contestInfo.getProperty("directions").getValue())$contestInfo.getProperty("directions").getValue()#end</textarea>
+							</div>
+						</div>
+		
+						<div class="form-group">
+							<label class="col-sm-2 col-xs-5 control-label" for="slideshow">Slideshow (<a href="https://en.wikipedia.org/wiki/YAML#Lists" target="_blank">YAML List of Inline Lists</a>) <code>[URL, Title, Caption]</code></label>
+							<div class="col-xs-7">
+								<textarea class="form-control" name="slideshow" rows="6">#if($contestInfo.getProperty("slideshow").getValue())$contestInfo.getProperty("slideshow").getValue()#end</textarea>
+							</div>
+						</div>
 
-				<div class="form-group">
-					<div class="col-sm-offset-2 col-sm-10">
-						<button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i> Apply Changes</button>
-						<button type="reset" class="btn btn-danger"><i class="glyphicon glyphicon-backward"></i> Reset to Last Settings</button>
-					</div>
-				</div>
-			</fieldset>
-		</form>
+						<input type="hidden" name="view" value="content">
+
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-10">
+								<button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i> Apply Changes</button>
+								<button type="reset" class="btn btn-danger"><i class="glyphicon glyphicon-backward"></i> Reset to Last Settings</button>
+							</div>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+
+			<div class="tab-pane fade" id="awards">
+				<form method="post" class="form-horizontal">
+					<fieldset>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="category">Category Winners</label>
+		
+							<div class="col-sm-2 control-label">Elementary <i class="iconfontello-medal"></i></div>
+							<div class="col-sm-1">
+								<input type="number" class="form-control" name="counts_category_elementary_medal" value="#if($awardCriteria.category_elementary_medal)$awardCriteria.category_elementary_medal#end" required>
+							</div>
+							<div class="col-sm-2 control-label">Middle <i class="iconfontello-medal"></i></div>
+							<div class="col-sm-1">
+								<input type="number" class="form-control" name="counts_category_middle_medal" value="#if($awardCriteria.category_middle_medal)$awardCriteria.category_middle_medal#end" required>
+							</div>
+							<div class="col-sm-2 control-label">High <i class="iconfontello-medal"></i></div>
+							<div class="col-sm-1">
+								<input type="number" class="form-control" name="counts_category_high_medal" value="#if($awardCriteria.category_high_medal)$awardCriteria.category_high_medal#end" required>
+							</div>
+		
+							<br><br><br>
+		
+							<div class="col-sm-2 col-sm-offset-2 control-label">Elementary <i class="fa fa-trophy"></i></div>
+							<div class="col-sm-1">
+								<input type="number" class="form-control" name="counts_category_elementary_trophy" value="#if($awardCriteria.category_elementary_trophy)$awardCriteria.category_elementary_trophy#end"  required>
+							</div>
+							<div class="col-sm-2 control-label">Middle <i class="fa fa-trophy"></i></div>
+							<div class="col-sm-1">
+								<input type="number" class="form-control" name="counts_category_middle_trophy" value="#if($awardCriteria.category_middle_trophy)$awardCriteria.category_middle_trophy#end"  required>
+							</div>
+							<div class="col-sm-2 control-label">High <i class="fa fa-trophy"></i></div>
+							<div class="col-sm-1">
+								<input type="number" class="form-control" name="counts_category_high_trophy" value="#if($awardCriteria.category_high_trophy)$awardCriteria.category_high_trophy#end" required>
+							</div>
+						</div>
+		
+						<div class="form-group">
+							<label class="col-sm-3 control-label" for="categorySweep">Category Sweepstakes Winners</label>
+		
+							<div class="col-sm-2 control-label">Elementary <i class="fa fa-trophy"></i></div>
+							<div class="col-sm-1">
+								<input type="number" class="form-control" name="counts_categorySweep_elementary" value="#if($awardCriteria.categorySweep_elementary)$awardCriteria.categorySweep_elementary#end" required>
+							</div>
+							<div class="col-sm-2 control-label">Middle <i class="fa fa-trophy"></i></div>
+							<div class="col-sm-1">
+								<input type="number" class="form-control" name="counts_categorySweep_middle" value="#if($awardCriteria.categorySweep_middle)$awardCriteria.categorySweep_middle#end" required>
+							</div>
+							<div class="col-sm-2 control-label">High <i class="fa fa-trophy"></i></div>
+							<div class="col-sm-1">
+								<input type="number" class="form-control" name ="counts_categorySweep_high" value="#if($awardCriteria.categorySweep_high)$awardCriteria.categorySweep_high#end" required>
+							</div>
+						</div>
+		
+						<div class="form-group">
+							<label class="col-sm-3 control-label" for="sweepstakes">Sweepstakes Winners</label>
+		
+							<div class="col-sm-2 control-label">Elementary <i class="fa fa-trophy"></i></div>
+							<div class="col-sm-1">
+								<input type="number" class="form-control" name="counts_sweepstakes_elementary" value="#if($awardCriteria.sweepstakes_elementary)$awardCriteria.sweepstakes_elementary#end" required>
+							</div>
+							<div class="col-sm-2 control-label">Middle <i class="fa fa-trophy"></i></div>
+							<div class="col-sm-1">
+								<input type="number" class="form-control" name="counts_sweepstakes_middle" value="#if($awardCriteria.sweepstakes_middle)$awardCriteria.sweepstakes_middle#end" required>
+							</div>
+							<div class="col-sm-2 control-label">High <i class="fa fa-trophy"></i></div>
+							<div class="col-sm-1">
+								<input type="number" class="form-control" name="counts_sweepstakes_high" value="#if($awardCriteria.sweepstakes_high)$awardCriteria.sweepstakes_high#end" required>
+							</div>
+						</div>
+
+						#if($enabledLevels.contains($Level.valueOf("MIDDLE")))
+						<div class="form-group">
+							<label class="col-sm-3 control-label" for="qualifying">Qualifying Scores</label>
+							#foreach($subject in $middleSubjects)
+								<div class="col-sm-1 control-label">$subject <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" title="$subject.getGrade()th $subject.getSubject().getName()"></span></div>
+								<div class="col-sm-1">
+									<input type="number" class="form-control" name="qualifying_$subject" value="#if($qualifyingCriteria.get($subject.toString()))$qualifyingCriteria.get($subject.toString())#end">
+								</div>
+								#if($foreach.count % 4 == 0)
+									<div class="col-sm-3"></div>
+								#end
+							#end
+						</div>
+						#end
+
+						<input type="hidden" name="view" value="awards">
+
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-10">
+								<button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i> Apply Changes</button>
+								<button type="reset" class="btn btn-danger"><i class="glyphicon glyphicon-backward"></i> Reset to Last Settings</button>
+							</div>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+
+			<div class="tab-pane fade" id="emails">
+				<form method="post" class="form-horizontal">
+					<fieldset>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="email">E-Mail Address</label>
+							<div class="input-prepend col-sm-6">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+									<input type="email" name="email" id="email" class="form-control" value='#if($contestInfo.getProperty("email"))$contestInfo.getProperty("email")#end' required>
+								</div>
+								<span class="help-block">Where should questions submitted through the <a href="/contactUs">contact us</a> page be sent?</span>
+							</div>
+						</div>
+		
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="email">Google E-Mail</label>
+							<div class="input-prepend col-sm-6">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+									<input type="email" name="account" id="account" class="form-control"
+										value='#if($contestInfo.getProperty("account"))$contestInfo.getProperty("account")#end' required>
+								</div>
+								<span class="help-block">Whose Google App Engine Account is this website currently deployed on?</span>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-2 col-xs-5 control-label" for="registrationEmail">Registration Email</label>
+							<div class="col-xs-7">
+								<textarea class="form-control" name="registrationEmail" rows="6">$registrationEmail</textarea>
+								<span class="help-block">Available variables: $account (bool), $name, \$title, $cost, $url</span>
+							</div>
+						</div>
+		
+						<div class="form-group">
+							<label class="col-sm-2 col-xs-5 control-label" for="forgotPassEmail">Forgot Password Email</label>
+							<div class="col-xs-7">
+								<textarea class="form-control" name="forgotPassEmail" rows="6">$forgotPassEmail</textarea>
+								<span class="help-block">Available variables: \$title, \$user, $url</span>
+							</div>
+						</div>
+		
+						<div class="form-group">
+							<label class="col-sm-2 col-xs-5 control-label" for="questionEmail">Question Email</label>
+							<div class="col-xs-7">
+								<textarea class="form-control" name="questionEmail" rows="6">$questionEmail</textarea>
+								<span class="help-block">Available variables: $name, $email, $message</span>
+							</div>
+						</div>
+
+						<input type="hidden" name="view" value="emails">
+
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-10">
+								<button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i> Apply Changes</button>
+								<button type="reset" class="btn btn-danger"><i class="glyphicon glyphicon-backward"></i> Reset to Last Settings</button>
+							</div>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+
+			<div class="tab-pane fade" id="apis">
+				<form method="post" class="form-horizontal">
+					<fieldset>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="recaptcha"><a href="https://www.google.com/recaptcha" target="_blank">ReCaptcha API Keys</a></label>
+							<div class="col-sm-1 control-label"><strong>Public</strong></div>
+							<div class="col-sm-4">
+								<input type="text" name="publicKey" class="form-control" value='#if($contestInfo.getProperty("publicKey"))$contestInfo.getProperty("publicKey")#end' required>
+							</div>
+							<div class="col-sm-1 control-label"><strong>Private</strong></div>
+							<div class="col-sm-4">
+								<input type="text" name="privateKey" class="form-control" value='#if($contestInfo.getProperty("privateKey"))$contestInfo.getProperty("privateKey")#end'  required>
+							</div>
+						</div>
+		
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="oath2"><a href="https://developers.google.com/console/help/new/#generatingoauth2" target="_blank">Google OAuth 2.0 Credentials</a></label>
+							<div class="col-sm-1 control-label"><strong>Client Id</strong></div>
+							<div class="col-sm-4">
+								<input type="text" name="OAuth2ClientId" class="form-control"
+									value='#if($contestInfo.getProperty("OAuth2ClientId"))$contestInfo.getProperty("OAuth2ClientId")#end' required>
+							</div>
+							<div class="col-sm-1 control-label"><strong>Client Secret</strong></div>
+							<div class="col-sm-4">
+								<input type="text" name="OAuth2ClientSecret" class="form-control"
+									value='#if($contestInfo.getProperty("OAuth2ClientSecret"))$contestInfo.getProperty("OAuth2ClientSecret")#end'  required>
+							</div>
+						</div>
+		
+						<div class="form-group">
+							<label class="col-sm-3 col-xs-5 control-label" for="siteVerification"><a href="https://support.google.com/webmasters/answer/35659" target="_blank">Google Site Verification</a></label>
+							<div class="col-sm-6 col-xs-7">
+								<input type="text" value='#if($contestInfo.getProperty("siteVerification"))$contestInfo.getProperty("siteVerification")#end' name="siteVerification" class="form-control">
+							</div>
+						</div>
+		
+						<div class="form-group">
+							<label class="col-sm-2 col-xs-5 control-label" for="googleAnalytics"><a href="https://support.google.com/webmasters/answer/185871" target="_blank">Google Analytics Tracking JS</a></label>
+							<div class="col-xs-7">
+								<textarea class="form-control" name="googleAnalytics" rows="6">#if($contestInfo.getProperty("googleAnalytics").getValue())$contestInfo.getProperty("googleAnalytics").getValue()#end</textarea>
+							</div>
+						</div>
+
+						<input type="hidden" name="view" value="apis">
+
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-10">
+								<button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i> Apply Changes</button>
+								<button type="reset" class="btn btn-danger"><i class="glyphicon glyphicon-backward"></i> Reset to Last Settings</button>
+							</div>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+		</div>
 	</div>
 
 	<script type="text/javascript" src="/js/bootstrap/bootstrap-datepicker.min.js"></script>

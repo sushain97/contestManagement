@@ -134,88 +134,117 @@ public class AdminPanel extends BaseHttpServlet {
 		boolean loggedIn = userCookie != null && userCookie.authenticate();
 		if (loggedIn && userCookie.isAdmin()) {
 			Map<String, String[]> params = req.getParameterMap();
-			boolean testingMode = params.get("testing") != null && !params.containsKey("changePass");
 
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 			Transaction txn = datastore.beginTransaction(TransactionOptions.Builder.withXG(true));
 			try {
 				Entity info = Retrieve.contestInfo();
 				Entity contestInfo = info != null ? info : new Entity("contestInfo");
+				String view = params.get("view")[0];
 
-				String[] stringPropNames = {"endDate", "startDate", "editStartDate", "editEndDate", "email", "account", "title", "publicKey",
-						"privateKey", "school", "address", "classificationQuestion", "siteVerification", "OAuth2ClientSecret", "OAuth2ClientId"};
-				for (String propName : stringPropNames) {
-					contestInfo.setProperty(propName, params.get(propName)[0]);
+				boolean testingMode;
+				if (view.equals("general")) {
+					testingMode = params.get("testing") != null && !params.containsKey("changePass");
+				}
+				else if (contestInfo.hasProperty("testingMode")) {
+					testingMode = (boolean) contestInfo.getProperty("testingMode");
+				}
+				else {
+					testingMode = false;
 				}
 
-				String[] textPropNames = {"aboutText", "googleAnalytics", "forgotPassEmail", "questionEmail", "registrationEmail"};
-				for (String propName : textPropNames) {
-					contestInfo.setProperty(propName, new Text(params.get(propName)[0]));
-				}
+				String[] stringPropNames = {}, textPropNames = {};
 
-				contestInfo.setProperty("testingMode", testingMode);
-				contestInfo.setProperty("location", new GeoPt(Float.parseFloat(params.get("location_lat")[0]), Float.parseFloat(params.get("location_long")[0])));
-				contestInfo.setProperty("price", Integer.parseInt(params.get("price")[0]));
-				contestInfo.setProperty("complete", params.get("complete") != null);
-				contestInfo.setProperty("hideFullNames", params.get("fullnames") != null);
-				contestInfo.setProperty("levels", StringUtils.join(params.get("levels"), "+"));
+				if (view.equals("general")) {
+					contestInfo.setProperty("levels", StringUtils.join(params.get("levels"), "+"));
+					contestInfo.setProperty("price", Integer.parseInt(params.get("price")[0]));
+					contestInfo.setProperty("testingMode", testingMode);
+					contestInfo.setProperty("complete", params.get("complete") != null);
+					contestInfo.setProperty("hideFullNames", params.get("fullnames") != null);
 
-				JSONObject awardCriteria = new JSONObject(), qualifyingCriteria = new JSONObject();;
-				for (Entry<String, String[]> entry : params.entrySet()) {
-					if (entry.getKey().startsWith("counts_")) {
-						awardCriteria.put(entry.getKey().replace("counts_", ""), Integer.parseInt(entry.getValue()[0]));
+					if (params.containsKey("update")) {
+						Queue queue = QueueFactory.getDefaultQueue();
+						TaskOptions options = withUrl("/tabulate");
+
+						for (Level level : Level.values()) {
+							String[] docNames = params.get("doc" + level.getName());
+							if (docNames != null) {
+								contestInfo.setProperty("doc" + level.getName(), docNames[0]);
+								options.param("doc" + level.getName(), docNames[0]);
+							}
+						}
+
+						queue.add(options);
 					}
-					else if (entry.getKey().startsWith("qualifying_")) {
-						if (!entry.getValue()[0].isEmpty()) {
-							qualifyingCriteria.put(entry.getKey().replace("qualifying_", ""), Integer.parseInt(entry.getValue()[0]));
+
+					stringPropNames = new String[] {"title", "endDate", "startDate", "editStartDate", "editEndDate", "classificationQuestion"};
+				}
+				else if (view.equals("content")) {
+					GeoPt location = new GeoPt(Float.parseFloat(params.get("location_lat")[0]), Float.parseFloat(params.get("location_long")[0]));
+					contestInfo.setProperty("location", location);
+
+					Yaml yaml = new Yaml();
+					String[] mapPropNames = {"schedule", "directions"};
+					for (String propName : mapPropNames) {
+						String text = params.get(propName)[0];
+
+						try {
+							@SuppressWarnings("unused")
+							HashMap<String, String> map = (HashMap<String, String>) yaml.load(text);
+							contestInfo.setProperty(propName, new Text(text));
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+							resp.sendError(HttpServletResponse.SC_BAD_REQUEST, e.toString());
+							return;
 						}
 					}
-				}
-				contestInfo.setProperty("awardCriteria", new Text(awardCriteria.toString()));
-				contestInfo.setProperty("qualifyingCriteria", new Text(qualifyingCriteria.toString()));
 
-				Yaml yaml = new Yaml();
-				String[] mapPropNames = {"schedule", "directions"};
-				for (String propName : mapPropNames) {
-					String text = params.get(propName)[0];
-
+					String slideshowText = params.get("slideshow")[0];
 					try {
 						@SuppressWarnings("unused")
-						HashMap<String, String> map = (HashMap<String, String>) yaml.load(text);
-						contestInfo.setProperty(propName, new Text(text));
+						ArrayList<ArrayList<String>> map = (ArrayList<ArrayList<String>>) yaml.load(slideshowText);
+						contestInfo.setProperty("slideshow", new Text(slideshowText));
 					}
 					catch (Exception e) {
 						e.printStackTrace();
 						resp.sendError(HttpServletResponse.SC_BAD_REQUEST, e.toString());
 						return;
 					}
-				}
 
-				String slideshowText = params.get("slideshow")[0];
-				try {
-					@SuppressWarnings("unused")
-					ArrayList<ArrayList<String>> map = (ArrayList<ArrayList<String>>) yaml.load(slideshowText);
-					contestInfo.setProperty("slideshow", new Text(slideshowText));
+					stringPropNames = new String[] {"school", "address"};
+					textPropNames = new String[] {"aboutText"};
 				}
-				catch (Exception e) {
-					e.printStackTrace();
-					resp.sendError(HttpServletResponse.SC_BAD_REQUEST, e.toString());
-					return;
-				}
-
-				if (params.containsKey("update")) {
-					Queue queue = QueueFactory.getDefaultQueue();
-					TaskOptions options = withUrl("/tabulate");
-
-					for (Level level : Level.values()) {
-						String[] docNames = params.get("doc" + level.getName());
-						if (docNames != null) {
-							contestInfo.setProperty("doc" + level.getName(), docNames[0]);
-							options.param("doc" + level.getName(), docNames[0]);
+				else if (view.equals("awards")) {
+					JSONObject awardCriteria = new JSONObject(), qualifyingCriteria = new JSONObject();;
+					for (Entry<String, String[]> entry : params.entrySet()) {
+						if (entry.getKey().startsWith("counts_")) {
+							awardCriteria.put(entry.getKey().replace("counts_", ""), Integer.parseInt(entry.getValue()[0]));
+						}
+						else if (entry.getKey().startsWith("qualifying_")) {
+							if (!entry.getValue()[0].isEmpty()) {
+								qualifyingCriteria.put(entry.getKey().replace("qualifying_", ""), Integer.parseInt(entry.getValue()[0]));
+							}
 						}
 					}
+					contestInfo.setProperty("awardCriteria", new Text(awardCriteria.toString()));
+					contestInfo.setProperty("qualifyingCriteria", new Text(qualifyingCriteria.toString()));
+				}
+				else if (view.equals("emails")) {
+					stringPropNames = new String[] {"email", "account"};
+					textPropNames = new String[] {"forgotPassEmail", "questionEmail", "registrationEmail"};
+				}
+				else if (view.equals("apis")) {
+					stringPropNames = new String[] {"OAuth2ClientSecret", "OAuth2ClientId", "siteVerification", "publicKey", "privateKey"};
+					textPropNames = new String[] {"googleAnalytics"};
+				}
 
-					queue.add(options);
+				for (String propName : stringPropNames) {
+					contestInfo.setProperty(propName, params.get(propName)[0]);
+				}
+
+				for (String propName : textPropNames) {
+					contestInfo.setProperty(propName, new Text(params.get(propName)[0]));
 				}
 
 				datastore.put(contestInfo);

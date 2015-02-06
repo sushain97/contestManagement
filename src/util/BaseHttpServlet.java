@@ -21,6 +21,8 @@ package util;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -32,12 +34,21 @@ import org.apache.velocity.VelocityContext;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Text;
 
+import contestTabulation.Level;
+
 @SuppressWarnings("serial")
 public class BaseHttpServlet extends HttpServlet {
 	public Pair<Entity, UserCookie> init(VelocityContext context, HttpServletRequest req) throws UnsupportedEncodingException {
 		Entity contestInfo = Retrieve.contestInfo();
 		if (contestInfo != null) {
-			context.put("enabledLevels", contestInfo.getProperty("levels"));
+			List<Level> enabledLevels = new ArrayList<Level>();
+			if (contestInfo.getProperty("levels") != null) {
+				for (String level : ((String) contestInfo.getProperty("levels")).split("\\+")) {
+					enabledLevels.add(Level.fromString(level));
+				}
+			}
+			context.put("enabledLevels", enabledLevels);
+
 			context.put("title", contestInfo.getProperty("title"));
 
 			if (contestInfo.hasProperty("googleAnalytics")) {

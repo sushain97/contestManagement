@@ -142,7 +142,7 @@
 					<div class="input-group col-sm-5 col-xs-7">
 						#foreach($level in $Level.values())
 						<label class="checkbox-inline">
-							<input type="checkbox" name="levels" value="$level" #if($enabledLevels.split("\+").contains($level.toString())) checked #end> $level.getName()
+							<input type="checkbox" name="levels" value="$level" #if($enabledLevels.contains($level)) checked #end> $level.getName()
 						</label>
 						#end
 					</div>
@@ -214,7 +214,7 @@
 					</div>
 				</div>
 
-				#if($enabledLevels.contains("middle"))
+				#if($enabledLevels.contains($Level.valueOf("MIDDLE")))
 				<div class="form-group">
 					<label class="col-sm-3 control-label" for="qualifying">Qualifying Scores</label>
 					#foreach($subject in $middleSubjects)
@@ -336,7 +336,7 @@
 					</div>
 
 					#foreach($level in $Level.values())
-						#if($enabledLevels.split("\+").contains($level.toString()))
+						#if($enabledLevels.contains($level))
 						<div class="form-group">
 							<label class="col-sm-3 control-label">$level.getName() School Doc</label>
 							<div class="col-sm-5">

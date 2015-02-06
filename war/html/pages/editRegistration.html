@@ -60,8 +60,7 @@
 					<div class="form-group">
 						<label class="col-sm-2 col-xs-5 control-label" for="schoolLevel">School Level</label>
 						<div class="input-group col-sm-5 col-xs-7">
-							#foreach($level in $enabledLevels.split("\+"))
-							#set($level = $Level.fromString($level))
+							#foreach($level in $enabledLevels)
 							<label class="radio-inline">
 								<input type="radio" name="schoolLevel" id="schoolType$level.getName()" value="$level" #if($schoolLevel == $level.toString() || (!$schoolLevel && $foreach.first)) checked #end> $level.getName()
 							</label>

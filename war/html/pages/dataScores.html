@@ -91,7 +91,7 @@
 						<li data-type="overview"><a href="/data/scores">Overview</a></li>
 
 						#foreach($level in $levels)
-							#if($enabledLevels.contains($level.toString()))
+							#if($enabledLevels.contains($level))
 								#set($LEVEL = $level.toString().toUpperCase())
 								<li class="nav-header"><h4>$level.getName() School</h4></li>
 								<li data-type="students$LEVEL"><a href="/data/scores?type=students&level=$level">All Students</a></li>
@@ -147,7 +147,7 @@
 
 						#set($numTests = 0.0)
 						#foreach($level in $levels)
-							#if($enabledLevels.split("\+").contains($level.toString()))
+							#if($enabledLevels.contains($level))
 								#set($numTests = $numTests + $level.getGrades().size() * $subjects.size())
 							#end
 						#end
@@ -169,7 +169,7 @@
 							</thead>
 							<tbody>
 								#foreach($level in $levels)
-									#if($enabledLevels.split("\+").contains($level.toString()))
+									#if($enabledLevels.contains($level))
 										#foreach($grade in $level.getGrades())
 											<tr>
 												<td class="row-header">${grade}th</td>

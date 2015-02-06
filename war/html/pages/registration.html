@@ -107,13 +107,12 @@
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-5 control-label" for="schoolLevel">School Level</label>
 					<div class="input-group col-sm-5 col-xs-7">
-						#foreach($level in $enabledLevels.split("\+"))
-							#set($level = $Level.fromString($level))
+						#foreach($level in $enabledLevels)
 							<label class="radio-inline">
-								<input type="radio" name="schoolLevel" id="schoolType$level.getName()" value="$level" #if($schoolLevel == $level.toString() || $numLevels < 2) checked #end required> $level.getName()
+								<input type="radio" name="schoolLevel" id="schoolType$level.getName()" value="$level" #if($schoolLevel == $level.toString() || $enabledLevels.size() < 2) checked #end required> $level.getName()
 							</label>
 						#end
-						#if($numLevels > 1)
+						#if($enabledLevels.size() > 1)
 							<span class="text-warning help-block">
 								If your school contains both students from multiple levels (e.g. both middle and high school), please make separate registrations for each level.
 							</span>

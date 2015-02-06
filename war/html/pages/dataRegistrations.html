@@ -86,7 +86,7 @@
 			<ul class="nav nav-pills pull-right lead">
 				<li class="active"><a href="#overview" data-toggle="tab">Overview</a></li>
 				#foreach($level in $levels)
-					#if($enabledLevels.split("\+").contains($level.toString().toLowerCase()))
+					#if($enabledLevels.contains($level))
 						<li><a href="#$level" data-toggle="tab">$level.getName()</a></li>
 					#end
 				#end
@@ -103,7 +103,7 @@
 			#set($allStudentsTotal = {})
 
 			#foreach($level in $levels)
-				#if($enabledLevels.split("\+").contains($level.toString().toLowerCase()))
+				#if($enabledLevels.contains($level))
 					<div class="tab-pane" id="$level">
 						<h3>$level.getName() School <button type="button" class="reset btn btn-sm btn-danger pull-right hidden-print"><i class="glyphicon glyphicon-refresh"></i> Reset</button></h3>
 
@@ -291,7 +291,7 @@
 								<tr>
 									<th></th>
 									#foreach($level in $levels)
-										#if($enabledLevels.split("\+").contains($level.toString()))
+										#if($enabledLevels.contains($level))
 											<th class="text-center">$level.getName() School</th>
 										#end
 									#end
@@ -303,7 +303,7 @@
 									<td class="table-vertical-header">Students</td>
 									#set($total = 0)
 									#foreach($level in $levels)
-										#if($enabledLevels.split("\+").contains($level.toString()))
+										#if($enabledLevels.contains($level))
 											<td>$allStudentsTotal.get($level)</td>
 											#set($total = $total + $allStudentsTotal.get($level))
 										#end
@@ -314,7 +314,7 @@
 									<td class="table-vertical-header">Fees</td>
 									#set($total = 0)
 									#foreach($level in $levels)
-										#if($enabledLevels.split("\+").contains($level.toString()))
+										#if($enabledLevels.contains($level))
 											<td>$$allTotalCosts.get($level)</td>
 											#set($total = $total + $allTotalCosts.get($level))
 										#end
@@ -344,7 +344,7 @@
 								#end
 
 								#foreach($level in $levels)
-									#if($enabledLevels.split("\+").contains($level.toString()))
+									#if($enabledLevels.contains($level))
 										<tr>
 											<td class="table-vertical-header">$level.getName() School</td>
 											#foreach($subject in $subjects)
@@ -407,7 +407,7 @@
 					#end
 
 					#foreach($level in $levels)
-						#if($enabledLevels.split("\+").contains($level.toString()))
+						#if($enabledLevels.contains($level))
 							#foreach($subject in $subjects)
 								{
 									name: '$subject.getName()',
@@ -431,7 +431,7 @@
 				name: 'School Level',
 				data: [
 					#foreach($level in $levels)
-						#if($enabledLevels.split("\+").contains($level.toString()))
+						#if($enabledLevels.contains($level))
 							{
 								name: '$level.getName()',
 								y: $totals.get($level)
@@ -470,7 +470,7 @@
 				name: 'Subject',
 				data: [
 					#foreach($level in $levels)
-						#if($enabledLevels.split("\+").contains($level.toString()))
+						#if($enabledLevels.contains($level))
 							#foreach($grade in $level.getGrades())
 								{
 									name: '${grade}th Grade',
@@ -492,7 +492,7 @@
 				name: 'School Level',
 				data: [
 					#foreach($level in $levels)
-						#if($enabledLevels.split("\+").contains($level.toString()))
+						#if($enabledLevels.contains($level))
 							{
 								name: '$level.getName()',
 								y: $allStudentsTotal.get($level)

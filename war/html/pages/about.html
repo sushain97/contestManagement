@@ -55,7 +55,7 @@
 					</dl>
 				#end
 			</div>
-			#if($enabledLevels.contains("middle") && $qualifyingCriteria && $qualifyingCriteria != "{}")
+			#if($enabledLevels.contains($Level.valueOf("MIDDLE")) && $qualifyingCriteria && $qualifyingCriteria != "{}")
 				<div class="col-sm-6">
 					<h2>Qualifying Scores</h2>
 

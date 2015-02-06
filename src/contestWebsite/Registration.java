@@ -183,7 +183,6 @@ public class Registration extends BaseHttpServlet {
 		}
 
 		context.put("Level", Level.class);
-		context.put("numLevels", ((String) context.get("enabledLevels")).split("\\+").length);
 
 		close(context, ve.getTemplate("registration.html"), resp);
 	}

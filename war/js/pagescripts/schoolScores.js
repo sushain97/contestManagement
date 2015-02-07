@@ -16,7 +16,7 @@
  */
 
 $(document).ready(function() {
-	$('button').on('click', function() {
+	$('button#printButton').on('click', function() {
 		window.print();
 	});
 

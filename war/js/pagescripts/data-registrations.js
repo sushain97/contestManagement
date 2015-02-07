@@ -18,7 +18,7 @@
 $(document).ready(function() {
 	$('.nav-pills').stickyTabs();
 
-	$('h1 button').on('click', function() {
+	$('button#printButton').on('click', function() {
 		window.print();
 	});
 

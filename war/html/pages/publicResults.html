@@ -100,7 +100,7 @@
 					<h1 style="white-space: nowrap; margin-top: 5px;">
 						Contest Results
 						<span class="pull-right visible-xs hidden-print" style="z-index: 1000;">
-							<button type="button" class="btn btn-default btn-sm" data-toggle="offcanvas" style="margin-right: 5px; margin-bottom: 10px;">
+							<button type="button" class="btn btn-primary btn-sm" data-toggle="offcanvas" style="margin-right: 5px; margin-bottom: 10px;">
 								<i class="fa fa-lg fa-bars"></i>
 							</button>
 						</span>
@@ -134,9 +134,12 @@
 					#end
 
 					#if($type == "avail" || !$complete)
-						#if($complete) <span class="hidden-xs">Choose an option at the left to view specific results.</span> #end
+						#if($complete)
+							<span class="hidden-xs">Use the menu at the left to view specific results.</span>
+							<span class="visible-xs">Use the blue menu above to view specific results.</span>
+						#end
 
-						<h2>Grading Progress (Tests Graded)</h2>
+						<h2>Grading Progress</h2>
 
 						#set($numTests = 0.0)
 						#foreach($level in $levels)

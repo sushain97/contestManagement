@@ -160,7 +160,7 @@
 								<div class="carousel-pic">
 									<img src="$slide.get(0)" class="img-thumbnail img-responsive">
 								</div>
-								#if(($slide.get(1) && $slide.get(1).length > 1) || ($slide.get(2) && $slide.get(2).length > 1))
+								#if(!$slide.get(1).empty || !$slide.get(2).empty)
 								<div class="carousel-caption">
 									<h4>$esc.html($slide.get(1))</h4>
 									<p>$esc.html($slide.get(2))</p>

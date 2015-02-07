@@ -38,17 +38,12 @@
 			text-transform: uppercase;
 			font-weight: bold;
 		}
-		/*
-		@media screen and (max-width: 768px) {
-			body { padding-top: 100px; }
-			.navbar-brand { height: 21px !important; }
-		}
-		@media screen and (min-width: 768px) and (max-width: 992px) {
-			body { padding-top: 110px; }
-		}
-		*/
-		table#statusTable td { display: table-cell !important; }
-		table#statusTable { table-layout: fixed; width: 75% !important; }
+
+		table#statusTable td.btn { display: table-cell; }
+		#set($widthPercent = 100 / $subjects.size())
+		table#statusTable th.subject { width: $widthPercent%; }
+		table#statusTable { max-width: 550px; }
+
 		div#sidebarMenu {
 			background-color: white;
 			z-index: 1000;
@@ -151,16 +146,16 @@
 						#end
 
 						#set($percentComplete = $testsGraded.size() / $numTests * 100)
-						<div class="progress progress-striped active" style="width: 65%; min-width: 300px;">
+						<div class="progress progress-striped active" style="min-width: 300px; max-width: 550px;">
 							<div class="progress-bar" role="progressbar" aria-valuenow="$percentComplete" aria-valuemin="0" aria-valuemax="100" style="width: $percentComplete%;"></div>
 						</div>
 
-						<table class="table table-condensed">
+						<table class="table table-condensed" id="statusTable">
 							<thead>
 								<tr>
 									<th>Grade</th>
 									#foreach($subject in $subjects)
-									<th>$subject.getName()</th>
+									<th class="subject">$subject.getName()</th>
 									#end
 								</tr>
 							</thead>

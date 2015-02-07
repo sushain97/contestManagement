@@ -17,7 +17,6 @@
 
 $(document).ready(function() {
 	EnableSubmit();
-	$('input[name=recaptcha_response_field]').prop('required', true);
 });
 
 function EnableSubmit() {

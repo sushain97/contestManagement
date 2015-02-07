@@ -38,20 +38,23 @@
 			text-transform: uppercase;
 			font-weight: bold;
 		}
-		@media screen and (max-width: 768px) {
-			body { padding-top: 100px; }
-			.navbar-brand { height: 21px !important; }
+
+		table#statusTable td.btn { display: table-cell; }
+		#set($widthPercent = 100 / $subjects.size())
+		table#statusTable th.subject { width: $widthPercent%; }
+		table#statusTable { max-width: 550px; }
+
+		div#sidebarMenu {
+			background-color: white;
+			z-index: 1000;
+			min-height: 100%;
 		}
-		@media screen and (min-width: 768px) and (max-width: 992px) {
-			body { padding-top: 110px; }
-		}
-		table#statusTable td { display: table-cell !important; }
-		table#statusTable { table-layout: fixed; width: 75% !important; }
 	</style>
 	<link type="text/css" href="/css/footer.css" rel="stylesheet">
 	<link type="text/css" href="/css/sticky-sidebar.css" rel="stylesheet">
 	<link type="text/css" href="/css/theme.bootstrap.css" rel="stylesheet">
 	<link type="text/css" href="/css/fontello.css" rel="stylesheet">
+	<link type="text/css" href="/css/offcanvas.css" rel="stylesheet">
 	<link type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
 </head>
 
@@ -60,9 +63,9 @@
 		#parse("navbar.html")
 
 		<div class="container">
-			<div class="row">
-				<div class="col-md-3 col-xs-6 hidden-print">
-					<ul class="nav nav-pills nav-stacked" >
+			<div class="row row-offcanvas row-offcanvas-right">
+				<div class="col-md-3 col-xs-6 hidden-print sidebar-offcanvas hidden-xs" id="sidebarMenu">
+					<ul class="nav nav-pills nav-stacked">
 						<li data-type="avail"><a href="/contestResults">Availability</a></li>
 
 						#foreach($level in $levels)
@@ -93,9 +96,15 @@
 					<div id="push"></div>
 				</div>
 
-				<div class="col-md-9 col-xs-6">
-					<h1>Contest Results
-					#include("printButton.html")
+				<div class="col-sm-9 col-xs-12">
+					<h1 style="white-space: nowrap; margin-top: 5px;">
+						Contest Results
+						<span class="pull-right visible-xs hidden-print" style="z-index: 1000;">
+							<button type="button" class="btn btn-primary btn-sm" data-toggle="offcanvas" style="margin-right: 5px; margin-bottom: 10px;">
+								<i class="fa fa-lg fa-bars"></i>
+							</button>
+						</span>
+						#include("printButton.html")
 					</h1>
 
 					#if(!$complete)
@@ -125,9 +134,12 @@
 					#end
 
 					#if($type == "avail" || !$complete)
-						#if($complete) Choose an option at the left to view specific results. #end
+						#if($complete)
+							<span class="hidden-xs">Use the menu at the left to view specific results.</span>
+							<span class="visible-xs">Use the blue menu above to view specific results.</span>
+						#end
 
-						<h2>Grading Progress (Tests Graded)</h2>
+						<h2>Grading Progress</h2>
 
 						#set($numTests = 0.0)
 						#foreach($level in $levels)
@@ -137,16 +149,16 @@
 						#end
 
 						#set($percentComplete = $testsGraded.size() / $numTests * 100)
-						<div class="progress progress-striped active" style="width: 65%; min-width: 300px;">
+						<div class="progress progress-striped active" style="min-width: 300px; max-width: 550px;">
 							<div class="progress-bar" role="progressbar" aria-valuenow="$percentComplete" aria-valuemin="0" aria-valuemax="100" style="width: $percentComplete%;"></div>
 						</div>
 
-						<table id="statusTable" class="table table-condensed">
+						<table class="table table-condensed" id="statusTable">
 							<thead>
 								<tr>
 									<th>Grade</th>
 									#foreach($subject in $subjects)
-									<th>$subject.getName()</th>
+									<th class="subject">$subject.getName()</th>
 									#end
 								</tr>
 							</thead>
@@ -190,9 +202,9 @@
 	</div>
 
 	<div id="footer">
-	<div class="container text-center">
-		<p><i class="icon-time"></i> Last auto-generated <b>#if($date) $date #else never #end</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
-	</div>
+		<div class="container text-center">
+			<p><i class="icon-time"></i> Last auto-generated <b>#if($date) $date #else never #end</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
+		</div>
 	</div>
 
 	<script type="text/javascript" src="/js/pagescripts/publicResults.js"></script>

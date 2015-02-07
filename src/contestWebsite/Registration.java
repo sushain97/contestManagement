@@ -21,7 +21,11 @@ package contestWebsite;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,9 +46,6 @@ import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import net.tanesha.recaptcha.ReCaptchaImpl;
-import net.tanesha.recaptcha.ReCaptchaResponse;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -71,6 +72,9 @@ import com.google.appengine.api.datastore.TransactionOptions;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
+import com.google.gdata.util.common.base.Charsets;
+import com.google.gdata.util.common.io.CharStreams;
+import com.google.gdata.util.common.io.InputSupplier;
 
 import contestTabulation.Level;
 import contestTabulation.Subject;
@@ -231,18 +235,36 @@ public class Registration extends BaseHttpServlet {
 		sess.setAttribute("email", email);
 		sess.setAttribute("studentData", studentData);
 
-		ReCaptchaResponse reCaptchaResponse = null;
+		boolean reCaptchaResponse = false;
 		if (!(Boolean) sess.getAttribute("nocaptcha")) {
-			String remoteAddr = req.getRemoteAddr();
-			ReCaptchaImpl reCaptcha = new ReCaptchaImpl();
-			reCaptcha.setPrivateKey((String) contestInfo.getProperty("privateKey"));
+			URL reCaptchaURL = new URL("https://www.google.com/recaptcha/api/siteverify");
+			String charset = java.nio.charset.StandardCharsets.UTF_8.name();
+			String reCaptchaQuery = String.format("secret=%s&response=%s&remoteip=%s",
+					URLEncoder.encode((String) contestInfo.getProperty("privateKey"), charset),
+					URLEncoder.encode(req.getParameter("g-recaptcha-response"), charset),
+					URLEncoder.encode(req.getRemoteAddr(), charset));
 
-			String challenge = req.getParameter("recaptcha_challenge_field");
-			String userResponse = req.getParameter("recaptcha_response_field");
-			reCaptchaResponse = reCaptcha.checkAnswer(remoteAddr, challenge, userResponse);
+			final URLConnection connection = new URL(reCaptchaURL + "?" + reCaptchaQuery).openConnection();
+			connection.setRequestProperty("Accept-Charset", charset);
+			String response = CharStreams.toString(CharStreams.newReaderSupplier(new InputSupplier<InputStream>() {
+				@Override
+				public InputStream getInput() throws IOException {
+					return connection.getInputStream();
+				}
+			}, Charsets.UTF_8));
+
+			try {
+				JSONObject JSONResponse = new JSONObject(response);
+				reCaptchaResponse = JSONResponse.getBoolean("success");
+			}
+			catch (JSONException e) {
+				e.printStackTrace();
+				resp.sendRedirect("/contactUs?captchaError=1");
+				return;
+			}
 		}
 
-		if (!(Boolean) sess.getAttribute("nocaptcha") && !reCaptchaResponse.isValid()) {
+		if (!(Boolean) sess.getAttribute("nocaptcha") && !reCaptchaResponse) {
 			resp.sendRedirect("/registration?captchaError=1");
 		}
 		else {

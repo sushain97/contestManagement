@@ -23,6 +23,9 @@
 			-o-transition: all 1s ease;
 			transition: all 1s ease;
 		}
+		@media screen and (max-width: 768px) {
+			div.tab-content { margin-top: 5em; }
+		}
 	</style>
 
 	<script type="text/javascript" src="/js/pagescripts/adminPanel.js"></script>
@@ -96,7 +99,7 @@
 								</div>
 							</div>
 						</div>
-		
+
 						<div class="form-group">
 							<label class="col-sm-2 control-label" for="datepicker">Registration Editing Dates</label>
 							<div class="col-sm-6 col-xs-9">
@@ -109,7 +112,7 @@
 								</div>
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label class="col-sm-2 control-label" for="price">Test Charges</label>
 							<div class="col-sm-5" style="padding-top: 10px;">
@@ -125,7 +128,7 @@
 						<div class="form-group">
 							<label class="col-sm-3 col-xs-6 control-label" for="update">
 								Update Online Scores?
-		
+
 							</label>
 							<div class="input-group col-sm-7 col-xs-6">
 								<label class="checkbox-inline">
@@ -134,7 +137,7 @@
 								</label>
 							</div>
 						</div>
-		
+
 						<div id="updateScores">
 							<div class="form-group">
 								<div class="col-sm-2 col-sm-offset-2">
@@ -153,7 +156,7 @@
 									<div id="oAuthResult"></div>
 								</div>
 							</div>
-		
+
 							#foreach($level in $Level.values())
 								#if($enabledLevels.contains($level))
 								<div class="form-group">
@@ -174,7 +177,7 @@
 						#else
 						<div class="lead text-danger">Google OAuth Credentials must be set to enable tabulation.</div>
 						#end
-		
+
 						<div class="form-group">
 							<label class="col-sm-3 control-label text-danger"><i class="fa fa-exclamation-triangle"></i> Scrub Datastore</label>
 							<div class="col-sm-3">
@@ -184,7 +187,7 @@
 								<button type="button" class="btn btn-danger"  id="deleteScoresButton" disabled><i class="fa fa-eraser"></i> Erase scores, rankings, visualizations</button>
 							</div>
 						</div>
-		
+
 						<div class="form-group">
 							<label class="col-sm-3 col-xs-7 control-label" for="complete">Make results public</label>
 							<div class="input-group col-sm-5 col-xs-1">
@@ -193,7 +196,7 @@
 								</label>
 							</div>
 						</div>
-		
+
 						<div class="form-group">
 							<label class="col-sm-3 col-xs-7 control-label" for="changePass">Change Admin Password?</label>
 							<div class="input-group col-sm-5 col-xs-1">
@@ -202,7 +205,7 @@
 								</label>
 							</div>
 						</div>
-		
+
 						<div id="changePassword">
 							<div class=#if($passError) "form-group has-error" #else "form-group" #end>
 								<label class="control-label col-sm-3" for="password">Current Password</label>
@@ -214,7 +217,7 @@
 									#if($passError) <span class="help-block">$passError</span> #end
 								</div>
 							</div>
-		
+
 							<div class="form-group">
 								<label class="control-label col-sm-3" for="password">New Password</label>
 								<div class="input-prepend col-sm-5">
@@ -224,7 +227,7 @@
 									</div>
 								</div>
 							</div>
-		
+
 							<div class=#if($confPassError) "form-group has-error" #else "form-group" #end>
 								<label class="control-label col-sm-3" for="password">Confirm New Password</label>
 								<div class="input-prepend col-sm-5">
@@ -236,7 +239,7 @@
 								</div>
 							</div>
 						</div>
-		
+
 						<div class="form-group">
 							<label class="col-sm-3 control-label" for="testing">Enable Testing Mode?</label>
 							<div class="input-group col-sm-5 col-xs-offset-1">
@@ -246,7 +249,7 @@
 								</label>
 							</div>
 						</div>
-		
+
 						<div class="form-group">
 							<label class="col-sm-3 control-label" for="classificationQuestion">Ask for School Classification?</label>
 							<div class="input-group col-sm-5 col-xs-offset-1">
@@ -258,7 +261,7 @@
 								#end
 							</div>
 						</div>
-		
+
 						<div class="form-group">
 							<label class="col-sm-3 control-label" for="fullnames">Hide Full Names?</label>
 							<div class="input-group col-sm-5 col-xs-offset-1">
@@ -290,14 +293,14 @@
 								<input type="text" value='#if($contestInfo.getProperty("school"))$contestInfo.getProperty("school")#end' name="school" class="form-control" required>
 							</div>
 						</div>
-		
+
 						<div class="form-group">
 							<label class="col-sm-2 col-xs-5 control-label" for="address">School Address</label>
 							<div class="col-sm-6 col-xs-7">
 								<input type="text" value='#if($contestInfo.getProperty("address"))$contestInfo.getProperty("address")#end' name="address" class="form-control" required>
 							</div>
 						</div>
-		
+
 						<div class="form-group">
 							<label class="col-sm-2 col-xs-5 control-label" for="location">Absolute Location</label>
 							<div class="col-xs-3">
@@ -314,21 +317,21 @@
 								<textarea class="form-control" name="aboutText" rows="6">#if($contestInfo.getProperty("aboutText").getValue())$contestInfo.getProperty("aboutText").getValue()#end</textarea>
 							</div>
 						</div>
-		
+
 						<div class="form-group">
 							<label class="col-sm-2 col-xs-5 control-label" for="schedule">Schedule (<a href="https://en.wikipedia.org/wiki/YAML#Associative_arrays" target="_blank">YAML Associative Array</a>)</label>
 							<div class="col-xs-7">
 								<textarea class="form-control" name="schedule" rows="6">#if($contestInfo.getProperty("schedule").getValue())$contestInfo.getProperty("schedule").getValue()#end</textarea>
 							</div>
 						</div>
-		
+
 						<div class="form-group">
 							<label class="col-sm-2 col-xs-5 control-label" for="directions">Directions (<a href="https://en.wikipedia.org/wiki/YAML#Associative_arrays" target="_blank">YAML Associative Array</a>)</label>
 							<div class="col-xs-7">
 								<textarea class="form-control" name="directions" rows="6">#if($contestInfo.getProperty("directions").getValue())$contestInfo.getProperty("directions").getValue()#end</textarea>
 							</div>
 						</div>
-		
+
 						<div class="form-group">
 							<label class="col-sm-2 col-xs-5 control-label" for="slideshow">Slideshow (<a href="https://en.wikipedia.org/wiki/YAML#Lists" target="_blank">YAML List of Inline Lists</a>) <code>[URL, Title, Caption]</code></label>
 							<div class="col-xs-7">
@@ -353,7 +356,7 @@
 					<fieldset>
 						<div class="form-group">
 							<label class="col-sm-2 control-label" for="category">Category Winners</label>
-		
+
 							<div class="col-sm-2 control-label">Elementary <i class="iconfontello-medal"></i></div>
 							<div class="col-sm-1">
 								<input type="number" class="form-control" name="counts_category_elementary_medal" value="#if($awardCriteria.category_elementary_medal)$awardCriteria.category_elementary_medal#end" required>
@@ -366,9 +369,9 @@
 							<div class="col-sm-1">
 								<input type="number" class="form-control" name="counts_category_high_medal" value="#if($awardCriteria.category_high_medal)$awardCriteria.category_high_medal#end" required>
 							</div>
-		
+
 							<br><br><br>
-		
+
 							<div class="col-sm-2 col-sm-offset-2 control-label">Elementary <i class="fa fa-trophy"></i></div>
 							<div class="col-sm-1">
 								<input type="number" class="form-control" name="counts_category_elementary_trophy" value="#if($awardCriteria.category_elementary_trophy)$awardCriteria.category_elementary_trophy#end"  required>
@@ -382,10 +385,10 @@
 								<input type="number" class="form-control" name="counts_category_high_trophy" value="#if($awardCriteria.category_high_trophy)$awardCriteria.category_high_trophy#end" required>
 							</div>
 						</div>
-		
+
 						<div class="form-group">
 							<label class="col-sm-3 control-label" for="categorySweep">Category Sweepstakes Winners</label>
-		
+
 							<div class="col-sm-2 control-label">Elementary <i class="fa fa-trophy"></i></div>
 							<div class="col-sm-1">
 								<input type="number" class="form-control" name="counts_categorySweep_elementary" value="#if($awardCriteria.categorySweep_elementary)$awardCriteria.categorySweep_elementary#end" required>
@@ -399,10 +402,10 @@
 								<input type="number" class="form-control" name ="counts_categorySweep_high" value="#if($awardCriteria.categorySweep_high)$awardCriteria.categorySweep_high#end" required>
 							</div>
 						</div>
-		
+
 						<div class="form-group">
 							<label class="col-sm-3 control-label" for="sweepstakes">Sweepstakes Winners</label>
-		
+
 							<div class="col-sm-2 control-label">Elementary <i class="fa fa-trophy"></i></div>
 							<div class="col-sm-1">
 								<input type="number" class="form-control" name="counts_sweepstakes_elementary" value="#if($awardCriteria.sweepstakes_elementary)$awardCriteria.sweepstakes_elementary#end" required>
@@ -457,7 +460,7 @@
 								<span class="help-block">Where should questions submitted through the <a href="/contactUs">contact us</a> page be sent?</span>
 							</div>
 						</div>
-		
+
 						<div class="form-group">
 							<label class="col-sm-2 control-label" for="email">Google E-Mail</label>
 							<div class="input-prepend col-sm-6">
@@ -477,7 +480,7 @@
 								<span class="help-block">Available variables: $account (bool), $name, \$title, $cost, $url</span>
 							</div>
 						</div>
-		
+
 						<div class="form-group">
 							<label class="col-sm-2 col-xs-5 control-label" for="forgotPassEmail">Forgot Password Email</label>
 							<div class="col-xs-7">
@@ -485,7 +488,7 @@
 								<span class="help-block">Available variables: \$title, \$user, $url</span>
 							</div>
 						</div>
-		
+
 						<div class="form-group">
 							<label class="col-sm-2 col-xs-5 control-label" for="questionEmail">Question Email</label>
 							<div class="col-xs-7">
@@ -520,7 +523,7 @@
 								<input type="text" name="privateKey" class="form-control" value='#if($contestInfo.getProperty("privateKey"))$contestInfo.getProperty("privateKey")#end'  required>
 							</div>
 						</div>
-		
+
 						<div class="form-group">
 							<label class="col-sm-2 control-label" for="oath2"><a href="https://developers.google.com/console/help/new/#generatingoauth2" target="_blank">Google OAuth 2.0 Credentials</a></label>
 							<div class="col-sm-1 control-label"><strong>Client Id</strong></div>
@@ -534,14 +537,14 @@
 									value='#if($contestInfo.getProperty("OAuth2ClientSecret"))$contestInfo.getProperty("OAuth2ClientSecret")#end'  required>
 							</div>
 						</div>
-		
+
 						<div class="form-group">
 							<label class="col-sm-3 col-xs-5 control-label" for="siteVerification"><a href="https://support.google.com/webmasters/answer/35659" target="_blank">Google Site Verification</a></label>
 							<div class="col-sm-6 col-xs-7">
 								<input type="text" value='#if($contestInfo.getProperty("siteVerification"))$contestInfo.getProperty("siteVerification")#end' name="siteVerification" class="form-control">
 							</div>
 						</div>
-		
+
 						<div class="form-group">
 							<label class="col-sm-2 col-xs-5 control-label" for="googleAnalytics"><a href="https://support.google.com/webmasters/answer/185871" target="_blank">Google Analytics Tracking JS</a></label>
 							<div class="col-xs-7">

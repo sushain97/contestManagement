@@ -7,9 +7,9 @@
 			<th title="Click to sort">School</th>
 			#if($admin) <th title="Click to sort">Number of Students</th> #end
 			#foreach($subject in $subjects)
-				<th title="Click to sort">$subject.getName() Score</th>
+				<th title="Click to sort">$subject.getName() <span class="hidden-xs">Score</span></th>
 			#end
-			<th title="Click to sort">Overall Score</th>
+			<th title="Click to sort">Overall <span class="hidden-xs">Score</span></th>
 		</tr>
 	</thead>
 	#foreach($school in $winners)

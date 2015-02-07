@@ -25,7 +25,6 @@ $(document).ready(function() {
 		calcCost();
 		checkAccount();
 		adjustGradeSelect();
-		$('input[name=recaptcha_response_field]').prop('required', true);
 
 		if(studentData) {
 			if(studentData.length > 0)

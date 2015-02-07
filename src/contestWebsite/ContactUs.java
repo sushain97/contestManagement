@@ -21,7 +21,11 @@ package contestWebsite;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Properties;
 
@@ -34,9 +38,6 @@ import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import net.tanesha.recaptcha.ReCaptchaImpl;
-import net.tanesha.recaptcha.ReCaptchaResponse;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -57,6 +58,11 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.labs.repackaged.org.json.JSONException;
+import com.google.appengine.labs.repackaged.org.json.JSONObject;
+import com.google.gdata.util.common.base.Charsets;
+import com.google.gdata.util.common.io.CharStreams;
+import com.google.gdata.util.common.io.InputSupplier;
 
 @SuppressWarnings("serial")
 public class ContactUs extends BaseHttpServlet {
@@ -119,15 +125,31 @@ public class ContactUs extends BaseHttpServlet {
 
 		Entity contestInfo = Retrieve.contestInfo();
 		if (!(Boolean) sess.getAttribute("nocaptcha")) {
-			String remoteAddr = req.getRemoteAddr();
-			ReCaptchaImpl reCaptcha = new ReCaptchaImpl();
-			reCaptcha.setPrivateKey((String) contestInfo.getProperty("privateKey"));
+			URL reCaptchaURL = new URL("https://www.google.com/recaptcha/api/siteverify");
+			String charset = java.nio.charset.StandardCharsets.UTF_8.name();
+			String reCaptchaQuery = String.format("secret=%s&response=%s&remoteip=%s",
+					URLEncoder.encode((String) contestInfo.getProperty("privateKey"), charset),
+					URLEncoder.encode(req.getParameter("g-recaptcha-response"), charset),
+					URLEncoder.encode(req.getRemoteAddr(), charset));
 
-			String challenge = req.getParameter("recaptcha_challenge_field");
-			String userResponse = req.getParameter("recaptcha_response_field");
-			ReCaptchaResponse reCaptchaResponse = reCaptcha.checkAnswer(remoteAddr, challenge, userResponse);
+			final URLConnection connection = new URL(reCaptchaURL + "?" + reCaptchaQuery).openConnection();
+			connection.setRequestProperty("Accept-Charset", charset);
+			String response = CharStreams.toString(CharStreams.newReaderSupplier(new InputSupplier<InputStream>() {
+				@Override
+				public InputStream getInput() throws IOException {
+					return connection.getInputStream();
+				}
+			}, Charsets.UTF_8));
 
-			if (!reCaptchaResponse.isValid()) {
+			try {
+				JSONObject JSONResponse = new JSONObject(response);
+				if (!JSONResponse.getBoolean("success")) {
+					resp.sendRedirect("/contactUs?captchaError=1");
+					return;
+				}
+			}
+			catch (JSONException e) {
+				e.printStackTrace();
 				resp.sendRedirect("/contactUs?captchaError=1");
 				return;
 			}

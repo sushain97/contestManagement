@@ -31,6 +31,7 @@
 		span.noneBtn { position: relative; left: 2.5em; }
 	</style>
 	<link type="text/css" href="/css/theme.bootstrap.css" rel="stylesheet">
+	<script type="text/javascript" src='https://www.google.com/recaptcha/api.js'></script>
 </head>
 
 <body>
@@ -289,15 +290,9 @@
 
 				#if(!$nocaptcha)
 					<div class="form-group" id="reCaptchaGroup">
-						<div class="input-group col-md-offset-2">
-							<script type="text/javascript"> var RecaptchaOptions = { theme : 'clean' }; </script>
-							<script type="text/javascript" src="//www.google.com/recaptcha/api/challenge?k=$publicKey"></script>
-							<noscript>
-								<iframe src="http://www.google.com/recaptcha/api/noscript?k=$publicKey" height="300" width="500" frameborder="0"></iframe> <br>
-								<textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
-								<input type="hidden" name="recaptcha_response_field" value="manual_challenge">
-							</noscript>
-							#if($captchaError) <span class="help-block text-danger lead">Incorrect captcha, try again.</span> #end
+						<div class="input-group col-xs-offset-1 col-md-offset-2">
+							<div class="g-recaptcha" data-sitekey="$publicKey" data-callback="captchaComplete()"></div>
+							#if($captchaError) <span class="help-block text-danger lead">Incomplete captcha, try again.</span> #end
 						</div>
 					</div>
 				#end

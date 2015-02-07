@@ -16,7 +16,7 @@
  */
 
 $(document).ready(function() {
-	$('h1 button').on('click', function() {
+	$('button#printButton').on('click', function() {
 		$('.accordion-body').addClass('in');
 		window.print();
 		$('.accordion-body').removeClass('in');

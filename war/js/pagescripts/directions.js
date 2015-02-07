@@ -16,7 +16,7 @@
  */
 
 $(document).ready(function() {
-	$('button').on('click', function() {
+	$('button#printButton').on('click', function() {
 		$('.panel-collapse').addClass('in');
 		window.print();
 		$('.panel-collapse').removeClass('in');

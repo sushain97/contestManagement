@@ -33,7 +33,7 @@
 					<div class="input-prepend col-sm-5 col-xs-8">
 						<div class="input-group">
 							<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-							<input type="text" name="name" class="form-control" id="name" #if($name) value="$name" #end #if($loggedIn) readonly #else required #end>
+							<input type="text" name="name" class="form-control" id="name" #if($name) value="$name" #end #if($loggedIn && !$admin) readonly #else required #end>
 						</div>
 					</div>
 				</div>
@@ -43,7 +43,7 @@
 					<div class="input-prepend col-sm-5 col-xs-8">
 						<div class="input-group">
 							<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
-							<input type="email" name="email" class="form-control" id="email" #if($email) value="$email" #end #if($loggedIn) readonly #else required #end>
+							<input type="email" name="email" class="form-control" id="email" #if($email) value="$email" #end #if($loggedIn && !$admin) readonly #else required #end>
 						</div>
 					</div>
 				</div>
@@ -51,7 +51,7 @@
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-4 control-label" for="school">Official School Name</label>
 					<div class="input-group col-sm-5 col-xs-8">
-						<input type="text" name="school" class="form-control" id="school" #if($school) value="$school" #end #if($loggedIn) readonly #else required #end>
+						<input type="text" name="school" class="form-control" id="school" #if($school) value="$school" #end #if($loggedIn && !$admin) readonly #else required #end>
 						<p class="help-block">The school with which you are affiliated</p>
 					</div>
 				</div>

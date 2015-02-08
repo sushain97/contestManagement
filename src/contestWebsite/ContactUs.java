@@ -97,6 +97,7 @@ public class ContactUs extends BaseHttpServlet {
 		context.put("captchaError", req.getParameter("captchaError"));
 		context.put("nocaptcha", loggedIn && !userCookie.isAdmin());
 		context.put("updated", req.getParameter("updated"));
+		context.put("admin", userCookie.isAdmin());
 		context.put("publicKey", infoAndCookie.x.getProperty("publicKey"));
 
 		close(context, ve.getTemplate("contactUs.html"), resp);

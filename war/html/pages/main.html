@@ -76,46 +76,48 @@
 				#end
 
 				<form method="post">
-					<table class="table table-striped table-condensed table-hover table-responsive" id="registrations">
-						<thead>
-							<tr>
-								#if(!$regEditClosed) <th></th> #end
-								<th class="col-xs-3 text-center">Student Name</th>
-								<th class="col-xs-1 text-center" style="border-right: 2px solid #ddd;">Grade</th>
-								<th class="col-xs-2 text-center">Number Sense</th>
-								<th class="col-xs-2 text-center">Calculator</th>
-								<th class="col-xs-2 text-center">Math</th>
-								<th class="col-xs-2 text-center">Science</th>
-								#if(!$regEditClosed) <th></th> #end
-							</tr>
-						</thead>
-						<tbody>
-						</tbody>
-						<tfoot>
-							#if(!$regEditClosed)
-								<tr id="addOptions">
-									<td class="text-center" colspan=2>
-										<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="1">
-											<i class="glyphicon glyphicon-plus"></i>
-											Add a student
-										</span>
-									</td>
-									<td class="text-center" colspan=2>
-										<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="5">
-											<i class="glyphicon glyphicon-plus"></i>
-											Add 5 students
-										</span>
-									</td>
-									<td class="text-center" colspan=2>
-										<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="10">
-											<i class="glyphicon glyphicon-plus"></i>
-											Add 10 students
-										</span>
-									</td>
+					<div class="table-responsive">
+						<table class="table table-striped table-condensed table-hover" id="registrations">
+							<thead>
+								<tr>
+									#if(!$regEditClosed) <th></th> #end
+									<th class="col-xs-3 text-center">Student Name</th>
+									<th class="col-xs-1 text-center" style="border-right: 2px solid #ddd;">Grade</th>
+									<th class="col-xs-2 text-center">Number Sense</th>
+									<th class="col-xs-2 text-center">Calculator</th>
+									<th class="col-xs-2 text-center">Math</th>
+									<th class="col-xs-2 text-center">Science</th>
+									#if(!$regEditClosed) <th></th> #end
 								</tr>
-							#end
-						</tfoot>
-					</table>
+							</thead>
+							<tbody>
+							</tbody>
+							<tfoot>
+								#if(!$regEditClosed)
+									<tr id="addOptions">
+										<td class="text-center" colspan=2>
+											<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="1">
+												<i class="glyphicon glyphicon-plus"></i>
+												Add a student
+											</span>
+										</td>
+										<td class="text-center" colspan=2>
+											<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="5">
+												<i class="glyphicon glyphicon-plus"></i>
+												Add 5 students
+											</span>
+										</td>
+										<td class="text-center" colspan=2>
+											<span class="btn btn-xs btn-default tableBtn addStudentBtn" data-numStudents="10">
+												<i class="glyphicon glyphicon-plus"></i>
+												Add 10 students
+											</span>
+										</td>
+									</tr>
+								#end
+							</tfoot>
+						</table>
+					</div>
 
 					<div class="pull-left lead" style="display: inline-block;">
 						<strong>Registration Charges:</strong> $<span id="cost"></span>
@@ -215,20 +217,22 @@ Bobby Doe	8&#9;x&#9;&#9;x&#9;x</pre>
 						<textarea id="importData" class="form-control" placeholder="Copy and paste your data here." rows="10"></textarea>
 					</div>
 					<div class="col-md-6">
-						<table class="table table-striped table-condensed table-hover table-responsive text-center" id="importTable">
-							<thead>
-								<tr>
-									<th class="text-center">Name</th>
-									<th class="text-center">Grade</th>
-									<th class="text-center"><abbr title="Number Sense">N</abbr></th>
-									<th class="text-center"><abbr title="Calculator">C</abbr></th>
-									<th class="text-center"><abbr title="Mathematics">M</abbr></th>
-									<th class="text-center"><abbr title="Science">S</abbr></th>
-								</tr>
-							</thead>
-							<tbody>
-							</tbody>
-						</table>
+						<div class="table-responsive">
+							<table class="table table-striped table-condensed table-hover text-center" id="importTable">
+								<thead>
+									<tr>
+										<th class="text-center">Name</th>
+										<th class="text-center">Grade</th>
+										<th class="text-center"><abbr title="Number Sense">N</abbr></th>
+										<th class="text-center"><abbr title="Calculator">C</abbr></th>
+										<th class="text-center"><abbr title="Mathematics">M</abbr></th>
+										<th class="text-center"><abbr title="Science">S</abbr></th>
+									</tr>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+						</div>
 					</div>
 				</div>
 				<div class="modal-footer">

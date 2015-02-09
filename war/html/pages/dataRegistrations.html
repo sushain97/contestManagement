@@ -111,138 +111,139 @@
 							The first number for each test indicates number of registrations and second the number of tests actually taken. <br>
 							Click a cell to edit its corresponding registration.
 						</p>
+						<div class="table-responsive">
+							<table class="table table-condensed table-hover regTable">
+								<thead>
+									<tr>
+										<th class="hidden-print"></th>
+										<th>Name</th>
+										<th colspan="2" class="hidden-print">Email</th>
+										<th><abbr title="Registration Type">Reg.</abbr></th>
+										<th #if($classificationQuestion != 'no') colspan="2" #else colspan="1" #end>School</th>
+										<!-- <th>Payment</th>  -->
+										<th><abbr title="Account">Acct.</abbr></th>
+										#foreach($test in $Test.getTests($level))
+											<th colspan="2" class="text-center"><abbr title="$test.getGrade()th $test.getSubject().getName()">$test</abbr></th>
+										#end
+										<th>Cost</th>
+									</tr>
+								</thead>
+								<tbody>
+									#set($totalCost = 0)
 
-						<table class="table table-condensed table-hover regTable">
-							<thead>
-								<tr>
-									<th class="hidden-print"></th>
-									<th>Name</th>
-									<th colspan="2" class="hidden-print">Email</th>
-									<th><abbr title="Registration Type">Reg.</abbr></th>
-									<th #if($classificationQuestion != 'no') colspan="2" #else colspan="1" #end>School</th>
-									<!-- <th>Payment</th>  -->
-									<th><abbr title="Account">Acct.</abbr></th>
+									#set($testTotals = {})
 									#foreach($test in $Test.getTests($level))
-										<th colspan="2" class="text-center"><abbr title="$test.getGrade()th $test.getSubject().getName()">$test</abbr></th>
+										$!testTotals.put($test, 0)
 									#end
-									<th>Cost</th>
-								</tr>
-							</thead>
-							<tbody>
-								#set($totalCost = 0)
 
-								#set($testTotals = {})
-								#foreach($test in $Test.getTests($level))
-									$!testTotals.put($test, 0)
-								#end
+									#set($subjectTotals = {})
+									#foreach($subject in $subjects)
+										$!subjectTotals.put($subject, 0)
+									#end
 
-								#set($subjectTotals = {})
-								#foreach($subject in $subjects)
-									$!subjectTotals.put($subject, 0)
-								#end
+									#set($gradeTotals = {})
+									#foreach($grade in $level.getGrades())
+										$!gradeTotals.put($grade, 0)
+									#end
 
-								#set($gradeTotals = {})
-								#foreach($grade in $level.getGrades())
-									$!gradeTotals.put($grade, 0)
-								#end
+									#foreach($reg in $registrations.get($level))
+										#if($reg.hasProperty("studentData"))
+											<tr data-eid="$reg.getKey().getId()">
+												<td class="uneditable text-center hidden-print" title='$dateFormat.format($reg.getProperty("timestamp"))'>
+													<a class="btn btn-xs btn-primary" href="/editRegistration?key=$reg.getKey().getId()">Edit</a>
+												</td>
+												<td data-type="name">$reg.getProperty("name")</td>
 
-								#foreach($reg in $registrations.get($level))
-									#if($reg.hasProperty("studentData"))
-										<tr data-eid="$reg.getKey().getId()">
-											<td class="uneditable text-center hidden-print" title='$dateFormat.format($reg.getProperty("timestamp"))'>
-												<a class="btn btn-xs btn-primary" href="/editRegistration?key=$reg.getKey().getId()">Edit</a>
-											</td>
-											<td data-type="name">$reg.getProperty("name")</td>
-
-											#if($reg.getProperty("email"))
-											<td data-type="email" class="email hidden-print" style="padding-right: 0px;">$reg.getProperty("email")</td>
-											<td class="uneditable hidden-print text-center" style="padding-left: 0px">
-												<a href='mailto:$reg.getProperty("name")<$reg.getProperty("email")>' target="_blank"><i class="glyphicon glyphicon-envelope"></i></a>
-											</td>
-											#else
-											<td class="hidden-print"></td><td class="hidden-print"></td>
-											#end
-
-											<td data-type="registrationType" class="regType uneditable">$reg.getProperty("registrationType")</td>
-											<td data-type="schoolName">$reg.getProperty("schoolName")</td>
-											#if($classificationQuestion != 'no') <td data-type="classification" class="classification uneditable">$reg.getProperty("classification")</td> #end
-											<!-- <td data-type="paid" class="paidComments">$reg.getProperty("paid")</td>  -->
-											<td class="account uneditable text-center"><i class="glyphicon #if($reg.getProperty("account") == "yes") glyphicon-ok #else glyphicon-remove #end"></i></td>
-
-											#set($studentData = $regJSONtoList.apply($reg.getProperty("studentData")))
-											#set($testStudents = {})
-
-											#foreach($student in $studentData)
-												#set($studentGrade = $student.get("grade"))
-												#set($studentName = $student.get("name"))
-												#foreach($subject in $subjects)
-													#set($testString = $studentGrade.toString().concat($subject.toString()))
-													#set($test = $Test.fromString($testString))
-
-													#if(!$testStudents.containsKey($test))
-														$!testStudents.put($test, [])
-													#end
-
-													#if($student.get($subject.toString()))
-														#set($_ = $testStudents.get($Test.fromString($testString)).add($studentName))
-
-														#set($newTotal = $testTotals.get($test) + 1)
-														#set($_ = $testTotals.put($test, $newTotal))
-
-														#set($newTotal = $subjectTotals.get($subject) + 1)
-														#set($_ = $subjectTotals.put($subject, $newTotal))
-													#end
+												#if($reg.getProperty("email"))
+												<td data-type="email" class="email hidden-print" style="padding-right: 0px;">$reg.getProperty("email")</td>
+												<td class="uneditable hidden-print text-center" style="padding-left: 0px">
+													<a href='mailto:$reg.getProperty("name")<$reg.getProperty("email")>' target="_blank"><i class="glyphicon glyphicon-envelope"></i></a>
+												</td>
+												#else
+												<td class="hidden-print"></td><td class="hidden-print"></td>
 												#end
 
-												#set($newTotal = $!gradeTotals.get($studentGrade) + 1)
-												#set($_= $!gradeTotals.put($studentGrade, $newTotal))
-											#end
+												<td data-type="registrationType" class="regType uneditable">$reg.getProperty("registrationType")</td>
+												<td data-type="schoolName">$reg.getProperty("schoolName")</td>
+												#if($classificationQuestion != 'no') <td data-type="classification" class="classification uneditable">$reg.getProperty("classification")</td> #end
+												<!-- <td data-type="paid" class="paidComments">$reg.getProperty("paid")</td>  -->
+												<td class="account uneditable text-center"><i class="glyphicon #if($reg.getProperty("account") == "yes") glyphicon-ok #else glyphicon-remove #end"></i></td>
 
-											#foreach($test in $Test.getTests($level))
-												<td class="test uneditable">
-													#set($title = "")
+												#set($studentData = $regJSONtoList.apply($reg.getProperty("studentData")))
+												#set($testStudents = {})
 
-													#if($testStudents.get($test))
-														#set($students = $testStudents.get($test))
-													#else
-														#set($students = [])
-													#end
+												#foreach($student in $studentData)
+													#set($studentGrade = $student.get("grade"))
+													#set($studentName = $student.get("name"))
+													#foreach($subject in $subjects)
+														#set($testString = $studentGrade.toString().concat($subject.toString()))
+														#set($test = $Test.fromString($testString))
 
-													#if($students)
-														#foreach($student in $students)
-															#if($foreach.hasNext)
-																#set($title = $title.concat($student).concat(", "))
-															#else
-																#set($title = $title.concat($student))
-															#end
+														#if(!$testStudents.containsKey($test))
+															$!testStudents.put($test, [])
+														#end
+
+														#if($student.get($subject.toString()))
+															#set($_ = $testStudents.get($Test.fromString($testString)).add($studentName))
+
+															#set($newTotal = $testTotals.get($test) + 1)
+															#set($_ = $testTotals.put($test, $newTotal))
+
+															#set($newTotal = $subjectTotals.get($subject) + 1)
+															#set($_ = $subjectTotals.put($subject, $newTotal))
 														#end
 													#end
 
-													<a class="popovers" href="#" data-toggle="popover" data-html="false" data-placement="bottom" data-title="$esc.html($title)">
-														#if($students) $students.size() #else 0 #end
-													</a>
-												</td>
-												<td class="uneditable">#if($reg.getProperty($test.toString().toUpperCase()))$reg.getProperty($test.toString().toUpperCase())#else 0 #end</td>
-											#end
+													#set($newTotal = $!gradeTotals.get($studentGrade) + 1)
+													#set($_= $!gradeTotals.put($studentGrade, $newTotal))
+												#end
 
-											#set($totalCost = $totalCost + $reg.getProperty("cost"))
-											<td class="uneditable">&#36;$reg.getProperty("cost")</td>
-										</tr>
+												#foreach($test in $Test.getTests($level))
+													<td class="test uneditable">
+														#set($title = "")
+
+														#if($testStudents.get($test))
+															#set($students = $testStudents.get($test))
+														#else
+															#set($students = [])
+														#end
+
+														#if($students)
+															#foreach($student in $students)
+																#if($foreach.hasNext)
+																	#set($title = $title.concat($student).concat(", "))
+																#else
+																	#set($title = $title.concat($student))
+																#end
+															#end
+														#end
+
+														<a class="popovers" href="#" data-toggle="popover" data-html="false" data-placement="bottom" data-title="$esc.html($title)">
+															#if($students) $students.size() #else 0 #end
+														</a>
+													</td>
+													<td class="uneditable">#if($reg.getProperty($test.toString().toUpperCase()))$reg.getProperty($test.toString().toUpperCase())#else 0 #end</td>
+												#end
+
+												#set($totalCost = $totalCost + $reg.getProperty("cost"))
+												<td class="uneditable">&#36;$reg.getProperty("cost")</td>
+											</tr>
+										#end
 									#end
-								#end
-							</tbody>
-							<tfoot>
-								<tr>
-									<td><strong>Total</strong></td>
-									#if($classificationQuestion == 'no') #set($end = 6) #else #set($end = 7) #end
-									#foreach($i in [1..$end]) <td #if($i <= 3) class="hidden-print" #end></td> #end
-									#foreach($test in $Test.getTests($level))
-										<td colspan="2"><strong>$testTotals.get($test)</strong></td>
-									#end
-									<td><strong>&#36;$totalCost</strong></td>
-								</tr>
-							</tfoot>
-						</table>
+								</tbody>
+								<tfoot>
+									<tr>
+										<td><strong>Total</strong></td>
+										#if($classificationQuestion == 'no') #set($end = 6) #else #set($end = 7) #end
+										#foreach($i in [1..$end]) <td #if($i <= 3) class="hidden-print" #end></td> #end
+										#foreach($test in $Test.getTests($level))
+											<td colspan="2"><strong>$testTotals.get($test)</strong></td>
+										#end
+										<td><strong>&#36;$totalCost</strong></td>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
 
 						<div class="row">
 							<div class="col-sm-3">
@@ -286,88 +287,92 @@
 				<div class="row">
 					<div class="col-md-6">
 						<h3>Registered Students and Fees by Level</h3>
-						<table class="table text-center overviewTable" style="width: auto;">
-							<thead>
-								<tr>
-									<th></th>
-									#foreach($level in $levels)
-										#if($enabledLevels.contains($level))
-											<th class="text-center">$level.getName() School</th>
+						<div class="table-responsive">
+							<table class="table text-center overviewTable" style="width: auto;">
+								<thead>
+									<tr>
+										<th></th>
+										#foreach($level in $levels)
+											#if($enabledLevels.contains($level))
+												<th class="text-center">$level.getName() School</th>
+											#end
 										#end
-									#end
-									<th class="text-center">Σ</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class="table-vertical-header">Students</td>
-									#set($total = 0)
-									#foreach($level in $levels)
-										#if($enabledLevels.contains($level))
-											<td>$allStudentsTotal.get($level)</td>
-											#set($total = $total + $allStudentsTotal.get($level))
+										<th class="text-center">Σ</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td class="table-vertical-header">Students</td>
+										#set($total = 0)
+										#foreach($level in $levels)
+											#if($enabledLevels.contains($level))
+												<td>$allStudentsTotal.get($level)</td>
+												#set($total = $total + $allStudentsTotal.get($level))
+											#end
 										#end
-									#end
-									<td><b>$total</b></td>
-								</tr>
-								<tr>
-									<td class="table-vertical-header">Fees</td>
-									#set($total = 0)
-									#foreach($level in $levels)
-										#if($enabledLevels.contains($level))
-											<td>$$allTotalCosts.get($level)</td>
-											#set($total = $total + $allTotalCosts.get($level))
+										<td><b>$total</b></td>
+									</tr>
+									<tr>
+										<td class="table-vertical-header">Fees</td>
+										#set($total = 0)
+										#foreach($level in $levels)
+											#if($enabledLevels.contains($level))
+												<td>$$allTotalCosts.get($level)</td>
+												#set($total = $total + $allTotalCosts.get($level))
+											#end
 										#end
-									#end
-									<td><b>$$total</b></td>
-								</tr>
-							</tbody>
-						</table>
+										<td><b>$$total</b></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 						<div id="studentsPieGraph"></div>
 					</div>
 					<div class="col-md-6">
 						<h3>Test Registrations by Subject and Level</h3>
-						<table class="table text-center overviewTable" style="width: auto;">
-							<thead>
-								<tr>
-									<th></th>
+						<div class="table-responsive">
+							<table class="table text-center overviewTable" style="width: auto;">
+								<thead>
+									<tr>
+										<th></th>
+										#foreach($subject in $subjects)
+											<th class="text-center">$subject.getName()</th>
+										#end
+										<th class="text-center">Σ</th>
+									</tr>
+								</thead>
+								<tbody>
+									#set($totals = {})
 									#foreach($subject in $subjects)
-										<th class="text-center">$subject.getName()</th>
+										$!totals.put($subject, 0)
 									#end
-									<th class="text-center">Σ</th>
-								</tr>
-							</thead>
-							<tbody>
-								#set($totals = {})
-								#foreach($subject in $subjects)
-									$!totals.put($subject, 0)
-								#end
 
-								#foreach($level in $levels)
-									#if($enabledLevels.contains($level))
-										<tr>
-											<td class="table-vertical-header">$level.getName() School</td>
-											#foreach($subject in $subjects)
-												<td>$allSubjectTotals.get($level).get($subject)</td>
+									#foreach($level in $levels)
+										#if($enabledLevels.contains($level))
+											<tr>
+												<td class="table-vertical-header">$level.getName() School</td>
+												#foreach($subject in $subjects)
+													<td>$allSubjectTotals.get($level).get($subject)</td>
 
-												#set($newTotal = $totals.get($subject) + $allSubjectTotals.get($level).get($subject))
-												#set($_ = $totals.put($subject, $newTotal))
-											#end
-											<td><b>$allTestsTotal.get($level)</b></td>
-										</tr>
+													#set($newTotal = $totals.get($subject) + $allSubjectTotals.get($level).get($subject))
+													#set($_ = $totals.put($subject, $newTotal))
+												#end
+												<td><b>$allTestsTotal.get($level)</b></td>
+											</tr>
+										#end
 									#end
-								#end
-								<tr>
-									<td class="table-vertical-header text-center">Σ</td>
-									#set($total = 0)
-									#foreach($subject in $subjects)
-										<td><b>$totals.get($subject)</b></td>
-										#set($total = $total + $totals.get($subject))
-									#end
-									<td><b>$total</b></td>
-								</tr>
-							</tbody>
-						</table>
+									<tr>
+										<td class="table-vertical-header text-center">Σ</td>
+										#set($total = 0)
+										#foreach($subject in $subjects)
+											<td><b>$totals.get($subject)</b></td>
+											#set($total = $total + $totals.get($subject))
+										#end
+										<td><b>$total</b></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 						<div id="subjectPieGraph"></div>
 					</div>
 				</div>

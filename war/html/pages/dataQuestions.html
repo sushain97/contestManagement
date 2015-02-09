@@ -29,52 +29,56 @@
 		<h2>Questions & Clarifications Requested</h2>
 		<h3>Unresolved Questions</h3>
 		<form method="post">
-			<table class="table table-striped table-condensed table-hover">
-				<thead>
-					<tr>
-						<th style="width: 5%">Resolved?</th>
-						<th>Name</th>
-						<th>E-Mail</th>
-						<th>School Name</th>
-						<th>Message</th>
-					</tr>
-				</thead>
-				<tbody>
-					#foreach($q in $unresolvedQs)
-					<tr>
-						<td style="text-align: center"><input type="checkbox" name="$q.getKey().getId()" value="r"></td>
-						<td>$q.getProperty("name")</td>
-						<td><a href='mailto:$q.getProperty("email")' target="_blank">$q.getProperty("email")</a></td>
-						<td>$q.getProperty("school")</td>
-						<td>#if($q.getProperty("comment").getValue()) $q.getProperty("comment").getValue() #else $q.getProperty("comment") #end</td>
-					</tr>
-					#end
-				</tbody>
-			</table>
+			<div class="table-responsive">
+				<table class="table table-striped table-condensed table-hover">
+					<thead>
+						<tr>
+							<th style="width: 5%">Resolved?</th>
+							<th>Name</th>
+							<th>E-Mail</th>
+							<th>School Name</th>
+							<th>Message</th>
+						</tr>
+					</thead>
+					<tbody>
+						#foreach($q in $unresolvedQs)
+						<tr>
+							<td style="text-align: center"><input type="checkbox" name="$q.getKey().getId()" value="r"></td>
+							<td>$q.getProperty("name")</td>
+							<td><a href='mailto:$q.getProperty("email")' target="_blank">$q.getProperty("email")</a></td>
+							<td>$q.getProperty("school")</td>
+							<td>#if($q.getProperty("comment").getValue()) $q.getProperty("comment").getValue() #else $q.getProperty("comment") #end</td>
+						</tr>
+						#end
+					</tbody>
+				</table>
+			</div>
 
 			<h3>Resolved Questions</h3>
-			<table class="table table-striped table-condensed table-hover">
-				<thead>
-					<tr>
-						<th style="width: 5%">Delete?</th>
-						<th>Name</th>
-						<th>E-Mail</th>
-						<th>School Name</th>
-						<th>Message</th>
-					</tr>
-				</thead>
-				<tbody>
-					#foreach($q in $resolvedQs)
-					<tr>
-						<td style="text-align: center"><input type="checkbox" name="$q.getKey().getId()" value="d"></td>
-						<td>$q.getProperty("name")</td>
-						<td><a href='mailto:$q.getProperty("email")' target="_blank">$q.getProperty("email")</a></td>
-						<td>$q.getProperty("school")</td>
-						<td>#if($q.getProperty("comment").getValue()) $q.getProperty("comment").getValue() #else $q.getProperty("comment") #end</td>
-					</tr>
-					#end
-				</tbody>
-			</table>
+			<div class="table-responsive">
+				<table class="table table-striped table-condensed table-hover">
+					<thead>
+						<tr>
+							<th style="width: 5%">Delete?</th>
+							<th>Name</th>
+							<th>E-Mail</th>
+							<th>School Name</th>
+							<th>Message</th>
+						</tr>
+					</thead>
+					<tbody>
+						#foreach($q in $resolvedQs)
+						<tr>
+							<td style="text-align: center"><input type="checkbox" name="$q.getKey().getId()" value="d"></td>
+							<td>$q.getProperty("name")</td>
+							<td><a href='mailto:$q.getProperty("email")' target="_blank">$q.getProperty("email")</a></td>
+							<td>$q.getProperty("school")</td>
+							<td>#if($q.getProperty("comment").getValue()) $q.getProperty("comment").getValue() #else $q.getProperty("comment") #end</td>
+						</tr>
+						#end
+					</tbody>
+				</table>
+			</div>
 
 			<div class="form-group">
 				<div class="col-sm-12">

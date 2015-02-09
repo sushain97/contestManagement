@@ -56,20 +56,22 @@
 			<h3>Test Registrations</h3>
 			To make any changes to your student registrations, <a href="/login">log in</a> if you have an account and <a href="/contactUs">contact us</a> if you don't. <br><br>
 
-			<table class="table table-striped table-condensed table-hover table-responsive" id="registrations">
-				<thead>
-					<tr>
-						<th class="col-xs-3 text-center">Student Name</th>
-						<th class="col-xs-1 text-center" style="border-right: 2px solid #ddd;">Grade</th>
-						<th class="col-xs-2 text-center">Number Sense</th>
-						<th class="col-xs-2 text-center">Calculator</th>
-						<th class="col-xs-2 text-center">Math</th>
-						<th class="col-xs-2 text-center">Science</th>
-					</tr>
-				</thead>
-				<tbody>
-				</tbody>
-			</table>
+			<div class="table-responsive">
+				<table class="table table-striped table-condensed table-hover" id="registrations">
+					<thead>
+						<tr>
+							<th class="col-xs-3 text-center">Student Name</th>
+							<th class="col-xs-1 text-center" style="border-right: 2px solid #ddd;">Grade</th>
+							<th class="col-xs-2 text-center">Number Sense</th>
+							<th class="col-xs-2 text-center">Calculator</th>
+							<th class="col-xs-2 text-center">Math</th>
+							<th class="col-xs-2 text-center">Science</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
 		#elseif(!$registrationError.equals(''))
 			<div class="alert alert-danger alert-dismissable">
 				<a class="close" data-dismiss="alert">&times;</a> <strong>Oh no!</strong> $registrationError
@@ -211,7 +213,7 @@
 					Please type student names in a <b>First Last</b> format. For example, type <b>John Doe</b> instead of <b>Doe, John</b> or <b>JOHN DOE</b>.
 				</span>
 				<div class="col-md-offset-1 col-md-10">
-					<table class="table table-striped table-condensed table-hover table-responsive" id="registrations">
+					<table class="table table-striped table-condensed table-hover" id="registrations">
 						<thead>
 							<tr>
 								<th></th>
@@ -345,20 +347,22 @@ Bobby Doe	8&#9;x&#9;&#9;x&#9;x</pre>
 						<textarea id="importData" class="form-control" placeholder="Copy and paste your data here." rows="10"></textarea>
 					</div>
 					<div class="col-md-6">
-						<table class="table table-striped table-condensed table-hover table-responsive text-center" id="importTable">
-							<thead>
-								<tr>
-									<th class="text-center">Name</th>
-									<th class="text-center">Grade</th>
-									<th class="text-center"><abbr title="Number Sense">N</abbr></th>
-									<th class="text-center"><abbr title="Calculator">C</abbr></th>
-									<th class="text-center"><abbr title="Mathematics">M</abbr></th>
-									<th class="text-center"><abbr title="Science">S</abbr></th>
-								</tr>
-							</thead>
-							<tbody>
-							</tbody>
-						</table>
+						<div class="table-responsive">
+							<table class="table table-striped table-condensed table-hover text-center" id="importTable">
+								<thead>
+									<tr>
+										<th class="text-center">Name</th>
+										<th class="text-center">Grade</th>
+										<th class="text-center"><abbr title="Number Sense">N</abbr></th>
+										<th class="text-center"><abbr title="Calculator">C</abbr></th>
+										<th class="text-center"><abbr title="Mathematics">M</abbr></th>
+										<th class="text-center"><abbr title="Science">S</abbr></th>
+									</tr>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+						</div>
 					</div>
 				</div>
 				<div class="modal-footer">

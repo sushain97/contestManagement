@@ -5,37 +5,39 @@
 	$subject.getName() Winners
 </h2>
 
-<table class="table table-striped table-condensed table-hover">
-	<thead>
-		<tr>
-			<th title="Click to sort">Rank</th>
-			<th title="Click to sort">Student Name</th>
-			<th title="Click to sort">School</th>
-			<th title="Click to sort">Score</th>
-		</tr>
-	</thead>
-	#foreach($student in $winners)
-		#if($student.getScore($subject).getScoreNum() < 0)
-			#break
-		#end
-		<tr>
-			#if($foreach.count > $trophy + $medal && !$admin)
+<div class="table-responsive">
+	<table class="table table-striped table-condensed table-hover">
+		<thead>
+			<tr>
+				<th title="Click to sort">Rank</th>
+				<th title="Click to sort">Student Name</th>
+				<th title="Click to sort">School</th>
+				<th title="Click to sort">Score</th>
+			</tr>
+		</thead>
+		#foreach($student in $winners)
+			#if($student.getScore($subject).getScoreNum() < 0)
 				#break
 			#end
-			<td> $foreach.count
-				#if($foreach.count <= $trophy) <i class="fa fa-trophy"></i> #end
-				#if($foreach.count > $trophy && $foreach.count <= ($medal + $trophy)) <i class="iconfontello-medal"></i> #end
-			</td>
-			<td> #if($hideFullNames) $student.getPublicName() #else $student.getName() #end </td>
+			<tr>
+				#if($foreach.count > $trophy + $medal && !$admin)
+					#break
+				#end
+				<td> $foreach.count
+					#if($foreach.count <= $trophy) <i class="fa fa-trophy"></i> #end
+					#if($foreach.count > $trophy && $foreach.count <= ($medal + $trophy)) <i class="iconfontello-medal"></i> #end
+				</td>
+				<td> #if($hideFullNames) $student.getPublicName() #else $student.getName() #end </td>
 
-			#set($schoolName = $student.getSchool().getName())
-			#if($admin)
-				<td><a href="/data/scores?type=school_$esc.url($schoolName)&level=$level">$schoolName</a></td>
-			#else
-				<td>$schoolName</td>
-			#end
+				#set($schoolName = $student.getSchool().getName())
+				#if($admin)
+					<td><a href="/data/scores?type=school_$esc.url($schoolName)&level=$level">$schoolName</a></td>
+				#else
+					<td>$schoolName</td>
+				#end
 
-			<td> #if($student.getScore($subject)) $student.getScore($subject) #else <span class="text-danger">???</span> #end </td>
-		</tr>
-	#end
-</table>
+				<td> #if($student.getScore($subject)) $student.getScore($subject) #else <span class="text-danger">???</span> #end </td>
+			</tr>
+		#end
+	</table>
+</div>

@@ -41,7 +41,7 @@
 		<h1>Contest Registration #if($updated) #include("printButton.html") #end</h1>
 
 		#if($updated)
-			<div class="alert alert-success">
+			<div class="alert alert-success alert-dismissable">
 				<a class="close" data-dismiss="alert">&times;</a> <strong>Success! </strong>Your registration has been
 				recorded. You will receive a confirmation e-mail soon.
 			</div>
@@ -71,7 +71,7 @@
 				</tbody>
 			</table>
 		#elseif(!$registrationError.equals(''))
-			<div class="alert alert-danger">
+			<div class="alert alert-danger alert-dismissable">
 				<a class="close" data-dismiss="alert">&times;</a> <strong>Oh no!</strong> $registrationError
 			</div>
 		#elseif($error)
@@ -79,7 +79,7 @@
 				<strong>Oh no!</strong> There has been a problem with your registration, look below.
 			</div>
 		#else
-			<div class="alert alert-info">
+			<div class="alert alert-info alert-dismissable">
 				<a class="close" data-dismiss="alert">&times;</a>
 				<strong>Remember! </strong>
 				Do not register multiple times, <a class="alert-link" href="/contactUs">contact us</a> or <a class="alert-link" href="/login">login</a> to make changes to your registration.
@@ -91,7 +91,7 @@
 			<fieldset>
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-5 control-label" for="registration">Registration Type</label>
-					<div class="input-group col-sm-7 col-xs-7">
+					<div class="col-xs-7">
 						<label class="radio-inline">
 							<input type="radio" name="registrationType" id="regType1" value="coach" #if($coach) checked #end required> Coach
 						</label>
@@ -107,7 +107,7 @@
 
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-5 control-label" for="schoolLevel">School Level</label>
-					<div class="input-group col-sm-5 col-xs-7">
+					<div class="col-sm-5 col-xs-7">
 						#foreach($level in $enabledLevels)
 							<label class="radio-inline">
 								<input type="radio" name="schoolLevel" id="schoolType$level.getName()" value="$level" #if($schoolLevel == $level.toString() || $enabledLevels.size() < 2) checked #end required> $level.getName()
@@ -124,7 +124,7 @@
 				#if($classificationQuestion != 'no')
 					<div class="form-group">
 						<label class="col-sm-2 col-xs-5 control-label" for="classification">School Classification</label>
-						<div class="input-group col-sm-5 col-xs-7">
+						<div class="col-sm-5 col-xs-7">
 							#foreach($i in [1..6])
 								<label class="radio-inline">
 									<input type="radio" name="classification" value="${i}A" #if($classification == $i + "A") checked #end #if($classificationQuestion == 'required') required #end> ${i}A
@@ -136,7 +136,7 @@
 
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-4 control-label" for="schoolName">Official School Name</label>
-					<div class="input-group col-sm-5 col-xs-8">
+					<div class="col-sm-5 col-xs-8">
 						<input type="text" name="schoolName" class="form-control"  id="schoolName" value="$schoolName" required>
 						<span class="help-block"><strong>Omit</strong> "Middle School", "High School", "Junior High School", etc.</span>
 					</div>
@@ -169,11 +169,13 @@
 					</p>
 					<label class="col-sm-2 col-xs-6 control-label" for="account">Create an Account?</label>
 
-					<div class="input-group col-sm-5 col-xs-1">
-						<label class="checkbox-inline">
-							<input type="checkbox" name="account" id="account" #if($account) checked #end>
-							&nbsp;
-						</label>
+					<div class="col-sm-5 col-xs-1">
+						<div class="input-group">
+							<label class="checkbox-inline">
+								<input type="checkbox" name="account" id="account" #if($account) checked #end>
+								&nbsp;
+							</label>
+						</div>
 					</div>
 				</div>
 

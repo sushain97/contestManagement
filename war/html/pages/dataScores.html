@@ -45,9 +45,13 @@
 		table#statusTable { max-width: 550px; }
 
 		div#sidebarMenu {
-			background-color: white;
 			z-index: 1000;
 			min-height: 100%;
+		}
+		@media (max-width: 767px) {
+			div#sidebarMenu {
+				background-color: white;
+			}
 		}
 	</style>
 	<link type="text/css" href="/css/footer.css" rel="stylesheet">

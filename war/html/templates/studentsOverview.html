@@ -49,7 +49,7 @@
 		<tfoot>
 			<td colspan="3"><strong>Missing</strong></td>
 			#foreach($subject in $subjects)
-				<td>$missingTests.get($subject) tests</td>
+				<td>$missingTests.get($subject) test#if($missingTests.get($subject) != 1)s#end</td>
 			#end
 		</tfoot>
 	</table>

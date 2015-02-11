@@ -59,7 +59,7 @@ public class ClearScores extends BaseHttpServlet {
 			javax.jdo.Query jdoQuery = pm.newQuery(School.class);
 			jdoQuery.deletePersistentAll();
 
-			String[] datastoreKinds = {"CategoryWinners", "CategorySweepstakesWinners", "SweepstakesWinners", "Visualization"};
+			String[] datastoreKinds = {"CategoryWinners", "CategorySweepstakesWinners", "SweepstakesWinners", "Visualization", "Student"};
 			Query datastoreQuery;
 			for (String kind : datastoreKinds) {
 				while (true) {

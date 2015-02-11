@@ -10,8 +10,11 @@
 				#end
 			</tr>
 		</thead>
-		#set($totalMissingTests = 0)
 		#set($missingStudents = 0)
+		#set($missingTests = {})
+		#foreach($subject in $subjects)
+			$!missingTests.put($subject, 0)
+		#end
 
 		#foreach($student in $students)
 		#set($scores = $student.getScores())
@@ -24,7 +27,15 @@
 				#set($score = $scores.get($subject))
 				#set($testString = $student.getGrade().toString() + $subject.toString())
 				<td #if($score && $score.getScoreNum() >= $qualifyingCriteria.get($testString)) class="qual text-success" #end>
-					#if($score) $score #elseif(!$score && $student.shouldHaveScore($subject)) ? #else - #end
+					#if($score)
+						$score
+					#elseif(!$score && $student.shouldHaveScore($subject) && $scores.size() > 0)
+						?
+						#set($newTotal = $missingTests.get($subject) + 1)
+						#set($_ = $missingTests.put($subject, $newTotal))
+					#else
+						-
+					#end
 				</td>
 			#end
 		</tr>
@@ -32,11 +43,22 @@
 		#if($scores.size() == 0)
 			#set($missingStudents = $missingStudents + 1)
 		#end
-		#set($totalMissingTests = $totalMissingTests + ($student.getRegisteredSubjects().size() - $scores.size()))
 
 		#end
+
+		<tfoot>
+			<td colspan="3"><strong>Missing</strong></td>
+			#foreach($subject in $subjects)
+				<td>$missingTests.get($subject) tests</td>
+			#end
+		</tfoot>
 	</table>
 </div>
+
+#set($totalMissingTests = 0)
+#foreach($subject in $subjects)
+	#set($totalMissingTests = $totalMissingTests + $missingTests.get($subject))
+#end
 
 <h4><strong class="text-warning">Missing tests from attendees:</strong> $totalMissingTests</h4>
 <h4><strong class="text-danger">Suspected missing students (no-shows): </strong> $missingStudents</h4>

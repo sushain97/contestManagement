@@ -10,20 +10,33 @@
 				#end
 			</tr>
 		</thead>
+		#set($totalMissingTests = 0)
+		#set($missingStudents = 0)
+
 		#foreach($student in $students)
-		<tr>
+		#set($scores = $student.getScores())
+		<tr #if($scores.size() == 0) class="danger" #elseif($scores.size() < $student.getRegisteredSubjects().size()) class="warning" #end>
 			<td>$student.getName()</td>
 			<td>$student.getGrade()</td>
 			<td>#set($schoolName = $student.getSchool().getName()) <a href="/data/scores?type=school_$esc.url($schoolName)&level=$level">$schoolName</a></td>
 			#foreach($subject in $subjects)
 				#set($score = false)
-				#set($score = $student.getScore($subject))
+				#set($score = $scores.get($subject))
 				#set($testString = $student.getGrade().toString() + $subject.toString())
 				<td #if($score && $score.getScoreNum() >= $qualifyingCriteria.get($testString)) class="qual text-success" #end>
-					#if($score) $score #else - #end
+					#if($score) $score #elseif(!$score && $student.shouldHaveScore($subject)) ? #else - #end
 				</td>
 			#end
 		</tr>
+
+		#if($scores.size() == 0)
+			#set($missingStudents = $missingStudents + 1)
+		#end
+		#set($totalMissingTests = $totalMissingTests + ($student.getRegisteredSubjects().size() - $scores.size()))
+
 		#end
 	</table>
 </div>
+
+<h4><strong class="text-warning">Missing tests from attendees:</strong> $totalMissingTests</h4>
+<h4><strong class="text-danger">Suspected missing students (no-shows): </strong> $missingStudents</h4>

@@ -211,13 +211,20 @@ public class Main extends HttpServlet {
 					Student student = new Student(name, school, grade);
 					students.add(student);
 
+					List<Subject> registeredSubjects = new ArrayList<Subject>();
 					for (Subject subject : Subject.values()) {
 						String score = row.getValue(subject.toString());
 						if (score != null && Score.isScore(score.trim())) {
 							student.setScore(subject, new Score(score));
 							testsGraded.add(Test.fromSubjectAndGrade(grade, subject));
+							registeredSubjects.add(subject);
+						}
+						else if (score == null) {
+							registeredSubjects.add(subject);
 						}
 					}
+
+					student.setRegisteredSubjects(registeredSubjects);
 
 					if (!school.addStudent(student)) {
 						System.err.println("!!! Duplicate student detected !!! " + student);

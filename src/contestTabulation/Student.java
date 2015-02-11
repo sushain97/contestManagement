@@ -19,8 +19,10 @@
 package contestTabulation;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -59,6 +61,7 @@ public class Student implements Serializable {
 	@Persistent private String name;
 	@Persistent private School school;
 	@Persistent(serialized = "true") @Unowned private Map<Subject, Score> scores = new HashMap<Subject, Score>();
+	@Persistent private List<Subject> registeredSubjects = new ArrayList<Subject>();
 
 	@PrimaryKey private Key key;
 
@@ -73,6 +76,11 @@ public class Student implements Serializable {
 		this.grade = Objects.requireNonNull(grade);
 		this.school = Objects.requireNonNull(school);
 		key = KeyFactory.createKey(this.school.getKey(), this.getClass().getSimpleName(), name + "_" + grade + "_" + school.getName());
+	}
+
+	Student(String name, School school, int grade, List<Subject> registeredSubjects) {
+		this(name, school, grade);
+		registeredSubjects = Objects.requireNonNull(registeredSubjects);
 	}
 
 	@Override
@@ -126,6 +134,10 @@ public class Student implements Serializable {
 		}
 	}
 
+	public List<Subject> getRegisteredSubjects() {
+		return registeredSubjects;
+	}
+
 	public School getSchool() {
 		return school;
 	}
@@ -158,6 +170,14 @@ public class Student implements Serializable {
 
 	public void setScore(Subject subject, Score score) {
 		scores.put(Objects.requireNonNull(subject), Objects.requireNonNull(score));
+	}
+
+	public boolean shouldHaveScore(Subject subject) {
+		return registeredSubjects.contains(Objects.requireNonNull(subject));
+	}
+
+	public void setRegisteredSubjects(List<Subject> registeredSubjects) {
+		this.registeredSubjects = registeredSubjects;
 	}
 
 	@Override

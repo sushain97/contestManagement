@@ -96,6 +96,10 @@
     <servlet-name>errors.ServerError_500</servlet-name>
     <servlet-class>errors.ServerError_500</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>contestWebsite.Favicon</servlet-name>
+    <servlet-class>contestWebsite.Favicon</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>contestWebsite.MainPage</servlet-name>
     <url-pattern>/index.html</url-pattern>
@@ -209,6 +213,10 @@
   <servlet-mapping>
     <servlet-name>errors.ServerError_500</servlet-name>
     <url-pattern>/500</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>contestWebsite.Favicon</servlet-name>
+    <url-pattern>/favicon.ico</url-pattern>
   </servlet-mapping>
 <error-page>
   <error-code>400</error-code>

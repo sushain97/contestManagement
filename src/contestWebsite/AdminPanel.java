@@ -26,6 +26,7 @@ import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -46,6 +47,9 @@ import util.Retrieve;
 import util.UserCookie;
 
 import com.google.api.client.util.Charsets;
+import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.blobstore.BlobstoreService;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -57,6 +61,8 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -120,6 +126,9 @@ public class AdminPanel extends BaseHttpServlet {
 				System.err.println("Surpressing exception while loading admin panel");
 				e.printStackTrace();
 			}
+
+			BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+			context.put("blobstoreService", blobstoreService);
 
 			close(context, ve.getTemplate("adminPanel.html"), resp);
 		}
@@ -210,6 +219,16 @@ public class AdminPanel extends BaseHttpServlet {
 						e.printStackTrace();
 						resp.sendError(HttpServletResponse.SC_BAD_REQUEST, e.toString());
 						return;
+					}
+
+					BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+					Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(req);
+					if (blobs.containsKey("favicon")) {
+						String blobKey = blobs.get("favicon").get(0).getKeyString();
+						contestInfo.setProperty("faviconKey", blobKey);
+
+						MemcacheService memcache = MemcacheServiceFactory.getMemcacheService();
+						memcache.put("faviconKey", blobKey);
 					}
 
 					stringPropNames = new String[] {"school", "address"};

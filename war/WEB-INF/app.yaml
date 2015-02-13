@@ -15,7 +15,7 @@
 # along with this program. If not, see [http://www.gnu.org/licenses/].
 
 application: tmscacontest
-version: 12
+version: 6-10-0
 runtime: java
 threadsafe: false
 sessions_enabled: true
@@ -95,9 +95,10 @@ handlers:
 - url: /500
   servlet: errors.ServerError_500
 
+- url: /favicon.ico
+  servlet: contestWebsite.Favicon
+
 static_files:
-  - include: /favicon.ico
-    expiration: 14d
   - include: /css/**.css
     expiration: 7d
   - include: /js/**.js

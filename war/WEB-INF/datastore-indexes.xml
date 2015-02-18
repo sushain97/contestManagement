@@ -8,4 +8,8 @@
 		<property name="level" direction="asc"/>
 		<property name="totalScore" direction="desc"/>
 	</datastore-index>
+	<datastore-index kind="registration" ancestor="false" source="manual">
+		<property name="schoolLevel" direction="asc"/>
+		<property name="schoolName" direction="asc"/>
+	</datastore-index>
 </datastore-indexes>

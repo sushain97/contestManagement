@@ -186,6 +186,7 @@ public class ContactUs extends BaseHttpServlet {
 				VelocityContext context = new VelocityContext();
 				context.put("name", name);
 				context.put("email", email);
+				context.put("school", school);
 				context.put("message", comment);
 
 				StringWriter sw = new StringWriter();

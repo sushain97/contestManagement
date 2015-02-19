@@ -19,6 +19,8 @@
 package contestWebsite;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +41,8 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 
 import contestTabulation.Level;
+import contestTabulation.School;
+import contestTabulation.Student;
 import contestTabulation.Subject;
 import contestTabulation.Test;
 
@@ -89,13 +93,18 @@ public class PublicResults extends BaseHttpServlet {
 				context.put("level", level.toString());
 				context.put("tests", Test.getTests(level));
 				context.put("Test", Test.class);
-				context.put("Level", Level.class);
 
 				if (type.startsWith("category_")) {
 					context.put("test", Test.fromString(types[1]));
 					context.put("trophy", awardCriteria.get("category_" + level + "_trophy"));
 					context.put("medal", awardCriteria.get("category_" + level + "_medal"));
 					context.put("winners", Retrieve.categoryWinners(types[1], level));
+				}
+				else if (type.startsWith("qualifying_")) {
+					context.put("School", School.class);
+					Pair<School, List<Student>> schoolAndStudents = Retrieve.schoolStudents(types[1], level);
+					context.put("school", schoolAndStudents.x);
+					context.put("students", schoolAndStudents.y);
 				}
 				else if (type.startsWith("categorySweep")) {
 					context.put("trophy", awardCriteria.get("categorySweep_" + level));
@@ -131,9 +140,17 @@ public class PublicResults extends BaseHttpServlet {
 			context.put("complete", false);
 		}
 
+		Map<Level, List<String>> schools = new HashMap<Level, List<String>>();
+		for (Level level : Level.values()) {
+			schools.put(level, Retrieve.schoolNames(level));
+		}
+		context.put("schools", schools);
+
+		context.put("qualifyingCriteria", Retrieve.qualifyingCriteria(infoAndCookie.x));
 		context.put("hideFullNames", contestInfo.getProperty("hideFullNames"));
 		context.put("date", contestInfo.getProperty("updated"));
 		context.put("subjects", Subject.values());
+		context.put("Level", Level.class);
 		context.put("levels", Level.values());
 		context.put("esc", new EscapeTool());
 

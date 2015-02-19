@@ -226,8 +226,12 @@
 						<h2>All $a.substring(0, 1).toUpperCase()$a.substring(1) School Students</h2>
 						#parse("studentsOverview.html")
 					#elseif($type.startsWith("qualifying_"))
-						<h2><a href="/data/scores?type=school_$esc.url($school.getName())&level=$level">$school.getName()</a> Qualifying Students</h2>
-						#parse("qualifyingStudents.html")
+						#if($school)
+							<h2><a href="/data/scores?type=school_$esc.url($school.getName())&level=$level">$school.getName()</a> Qualifying Students</h2>
+							#parse("qualifyingStudents.html")
+						#else
+							Score information for this school is not yet available.
+						#end
 					#elseif($type.startsWith("school_"))
 						#if($school)
 							#parse("schoolOverview.html")

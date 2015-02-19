@@ -76,6 +76,12 @@ public class Retrieve {
 		return null;
 	}
 
+	public static List<String> schoolNames(Level level) {
+		javax.jdo.Query q = pm.newQuery("select name from " + School.class.getName());
+		q.setFilter("level == :schoolLevel");
+		return (List<String>) q.execute(level);
+	}
+
 	public static Pair<School, Map<Test, Statistics>> schoolOverview(String schoolName, Level level) {
 		javax.jdo.Query q = pm.newQuery(School.class);
 		q.setFilter("name == :schoolName && level == :schoolLevel");

@@ -28,7 +28,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -38,7 +37,6 @@ import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.tools.generic.EscapeTool;
 
 import util.BaseHttpServlet;
-import util.PMF;
 import util.Pair;
 import util.Retrieve;
 import util.Statistics;
@@ -239,16 +237,12 @@ public class Data extends BaseHttpServlet {
 					}
 				}
 
-				PersistenceManager pm = PMF.get().getPersistenceManager();
-				javax.jdo.Query q = pm.newQuery("select name from " + School.class.getName());
-				q.setFilter("level == :schoolLevel");
-
-				Map<Level, Object> schools = new HashMap<Level, Object>();
+				Map<Level, List<String>> schools = new HashMap<Level, List<String>>();
 				for (Level level : Level.values()) {
-					schools.put(level, q.execute(level));
+					schools.put(level, Retrieve.schoolNames(level));
 				}
-
 				context.put("schools", schools);
+
 				context.put("qualifyingCriteria", Retrieve.qualifyingCriteria(infoAndCookie.x));
 				context.put("hideFullNames", false);
 				context.put("subjects", Subject.values());

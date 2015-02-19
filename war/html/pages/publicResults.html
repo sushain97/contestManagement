@@ -79,6 +79,20 @@
 								<li data-type="sweep$LEVEL"><a href="/contestResults?type=sweep&level=$level">Sweepstakes</a></li>
 								<li data-type="categorySweep$LEVEL"><a href="/contestResults?type=categorySweep&level=$level">Category Sweepstakes</a></li>
 								<li data-type="visualizations$LEVEL"><a href="/contestResults?type=visualizations&level=$level">Visualizations</a></li>
+								#if($level == $Level.valueOf("MIDDLE") && $qualifyingCriteria && $qualifyingCriteria != "{}")
+								<li class="dropdown">
+									<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+										Qualifying Students<b class="caret"></b>
+									</a>
+									<ul class="dropdown-menu">
+										#foreach($schoolName in $schools[$level])
+											<li data-type="qualifying_$schoolName$LEVEL" id="qualifying_$schoolName.hashCode()">
+												<a href='/contestResults?type=qualifying_$esc.url($schoolName)&level=$level'>$schoolName</a>
+											</li>
+										#end
+									</ul>
+								</li>
+								#end
 
 								<li class="divider"></li>
 
@@ -119,6 +133,13 @@
 								#parse("categoryWinners.html")
 							#else
 								Score information for this category is not yet available.
+							#end
+						#elseif($type.startsWith("qualifying_"))
+							#if($school)
+								<h2>$school.getName() Qualifying Students</h2>
+								#parse("qualifyingStudents.html")
+							#else
+								Score information for this school is not yet available.
 							#end
 						#elseif($type.equals("sweep"))
 							#parse("sweepstakesWinners.html")

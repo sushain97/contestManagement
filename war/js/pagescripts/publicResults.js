@@ -65,7 +65,24 @@ function ChangeActive() {
 
 	if(type.indexOf("school_") !== -1) {
 		var hash = hashCode(type.substring(type.indexOf('school_') + 7));
-		$("#" + hash).closest('.dropdown').addClass('active');
-		$('#' + hash).addClass('active');
+		$("#school_" + hash).closest('.dropdown').addClass('active');
+		$('#school_' + hash).addClass('active');
+	}
+
+	if(type.indexOf("qualifying_") !== -1) {
+		var hash = hashCode(type.substring(type.indexOf('qualifying_') + 11));
+		$("#qualifying_" + hash).closest('.dropdown').addClass('active');
+		$('#qualifying_' + hash).addClass('active');
 	}
 }
+
+hashCode = function(s) {
+	var hash = 0, i, c;
+	if (s.length == 0) return hash;
+	for (i = 0; i < s.length; i++) {
+		c = s.charCodeAt(i);
+		hash = ((hash << 5) - hash) + c;
+		hash = hash & hash; // Convert to 32bit integer
+	}
+	return hash;
+};

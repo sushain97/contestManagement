@@ -91,7 +91,7 @@
 
 						<div class="form-group">
 							<label class="col-sm-2 control-label" for="datepicker">Registration Dates</label>
-							<div class="col-sm-6 col-xs-9">
+							<div class="col-sm-5 col-xs-9">
 								<div class="input-daterange input-group" id="datepicker" data-date-format="mm/dd/yyyy">
 									<input type="text" class="form-control" name="startDate"
 										value='#if($contestInfo.getProperty("startDate"))$contestInfo.getProperty("startDate")#end' required>
@@ -100,11 +100,12 @@
 										value='#if($contestInfo.getProperty("endDate"))$contestInfo.getProperty("endDate")#end' required>
 								</div>
 							</div>
+							<p class="help-block lead" style="margin: 0;">#if($regClosed) <span class="label label-danger">Closed</span> #else <span class="label label-success">Open</span> #end</p>
 						</div>
 
 						<div class="form-group">
 							<label class="col-sm-2 control-label" for="datepicker">Registration Editing Dates</label>
-							<div class="col-sm-6 col-xs-9">
+							<div class="col-sm-5 col-xs-9">
 								<div class="input-daterange input-group" id="datepicker" data-date-format="mm/dd/yyyy">
 									<input type="text" class="form-control" name="editStartDate"
 										value='#if($contestInfo.getProperty("editStartDate"))$contestInfo.getProperty("editStartDate")#end' required>
@@ -113,6 +114,7 @@
 										value='#if($contestInfo.getProperty("editEndDate"))$contestInfo.getProperty("editEndDate")#end' required>
 								</div>
 							</div>
+							<p class="help-block lead" style="margin: 0;">#if($regEditClosed) <span class="label label-danger">Closed</span> #else <span class="label label-success">Open</span> #end</p>
 						</div>
 
 						<div class="form-group">
@@ -122,7 +124,7 @@
 								#if(!$price) #set($price = 5) #end
 								<b id="priceText">$$price</b>
 								<input type="text" class="price" id="price" name="price" data-slider-min="0" data-slider-max="15" data-slider-step="1" data-slider-value="$price" value="$price" required>
-							<p class="help-block">How much should each test registration cost in dollars?</p>
+								<p class="help-block">How much should each test registration cost in dollars?</p>
 							</div>
 						</div>
 

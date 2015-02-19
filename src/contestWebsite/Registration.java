@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.TimeZone;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -94,8 +95,11 @@ public class Registration extends BaseHttpServlet {
 			context.put("registrationError", "You are already registered.");
 		}
 
-		String endDateStr = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
-		String startDateStr = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
+		SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+6"));
+
+		String endDateStr = dateFormat.format(new Date());
+		String startDateStr = dateFormat.format(new Date());
 
 		Entity contestInfo = infoAndCookie.x;
 		if (contestInfo != null) {
@@ -105,8 +109,8 @@ public class Registration extends BaseHttpServlet {
 			Date endDate = new Date();
 			Date startDate = new Date();
 			try {
-				endDate = new SimpleDateFormat("MM/dd/yyyy").parse(endDateStr);
-				startDate = new SimpleDateFormat("MM/dd/yyyy").parse(startDateStr);
+				endDate = dateFormat.parse(endDateStr);
+				startDate = dateFormat.parse(startDateStr);
 			}
 			catch (ParseException e) {
 				e.printStackTrace();

@@ -24,6 +24,10 @@ $(document).ready(function() {
 	$('.input-daterange').datepicker();
 	$('.glyphicon-question-sign').tooltip();
 
+	$('input[name=startDate], input[name=endDate], input[name=editStartDate], input[name=editEndDate]').change(function(ev) {
+		$($(this).parents('.form-group')[0]).children('.help-block').fadeOut();
+	});
+
 	$('.price').slider({
 		formater: function(value) {
 		return '$' + value;

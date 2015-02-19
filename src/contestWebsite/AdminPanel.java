@@ -24,10 +24,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -119,6 +122,31 @@ public class AdminPanel extends BaseHttpServlet {
 			catch (Exception e) {
 				System.err.println("Surpressing exception while loading admin panel");
 				e.printStackTrace();
+			}
+
+			SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+			dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+6"));
+
+			try {
+				Date endDate = dateFormat.parse((String) contestInfo.getProperty("editEndDate"));
+				Date startDate = dateFormat.parse((String) contestInfo.getProperty("editStartDate"));
+				if (new Date().after(endDate) || new Date().before(startDate)) {
+					context.put("regEditClosed", true);
+				}
+			}
+			catch (Exception e) {
+				context.put("regEditClosed", true);
+			}
+
+			try {
+				Date endDate = dateFormat.parse((String) contestInfo.getProperty("endDate"));
+				Date startDate = dateFormat.parse((String) contestInfo.getProperty("startDate"));
+				if (new Date().after(endDate) || new Date().before(startDate)) {
+					context.put("regClosed", true);
+				}
+			}
+			catch (Exception e) {
+				context.put("regClosed", true);
 			}
 
 			close(context, ve.getTemplate("adminPanel.html"), resp);

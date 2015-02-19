@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -110,8 +111,10 @@ public class MainPage extends BaseHttpServlet {
 				Date endDate = new Date();
 				Date startDate = new Date();
 				try {
-					endDate = new SimpleDateFormat("MM/dd/yyyy").parse(endDateStr);
-					startDate = new SimpleDateFormat("MM/dd/yyyy").parse(startDateStr);
+					SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+					dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+6"));
+					endDate = dateFormat.parse(endDateStr);
+					startDate = dateFormat.parse(startDateStr);
 				}
 				catch (ParseException e) {
 					e.printStackTrace();

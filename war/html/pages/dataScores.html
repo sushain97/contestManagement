@@ -101,6 +101,20 @@
 								#set($LEVEL = $level.toString().toUpperCase())
 								<li class="nav-header"><h4>$level.getName() School</h4></li>
 								<li data-type="students$LEVEL"><a href="/data/scores?type=students&level=$level">All Students</a></li>
+								#if($level == $Level.valueOf("MIDDLE") && $qualifyingCriteria && $qualifyingCriteria != "{}")
+								<li class="dropdown">
+									<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+										Qualifying Students<b class="caret"></b>
+									</a>
+									<ul class="dropdown-menu">
+										#foreach($schoolName in $schools[$level])
+											<li data-type="qualifying_$schoolName$LEVEL" id="qualifying_$schoolName.hashCode()">
+												<a href='/data/scores?type=qualifying_$esc.url($schoolName)&level=$level'>$schoolName</a>
+											</li>
+										#end
+									</ul>
+								</li>
+								#end
 								<li data-type="sweep$LEVEL"><a href="/data/scores?type=sweep&level=$level">Sweepstakes</a></li>
 								<li data-type="categorySweep$LEVEL"><a href="/data/scores?type=categorySweep&level=$level">Category Sweepstakes</a></li>
 								<li data-type="visualizations$LEVEL"><a href="/data/scores?type=visualizations&level=$level">Visualizations</a></li>
@@ -110,7 +124,7 @@
 									</a>
 									<ul class="dropdown-menu">
 										#foreach($schoolName in $schools[$level])
-											<li data-type="school_$schoolName$LEVEL" id="$schoolName.hashCode()">
+											<li data-type="school_$schoolName$LEVEL" id="school_$schoolName.hashCode()">
 												<a href='/data/scores?type=school_$esc.url($schoolName)&level=$level'>$schoolName</a>
 											</li>
 										#end
@@ -208,7 +222,12 @@
 						</table>
 						<button type="button" class="btn btn-default" id="updateAvailability" style="display: none;">Update</button>
 					#elseif($type.equals("students"))
+						#set($a = $level.toString())
+						<h2>All $a.substring(0, 1).toUpperCase()$a.substring(1) School Students</h2>
 						#parse("studentsOverview.html")
+					#elseif($type.startsWith("qualifying_"))
+						<h2><a href="/data/scores?type=school_$esc.url($school.getName())&level=$level">$school.getName()</a> Qualifying Students</h2>
+						#parse("qualifyingStudents.html")
 					#elseif($type.startsWith("school_"))
 						#if($school)
 							#parse("schoolOverview.html")

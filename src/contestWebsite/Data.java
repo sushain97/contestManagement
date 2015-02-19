@@ -63,6 +63,7 @@ import com.google.common.base.Function;
 
 import contestTabulation.Level;
 import contestTabulation.School;
+import contestTabulation.Student;
 import contestTabulation.Subject;
 import contestTabulation.Test;
 
@@ -182,11 +183,16 @@ public class Data extends BaseHttpServlet {
 					context.put("level", level.toString());
 					context.put("tests", Test.getTests(level));
 					context.put("Test", Test.class);
-					context.put("Level", Level.class);
 
 					if (type.equals("students")) {
 						context.put("subjects", Subject.values());
 						context.put("students", Retrieve.allStudents(level));
+					}
+					else if (type.startsWith("qualifying_")) {
+						context.put("School", School.class);
+						Pair<School, List<Student>> schoolAndStudents = Retrieve.schoolStudents(types[1], level);
+						context.put("school", schoolAndStudents.x);
+						context.put("students", schoolAndStudents.y);
 					}
 					else if (type.startsWith("school_")) {
 						Pair<School, Map<Test, Statistics>> schoolAndStats = Retrieve.schoolOverview(types[1], level);
@@ -246,6 +252,7 @@ public class Data extends BaseHttpServlet {
 				context.put("qualifyingCriteria", Retrieve.qualifyingCriteria(infoAndCookie.x));
 				context.put("hideFullNames", false);
 				context.put("subjects", Subject.values());
+				context.put("Level", Level.class);
 				context.put("levels", Level.values());
 				context.put("date", infoAndCookie.x.getProperty("updated"));
 				context.put("esc", new EscapeTool());

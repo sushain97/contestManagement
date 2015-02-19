@@ -61,6 +61,21 @@ public class Retrieve {
 		return students;
 	}
 
+	public static Pair<School, List<Student>> schoolStudents(String schoolName, Level level) {
+		javax.jdo.Query q = pm.newQuery(School.class);
+		q.setFilter("name == :schoolName && level == :schoolLevel");
+		List<School> schools = (List<School>) q.execute(schoolName, level);
+
+		if (!schools.isEmpty()) {
+			School school = schools.get(0);
+			List<Student> students = new ArrayList<Student>();
+			students.addAll(school.getStudents());
+			Collections.sort(students, Student.getNameComparator());
+			return new Pair<School, List<Student>>(school, students);
+		}
+		return null;
+	}
+
 	public static Pair<School, Map<Test, Statistics>> schoolOverview(String schoolName, Level level) {
 		javax.jdo.Query q = pm.newQuery(School.class);
 		q.setFilter("name == :schoolName && level == :schoolLevel");

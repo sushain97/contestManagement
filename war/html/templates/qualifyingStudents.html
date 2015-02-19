@@ -47,6 +47,7 @@
 					#set($testString = $grade + $subject.toString())
 					<div class="col-sm-$size">
 						<h3>${grade}th Grade <span class="label label-default">$qualifiers.get($testString).size()</span></h3>
+						<h4>requires &ge; $qualifyingCriteria.get($testString)</h4>
 						#foreach($student in $qualifiers.get($testString))
 							<div>$student.getPublicName()</div>
 						#end

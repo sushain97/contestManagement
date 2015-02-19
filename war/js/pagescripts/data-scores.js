@@ -92,8 +92,14 @@ function ChangeActive() {
 
 	if(type.indexOf("school_") !== -1) {
 		var hash = hashCode(type.substring(type.indexOf('school_') + 7));
-		$("#" + hash).closest('.dropdown').addClass('active');
-		$('#' + hash).addClass('active');
+		$("#school_" + hash).closest('.dropdown').addClass('active');
+		$('#school_' + hash).addClass('active');
+	}
+
+	if(type.indexOf("qualifying_") !== -1) {
+		var hash = hashCode(type.substring(type.indexOf('qualifying_') + 11));
+		$("#qualifying_" + hash).closest('.dropdown').addClass('active');
+		$('#qualifying_' + hash).addClass('active');
 	}
 }
 

@@ -1,0 +1,60 @@
+#set($grades = $Level.valueOf($level.toString().toUpperCase()).getGrades())
+
+#set($qualifiers = {})
+#foreach($subject in $subjects)
+	$!qualifiers.put($subject, 0)
+	#foreach($grade in $grades)
+		#set($testString = $grade + $subject.toString())
+		$!qualifiers.put($testString, [])
+	#end
+#end
+
+#foreach($subject in $subjects)
+	#foreach($grade in $grades)
+		#set($testString = $grade + $subject.toString())
+		#foreach($student in $students)
+			#if($student.getGrade() == $grade)
+				#set($score = false)
+				#set($score = $student.getScores().get($subject))
+				#if($score && $score.getScoreNum() >= $qualifyingCriteria.get($testString))
+					#set($_ = $qualifiers.get($testString).add($student))
+					#set($newValue = $qualifiers.get($subject) + 1)
+					#set($_ = $qualifiers.put($subject, $newValue))
+				#end
+			#end
+		#end
+	#end
+#end
+
+<div role="tabpanel">
+	<ul class="nav nav-tabs nav-justified" role="tablist">
+		#foreach($subject in $subjects)
+		<li role="presentation" class="lead #if($foreach.first) active #end">
+			<a href="#$subject" aria-controls="$subject" role="tab" data-toggle="tab">
+				$subject.getName() <span class="badge">$qualifiers.get($subject)</span>
+			</a>
+		</li>
+		#end
+	</ul>
+
+	<div class="tab-content">
+		#set($size = 12 / $grades.size())
+
+		#foreach($subject in $subjects)
+		<div role="tabpanel" class="tab-pane #if($foreach.first) active #end" id="$subject">
+			<div class="row">
+				#foreach($grade in $grades)
+					#set($testString = $grade + $subject.toString())
+					<div class="col-sm-$size">
+						<h3>${grade}th Grade <span class="label label-default">$qualifiers.get($testString).size()</span></h3>
+						<h4>requires &ge; $qualifyingCriteria.get($testString)</h4>
+						#foreach($student in $qualifiers.get($testString))
+							<div>$student.getPublicName()</div>
+						#end
+					</div>
+				#end
+			</div>
+		</div>
+		#end
+	</div>
+</div>

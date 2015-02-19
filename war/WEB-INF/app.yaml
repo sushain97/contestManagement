@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see [http://www.gnu.org/licenses/].
 
-application: tmscacontest
-version: 12
+application: villagetmsca
+version: 7-0-0
 runtime: java
 threadsafe: false
 sessions_enabled: true

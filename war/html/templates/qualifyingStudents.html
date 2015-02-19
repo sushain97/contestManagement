@@ -5,7 +5,7 @@
 	$!qualifiers.put($subject, 0)
 	#foreach($grade in $grades)
 		#set($testString = $grade + $subject.toString())
-		$!qualifiers.put($testString, 0)
+		$!qualifiers.put($testString, [])
 	#end
 #end
 
@@ -17,9 +17,7 @@
 				#set($score = false)
 				#set($score = $student.getScores().get($subject))
 				#if($score && $score.getScoreNum() >= $qualifyingCriteria.get($testString))
-					#set($newValue = $qualifiers.get($testString) + 1)
-					#set($_ = $qualifiers.put($testString, $newValue))
-					
+					#set($_ = $qualifiers.get($testString).add($student))
 					#set($newValue = $qualifiers.get($subject) + 1)
 					#set($_ = $qualifiers.put($subject, $newValue))
 				#end
@@ -40,7 +38,6 @@
 	</ul>
 
 	<div class="tab-content">
-		
 		#set($size = 12 / $grades.size())
 
 		#foreach($subject in $subjects)
@@ -49,22 +46,14 @@
 				#foreach($grade in $grades)
 					#set($testString = $grade + $subject.toString())
 					<div class="col-sm-$size">
-					<h3>${grade}th Grade <span class="label label-default">$qualifiers.get($testString)</span></h3>
-					#foreach($student in $students)
-						#if($student.getGrade() == $grade)
-							#set($score = false)
-							#set($score = $student.getScores().get($subject))
-							#if($score && $score.getScoreNum() >= $qualifyingCriteria.get($testString))
+						<h3>${grade}th Grade <span class="label label-default">$qualifiers.get($testString).size()</span></h3>
+						#foreach($student in $qualifiers.get($testString))
 							<div>$student.getPublicName()</div>
-							#end
 						#end
-					#end
 					</div>
 				#end
 			</div>
 		</div>
 		#end
-		<div class="row">
-		</div>
 	</div>
 </div>

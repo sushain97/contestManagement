@@ -38,6 +38,8 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
@@ -192,6 +194,11 @@ public class Retrieve {
 		Query query = new Query("contestInfo");
 		List<Entity> contestInfos = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(1));
 		return !contestInfos.isEmpty() ? contestInfos.get(0) : null;
+	}
+
+	public static int numUnresolvedQuestions() {
+		Query query = new Query("feedback").setFilter(new FilterPredicate("resolved", FilterOperator.NOT_EQUAL, true)).setKeysOnly();
+		return datastore.prepare(query).asList(FetchOptions.Builder.withDefaults()).size();
 	}
 
 	private static Map<String, Integer> textToMap(Entity contestInfo, String propertyName) {

@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.tools.generic.EscapeTool;
 
 import util.BaseHttpServlet;
 import util.Pair;
@@ -88,6 +89,7 @@ public class ViewScores extends BaseHttpServlet {
 
 			context.put("qualifyingCriteria", Retrieve.qualifyingCriteria(infoAndCookie.x));
 			context.put("date", infoAndCookie.x.getProperty("updated"));
+			context.put("esc", new EscapeTool());
 			context.put("hideFullNames", false);
 
 			close(context, ve.getTemplate("schoolScores.html"), resp);

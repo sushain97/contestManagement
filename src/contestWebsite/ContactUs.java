@@ -94,6 +94,10 @@ public class ContactUs extends BaseHttpServlet {
 			context.put("comment", sess.getAttribute("comment"));
 		}
 
+		if (req.getParameter("comment") != null) {
+			context.put("comment", req.getParameter("comment"));
+		}
+
 		context.put("captchaError", req.getParameter("captchaError"));
 		context.put("nocaptcha", loggedIn && !userCookie.isAdmin());
 		context.put("updated", req.getParameter("updated"));

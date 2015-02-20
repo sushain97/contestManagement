@@ -1,9 +1,16 @@
 <h2><a class="anchor" id="scores"></a>Scores #if($qualifyingCriteria && $qualifyingCriteria != "{}") <small class="pull-right"><span class="text-success">Green</span> indicates qualifying</small> #end</h2>
 
+<div class="alert alert-warning" role="alert">
+	Click an alert button <span class="glyphicon glyphicon-alert"></span> to report an issue with a particular student.
+	If your problem isn't associated with a student displayed here, <a class="alert-link" href="/contactUs" target="blank">contact us</a>.
+	Please include as much detail as possible.
+</div>
+
 <div class="table-responsive">
 	<table class="table table-striped table-condensed table-hover">
 		<thead>
 			<tr>
+				<th class="hidden-print"></th>
 				<th title="Click to sort"><span class="hidden-xs">Student</span> Name</th>
 				<th title="Click to sort">Grade</th>
 				#foreach($subject in $subjects)
@@ -13,6 +20,11 @@
 		</thead>
 		#foreach($student in $school.getStudents())
 			<tr>
+				<td class="hidden-print">
+					<a href="/contactUs?comment=There+is+an+issue+with+$esc.url($student.getName())'s scores:+" target="blank">
+						<span class="glyphicon glyphicon-alert"></span>
+					</a>
+					</td>
 				<td>$student.getName()</td>
 				<td>$student.getGrade()</td>
 				#foreach($subject in $subjects)

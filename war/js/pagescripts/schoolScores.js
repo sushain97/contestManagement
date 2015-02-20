@@ -20,8 +20,20 @@ $(document).ready(function() {
 		window.print();
 	});
 
+	$.extend($.tablesorter.themes.bootstrap, {
+		table: 'table'
+	});
+
 	if($('table tr').length > 1)
-		$("table").tablesorter({sortList: [[0,0]]});
+		$("table").tablesorter({
+			theme: 'bootstrap',
+			headerTemplate: '{content} {icon}',
+			widgets: ['uitheme'],
+			sortList: [[1,0]],
+			headers: {
+				0: {sorter: false}
+			}
+		});
 
 	$('td').hover(function() {
 		var t = parseInt($(this).index()) + 1;

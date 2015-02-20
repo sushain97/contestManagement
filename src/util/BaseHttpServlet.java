@@ -63,6 +63,9 @@ public class BaseHttpServlet extends HttpServlet {
 		if (loggedIn) {
 			context.put("user", userCookie.getUsername());
 			context.put("admin", userCookie.isAdmin());
+			if (userCookie.isAdmin()) {
+				context.put("numUnresolvedQuestions", Retrieve.numUnresolvedQuestions());
+			}
 		}
 
 		return new Pair<Entity, UserCookie>(contestInfo, userCookie);

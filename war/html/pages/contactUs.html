@@ -59,7 +59,7 @@
 				<div class="form-group">
 					<label class="col-sm-2 col-xs-4 control-label" for="message">Your Message</label>
 					<div class="col-sm-5 col-xs-8">
-						<textarea class="form-control" id="message" rows="5" name="text" required>#if($comment)$comment#end</textarea>
+						<textarea class="form-control" id="message" rows="5" name="text" required #if($name && $email && $school) autofocus #end>#if($comment)$comment#end</textarea>
 					</div>
 				</div>
 

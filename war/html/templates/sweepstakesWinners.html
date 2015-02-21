@@ -54,3 +54,78 @@
 		#end
 	</table>
 </div>
+
+<div id="stackedColumnGraph"></div>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		$('#stackedColumnGraph').highcharts({
+			chart: {
+				type: 'column'
+			},
+			title: {
+				text: 'Sweepstakes Winners'
+			},
+			xAxis: {
+				categories: [
+					#foreach($school in $winners)
+						#if($foreach.count > $trophy * 3 || $foreach.count > 6)
+							#break
+						#end
+						'$school.getName()',
+					#end
+				]
+			},
+			yAxis: {
+				min: 0,
+				title: {
+					text: 'Overall Score'
+				},
+				stackLabels: {
+					enabled: true,
+					style: {
+						fontWeight: 'bold',
+						color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+					}
+				}
+			},
+			legend: {
+				align: 'right',
+				x: -30,
+				verticalAlign: 'top',
+				y: 25,
+				floating: true,
+				backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+				borderColor: '#CCC',
+				borderWidth: 1
+			},
+			plotOptions: {
+				column: {
+					stacking: 'normal',
+					dataLabels: {
+						enabled: true,
+						color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+						style: {
+							textShadow: '0 0 3px black'
+						}
+					}
+				}
+			},
+			series: [
+				#foreach($subject in $subjects)
+					{
+						name: '$subject.getName()',
+						data: [
+							#foreach($school in $winners)
+								#if($foreach.count > $trophy * 3 || $foreach.count > 6)
+									#break
+								#end
+								Math.round($school.getAdjustedScore($subject)),
+							#end
+						]
+					},
+				#end
+			]
+		})
+	});
+</script>

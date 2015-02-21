@@ -238,7 +238,7 @@
 	#if($type.toLowerCase().endsWith("sweep"))
 	<script type="text/javascript" src="/js/score-popovers.js"></script>
 	#end
-	#if($type.endsWith("visualizations"))
+	#if($type.endsWith("visualizations") || $type.equals("sweep"))
 		<script type="text/javascript" src="/js/highcharts/highcharts.js"></script>
 		<script type="text/javascript" src="/js/highcharts/highcharts-more.js"></script>
 		<script type="text/javascript" src="/js/highcharts/exporting.js"></script>

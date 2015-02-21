@@ -166,17 +166,35 @@
 
 						<h2>Grading Progress</h2>
 
-						#set($numTests = 0.0)
-						#foreach($level in $levels)
-							#if($enabledLevels.contains($level))
-								#set($numTests = $numTests + $level.getGrades().size() * $subjects.size())
-							#end
-						#end
-
-						#set($percentComplete = $testsGraded.size() / $numTests * 100)
-						<div class="progress progress-striped active" style="min-width: 300px; max-width: 550px;">
-							<div class="progress-bar" role="progressbar" aria-valuenow="$percentComplete" aria-valuemin="0" aria-valuemax="100" style="width: $percentComplete%;"></div>
-						</div>
+						<div id="testsGradedColumnGraph"></div>
+						<script type="text/javascript">
+							var testsGraded = JSON.parse('$testsGradedNums');
+							var grades = [
+									#foreach($level in $levels)
+										#if($enabledLevels.contains($level))
+											#foreach($grade in $level.getGrades())
+												"${grade}th Grade",
+											#end
+										#end
+									#end
+								],
+								testsGradedSeries = [
+									#foreach($subject in $subjects)
+									{
+										name: '$subject.getName()',
+										data: [
+											#foreach($level in $levels)
+												#if($enabledLevels.contains($level))
+													#foreach($grade in $level.getGrades())
+														testsGraded["$grade$subject"] ? testsGraded["$grade$subject"][0] / testsGraded["$grade$subject"][1] * 100 : 0,
+													#end
+												#end
+											#end
+										]
+									},
+									#end
+								];
+						</script>
 
 						<table class="table table-condensed" id="statusTable">
 							<thead>
@@ -238,7 +256,7 @@
 	#if($type.toLowerCase().endsWith("sweep"))
 	<script type="text/javascript" src="/js/score-popovers.js"></script>
 	#end
-	#if($type.endsWith("visualizations") || $type.equals("sweep"))
+	#if($type.endsWith("visualizations") || $type.equals("sweep") || $type == "avail" || !$complete)
 		<script type="text/javascript" src="/js/highcharts/highcharts.js"></script>
 		<script type="text/javascript" src="/js/highcharts/highcharts-more.js"></script>
 		<script type="text/javascript" src="/js/highcharts/exporting.js"></script>

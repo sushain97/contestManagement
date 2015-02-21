@@ -78,6 +78,12 @@ public class ClearScores extends BaseHttpServlet {
 					}
 				}
 			}
+
+			String[] contestInfoProperties = {"testsGraded", "testsGradedNums"};
+			for (String propertyName : contestInfoProperties) {
+				infoAndCookie.x.setProperty(propertyName, null);
+			}
+			datastore.put(infoAndCookie.x);
 		}
 		else {
 			resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Contest Administrator privileges required for that operation");

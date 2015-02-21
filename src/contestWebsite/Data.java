@@ -80,6 +80,8 @@ public class Data extends BaseHttpServlet {
 		UserCookie userCookie = infoAndCookie.y;
 		boolean loggedIn = (boolean) context.get("loggedIn");
 
+		Entity contestInfo = infoAndCookie.x;
+
 		if (!loggedIn || !userCookie.isAdmin()) {
 			resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Contest Administrator privileges required for that operation");
 		}
@@ -95,8 +97,8 @@ public class Data extends BaseHttpServlet {
 			else if (choice.equals("/registrations")) {
 				template = "dataRegistrations.html";
 				context.put("updated", req.getParameter("updated"));
-				context.put("price", infoAndCookie.x.getProperty("price"));
-				context.put("classificationQuestion", infoAndCookie.x.getProperty("classificationQuestion"));
+				context.put("price", contestInfo.getProperty("price"));
+				context.put("classificationQuestion", contestInfo.getProperty("classificationQuestion"));
 				context.put("dateFormat", new SimpleDateFormat("MMM dd, yyyy hh:mm aa"));
 				context.put("Test", Test.class);
 				context.put("subjects", Subject.values());
@@ -161,7 +163,7 @@ public class Data extends BaseHttpServlet {
 			else if (choice.equals("/scores")) {
 				template = "dataScores.html";
 
-				Map<String, Integer> awardCriteria = Retrieve.awardCriteria(infoAndCookie.x);
+				Map<String, Integer> awardCriteria = Retrieve.awardCriteria(contestInfo);
 
 				String type = req.getParameter("type");
 				if (type != null) {
@@ -231,8 +233,9 @@ public class Data extends BaseHttpServlet {
 				}
 				else {
 					context.put("type", "overview");
-					Entity contestInfo = infoAndCookie.x;
-					if (contestInfo.hasProperty("testsGraded")) {
+					context.put("testsGradedNums", contestInfo.hasProperty("testsGradedNums") && contestInfo.getProperty("testsGradedNums") != null ? ((Text) contestInfo.getProperty("testsGradedNums")).getValue()
+							: "{}");
+					if (contestInfo.hasProperty("testsGraded") && contestInfo.getProperty("testsGraded") != null) {
 						context.put("testsGraded", contestInfo.getProperty("testsGraded"));
 					}
 				}
@@ -243,12 +246,12 @@ public class Data extends BaseHttpServlet {
 				}
 				context.put("schools", schools);
 
-				context.put("qualifyingCriteria", Retrieve.qualifyingCriteria(infoAndCookie.x));
+				context.put("qualifyingCriteria", Retrieve.qualifyingCriteria(contestInfo));
 				context.put("hideFullNames", false);
 				context.put("subjects", Subject.values());
 				context.put("Level", Level.class);
 				context.put("levels", Level.values());
-				context.put("date", infoAndCookie.x.getProperty("updated"));
+				context.put("date", contestInfo.getProperty("updated"));
 				context.put("esc", new EscapeTool());
 			}
 			else {

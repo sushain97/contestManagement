@@ -36,7 +36,16 @@
 					<td>$schoolName</td>
 				#end
 
-				<td> #if($student.getScore($subject)) $student.getScore($subject) #else <span class="text-danger">???</span> #end </td>
+				#set($score = $student.getScore($subject))
+				#if($score)
+					<td> $score </td>
+					#if($admin)
+						#if($lastScore == $score) <td class="danger">Duplicate detected</td> #end
+						#set($lastScore = $student.getScore($subject))
+					#end
+				#else
+					<td><span class="text-danger">???</span></td>
+				#end
 			</tr>
 		#end
 	</table>

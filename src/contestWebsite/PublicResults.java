@@ -67,7 +67,10 @@ public class PublicResults extends BaseHttpServlet {
 		}
 
 		Entity contestInfo = infoAndCookie.x;
-		if (contestInfo.hasProperty("testsGraded")) {
+
+		context.put("testsGradedNums", contestInfo.hasProperty("testsGradedNums") && contestInfo.getProperty("testsGradedNums") != null ? ((Text) contestInfo.getProperty("testsGradedNums")).getValue()
+				: "{}");
+		if (contestInfo.hasProperty("testsGraded") && contestInfo.getProperty("testsGraded") != null) {
 			context.put("testsGraded", contestInfo.getProperty("testsGraded"));
 		}
 
@@ -135,8 +138,6 @@ public class PublicResults extends BaseHttpServlet {
 			}
 			else {
 				context.put("type", "avail");
-				context.put("testsGradedNums", contestInfo.hasProperty("testsGradedNums") ? ((Text) contestInfo.getProperty("testsGradedNums")).getValue()
-						: "{}");
 			}
 		}
 		else {

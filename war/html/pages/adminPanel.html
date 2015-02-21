@@ -138,9 +138,12 @@
 									<input type="checkbox" name="update" id="update">
 									#if($contestInfo.getProperty("updated"))
 										<strong>Last generated $contestInfo.getProperty("updated")</strong>
-
 										#if($contestInfo.getProperty("errorLog"))
-											#set($errors = $contestInfo.getProperty("errorLog").getValue().split("\n"))
+											#if($contestInfo.getProperty("errorLog").getValue().toString().length() == 0)
+												#set($errors = [])
+											#else
+												#set($errors = $contestInfo.getProperty("errorLog").getValue().split("\n"))
+											#end
 											<a href="#errorLogModal" role="button" class="btn #if($errors.size() > 0) btn-warning #else btn-success #end btn-sm" data-toggle="modal">Show Error Log <span class="badge">$errors.size()</span></a>
 										#end
 									#else

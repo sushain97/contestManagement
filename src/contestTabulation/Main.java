@@ -422,7 +422,9 @@ public class Main extends HttpServlet {
 
 		List<String> testsGradedList = new ArrayList<String>();
 		for (Test test : testsGraded.keySet()) {
-			testsGradedList.add(test.toString());
+			if (testsGraded.get(test).x > 0) {
+				testsGradedList.add(test.toString());
+			}
 		}
 		contestInfo.setProperty("testsGraded", testsGradedList);
 

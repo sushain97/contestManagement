@@ -38,6 +38,7 @@ import util.Statistics;
 import util.UserCookie;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 
 import contestTabulation.Level;
@@ -134,6 +135,8 @@ public class PublicResults extends BaseHttpServlet {
 			}
 			else {
 				context.put("type", "avail");
+				context.put("testsGradedNums", contestInfo.hasProperty("testsGradedNums") ? ((Text) contestInfo.getProperty("testsGradedNums")).getValue()
+						: "{}");
 			}
 		}
 		else {

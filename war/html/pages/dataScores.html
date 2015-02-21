@@ -170,20 +170,9 @@
 						<span class="visible-xs">Use the blue menu to view specific results.</span>
 
 						<h2>Grading Progress</h2>
+						<div id="testsGradedColumnGraph"></div>
 
-						#set($numTests = 0.0)
-						#foreach($level in $levels)
-							#if($enabledLevels.contains($level))
-								#set($numTests = $numTests + $level.getGrades().size() * $subjects.size())
-							#end
-						#end
-
-						#set($percentComplete = $testsGraded.size() / $numTests * 100)
-						<div class="progress progress-striped active" style="min-width: 300px; max-width: 550px;">
-							<div class="progress-bar" role="progressbar" aria-valuenow="$percentComplete" aria-valuemin="0" aria-valuemax="100" style="width: $percentComplete%;"></div>
-						</div>
 						<div><strong class="lead">Click a test to toggle its status manually.</strong></div>
-
 						<table class="table table-condensed" id="statusTable">
 							<thead>
 								<tr>
@@ -221,6 +210,34 @@
 							</tbody>
 						</table>
 						<button type="button" class="btn btn-default" id="updateAvailability" style="display: none;">Update</button>
+						<script type="text/javascript">
+							var testsGraded = JSON.parse('$testsGradedNums');
+							var grades = [
+									#foreach($level in $levels)
+										#if($enabledLevels.contains($level))
+											#foreach($grade in $level.getGrades())
+												"${grade}th Grade",
+											#end
+										#end
+									#end
+								],
+								testsGradedSeries = [
+									#foreach($subject in $subjects)
+									{
+										name: '$subject.getName()',
+										data: [
+											#foreach($level in $levels)
+												#if($enabledLevels.contains($level))
+													#foreach($grade in $level.getGrades())
+														testsGraded["$grade$subject"] ? testsGraded["$grade$subject"][0] / testsGraded["$grade$subject"][1] * 100 : 0,
+													#end
+												#end
+											#end
+										]
+									},
+									#end
+								];
+						</script>
 					#elseif($type.equals("students"))
 						#set($a = $level.toString())
 						<h2>All $a.substring(0, 1).toUpperCase()$a.substring(1) School Students</h2>
@@ -282,7 +299,7 @@
 	#if($type.toLowerCase().endsWith("sweep"))
 		<script type="text/javascript" src="/js/score-popovers.js"></script>
 	#end
-	#if($type.endsWith("visualizations") || $type.contains("school") || $type.equals("sweep"))
+	#if($type.endsWith("visualizations") || $type.contains("school") || $type.equals("sweep") || $type == "overview")
 		<script type="text/javascript" src="/js/highcharts/highcharts.js"></script>
 		<script type="text/javascript" src="/js/highcharts/highcharts-more.js"></script>
 		<script type="text/javascript" src="/js/highcharts/exporting.js"></script>

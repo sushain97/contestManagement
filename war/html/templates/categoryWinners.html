@@ -40,7 +40,9 @@
 				#if($score)
 					<td> $score </td>
 					#if($admin)
-						#if($lastScore == $score) <td class="danger">Duplicate detected</td> #end
+						#if($lastScore == $score && $score.getScoreNum() != $test.getMaxTeamScore() && $foreach.count <= $trophy + $medal)
+							<td class="danger">Tie detected</td>
+						#end
 						#set($lastScore = $student.getScore($subject))
 					#end
 				#else

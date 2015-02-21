@@ -43,6 +43,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import util.PMF;
+import util.Pair;
 import util.Retrieve;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -62,7 +63,9 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
+import com.google.appengine.labs.repackaged.org.json.JSONObject;
 import com.google.gdata.client.Service;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.CustomElementCollection;
@@ -86,7 +89,7 @@ public class Main extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) {
 		errorLog = new StringBuilder();
-		final Set<Test> testsGraded = new HashSet<Test>();
+		final Map<Test, Pair<Integer, Integer>> testsGraded = new HashMap<Test, Pair<Integer, Integer>>();
 
 		final Entity contestInfo;
 		final Map<String, Integer> awardCriteria;
@@ -191,7 +194,7 @@ public class Main extends HttpServlet {
 		return null;
 	}
 
-	private static void updateDatabase(Level level, SpreadsheetEntry spreadsheet, Set<Student> students, Map<String, School> schools, Set<Test> testsGraded, Service service) throws IOException, ServiceException {
+	private static void updateDatabase(Level level, SpreadsheetEntry spreadsheet, Set<Student> students, Map<String, School> schools, Map<Test, Pair<Integer, Integer>> testsGraded, Service service) throws IOException, ServiceException {
 		WorksheetFeed worksheetFeed = service.getFeed(spreadsheet.getWorksheetFeedUrl(), WorksheetFeed.class);
 		service.setReadTimeout(60000);
 		service.setConnectTimeout(60000);
@@ -220,7 +223,13 @@ public class Main extends HttpServlet {
 						String score = row.getValue(subject.toString());
 						if (score != null && Score.isScore(score.trim())) {
 							student.setScore(subject, new Score(score));
-							testsGraded.add(Test.fromSubjectAndGrade(grade, subject));
+							Test test = Test.fromSubjectAndGrade(grade, subject);
+							if (testsGraded.containsKey(test)) {
+								testsGraded.put(test, new Pair<Integer, Integer>(testsGraded.get(test).x + 1, testsGraded.get(test).y + 1));
+							}
+							else {
+								testsGraded.put(test, new Pair<Integer, Integer>(0, 1));
+							}
 							registeredSubjects.add(subject);
 						}
 						else if (score == null) {
@@ -243,8 +252,8 @@ public class Main extends HttpServlet {
 		}
 	}
 
-	private static void tabulateCategoryWinners(Level level, Set<Student> students, Map<Test, List<Student>> categoryWinners, Set<Test> testsGraded, Map<String, Integer> awardCriteria) {
-		for (Test test : testsGraded) {
+	private static void tabulateCategoryWinners(Level level, Set<Student> students, Map<Test, List<Student>> categoryWinners, Map<Test, Pair<Integer, Integer>> testsGraded, Map<String, Integer> awardCriteria) {
+		for (Test test : testsGraded.keySet()) {
 			ArrayList<Student> winners = new ArrayList<Student>();
 			int grade = test.getGrade();
 			final Subject subject = test.getSubject();
@@ -399,16 +408,24 @@ public class Main extends HttpServlet {
 		}
 	}
 
-	private static void updateContestInfo(Set<Test> testsGraded, Entity contestInfo, StringBuilder errorLog) {
+	private static void updateContestInfo(Map<Test, Pair<Integer, Integer>> testsGraded, Entity contestInfo, StringBuilder errorLog) throws JSONException {
 		SimpleDateFormat isoFormat = new SimpleDateFormat("hh:mm:ss a EEEE MMMM d, yyyy zzzz");
 		isoFormat.setTimeZone(TimeZone.getTimeZone("America/Chicago"));
 		contestInfo.setProperty("updated", isoFormat.format(new Date()).toString());
 
 		List<String> testsGradedList = new ArrayList<String>();
-		for (Test test : testsGraded) {
+		for (Test test : testsGraded.keySet()) {
 			testsGradedList.add(test.toString());
 		}
 		contestInfo.setProperty("testsGraded", testsGradedList);
+
+		JSONObject testsGradedJSON = new JSONObject();
+		for (Entry<Test, Pair<Integer, Integer>> entry : testsGraded.entrySet()) {
+			JSONArray numTests = new JSONArray().put(entry.getValue().x).put(entry.getValue().y);
+			testsGradedJSON.put(entry.getKey().toString(), numTests);
+		}
+
+		contestInfo.setProperty("testsGradedNums", new Text(testsGradedJSON.toString()));
 
 		contestInfo.setProperty("errorLog", new Text(errorLog.toString()));
 

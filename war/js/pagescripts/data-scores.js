@@ -84,7 +84,7 @@ $(document).ready(function () {
 		$('.sidebar-offcanvas').toggleClass('hidden-xs');
 	});
 
-	if($('#testsGradedColumnGraph').length) {
+	if($('#testsGradedColumnGraph').length > 0) {
 		$('#testsGradedColumnGraph').highcharts({
 			chart: {
 				type: 'column'

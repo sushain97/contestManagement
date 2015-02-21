@@ -295,7 +295,7 @@ public class Main extends HttpServlet {
 			}
 
 			for (Entry<Score, List<Student>> entry : studentsByScore.entrySet()) {
-				if (entry.getValue().size() > 1) {
+				if (entry.getValue().size() > 1 && entry.getKey().getScoreNum() != test.getMaxTeamScore()) {
 					String error = logDateFormat.format(new Date()) + " - " + "Tie of " + entry.getKey().getScoreNum() + " detected in " + test.toString() + ": ";
 					for (Student st : entry.getValue()) {
 						error += st.getName() + " (" + st.getGrade() + ", " + st.getSchool().getName() + ") ";

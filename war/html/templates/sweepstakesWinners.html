@@ -14,7 +14,7 @@
 			</tr>
 		</thead>
 		#foreach($school in $winners)
-			#if($foreach.count > $trophy * 3 && !$admin)
+			#if(($foreach.count > $trophy * 3 || $foreach.count > 10) && !$admin)
 				#break
 			#end
 			<tr>

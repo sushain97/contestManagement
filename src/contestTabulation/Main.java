@@ -228,12 +228,19 @@ public class Main extends HttpServlet {
 								testsGraded.put(test, new Pair<Integer, Integer>(testsGraded.get(test).x + 1, testsGraded.get(test).y + 1));
 							}
 							else {
-								testsGraded.put(test, new Pair<Integer, Integer>(0, 1));
+								testsGraded.put(test, new Pair<Integer, Integer>(1, 1));
 							}
 							registeredSubjects.add(subject);
 						}
 						else if (score == null) {
 							registeredSubjects.add(subject);
+							Test test = Test.fromSubjectAndGrade(grade, subject);
+							if (testsGraded.containsKey(test)) {
+								testsGraded.put(test, new Pair<Integer, Integer>(testsGraded.get(test).x, testsGraded.get(test).y + 1));
+							}
+							else {
+								testsGraded.put(test, new Pair<Integer, Integer>(0, 1));
+							}
 						}
 					}
 

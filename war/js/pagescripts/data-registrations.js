@@ -137,7 +137,7 @@ function sendAJAXReq(elem, value) {
 		'data': {
 			'key': $(elem).parent().data('eid'),
 			'ajax': '1',
-			'account': $(elem).siblings('.account').html(),
+			'account': $(elem).siblings('.account').text().trim(),
 			'newValue': value,
 			'modified': $(elem).data('type')
 		}

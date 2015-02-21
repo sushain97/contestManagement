@@ -15,15 +15,24 @@
 				<th title="Click to sort">Score</th>
 			</tr>
 		</thead>
+		#set($lastPlacingScore = -1)
+		#set($lastPlace = -1)
 		#foreach($student in $winners)
-			#if($student.getScore($subject).getScoreNum() < 0)
+			#set($score = $student.getScore($subject))
+			#if($score.getScoreNum() < 0)
 				#break
 			#end
 			<tr>
 				#if($foreach.count > $trophy + $medal && !$admin)
 					#break
 				#end
-				<td> $foreach.count
+				<td> #if($score.equals($lastPlacingScore))
+						$lastPlace
+					#else
+						$foreach.count
+						#set($lastPlace = $foreach.count)
+						#set($lastPlacingScore = $score)
+					#end
 					#if($foreach.count <= $trophy) <i class="fa fa-trophy"></i> #end
 					#if($foreach.count > $trophy && $foreach.count <= ($medal + $trophy)) <i class="iconfontello-medal"></i> #end
 				</td>
@@ -36,7 +45,6 @@
 					<td>$schoolName</td>
 				#end
 
-				#set($score = $student.getScore($subject))
 				#if($score)
 					<td> $score </td>
 					#if($admin)

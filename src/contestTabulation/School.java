@@ -150,15 +150,12 @@ public class School implements Serializable {
 	}
 
 	public void calculateScores() {
+		double totalScore = 0;
 		for (Subject subject : Subject.values()) {
 			calculateScore(subject);
+			totalScore += getAdjustedScore(subject);
 		}
-		if (level == Level.MIDDLE || level == Level.ELEMENTARY) {
-			totalScore = topScores.get(Subject.N).y + topScores.get(Subject.C).y + (int) Math.round(topScores.get(Subject.M).y * 8.0 / 5.0 + topScores.get(Subject.S).y * 8.0 / 5.0);
-		}
-		else {
-			totalScore = topScores.get(Subject.N).y + (int) Math.round(topScores.get(Subject.M).y * 10.0 / 9.0 + topScores.get(Subject.S).y * 10.0 / 9.0 + topScores.get(Subject.C).y * 8.0 / 7.0);
-		}
+		this.totalScore = (int) Math.round(totalScore);
 	}
 
 	public void calculateTestNums() {
@@ -212,6 +209,36 @@ public class School implements Serializable {
 	@Deprecated
 	public ArrayList<Score> getAnonScores(Test test) {
 		return anonScores.get(Objects.requireNonNull(test));
+	}
+
+	public double getAdjustedScore(Subject subject) {
+		switch (level) {
+			case ELEMENTARY:
+			case MIDDLE:
+				switch (subject) {
+					case N:
+						return topScores.get(Subject.N).y;
+					case C:
+						return topScores.get(Subject.C).y;
+					case M:
+						return topScores.get(Subject.M).y * 8.0 / 5.0;
+					case S:
+						return topScores.get(Subject.S).y * 8.0 / 5.0;
+				}
+			case HIGH:
+				switch (subject) {
+					case N:
+						return topScores.get(Subject.N).y;
+					case C:
+						return topScores.get(Subject.C).y * 8.0 / 7.0;
+					case M:
+						return topScores.get(Subject.M).y * 10.0 / 9.0;
+					case S:
+						return topScores.get(Subject.S).y * 10.0 / 9.0;
+				}
+		}
+
+		throw new IllegalArgumentException();
 	}
 
 	public Key getKey() {

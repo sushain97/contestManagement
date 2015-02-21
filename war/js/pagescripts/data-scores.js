@@ -90,7 +90,7 @@ $(document).ready(function () {
 				type: 'column'
 			},
 			title: {
-				text: false
+				text: 'Test Grading Progress'
 			},
 			xAxis: {
 				categories: grades

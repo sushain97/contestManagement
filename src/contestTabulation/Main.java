@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -279,18 +280,29 @@ public class Main extends HttpServlet {
 			Collections.reverse(winners);
 			winners = new ArrayList<Student>(winners.subList(0, winners.size() >= numStudents ? numStudents : winners.size()));
 
-			Score lastScore = null;
-			Student lastStudent = null;
+			Map<Score, List<Student>> studentsByScore = new TreeMap<Score, List<Student>>();
 			for (int i = 0; i < Math.min(winners.size(), numStudents - 5); i++) {
 				Student student = winners.get(i);
 				Score score = student.getScore(subject);
-				if (score.equals(lastScore) && score.getScoreNum() != test.getMaxTeamScore()) {
-					String error = logDateFormat.format(new Date()) + " - " + "Tie of " + score + " detected in " + test.toString() + ": " + student + " and " + lastStudent;
+				if (!studentsByScore.containsKey(score)) {
+					List<Student> s = new ArrayList<Student>();
+					s.add(student);
+					studentsByScore.put(score, s);
+				}
+				else {
+					studentsByScore.get(score).add(student);
+				}
+			}
+
+			for (Entry<Score, List<Student>> entry : studentsByScore.entrySet()) {
+				if (entry.getValue().size() > 1) {
+					String error = logDateFormat.format(new Date()) + " - " + "Tie of " + entry.getKey().getScoreNum() + " detected in " + test.toString() + ": ";
+					for (Student st : entry.getValue()) {
+						error += st.getName() + " (" + st.getGrade() + ", " + st.getSchool().getName() + ") ";
+					}
 					logger.severe(error);
 					errorLog.append(error + "\n");
 				}
-				lastScore = score;
-				lastStudent = student;
 			}
 
 			categoryWinners.put(test, winners);

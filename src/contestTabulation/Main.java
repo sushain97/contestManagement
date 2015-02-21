@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import javax.jdo.PersistenceManager;
@@ -78,6 +79,7 @@ public class Main extends HttpServlet {
 	private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	private static final HttpTransport httpTransport = new NetHttpTransport();
 	private static final JacksonFactory jsonFactory = new JacksonFactory();
+	private static final Logger logger = Logger.getLogger(Main.class.getName());
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) {
@@ -227,7 +229,8 @@ public class Main extends HttpServlet {
 					student.setRegisteredSubjects(registeredSubjects);
 
 					if (!school.addStudent(student)) {
-						System.err.println("!!! Duplicate student detected !!! " + student);
+						String error = "Duplicate student detected: " + student;
+						logger.severe(error);
 					}
 				}
 				catch (Exception e) {
@@ -256,6 +259,19 @@ public class Main extends HttpServlet {
 			Collections.sort(winners, Student.getScoreComparator(subject));
 			Collections.reverse(winners);
 			winners = new ArrayList<Student>(winners.subList(0, winners.size() >= numStudents ? numStudents : winners.size()));
+
+			Score lastScore = null;
+			Student lastStudent = null;
+			for (Student student : winners) {
+				Score score = student.getScore(subject);
+				if (score.equals(lastScore)) {
+					String error = "Tie of " + score + " detected in " + test.toString() + ": " + student + " and " + lastStudent;
+					logger.severe(error);
+				}
+				lastScore = score;
+				lastStudent = student;
+			}
+
 			categoryWinners.put(test, winners);
 		}
 	}

@@ -153,7 +153,7 @@ public class School implements Serializable {
 		for (Subject subject : Subject.values()) {
 			calculateScore(subject);
 		}
-		if (level == Level.MIDDLE) {
+		if (level == Level.MIDDLE || level == Level.ELEMENTARY) {
 			totalScore = topScores.get(Subject.N).y + topScores.get(Subject.C).y + (int) Math.round(topScores.get(Subject.M).y * 8.0 / 5.0 + topScores.get(Subject.S).y * 8.0 / 5.0);
 		}
 		else {

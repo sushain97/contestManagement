@@ -136,7 +136,16 @@
 							<div class="col-sm-7 col-xs-6">
 								<label class="checkbox-inline">
 									<input type="checkbox" name="update" id="update">
-									<strong>Last generated#if($contestInfo.getProperty("updated")) $contestInfo.getProperty("updated")#else never#end</strong>
+									#if($contestInfo.getProperty("updated"))
+										<strong>Last generated $contestInfo.getProperty("updated")</strong>
+
+										#if($contestInfo.getProperty("errorLog"))
+											#set($errors = $contestInfo.getProperty("errorLog").getValue().split("\n"))
+											<a href="#errorLogModal" role="button" class="btn #if($errors.size() > 0) btn-warning #else btn-success #end btn-sm" data-toggle="modal">Show Error Log <span class="badge">$errors.size()</span></a>
+										#end
+									#else
+										<strong>Last generated never</strong>
+									#end
 								</label>
 							</div>
 						</div>
@@ -562,6 +571,24 @@
 						</div>
 					</fieldset>
 				</form>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="errorLogModal" tabindex="-1" role="dialog" aria-labelledby="errorLogModal" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h3 id="errorLogModal">Tabulation Error Log</h3>
+				</div>
+				<div class="modal-body">
+					<ul>
+						#foreach($error in $errors)
+							<li>$error</li>
+						#end
+					</ul>
+				</div>
 			</div>
 		</div>
 	</div>

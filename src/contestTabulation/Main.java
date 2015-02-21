@@ -80,10 +80,12 @@ public class Main extends HttpServlet {
 	private static final HttpTransport httpTransport = new NetHttpTransport();
 	private static final JacksonFactory jsonFactory = new JacksonFactory();
 	private static final Logger logger = Logger.getLogger(Main.class.getName());
+	private static final SimpleDateFormat logDateFormat = new SimpleDateFormat("h:mm:ss a");
+	private static StringBuilder errorLog;
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) {
-		// TODO: Add Logging
+		errorLog = new StringBuilder();
 		final Set<Test> testsGraded = new HashSet<Test>();
 
 		final Entity contestInfo;
@@ -154,8 +156,8 @@ public class Main extends HttpServlet {
 				updateRegistrations(level, lSchools);
 			}
 
-			// Update Datastore by modifying contest information entity to include tests graded and last updated timestamp
-			updateContestInfo(testsGraded, contestInfo);
+			// Update Datastore by modifying contest information entity to include tests graded, last updated timestamp and error logs
+			updateContestInfo(testsGraded, contestInfo, errorLog);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -229,8 +231,9 @@ public class Main extends HttpServlet {
 					student.setRegisteredSubjects(registeredSubjects);
 
 					if (!school.addStudent(student)) {
-						String error = "Duplicate student detected: " + student;
+						String error = logDateFormat.format(new Date()) + " - " + "Duplicate student detected: " + student;
 						logger.severe(error);
+						errorLog.append(error + "\n");
 					}
 				}
 				catch (Exception e) {
@@ -262,11 +265,13 @@ public class Main extends HttpServlet {
 
 			Score lastScore = null;
 			Student lastStudent = null;
-			for (Student student : winners) {
+			for (int i = 0; i < Math.min(winners.size(), numStudents - 5); i++) {
+				Student student = winners.get(i);
 				Score score = student.getScore(subject);
-				if (score.equals(lastScore)) {
-					String error = "Tie of " + score + " detected in " + test.toString() + ": " + student + " and " + lastStudent;
+				if (score.equals(lastScore) && score.getScoreNum() != test.getMaxTeamScore()) {
+					String error = logDateFormat.format(new Date()) + " - " + "Tie of " + score + " detected in " + test.toString() + ": " + student + " and " + lastStudent;
 					logger.severe(error);
+					errorLog.append(error + "\n");
 				}
 				lastScore = score;
 				lastStudent = student;
@@ -394,7 +399,7 @@ public class Main extends HttpServlet {
 		}
 	}
 
-	private static void updateContestInfo(Set<Test> testsGraded, Entity contestInfo) {
+	private static void updateContestInfo(Set<Test> testsGraded, Entity contestInfo, StringBuilder errorLog) {
 		SimpleDateFormat isoFormat = new SimpleDateFormat("hh:mm:ss a EEEE MMMM d, yyyy zzzz");
 		isoFormat.setTimeZone(TimeZone.getTimeZone("America/Chicago"));
 		contestInfo.setProperty("updated", isoFormat.format(new Date()).toString());
@@ -404,6 +409,8 @@ public class Main extends HttpServlet {
 			testsGradedList.add(test.toString());
 		}
 		contestInfo.setProperty("testsGraded", testsGradedList);
+
+		contestInfo.setProperty("errorLog", new Text(errorLog.toString()));
 
 		datastore.put(contestInfo);
 	}

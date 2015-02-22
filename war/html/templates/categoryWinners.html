@@ -26,7 +26,8 @@
 				#if($foreach.count > $trophy + $medal && !$admin)
 					#break
 				#end
-				<td> #if($score.equals($lastPlacingScore))
+				<td>
+					#if($score.equals($lastPlacingScore))
 						$lastPlace
 					#else
 						$foreach.count

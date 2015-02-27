@@ -85,11 +85,9 @@ public class Main extends HttpServlet {
 	private static final JacksonFactory jsonFactory = new JacksonFactory();
 	private static final Logger logger = Logger.getLogger(Main.class.getName());
 	private static final SimpleDateFormat logDateFormat = new SimpleDateFormat("h:mm:ss a");
-	private static StringBuilder errorLog;
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) {
-		errorLog = new StringBuilder();
 		final Map<Test, Pair<Integer, Integer>> testsGraded = new HashMap<Test, Pair<Integer, Integer>>();
 		final List<Test> tiesBroken = new ArrayList<Test>();
 
@@ -102,6 +100,8 @@ public class Main extends HttpServlet {
 		final Map<Level, Map<Test, List<Student>>> categoryWinners = new HashMap<Level, Map<Test, List<Student>>>();
 		final Map<Level, Map<Subject, List<School>>> categorySweepstakesWinners = new HashMap<Level, Map<Subject, List<School>>>();
 		final Map<Level, List<School>> sweepstakesWinners = new HashMap<Level, List<School>>();
+
+		final StringBuilder errorLog = new StringBuilder();
 
 		try {
 			// Retrieve contest information from Datastore
@@ -139,10 +139,10 @@ public class Main extends HttpServlet {
 
 				// Populate base data structures by traversing Google Documents Spreadsheets
 				spreadsheet.put(level, getSpreadSheet(params.get("doc" + level.getName())[0], service));
-				updateDatabase(level, spreadsheet.get(level), students.get(level), lSchools, testsGraded, service);
+				updateDatabase(level, spreadsheet.get(level), students.get(level), lSchools, testsGraded, service, errorLog);
 
 				// Populate category winners lists with top scorers (as defined by award criteria)
-				tabulateCategoryWinners(level, students.get(level), lCategoryWinners, testsGraded, tiesBroken, awardCriteria);
+				tabulateCategoryWinners(level, students.get(level), lCategoryWinners, testsGraded, tiesBroken, awardCriteria, errorLog);
 
 				// Calculate school sweepstakes scores and number of tests fields
 				for (School school : lSchools.values()) {
@@ -196,7 +196,7 @@ public class Main extends HttpServlet {
 		return null;
 	}
 
-	private static void updateDatabase(Level level, SpreadsheetEntry spreadsheet, Set<Student> students, Map<String, School> schools, Map<Test, Pair<Integer, Integer>> testsGraded, Service service) throws IOException, ServiceException {
+	private static void updateDatabase(Level level, SpreadsheetEntry spreadsheet, Set<Student> students, Map<String, School> schools, Map<Test, Pair<Integer, Integer>> testsGraded, Service service, StringBuilder errorLog) throws IOException, ServiceException {
 		WorksheetFeed worksheetFeed = service.getFeed(spreadsheet.getWorksheetFeedUrl(), WorksheetFeed.class);
 		service.setReadTimeout(60000);
 		service.setConnectTimeout(60000);
@@ -261,7 +261,7 @@ public class Main extends HttpServlet {
 		}
 	}
 
-	private static void tabulateCategoryWinners(Level level, Set<Student> students, Map<Test, List<Student>> categoryWinners, Map<Test, Pair<Integer, Integer>> testsGraded, List<Test> tiesBroken, Map<String, Integer> awardCriteria) {
+	private static void tabulateCategoryWinners(Level level, Set<Student> students, Map<Test, List<Student>> categoryWinners, Map<Test, Pair<Integer, Integer>> testsGraded, List<Test> tiesBroken, Map<String, Integer> awardCriteria, StringBuilder errorLog) {
 		for (Test test : testsGraded.keySet()) {
 			ArrayList<Student> winners = new ArrayList<Student>();
 			int grade = test.getGrade();

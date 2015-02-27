@@ -280,28 +280,35 @@ public class Main extends HttpServlet {
 			Collections.reverse(winners);
 			winners = new ArrayList<Student>(winners.subList(0, winners.size() >= numStudents ? numStudents : winners.size()));
 
-			Map<Score, List<Student>> studentsByScore = new TreeMap<Score, List<Student>>();
+			Map<Integer, List<Student>> studentsByScore = new TreeMap<Integer, List<Student>>();
 			for (int i = 0; i < Math.min(winners.size(), numStudents - 5); i++) {
 				Student student = winners.get(i);
 				Score score = student.getScore(subject);
-				if (!studentsByScore.containsKey(score)) {
+				if (!studentsByScore.containsKey(score.getScoreNum())) {
 					List<Student> s = new ArrayList<Student>();
 					s.add(student);
-					studentsByScore.put(score, s);
+					studentsByScore.put(score.getScoreNum(), s);
 				}
 				else {
-					studentsByScore.get(score).add(student);
+					studentsByScore.get(score.getScoreNum()).add(student);
 				}
 			}
 
-			for (Entry<Score, List<Student>> entry : studentsByScore.entrySet()) {
-				if (entry.getValue().size() > 1 && entry.getKey().getScoreNum() != test.getMaxTeamScore()) {
-					String error = logDateFormat.format(new Date()) + " - " + "Tie of " + entry.getKey().getScoreNum() + " detected in " + test.toString() + ": ";
+			for (Entry<Integer, List<Student>> entry : studentsByScore.entrySet()) {
+				if (entry.getValue().size() > 1 && entry.getKey() != test.getMaxTeamScore()) {
+					boolean scoreModsPresent = true;
 					for (Student st : entry.getValue()) {
-						error += st.getName() + " (" + st.getGrade() + ", " + st.getSchool().getName() + ") ";
+						scoreModsPresent &= st.getScore(subject).getScoreMod() != 0;
 					}
-					logger.severe(error);
-					errorLog.append(error + "\n");
+
+					if (!scoreModsPresent) {
+						String error = logDateFormat.format(new Date()) + " - " + "Tie of " + entry.getKey() + " detected in " + test.toString() + ": ";
+						for (Student st : entry.getValue()) {
+							error += st.getName() + " (" + st.getGrade() + ", " + st.getSchool().getName() + ") ";
+						}
+						logger.severe(error);
+						errorLog.append(error + "\n");
+					}
 				}
 			}
 

@@ -91,6 +91,7 @@ public class Main extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) {
 		errorLog = new StringBuilder();
 		final Map<Test, Pair<Integer, Integer>> testsGraded = new HashMap<Test, Pair<Integer, Integer>>();
+		final List<Test> tiesBroken = new ArrayList<Test>();
 
 		final Entity contestInfo;
 		final Map<String, Integer> awardCriteria;
@@ -141,7 +142,7 @@ public class Main extends HttpServlet {
 				updateDatabase(level, spreadsheet.get(level), students.get(level), lSchools, testsGraded, service);
 
 				// Populate category winners lists with top scorers (as defined by award criteria)
-				tabulateCategoryWinners(level, students.get(level), lCategoryWinners, testsGraded, awardCriteria);
+				tabulateCategoryWinners(level, students.get(level), lCategoryWinners, testsGraded, tiesBroken, awardCriteria);
 
 				// Calculate school sweepstakes scores and number of tests fields
 				for (School school : lSchools.values()) {
@@ -161,7 +162,7 @@ public class Main extends HttpServlet {
 			}
 
 			// Update Datastore by modifying contest information entity to include tests graded, last updated timestamp and error logs
-			updateContestInfo(testsGraded, contestInfo, errorLog);
+			updateContestInfo(testsGraded, tiesBroken, contestInfo, errorLog);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -260,7 +261,7 @@ public class Main extends HttpServlet {
 		}
 	}
 
-	private static void tabulateCategoryWinners(Level level, Set<Student> students, Map<Test, List<Student>> categoryWinners, Map<Test, Pair<Integer, Integer>> testsGraded, Map<String, Integer> awardCriteria) {
+	private static void tabulateCategoryWinners(Level level, Set<Student> students, Map<Test, List<Student>> categoryWinners, Map<Test, Pair<Integer, Integer>> testsGraded, List<Test> tiesBroken, Map<String, Integer> awardCriteria) {
 		for (Test test : testsGraded.keySet()) {
 			ArrayList<Student> winners = new ArrayList<Student>();
 			int grade = test.getGrade();
@@ -279,6 +280,8 @@ public class Main extends HttpServlet {
 			Collections.sort(winners, Student.getScoreComparator(subject));
 			Collections.reverse(winners);
 			winners = new ArrayList<Student>(winners.subList(0, winners.size() >= numStudents ? numStudents : winners.size()));
+
+			boolean testTiesBroken = true;
 
 			Map<Integer, List<Student>> studentsByScore = new TreeMap<Integer, List<Student>>();
 			for (int i = 0; i < Math.min(winners.size(), numStudents - 5); i++) {
@@ -308,11 +311,16 @@ public class Main extends HttpServlet {
 						}
 						logger.severe(error);
 						errorLog.append(error + "\n");
+						testTiesBroken = false;
 					}
 				}
 			}
 
 			categoryWinners.put(test, winners);
+
+			if (testTiesBroken) {
+				tiesBroken.add(test);
+			}
 		}
 	}
 
@@ -434,14 +442,14 @@ public class Main extends HttpServlet {
 		}
 	}
 
-	private static void updateContestInfo(Map<Test, Pair<Integer, Integer>> testsGraded, Entity contestInfo, StringBuilder errorLog) throws JSONException {
+	private static void updateContestInfo(Map<Test, Pair<Integer, Integer>> testsGraded, List<Test> tiesBroken, Entity contestInfo, StringBuilder errorLog) throws JSONException {
 		SimpleDateFormat isoFormat = new SimpleDateFormat("hh:mm:ss a EEEE MMMM d, yyyy zzzz");
 		isoFormat.setTimeZone(TimeZone.getTimeZone("America/Chicago"));
 		contestInfo.setProperty("updated", isoFormat.format(new Date()).toString());
 
 		List<String> testsGradedList = new ArrayList<String>();
 		for (Test test : testsGraded.keySet()) {
-			if (testsGraded.get(test).x > 0) {
+			if (testsGraded.get(test).x > 0 && tiesBroken.contains(test)) {
 				testsGradedList.add(test.toString());
 			}
 		}

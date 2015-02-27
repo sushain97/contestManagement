@@ -128,6 +128,26 @@ $(document).ready(function() {
 		var t = parseInt($(this).index()) + 1;
 		$('td:nth-child(' + t + '):not(tfoot td)', $(this).closest('table')).removeClass('highlighted');
 	});
+
+	$('.tablesorter-filter-row td:odd').slice(4).hide();
+	$('.testsTakenColspan').attr('colspan', 1);
+	$('.testsTaken').hide();
+
+	$('button#testsTaken').click(function() {
+		var parent = $(this).parents('.tab-pane');
+		if($(this).hasClass('active')) {
+			$('.tablesorter-filter-row td:odd', parent).slice(4).hide();
+			$('.testsTakenColspan', parent).attr('colspan', 1);
+			$('.testsTaken', parent).hide();
+			$(this).removeClass('active');
+		}
+		else {
+			$('.tablesorter-filter-row td:odd', parent).slice(4).show();
+			$('.testsTakenColspan', parent).attr('colspan', 2);
+			$('.testsTaken', parent).show();
+			$(this).addClass('active');
+		}
+	});
 });
 
 function sendAJAXReq(elem, value) {

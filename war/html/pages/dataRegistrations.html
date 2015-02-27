@@ -110,6 +110,7 @@
 						<p>
 							The first number for each test indicates number of registrations and second the number of tests actually taken. <br>
 							Click a cell to edit its corresponding registration.
+							<button type="button" class="btn btn-sm pull-right" id="testsTaken">Show tests taken</button>
 						</p>
 						<div class="table-responsive">
 							<table class="table table-condensed table-hover regTable">
@@ -123,7 +124,7 @@
 										<!-- <th>Payment</th>  -->
 										<th><abbr title="Account">Acct.</abbr></th>
 										#foreach($test in $Test.getTests($level))
-											<th colspan="2" class="text-center"><abbr title="$test.getGrade()th $test.getSubject().getName()">$test</abbr></th>
+											<th colspan="2" class="text-center testsTakenColspan"><abbr title="$test.getGrade()th $test.getSubject().getName()">$test</abbr></th>
 										#end
 										<th>Cost</th>
 									</tr>
@@ -225,7 +226,7 @@
 															#if($students) $students.size() #else 0 #end
 														</a>
 													</td>
-													<td class="uneditable">#if($reg.getProperty($test.toString().toUpperCase()))$reg.getProperty($test.toString().toUpperCase())#else 0 #end</td>
+													<td class="uneditable testsTaken">#if($reg.getProperty($test.toString().toUpperCase()))$reg.getProperty($test.toString().toUpperCase())#else 0 #end</td>
 												#end
 
 												#set($totalCost = $totalCost + $reg.getProperty("cost"))
@@ -240,7 +241,7 @@
 										#if($classificationQuestion == 'no') #set($end = 6) #else #set($end = 7) #end
 										#foreach($i in [1..$end]) <td #if($i <= 3) class="hidden-print" #end></td> #end
 										#foreach($test in $Test.getTests($level))
-											<td colspan="2"><strong>$testTotals.get($test)</strong></td>
+											<td colspan="2" class="testsTakenColspan"><strong>$testTotals.get($test)</strong></td>
 										#end
 										<td><strong>&#36;$totalCost</strong></td>
 									</tr>

@@ -15,7 +15,7 @@
 # along with this program. If not, see [http://www.gnu.org/licenses/].
 
 application: villagetmsca
-version: 7-0-0
+version: 7-6-0
 runtime: java
 threadsafe: false
 sessions_enabled: true

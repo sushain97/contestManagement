@@ -33,6 +33,7 @@ import org.apache.velocity.VelocityContext;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.utils.SystemProperty;
 
 import contestTabulation.Level;
 
@@ -67,6 +68,8 @@ public class BaseHttpServlet extends HttpServlet {
 				context.put("numUnresolvedQuestions", Retrieve.numUnresolvedQuestions());
 			}
 		}
+
+		context.put("applicationVersion", SystemProperty.applicationVersion.get().split("\\.")[0].replace('-', '.'));
 
 		return new Pair<Entity, UserCookie>(contestInfo, userCookie);
 	}

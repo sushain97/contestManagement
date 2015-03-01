@@ -86,6 +86,8 @@ $(document).ready(function() {
 			.attr('value', $(this).attr('id'))
 			.appendTo($(this).parents('form'));
 	});
+
+	$('.subjectColor').colorpicker();
 });
 
 function CheckPassChange() {

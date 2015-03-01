@@ -67,6 +67,7 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
 import com.google.common.io.CharStreams;
 
 import contestTabulation.Level;
+import contestTabulation.Subject;
 import contestTabulation.Test;
 
 @SuppressWarnings("serial")
@@ -99,6 +100,7 @@ public class AdminPanel extends BaseHttpServlet {
 
 			context.put("middleSubjects", Test.getTests(Level.MIDDLE));
 			context.put("Level", Level.class);
+			context.put("subjects", Subject.values());
 
 			String[] defaultEmails = {"forgotPass", "question", "registration"};
 			for (String defaultEmail : defaultEmails) {
@@ -197,6 +199,13 @@ public class AdminPanel extends BaseHttpServlet {
 						String[] docNames = params.get("doc" + level.getName());
 						if (docNames != null) {
 							contestInfo.setProperty("doc" + level.getName(), docNames[0]);
+						}
+					}
+
+					for (Subject subject : Subject.values()) {
+						String[] subjectColors = params.get("color" + subject.getName());
+						if (subjectColors != null) {
+							contestInfo.setProperty("color" + subject.getName(), subjectColors[0]);
 						}
 					}
 

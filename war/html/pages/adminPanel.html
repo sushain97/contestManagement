@@ -11,6 +11,7 @@
 	<link type="text/css" href="/css/slider.css" rel="stylesheet">
 	<link type="text/css" href="/css/fontello.css" rel="stylesheet">
 	<link type="text/css" href="/css/bootstrap3-wysihtml5.min.css" rel="stylesheet">
+	<link type="text/css" href="/css/bootstrap-colorpicker.min.css" rel="stylesheet">
 	<link type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
 	<style type="text/css">
 		#updateScores { display: none; }
@@ -270,6 +271,19 @@
 								</div>
 							</div>
 							#end
+						#end
+
+						#foreach($subject in $subjects)
+							#set($colorName = "color$subject.getName()")
+							<div class="form-group">
+								<label class="col-sm-3 control-label">$subject.getName() Color</label>
+								<div class="col-sm-2 col-xs-4">
+									<div class="input-group subjectColor">
+										<input type="text" class="form-control" name="$colorName" id="$colorName" value='#if($contestInfo.getProperty($colorName))$contestInfo.getProperty($colorName)#else#ffffff#end' required>
+										<span class="input-group-addon"><i></i></span>
+									</div>
+								</div>
+							</div>
 						#end
 
 						<div class="form-group">
@@ -600,6 +614,7 @@
 	<script type="text/javascript" src="/js/bootstrap/bootstrap-datepicker.min.js"></script>
 	<script type="text/javascript" src="/js/bootstrap/bootstrap-slider.js"></script>
 	<script type="text/javascript" src="/js/bootstrap/bootstrap3-wysihtml5.all.min.js"></script>
+	<script type="text/javascript" src="/js/bootstrap/bootstrap-colorpicker.min.js"></script>
 	#include("noscript.html")
 
 	<script type="text/javascript">

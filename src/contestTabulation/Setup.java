@@ -180,7 +180,19 @@ public class Setup extends BaseHttpServlet {
 
 		Workbook workbook = new XSSFWorkbook();
 
-		CellStyle boldStyle = workbook.createCellStyle();
+		XSSFColor quillGray = new XSSFColor(new byte[] {(byte) 218, (byte) 218, (byte) 218});
+
+		XSSFCellStyle defaultStyle = (XSSFCellStyle) workbook.createCellStyle();
+		defaultStyle.setBorderBottom(CellStyle.BORDER_THIN);
+		defaultStyle.setBottomBorderColor(quillGray);
+		defaultStyle.setBorderBottom(CellStyle.BORDER_THIN);
+		defaultStyle.setLeftBorderColor(quillGray);
+		defaultStyle.setBorderBottom(CellStyle.BORDER_THIN);
+		defaultStyle.setRightBorderColor(quillGray);
+		defaultStyle.setBorderBottom(CellStyle.BORDER_THIN);
+		defaultStyle.setTopBorderColor(quillGray);
+
+		XSSFCellStyle boldStyle = (XSSFCellStyle) workbook.createCellStyle();
 		Font boldFont = workbook.createFont();
 		boldFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
 		boldStyle.setFont(boldFont);
@@ -192,6 +204,15 @@ public class Setup extends BaseHttpServlet {
 			style.setFillBackgroundColor(new XSSFColor(new byte[] {Integer.valueOf(colorStr.substring(1, 3), 16).byteValue(),
 					Integer.valueOf(colorStr.substring(3, 5), 16).byteValue(), Integer.valueOf(colorStr.substring(5, 7), 16).byteValue()}));
 			style.setFillPattern(CellStyle.ALIGN_FILL);
+
+			style.setBorderBottom(CellStyle.BORDER_THIN);
+			style.setBottomBorderColor(quillGray);
+			style.setBorderLeft(CellStyle.BORDER_THIN);
+			style.setLeftBorderColor(quillGray);
+			style.setBorderRight(CellStyle.BORDER_THIN);
+			style.setRightBorderColor(quillGray);
+			style.setBorderTop(CellStyle.BORDER_THIN);
+			style.setTopBorderColor(quillGray);
 			subjectCellStyles.put(subject, style);
 		}
 
@@ -221,8 +242,15 @@ public class Setup extends BaseHttpServlet {
 			for (JSONObject student : studentDataEntry.getValue()) {
 				try {
 					row = sheet.createRow((short) rowNum);
-					row.createCell(0).setCellValue(student.getString("name"));
-					row.createCell(1).setCellValue(student.getInt("grade"));
+
+					Cell cell0 = row.createCell(0);
+					cell0.setCellValue(student.getString("name"));
+					cell0.setCellStyle(defaultStyle);
+
+					Cell cell1 = row.createCell(1);
+					cell1.setCellValue(student.getInt("grade"));
+					cell1.setCellStyle(defaultStyle);
+
 					for (Subject subject : Subject.values()) {
 						String value = student.getBoolean(subject.toString()) ? "" : "X";
 						Cell cell = row.createCell(Arrays.asList(columnNames).indexOf(subject.toString()));

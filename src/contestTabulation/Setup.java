@@ -44,6 +44,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellUtil;
 import org.apache.poi.ss.util.WorkbookUtil;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import util.BaseHttpServlet;
@@ -179,9 +181,19 @@ public class Setup extends BaseHttpServlet {
 		Workbook workbook = new XSSFWorkbook();
 
 		CellStyle boldStyle = workbook.createCellStyle();
-		Font font = workbook.createFont();
-		font.setBoldweight(Font.BOLDWEIGHT_BOLD);
-		boldStyle.setFont(font);
+		Font boldFont = workbook.createFont();
+		boldFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
+		boldStyle.setFont(boldFont);
+
+		Map<Subject, XSSFCellStyle> subjectCellStyles = new HashMap<Subject, XSSFCellStyle>();
+		for (Subject subject : Subject.values()) {
+			XSSFCellStyle style = (XSSFCellStyle) workbook.createCellStyle();
+			String colorStr = (String) contestInfo.getProperty("color" + subject.getName());
+			style.setFillBackgroundColor(new XSSFColor(new byte[] {Integer.valueOf(colorStr.substring(1, 3), 16).byteValue(),
+					Integer.valueOf(colorStr.substring(3, 5), 16).byteValue(), Integer.valueOf(colorStr.substring(5, 7), 16).byteValue()}));
+			style.setFillPattern(CellStyle.ALIGN_FILL);
+			subjectCellStyles.put(subject, style);
+		}
 
 		Entry<String, List<JSONObject>>[] studentDataEntries = studentData.entrySet().toArray(new Entry[] {});
 		Arrays.sort(studentDataEntries, Collections.reverseOrder(new Comparator<Entry<String, List<JSONObject>>>() {
@@ -197,8 +209,9 @@ public class Setup extends BaseHttpServlet {
 
 			String[] columnNames = {"Name", "Grade", "N", "C", "M", "S"};
 			for (int i = 0; i < columnNames.length; i++) {
+				String columnName = columnNames[i];
 				Cell cell = row.createCell(i);
-				cell.setCellValue(columnNames[i]);
+				cell.setCellValue(columnName);
 				cell.setCellStyle(boldStyle);
 				CellUtil.setAlignment(cell, workbook, CellStyle.ALIGN_CENTER);
 			}
@@ -212,7 +225,9 @@ public class Setup extends BaseHttpServlet {
 					row.createCell(1).setCellValue(student.getInt("grade"));
 					for (Subject subject : Subject.values()) {
 						String value = student.getBoolean(subject.toString()) ? "" : "X";
-						row.createCell(Arrays.asList(columnNames).indexOf(subject.toString())).setCellValue(value);
+						Cell cell = row.createCell(Arrays.asList(columnNames).indexOf(subject.toString()));
+						cell.setCellValue(value);
+						cell.setCellStyle(subjectCellStyles.get(subject));
 					}
 
 					if (student.getString("name").length() > longestNameLength) {

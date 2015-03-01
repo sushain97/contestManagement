@@ -79,6 +79,13 @@ $(document).ready(function() {
 			$('#deleteScoresButton').removeClass('blurred');
 		});
 	});
+
+	$('.tab-pane#tabulation button[type=submit]').click(function() {
+		$('<input />').attr('type', 'hidden')
+			.attr('name', 'submitType')
+			.attr('value', $(this).attr('id'))
+			.appendTo($(this).parents('form'));
+	});
 });
 
 function CheckPassChange() {

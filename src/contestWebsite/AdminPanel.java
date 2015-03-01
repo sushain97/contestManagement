@@ -190,22 +190,21 @@ public class AdminPanel extends BaseHttpServlet {
 					contestInfo.setProperty("complete", params.get("complete") != null);
 					contestInfo.setProperty("hideFullNames", params.get("fullnames") != null);
 
-					if (params.containsKey("update")) {
-						Queue queue = QueueFactory.getDefaultQueue();
-						TaskOptions options = withUrl("/tabulate");
+					stringPropNames = new String[] {"title", "endDate", "startDate", "editStartDate", "editEndDate", "classificationQuestion"};
+				}
+				else if (view.equals("tabulation")) {
+					Queue queue = QueueFactory.getDefaultQueue();
+					TaskOptions options = withUrl("/tabulate");
 
-						for (Level level : Level.values()) {
-							String[] docNames = params.get("doc" + level.getName());
-							if (docNames != null) {
-								contestInfo.setProperty("doc" + level.getName(), docNames[0]);
-								options.param("doc" + level.getName(), docNames[0]);
-							}
+					for (Level level : Level.values()) {
+						String[] docNames = params.get("doc" + level.getName());
+						if (docNames != null) {
+							contestInfo.setProperty("doc" + level.getName(), docNames[0]);
+							options.param("doc" + level.getName(), docNames[0]);
 						}
-
-						queue.add(options);
 					}
 
-					stringPropNames = new String[] {"title", "endDate", "startDate", "editStartDate", "editEndDate", "classificationQuestion"};
+					queue.add(options);
 				}
 				else if (view.equals("content")) {
 					GeoPt location = new GeoPt(Float.parseFloat(params.get("location_lat")[0]), Float.parseFloat(params.get("location_long")[0]));

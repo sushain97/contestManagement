@@ -263,28 +263,40 @@ public class Main extends HttpServlet {
 
 	private static void tabulateCategoryWinners(Level level, Set<Student> students, Map<Test, List<Student>> categoryWinners, Map<Test, Pair<Integer, Integer>> testsGraded, List<Test> tiesBroken, Map<String, Integer> awardCriteria, StringBuilder errorLog) {
 		for (Test test : testsGraded.keySet()) {
-			ArrayList<Student> winners = new ArrayList<Student>();
 			int grade = test.getGrade();
 			final Subject subject = test.getSubject();
 
+			ArrayList<Student> testStudents = new ArrayList<Student>();
 			for (Student student : students) {
 				if (student.getGrade() == grade) {
 					Score score = student.getScore(subject);
 					if (score != null && score.isNumeric() && score.getScoreNum() > 0) {
-						winners.add(student);
+						testStudents.add(student);
 					}
 				}
 			}
+			Collections.sort(testStudents, Student.getScoreComparator(subject));
+			Collections.reverse(testStudents);
 
-			int numStudents = awardCriteria.get("category_" + level + "_medal") + awardCriteria.get("category_" + level + "_trophy") + 5;
-			Collections.sort(winners, Student.getScoreComparator(subject));
-			Collections.reverse(winners);
-			winners = new ArrayList<Student>(winners.subList(0, winners.size() >= numStudents ? numStudents : winners.size()));
+			ArrayList<Student> winners = new ArrayList<Student>();
+			int numWinners = awardCriteria.get("category_" + level + "_medal") + awardCriteria.get("category_" + level + "_trophy");
+			int lastScoreNum = Integer.MIN_VALUE;
+			for (Student student : testStudents) {
+				Score score = student.getScore(subject);
+				if (lastScoreNum == score.getScoreNum() || winners.size() < numWinners) {
+					winners.add(student);
+				}
+				else if (winners.size() >= numWinners) {
+					winners.add(student);
+					break;
+				}
+				lastScoreNum = score.getScoreNum();
+			}
 
 			boolean testTiesBroken = true;
 
 			Map<Integer, List<Student>> studentsByScore = new TreeMap<Integer, List<Student>>();
-			for (int i = 0; i < Math.min(winners.size(), numStudents - 5); i++) {
+			for (int i = 0; i < winners.size(); i++) {
 				Student student = winners.get(i);
 				Score score = student.getScore(subject);
 				if (!studentsByScore.containsKey(score.getScoreNum())) {

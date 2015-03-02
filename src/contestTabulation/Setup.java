@@ -180,18 +180,6 @@ public class Setup extends BaseHttpServlet {
 
 		Workbook workbook = new XSSFWorkbook();
 
-		XSSFColor quillGray = new XSSFColor(new byte[] {(byte) 218, (byte) 218, (byte) 218});
-
-		XSSFCellStyle defaultStyle = (XSSFCellStyle) workbook.createCellStyle();
-		defaultStyle.setBorderBottom(CellStyle.BORDER_THIN);
-		defaultStyle.setBottomBorderColor(quillGray);
-		defaultStyle.setBorderBottom(CellStyle.BORDER_THIN);
-		defaultStyle.setLeftBorderColor(quillGray);
-		defaultStyle.setBorderBottom(CellStyle.BORDER_THIN);
-		defaultStyle.setRightBorderColor(quillGray);
-		defaultStyle.setBorderBottom(CellStyle.BORDER_THIN);
-		defaultStyle.setTopBorderColor(quillGray);
-
 		XSSFCellStyle boldStyle = (XSSFCellStyle) workbook.createCellStyle();
 		Font boldFont = workbook.createFont();
 		boldFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
@@ -199,20 +187,26 @@ public class Setup extends BaseHttpServlet {
 
 		Map<Subject, XSSFCellStyle> subjectCellStyles = new HashMap<Subject, XSSFCellStyle>();
 		for (Subject subject : Subject.values()) {
-			XSSFCellStyle style = (XSSFCellStyle) workbook.createCellStyle();
+			final double ALPHA = .144;
 			String colorStr = (String) contestInfo.getProperty("color" + subject.getName());
-			style.setFillBackgroundColor(new XSSFColor(new byte[] {Integer.valueOf(colorStr.substring(1, 3), 16).byteValue(),
-					Integer.valueOf(colorStr.substring(3, 5), 16).byteValue(), Integer.valueOf(colorStr.substring(5, 7), 16).byteValue()}));
+			byte[] backgroundColor = new byte[] {Integer.valueOf(colorStr.substring(1, 3), 16).byteValue(),
+					Integer.valueOf(colorStr.substring(3, 5), 16).byteValue(), Integer.valueOf(colorStr.substring(5, 7), 16).byteValue()};
+			// http://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending
+			byte[] borderColor = new byte[] {(byte) ((backgroundColor[0] & 0xff) * (1 - ALPHA)), (byte) ((backgroundColor[1] & 0xff) * (1 - ALPHA)),
+					(byte) ((backgroundColor[2] & 0xff) * (1 - ALPHA))};
+
+			XSSFCellStyle style = (XSSFCellStyle) workbook.createCellStyle();
+			style.setFillBackgroundColor(new XSSFColor(backgroundColor));
 			style.setFillPattern(CellStyle.ALIGN_FILL);
 
 			style.setBorderBottom(CellStyle.BORDER_THIN);
-			style.setBottomBorderColor(quillGray);
-			style.setBorderLeft(CellStyle.BORDER_THIN);
-			style.setLeftBorderColor(quillGray);
-			style.setBorderRight(CellStyle.BORDER_THIN);
-			style.setRightBorderColor(quillGray);
+			style.setBottomBorderColor(new XSSFColor(borderColor));
 			style.setBorderTop(CellStyle.BORDER_THIN);
-			style.setTopBorderColor(quillGray);
+			style.setTopBorderColor(new XSSFColor(borderColor));
+			style.setBorderRight(CellStyle.BORDER_THIN);
+			style.setRightBorderColor(new XSSFColor(borderColor));
+			style.setBorderLeft(CellStyle.BORDER_THIN);
+			style.setLeftBorderColor(new XSSFColor(borderColor));
 			subjectCellStyles.put(subject, style);
 		}
 
@@ -242,14 +236,8 @@ public class Setup extends BaseHttpServlet {
 			for (JSONObject student : studentDataEntry.getValue()) {
 				try {
 					row = sheet.createRow((short) rowNum);
-
-					Cell cell0 = row.createCell(0);
-					cell0.setCellValue(student.getString("name"));
-					cell0.setCellStyle(defaultStyle);
-
-					Cell cell1 = row.createCell(1);
-					cell1.setCellValue(student.getInt("grade"));
-					cell1.setCellStyle(defaultStyle);
+					row.createCell(0).setCellValue(student.getString("name"));
+					row.createCell(1).setCellValue(student.getInt("grade"));
 
 					for (Subject subject : Subject.values()) {
 						String value = student.getBoolean(subject.toString()) ? "" : "X";

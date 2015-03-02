@@ -124,10 +124,10 @@ public class Login extends BaseHttpServlet {
 					boolean persistent = "stay".equals(req.getParameter("signedIn"));
 					Calendar calendar = Calendar.getInstance();
 					if (persistent) {
-						calendar.add(Calendar.WEEK_OF_YEAR, 2);
+						calendar.add(Calendar.WEEK_OF_YEAR, 1);
 					}
 					else {
-						calendar.add(Calendar.MINUTE, 60);
+						calendar.add(Calendar.MINUTE, 120);
 					}
 					token.setProperty("expires", new Date(calendar.getTimeInMillis()));
 

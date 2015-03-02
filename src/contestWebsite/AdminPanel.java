@@ -67,6 +67,7 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
 import com.google.common.io.CharStreams;
 
 import contestTabulation.Level;
+import contestTabulation.Subject;
 import contestTabulation.Test;
 
 @SuppressWarnings("serial")
@@ -99,6 +100,7 @@ public class AdminPanel extends BaseHttpServlet {
 
 			context.put("middleSubjects", Test.getTests(Level.MIDDLE));
 			context.put("Level", Level.class);
+			context.put("subjects", Subject.values());
 
 			String[] defaultEmails = {"forgotPass", "question", "registration"};
 			for (String defaultEmail : defaultEmails) {
@@ -190,22 +192,36 @@ public class AdminPanel extends BaseHttpServlet {
 					contestInfo.setProperty("complete", params.get("complete") != null);
 					contestInfo.setProperty("hideFullNames", params.get("fullnames") != null);
 
-					if (params.containsKey("update")) {
+					stringPropNames = new String[] {"title", "endDate", "startDate", "editStartDate", "editEndDate", "classificationQuestion"};
+				}
+				else if (view.equals("tabulation")) {
+					for (Level level : Level.values()) {
+						String[] docNames = params.get("doc" + level.getName());
+						if (docNames != null) {
+							contestInfo.setProperty("doc" + level.getName(), docNames[0]);
+						}
+					}
+
+					for (Subject subject : Subject.values()) {
+						String[] subjectColors = params.get("color" + subject.getName());
+						if (subjectColors != null) {
+							contestInfo.setProperty("color" + subject.getName(), subjectColors[0]);
+						}
+					}
+
+					if (params.get("submitType")[0].equals("enqueueTabulationTask")) {
 						Queue queue = QueueFactory.getDefaultQueue();
 						TaskOptions options = withUrl("/tabulate");
 
 						for (Level level : Level.values()) {
 							String[] docNames = params.get("doc" + level.getName());
 							if (docNames != null) {
-								contestInfo.setProperty("doc" + level.getName(), docNames[0]);
 								options.param("doc" + level.getName(), docNames[0]);
 							}
 						}
 
 						queue.add(options);
 					}
-
-					stringPropNames = new String[] {"title", "endDate", "startDate", "editStartDate", "editEndDate", "classificationQuestion"};
 				}
 				else if (view.equals("content")) {
 					GeoPt location = new GeoPt(Float.parseFloat(params.get("location_lat")[0]), Float.parseFloat(params.get("location_long")[0]));

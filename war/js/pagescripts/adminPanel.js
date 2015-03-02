@@ -19,7 +19,6 @@ $(document).ready(function() {
 	$('.nav-pills').stickyTabs();
 
 	CheckPassChange();
-	CheckUpdate();
 
 	$('.input-daterange').datepicker();
 	$('.glyphicon-question-sign').tooltip();
@@ -35,11 +34,6 @@ $(document).ready(function() {
 	});
 	$('.price').slider().on('slide', function(ev) {
 		$('#priceText').html('$' + ev.value);
-	});
-
-	$('#update').change(function() {
-		$('#updateScores').toggle('fast');
-		CheckUpdate();
 	});
 
 	$('#changePass').change(function() {
@@ -85,18 +79,16 @@ $(document).ready(function() {
 			$('#deleteScoresButton').removeClass('blurred');
 		});
 	});
-});
 
-function CheckUpdate() {
-	var update = $('#update').prop('checked');
-	$('#docAccount').prop('required', update);
-	$('#docPassword').prop('required', update);
-	$('#docHigh').prop('required', update);
-	$('#docMiddle').prop('required', update);
-	$('#docElementary').prop('required', update);
-	if(update)
-		$('#updateScores').show();
-}
+	$('.tab-pane#tabulation button[type=submit]').click(function() {
+		$('<input />').attr('type', 'hidden')
+			.attr('name', 'submitType')
+			.attr('value', $(this).attr('id'))
+			.appendTo($(this).parents('form'));
+	});
+
+	$('.subjectColor').colorpicker();
+});
 
 function CheckPassChange() {
 	var change = $('#changePass').prop('checked');
@@ -120,7 +112,7 @@ function signInCallback(authResult) {
 			processData: false,
 			contentType: 'application/octet-stream; charset=utf-8',
 			success: function() {
-				$('#oAuthResult').html('<strong class="text-success">You are signed in, submit the form to update online scores.</strong>');
+				$('#oAuthResult').html('<strong class="text-success">You are signed in.</strong>');
 				$('.docButton').show();
 			}
 		});

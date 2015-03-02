@@ -11,6 +11,7 @@
 	<link type="text/css" href="/css/slider.css" rel="stylesheet">
 	<link type="text/css" href="/css/fontello.css" rel="stylesheet">
 	<link type="text/css" href="/css/bootstrap3-wysihtml5.min.css" rel="stylesheet">
+	<link type="text/css" href="/css/bootstrap-colorpicker.min.css" rel="stylesheet">
 	<link type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
 	<style type="text/css">
 		#updateScores { display: none; }
@@ -29,16 +30,7 @@
 	</style>
 
 	<script type="text/javascript" src="/js/pagescripts/adminPanel.js"></script>
-	<script type="text/javascript">
-		(function() {
-			var po = document.createElement('script');
-			po.type = 'text/javascript';
-			po.async = true;
-			po.src = 'https://plus.google.com/js/client:plusone.js?onload=start';
-			var s = document.getElementsByTagName('script')[0];
-			s.parentNode.insertBefore(po, s);
-		})();
-	</script>
+	<script type="text/javascript" src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
 </head>
 
 <body>
@@ -49,6 +41,7 @@
 			Admin Control Panel
 			<ul class="nav nav-pills pull-right lead">
 				<li class="active"><a href="#general" data-toggle="tab">General</a></li>
+				<li><a href="#tabulation" data-toggle="tab">Tabulation</a></li>
 				<li><a href="#content" data-toggle="tab">Content</a></li>
 				<li><a href="#awards" data-toggle="tab">Awards</a></li>
 				<li><a href="#emails" data-toggle="tab">Emails</a></li>
@@ -125,81 +118,6 @@
 								<b id="priceText">$$price</b>
 								<input type="text" class="price" id="price" name="price" data-slider-min="0" data-slider-max="15" data-slider-step="1" data-slider-value="$price" value="$price" required>
 								<p class="help-block">How much should each test registration cost in dollars?</p>
-							</div>
-						</div>
-
-						#if($contestInfo.getProperty("OAuth2ClientId") && $contestInfo.getProperty("OAuth2ClientSecret"))
-						<div class="form-group">
-							<label class="col-sm-3 col-xs-6 control-label" for="update">
-								Update Online Scores?
-							</label>
-							<div class="col-sm-7 col-xs-6">
-								<label class="checkbox-inline">
-									<input type="checkbox" name="update" id="update">
-									#if($contestInfo.getProperty("updated"))
-										<strong>Last generated $contestInfo.getProperty("updated")</strong>
-										#if($contestInfo.getProperty("errorLog"))
-											#if($contestInfo.getProperty("errorLog").getValue().toString().length() == 0)
-												#set($errors = [])
-											#else
-												#set($errors = $contestInfo.getProperty("errorLog").getValue().split("\n"))
-											#end
-											<a href="#errorLogModal" role="button" class="btn #if($errors.size() > 0) btn-warning #else btn-success #end btn-sm" data-toggle="modal">Show Error Log <span class="badge">$errors.size()</span></a>
-										#end
-									#else
-										<strong>Last generated never</strong>
-									#end
-								</label>
-							</div>
-						</div>
-
-						<div id="updateScores">
-							<div class="form-group">
-								<div class="col-sm-2 col-sm-offset-2">
-									<div id="signinButton">
-										<span class="g-signin"
-											data-scope="https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/drive https://spreadsheets.google.com/feeds https://docs.google.com/feeds"
-											data-clientid="$clientId"
-											data-redirecturi="postmessage"
-											data-accesstype="offline"
-											data-cookiepolicy="single_host_origin"
-											data-callback="signInCallback">
-										</span>
-									</div>
-								</div>
-								<div class="col-sm-8 lead">
-									<div id="oAuthResult"></div>
-								</div>
-							</div>
-
-							#foreach($level in $Level.values())
-								#if($enabledLevels.contains($level))
-								<div class="form-group">
-									<label class="col-sm-3 control-label">$level.getName() School Doc</label>
-									<div class="col-sm-5">
-										#set($docName = "doc$level.getName()")
-										<input type="text" name="$docName" class="form-control" id="$docName"
-											value='#if($contestInfo.getProperty($docName))$contestInfo.getProperty($docName)#end'>
-										<span class="help-block">Name of Google Spreadsheet with $level.getName() School Scores</span>
-									</div>
-									<div class="col-sm-3" class="docButton" id="$level.toString()DocButton">
-										<button type="button" class="btn btn-default">Create Tabulation Spreadsheet</button>
-									</div>
-								</div>
-								#end
-							#end
-						</div>
-						#else
-						<div class="lead text-danger">Google OAuth Credentials must be set to enable tabulation.</div>
-						#end
-
-						<div class="form-group">
-							<label class="col-sm-3 control-label text-danger"><i class="fa fa-exclamation-triangle"></i> Scrub Datastore</label>
-							<div class="col-sm-3">
-								<button type="button" class="btn btn-danger" id="enableDeleteScores"><i class="fa fa-unlock"></i> Enable delete button</button>
-							</div>
-							<div class="col-sm-3">
-								<button type="button" class="btn btn-danger"  id="deleteScoresButton" disabled><i class="fa fa-eraser"></i> Erase scores, rankings, visualizations</button>
 							</div>
 						</div>
 
@@ -295,6 +213,103 @@
 								<button type="reset" class="btn btn-danger"><i class="glyphicon glyphicon-backward"></i> Reset to Last Settings</button>
 							</div>
 						</div>
+					</fieldset>
+				</form>
+			</div>
+
+			<div class="tab-pane fade" id="tabulation">
+				<form method="post" class="form-horizontal">
+					<div class="lead">
+						#if($contestInfo.getProperty("updated"))
+							<strong>Last generated $contestInfo.getProperty("updated")</strong>
+							#if($contestInfo.getProperty("errorLog"))
+								#if($contestInfo.getProperty("errorLog").getValue().toString().length() == 0)
+									#set($errors = [])
+								#else
+									#set($errors = $contestInfo.getProperty("errorLog").getValue().split("\n"))
+								#end
+								<a href="#errorLogModal" role="button" class="btn #if($errors.size() > 0) btn-warning #else btn-success #end btn-sm pull-right" data-toggle="modal">
+									Show Error Log <span class="badge">$errors.size()</span>
+								</a>
+							#end
+						#else
+							<strong>Last generated never</strong>
+						#end
+					</div>
+
+					<fieldset>
+						#if($contestInfo.getProperty("OAuth2ClientId") && $contestInfo.getProperty("OAuth2ClientSecret"))
+						<div class="form-group">
+							<div class="col-sm-2 col-sm-offset-2">
+								<div id="signinButton">
+									<span class="g-signin"
+										data-scope="https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/drive https://spreadsheets.google.com/feeds https://docs.google.com/feeds"
+										data-clientid="$clientId"
+										data-redirecturi="postmessage"
+										data-accesstype="offline"
+										data-cookiepolicy="single_host_origin"
+										data-callback="signInCallback">
+									</span>
+								</div>
+							</div>
+							<div class="col-sm-8 lead">
+								<div id="oAuthResult"></div>
+							</div>
+						</div>
+
+						#foreach($level in $Level.values())
+							#if($enabledLevels.contains($level))
+							<div class="form-group">
+								<label class="col-sm-3 control-label">$level.getName() School Spreadsheet</label>
+								<div class="col-sm-5">
+									#set($docName = "doc$level.getName()")
+									<input type="text" name="$docName" class="form-control" id="$docName" value='#if($contestInfo.getProperty($docName))$contestInfo.getProperty($docName)#end' required>
+									<span class="help-block">Name of Google Spreadsheet with $level.getName() School Scores</span>
+								</div>
+								<div class="col-sm-3" class="docButton" id="$level.toString()DocButton">
+									<button type="button" class="btn btn-default">Create Tabulation Spreadsheet</button>
+								</div>
+							</div>
+							#end
+						#end
+
+						#foreach($subject in $subjects)
+							#set($colorName = "color$subject.getName()")
+							<div class="form-group">
+								<label class="col-sm-3 control-label">$subject.getName() Color</label>
+								<div class="col-sm-2 col-xs-4">
+									<div class="input-group subjectColor">
+										<input type="text" class="form-control" name="$colorName" id="$colorName" value='#if($contestInfo.getProperty($colorName))$contestInfo.getProperty($colorName)#else#ffffff#end' required>
+										<span class="input-group-addon"><i></i></span>
+									</div>
+								</div>
+							</div>
+						#end
+
+						<div class="form-group">
+							<div class="col-sm-offset-3 col-sm-9">
+								<button type="submit" class="btn btn-primary" id="saveSettings"><i class="glyphicon glyphicon-save"></i> Save Settings</button>
+								<button type="submit" class="btn btn-warning" id="enqueueTabulationTask"><i class="glyphicon glyphicon-pencil"></i> Enqueue tabulation task</button>
+							</div>
+						</div>
+
+						#else
+						<div class="lead text-danger">Google OAuth Credentials must be set to enable tabulation.</div>
+						#end
+
+						<hr>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label text-danger"><i class="fa fa-exclamation-triangle"></i> Scrub Datastore</label>
+							<div class="col-sm-3">
+								<button type="button" class="btn btn-danger" id="enableDeleteScores"><i class="fa fa-unlock"></i> Enable delete button</button>
+							</div>
+							<div class="col-sm-3">
+								<button type="button" class="btn btn-danger"  id="deleteScoresButton" disabled><i class="fa fa-eraser"></i> Erase scores, rankings, visualizations</button>
+							</div>
+						</div>
+
+						<input type="hidden" name="view" value="tabulation">
 					</fieldset>
 				</form>
 			</div>
@@ -599,6 +614,7 @@
 	<script type="text/javascript" src="/js/bootstrap/bootstrap-datepicker.min.js"></script>
 	<script type="text/javascript" src="/js/bootstrap/bootstrap-slider.js"></script>
 	<script type="text/javascript" src="/js/bootstrap/bootstrap3-wysihtml5.all.min.js"></script>
+	<script type="text/javascript" src="/js/bootstrap/bootstrap-colorpicker.min.js"></script>
 	#include("noscript.html")
 
 	<script type="text/javascript">

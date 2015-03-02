@@ -44,6 +44,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellUtil;
 import org.apache.poi.ss.util.WorkbookUtil;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import util.BaseHttpServlet;
@@ -178,10 +180,35 @@ public class Setup extends BaseHttpServlet {
 
 		Workbook workbook = new XSSFWorkbook();
 
-		CellStyle boldStyle = workbook.createCellStyle();
-		Font font = workbook.createFont();
-		font.setBoldweight(Font.BOLDWEIGHT_BOLD);
-		boldStyle.setFont(font);
+		XSSFCellStyle boldStyle = (XSSFCellStyle) workbook.createCellStyle();
+		Font boldFont = workbook.createFont();
+		boldFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
+		boldStyle.setFont(boldFont);
+
+		Map<Subject, XSSFCellStyle> subjectCellStyles = new HashMap<Subject, XSSFCellStyle>();
+		for (Subject subject : Subject.values()) {
+			final double ALPHA = .144;
+			String colorStr = (String) contestInfo.getProperty("color" + subject.getName());
+			byte[] backgroundColor = new byte[] {Integer.valueOf(colorStr.substring(1, 3), 16).byteValue(),
+					Integer.valueOf(colorStr.substring(3, 5), 16).byteValue(), Integer.valueOf(colorStr.substring(5, 7), 16).byteValue()};
+			// http://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending
+			byte[] borderColor = new byte[] {(byte) ((backgroundColor[0] & 0xff) * (1 - ALPHA)), (byte) ((backgroundColor[1] & 0xff) * (1 - ALPHA)),
+					(byte) ((backgroundColor[2] & 0xff) * (1 - ALPHA))};
+
+			XSSFCellStyle style = (XSSFCellStyle) workbook.createCellStyle();
+			style.setFillBackgroundColor(new XSSFColor(backgroundColor));
+			style.setFillPattern(CellStyle.ALIGN_FILL);
+
+			style.setBorderBottom(CellStyle.BORDER_THIN);
+			style.setBottomBorderColor(new XSSFColor(borderColor));
+			style.setBorderTop(CellStyle.BORDER_THIN);
+			style.setTopBorderColor(new XSSFColor(borderColor));
+			style.setBorderRight(CellStyle.BORDER_THIN);
+			style.setRightBorderColor(new XSSFColor(borderColor));
+			style.setBorderLeft(CellStyle.BORDER_THIN);
+			style.setLeftBorderColor(new XSSFColor(borderColor));
+			subjectCellStyles.put(subject, style);
+		}
 
 		Entry<String, List<JSONObject>>[] studentDataEntries = studentData.entrySet().toArray(new Entry[] {});
 		Arrays.sort(studentDataEntries, Collections.reverseOrder(new Comparator<Entry<String, List<JSONObject>>>() {
@@ -197,8 +224,9 @@ public class Setup extends BaseHttpServlet {
 
 			String[] columnNames = {"Name", "Grade", "N", "C", "M", "S"};
 			for (int i = 0; i < columnNames.length; i++) {
+				String columnName = columnNames[i];
 				Cell cell = row.createCell(i);
-				cell.setCellValue(columnNames[i]);
+				cell.setCellValue(columnName);
 				cell.setCellStyle(boldStyle);
 				CellUtil.setAlignment(cell, workbook, CellStyle.ALIGN_CENTER);
 			}
@@ -210,9 +238,12 @@ public class Setup extends BaseHttpServlet {
 					row = sheet.createRow((short) rowNum);
 					row.createCell(0).setCellValue(student.getString("name"));
 					row.createCell(1).setCellValue(student.getInt("grade"));
+
 					for (Subject subject : Subject.values()) {
 						String value = student.getBoolean(subject.toString()) ? "" : "X";
-						row.createCell(Arrays.asList(columnNames).indexOf(subject.toString())).setCellValue(value);
+						Cell cell = row.createCell(Arrays.asList(columnNames).indexOf(subject.toString()));
+						cell.setCellValue(value);
+						cell.setCellStyle(subjectCellStyles.get(subject));
 					}
 
 					if (student.getString("name").length() > longestNameLength) {

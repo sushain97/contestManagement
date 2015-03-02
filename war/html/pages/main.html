@@ -27,6 +27,14 @@
 		#if($loggedIn)
 			<h1>Welcome, $name. #include("printButton.html")</h1>
 
+			#if($complete && $testDownloadURL && !$testDownloadURL.empty)
+			<div class="lead">
+				<a href="$testDownloadURL" target="_blank">
+					<i class="fa fa-download"></i> Download Contest Tests &amp; Keys
+				</a>
+			</div>
+			#end
+
 			#if($admin)
 				To manage the competition and the admin account go to the <a href="/adminPanel">Admin Control Panel</a>.
 				<br> To view registrations, current scores and clarifications requested by coaches go to the

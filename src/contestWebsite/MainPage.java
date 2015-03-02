@@ -140,6 +140,8 @@ public class MainPage extends BaseHttpServlet {
 				context.put("name", "Contest Administrator");
 				context.put("admin", true);
 			}
+			context.put("complete", infoAndCookie.x.getProperty("complete"));
+			context.put("testDownloadURL", infoAndCookie.x.getProperty("testDownloadURL"));
 		}
 		else {
 			Yaml yaml = new Yaml();

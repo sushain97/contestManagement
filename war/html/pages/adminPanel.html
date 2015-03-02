@@ -122,10 +122,18 @@
 						</div>
 
 						<div class="form-group">
-							<label class="col-sm-3 col-xs-7 control-label" for="complete">Make results public</label>
+							<label class="col-sm-2 col-xs-5 control-label" for="testDownloadURL">Test Download URL</label>
+							<div class="col-sm-6 col-xs-7">
+								<input type="text" value='#if($contestInfo.getProperty("testDownloadURL"))$contestInfo.getProperty("testDownloadURL")#end' name="testDownloadURL" class="form-control">
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 col-xs-7 control-label" for="complete">Awards complete?</label>
 							<div class="col-sm-5 col-xs-1">
 								<label class="checkbox-inline">
 									<input type="checkbox" name="complete" value="yes" id="complete" #if($contestInfo.getProperty("complete")) checked #end>
+									Makes results public and test download link visible to coaches
 								</label>
 							</div>
 						</div>

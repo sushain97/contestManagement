@@ -192,7 +192,8 @@ public class AdminPanel extends BaseHttpServlet {
 					contestInfo.setProperty("complete", params.get("complete") != null);
 					contestInfo.setProperty("hideFullNames", params.get("fullnames") != null);
 
-					stringPropNames = new String[] {"title", "endDate", "startDate", "editStartDate", "editEndDate", "classificationQuestion"};
+					stringPropNames = new String[] {"title", "endDate", "startDate", "editStartDate", "editEndDate", "classificationQuestion",
+							"testDownloadURL"};
 				}
 				else if (view.equals("tabulation")) {
 					for (Level level : Level.values()) {

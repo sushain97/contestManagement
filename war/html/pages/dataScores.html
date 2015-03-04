@@ -55,6 +55,11 @@
 				background-color: white;
 			}
 		}
+
+		#if($type.startsWith("school_"))
+		.navbar-fixed-top { margin-bottom: 0px; }
+		body { padding-top: 50px; }
+		#end
 	</style>
 	<link type="text/css" href="/css/footer.css" rel="stylesheet">
 	<link type="text/css" href="/css/sticky-sidebar.css" rel="stylesheet">
@@ -68,8 +73,8 @@
 	<div id="wrap">
 		#parse("navbar.html")
 
-		#if($type == "schoolOverview")
-		<div class="navbar navbar-inverse hidden-xs" style="margin-bottom: 0px;">
+		#if($type.startsWith("school_"))
+		<div class="navbar navbar-inverse hidden-xs">
 			<div class="container">
 				<div class="navbar-header">
 					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">

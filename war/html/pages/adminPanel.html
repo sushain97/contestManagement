@@ -298,6 +298,11 @@
 							<div class="col-sm-offset-3 col-sm-9">
 								<button type="submit" class="btn btn-primary" id="saveSettings"><i class="glyphicon glyphicon-save"></i> Save Settings</button>
 								<button type="submit" class="btn btn-warning" id="enqueueTabulationTask"><i class="glyphicon glyphicon-pencil"></i> Enqueue tabulation task</button>
+								#if($tabulationTaskStatus)
+									<span class='label #if($tabulationTaskStatus.startsWith("Running")) label-info #elseif($tabulationTaskStatus.startsWith("Success")) label-success #elseif($tabulationTaskStatus.startsWith("Failed")) label-danger #end'>
+										$tabulationTaskStatus - $tabulationTaskStatusTime ago
+									</span>
+								#end
 							</div>
 						</div>
 

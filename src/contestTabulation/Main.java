@@ -34,6 +34,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -64,6 +65,9 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.memcache.ErrorHandlers;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
@@ -85,9 +89,11 @@ public class Main extends HttpServlet {
 	private static final JacksonFactory jsonFactory = new JacksonFactory();
 	private static final Logger logger = Logger.getLogger(Main.class.getName());
 	private static final SimpleDateFormat logDateFormat = new SimpleDateFormat("h:mm:ss a");
+	private static final MemcacheService memCache = MemcacheServiceFactory.getMemcacheService();
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) {
+		final long startTimeMillis = System.currentTimeMillis();
 		final Map<Test, Pair<Integer, Integer>> testsGraded = new HashMap<Test, Pair<Integer, Integer>>();
 		final List<Test> tiesBroken = new ArrayList<Test>();
 
@@ -102,6 +108,9 @@ public class Main extends HttpServlet {
 		final Map<Level, List<School>> sweepstakesWinners = new HashMap<Level, List<School>>();
 
 		final StringBuilder errorLog = new StringBuilder();
+
+		memCache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(java.util.logging.Level.INFO));
+		memCache.put("tabulationTaskStatus", ("Running/Init_" + System.currentTimeMillis()).getBytes());
 
 		try {
 			// Retrieve contest information from Datastore
@@ -132,6 +141,7 @@ public class Main extends HttpServlet {
 			}
 
 			for (Level level : levels) {
+				memCache.put("tabulationTaskStatus", ("Running/" + level.getName() + "_" + System.currentTimeMillis()).getBytes());
 				Map<String, School> lSchools = schools.get(level);
 				List<School> lsweepstakesWinners = sweepstakesWinners.get(level);
 				Map<Test, List<Student>> lCategoryWinners = categoryWinners.get(level);
@@ -163,9 +173,13 @@ public class Main extends HttpServlet {
 
 			// Update Datastore by modifying contest information entity to include tests graded, last updated timestamp and error logs
 			updateContestInfo(testsGraded, tiesBroken, contestInfo, errorLog);
+
+			long elapsedSeconds = TimeUnit.SECONDS.convert(System.currentTimeMillis() - startTimeMillis, TimeUnit.MILLISECONDS);
+			memCache.put("tabulationTaskStatus", ("Success/" + elapsedSeconds + " second" + (elapsedSeconds == 1 ? "" : "s") + "_" + System.currentTimeMillis()).getBytes());
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			memCache.put("tabulationTaskStatus", ("Failed/" + e.getClass().getName() + "_" + System.currentTimeMillis()).getBytes());
 		}
 	}
 

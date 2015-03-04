@@ -28,9 +28,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -60,8 +62,12 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
+import com.google.appengine.api.memcache.ErrorHandlers;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.RetryOptions;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 import com.google.common.io.CharStreams;
@@ -151,6 +157,37 @@ public class AdminPanel extends BaseHttpServlet {
 				context.put("regClosed", true);
 			}
 
+			MemcacheService memCache = MemcacheServiceFactory.getMemcacheService();
+			memCache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(java.util.logging.Level.INFO));
+			byte[] tabulationTaskStatusBytes = (byte[]) memCache.get("tabulationTaskStatus");
+			if (tabulationTaskStatusBytes != null) {
+				String[] tabulationTaskStatus = new String(tabulationTaskStatusBytes).split("_");
+				context.put("tabulationTaskStatus", tabulationTaskStatus[0]);
+				List<String> tabulationTaskStatusTime = new ArrayList<String>();
+				long timeAgo = new Date().getTime() - new Date(Long.parseLong(tabulationTaskStatus[1])).getTime();
+				List<Pair<TimeUnit, String>> timeUnits = new ArrayList<Pair<TimeUnit, String>>() {
+					{
+						add(new Pair<TimeUnit, String>(TimeUnit.DAYS, "day"));
+						add(new Pair<TimeUnit, String>(TimeUnit.HOURS, "hour"));
+						add(new Pair<TimeUnit, String>(TimeUnit.MINUTES, "minute"));
+						add(new Pair<TimeUnit, String>(TimeUnit.SECONDS, "second"));
+					}
+				};
+				for (Pair<TimeUnit, String> entry : timeUnits) {
+					if (entry.getX().convert(timeAgo, TimeUnit.MILLISECONDS) > 0) {
+						long numUnit = entry.getX().convert(timeAgo, TimeUnit.MILLISECONDS);
+						tabulationTaskStatusTime.add(numUnit + " " + entry.getY() + (numUnit == 1 ? "" : "s"));
+						timeAgo -= TimeUnit.MILLISECONDS.convert(numUnit, entry.getX());
+					}
+				}
+				if (tabulationTaskStatusTime.size() >= 1) {
+					context.put("tabulationTaskStatusTime", StringUtils.join(tabulationTaskStatusTime, ", "));
+				}
+				else {
+					context.put("tabulationTaskStatusTime", timeAgo + " milliseconds");
+				}
+			}
+
 			close(context, ve.getTemplate("adminPanel.html"), resp);
 		}
 		else {
@@ -212,7 +249,7 @@ public class AdminPanel extends BaseHttpServlet {
 
 					if (params.get("submitType")[0].equals("enqueueTabulationTask")) {
 						Queue queue = QueueFactory.getDefaultQueue();
-						TaskOptions options = withUrl("/tabulate");
+						TaskOptions options = withUrl("/tabulate").retryOptions(RetryOptions.Builder.withTaskRetryLimit(0));
 
 						for (Level level : Level.values()) {
 							String[] docNames = params.get("doc" + level.getName());

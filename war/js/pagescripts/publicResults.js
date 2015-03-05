@@ -96,8 +96,10 @@ $(document).ready(function() {
 		});
 	}
 
-	var affixElements = $('[data-spy="affix"]');
-	affixElements.width(affixElements.parent().width());
+	if(!$('.hidden-xs').is(':hidden')) {
+		var affixElements = $('[data-spy="affix"]');
+		affixElements.width(affixElements.parent().width());
+	}
 });
 
 function ChangeActive() {

@@ -122,6 +122,9 @@ $(document).ready(function () {
 			series: testsGradedSeries
 		});
 	}
+
+	var affixElements = $('[data-spy="affix"]');
+	affixElements.width(affixElements.parent().width());
 });
 
 function ChangeActive() {

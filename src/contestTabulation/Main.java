@@ -213,16 +213,9 @@ public class Main extends HttpServlet {
 	}
 
 	private static Map<String, String> getSchoolGroups(Level level, Entity contestInfo) {
-		String schoolGroupsString = ((Text) contestInfo.getProperty(level.toString() + "SchoolGroups")).getValue();
-		if (schoolGroupsString != null) {
-			Map<String, List<String>> schoolGroups = (Map<String, List<String>>) new Yaml().load(schoolGroupsString);
-			Map<String, String> schoolGroupNames = new HashMap<String, String>();
-			for (Entry<String, List<String>> schoolGroupEntry : schoolGroups.entrySet()) {
-				for (String school : schoolGroupEntry.getValue()) {
-					schoolGroupNames.put(school, schoolGroupEntry.getKey());
-				}
-			}
-			return schoolGroupNames;
+		String schoolGroupsNamesString = ((Text) contestInfo.getProperty(level.toString() + "SchoolGroupsNames")).getValue();
+		if (schoolGroupsNamesString != null) {
+			return (Map<String, String>) new Yaml().load(schoolGroupsNamesString);
 		}
 		else {
 			return new HashMap<String, String>();

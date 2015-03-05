@@ -239,13 +239,19 @@ public class AdminPanel extends BaseHttpServlet {
 							contestInfo.setProperty("doc" + level.getName(), docNames[0]);
 						}
 
-						String[] schoolGroups = params.get(level.toString() + "SchoolGroups");
-						if (schoolGroups != null) {
+						String[] schoolGroupsParam = params.get(level.toString() + "SchoolGroups");
+						if (schoolGroupsParam != null) {
 							try {
 								Yaml yaml = new Yaml();
-								@SuppressWarnings("unused")
-								Map<String, List<String>> list = (Map<String, List<String>>) yaml.load(schoolGroups[0]);
-								contestInfo.setProperty(level.toString() + "SchoolGroups", new Text(schoolGroups[0]));
+								Map<String, List<String>> schoolGroups = (Map<String, List<String>>) yaml.load(schoolGroupsParam[0]);
+								Map<String, String> schoolGroupNames = new HashMap<String, String>();
+								for (Entry<String, List<String>> schoolGroupEntry : schoolGroups.entrySet()) {
+									for (String school : schoolGroupEntry.getValue()) {
+										schoolGroupNames.put(school, schoolGroupEntry.getKey());
+									}
+								}
+								contestInfo.setProperty(level.toString() + "SchoolGroups", new Text(schoolGroupsParam[0]));
+								contestInfo.setProperty(level.toString() + "SchoolGroupsNames", new Text(new Yaml().dump(schoolGroupNames)));
 							}
 							catch (Exception e) {
 								e.printStackTrace();

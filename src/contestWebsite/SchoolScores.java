@@ -50,7 +50,7 @@ import contestTabulation.Subject;
 import contestTabulation.Test;
 
 @SuppressWarnings("serial")
-public class ViewScores extends BaseHttpServlet {
+public class SchoolScores extends BaseHttpServlet {
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		VelocityEngine ve = new VelocityEngine();

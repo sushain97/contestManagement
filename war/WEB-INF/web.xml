@@ -41,8 +41,8 @@
     <servlet-class>contestWebsite.ContactUs</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>contestWebsite.ViewScores</servlet-name>
-    <servlet-class>contestWebsite.ViewScores</servlet-class>
+    <servlet-name>contestWebsite.SchoolScores</servlet-name>
+    <servlet-class>contestWebsite.SchoolScores</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>contestWebsite.PublicResults</servlet-name>
@@ -146,8 +146,8 @@
     <url-pattern>/contactUs</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>contestWebsite.ViewScores</servlet-name>
-    <url-pattern>/viewScores</url-pattern>
+    <servlet-name>contestWebsite.SchoolScores</servlet-name>
+    <url-pattern>/schoolScores</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>contestWebsite.PublicResults</servlet-name>

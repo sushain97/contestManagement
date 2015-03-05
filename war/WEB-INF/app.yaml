@@ -15,7 +15,7 @@
 # along with this program. If not, see [http://www.gnu.org/licenses/].
 
 application: villagetmsca
-version: 7-6-0
+version: 7-11-1
 runtime: java
 threadsafe: false
 sessions_enabled: true
@@ -52,8 +52,8 @@ handlers:
 - url: /contactUs
   servlet: contestWebsite.ContactUs
 
-- url: /viewScores
-  servlet: contestWebsite.ViewScores
+- url: /schoolScores
+  servlet: contestWebsite.SchoolScores
 
 - url: /contestResults
   servlet: contestWebsite.PublicResults

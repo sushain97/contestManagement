@@ -30,6 +30,8 @@ import java.util.Objects;
 import javax.jdo.JDOFatalUserException;
 import javax.jdo.PersistenceManager;
 
+import org.yaml.snakeyaml.Yaml;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -85,6 +87,14 @@ public class Retrieve {
 	}
 
 	public static Pair<School, Map<Test, Statistics>> schoolOverview(String schoolName, Level level) {
+		String schoolGroupsNamesString = ((Text) Retrieve.contestInfo().getProperty(level.toString() + "SchoolGroupsNames")).getValue();
+		if (schoolGroupsNamesString != null) {
+			Map<String, String> schoolGroupsNames = (Map<String, String>) new Yaml().load(schoolGroupsNamesString);
+			if (schoolGroupsNames.containsKey(schoolName)) {
+				schoolName = schoolGroupsNames.get(schoolName);
+			}
+		}
+
 		javax.jdo.Query q = pm.newQuery(School.class);
 		q.setFilter("name == :schoolName && level == :schoolLevel");
 		List<School> schools = (List<School>) q.execute(schoolName, level);

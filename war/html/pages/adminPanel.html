@@ -267,19 +267,29 @@
 
 						#foreach($level in $Level.values())
 							#if($enabledLevels.contains($level))
+							<h3>$level.getName() School Settings</h3>
 							<div class="form-group">
 								<label class="col-sm-3 control-label">$level.getName() School Spreadsheet</label>
 								<div class="col-sm-5">
 									#set($docName = "doc$level.getName()")
 									<input type="text" name="$docName" class="form-control" id="$docName" value='#if($contestInfo.getProperty($docName))$contestInfo.getProperty($docName)#end' required>
-									<span class="help-block">Name of Google Spreadsheet with $level.getName() School Scores</span>
+									<span class="help-block">Name of Google Spreadsheet with School Scores</span>
 								</div>
 								<div class="col-sm-3" class="docButton" id="$level.toString()DocButton">
 									<button type="button" class="btn btn-default">Create Tabulation Spreadsheet</button>
 								</div>
 							</div>
+							
+							<div class="form-group">
+								<label class="col-sm-3 control-label" for="$level.toString()SchoolGroups">School Groups (<a href="https://en.wikipedia.org/wiki/YAML#Associative_arrays_of_lists" target="_blank">YAML Map of Inline Lists</a>) <code>Combined School Name: [School1, School2, ...]</code></label>
+								<div class="col-xs-7">
+									<textarea class="form-control" name="$level.toString()SchoolGroups" rows="6">#if($contestInfo.getProperty("$level.toString()SchoolGroups").getValue())$contestInfo.getProperty("$level.toString()SchoolGroups").getValue()#end</textarea>
+								</div>
+							</div>
 							#end
 						#end
+
+						<h3>General Settings</h3>
 
 						#foreach($subject in $subjects)
 							#set($colorName = "color$subject.getName()")

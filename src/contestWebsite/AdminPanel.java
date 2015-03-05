@@ -238,6 +238,21 @@ public class AdminPanel extends BaseHttpServlet {
 						if (docNames != null) {
 							contestInfo.setProperty("doc" + level.getName(), docNames[0]);
 						}
+
+						String[] schoolGroups = params.get(level.toString() + "SchoolGroups");
+						if (schoolGroups != null) {
+							try {
+								Yaml yaml = new Yaml();
+								@SuppressWarnings("unused")
+								Map<String, List<String>> list = (Map<String, List<String>>) yaml.load(schoolGroups[0]);
+								contestInfo.setProperty(level.toString() + "SchoolGroups", new Text(schoolGroups[0]));
+							}
+							catch (Exception e) {
+								e.printStackTrace();
+								resp.sendError(HttpServletResponse.SC_BAD_REQUEST, e.toString());
+								return;
+							}
+						}
 					}
 
 					for (Subject subject : Subject.values()) {
@@ -285,7 +300,7 @@ public class AdminPanel extends BaseHttpServlet {
 					String slideshowText = params.get("slideshow")[0];
 					try {
 						@SuppressWarnings("unused")
-						ArrayList<ArrayList<String>> map = (ArrayList<ArrayList<String>>) yaml.load(slideshowText);
+						ArrayList<ArrayList<String>> list = (ArrayList<ArrayList<String>>) yaml.load(slideshowText);
 						contestInfo.setProperty("slideshow", new Text(slideshowText));
 					}
 					catch (Exception e) {

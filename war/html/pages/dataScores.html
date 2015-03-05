@@ -151,6 +151,11 @@
 								#end
 							#end
 						#end
+						<p class="hidden-xs">
+							<a href="#backToTop" id="backToTop" class="well well-sm" style="display: none;">
+								<i class="glyphicon glyphicon-chevron-up"></i> Back to Top
+							</a>
+						</p>
 					</ul>
 
 					<div id="push"></div>
@@ -159,15 +164,16 @@
 				<div class="col-sm-9 col-xs-12">
 					<h1 style="white-space: nowrap; margin-top: 5px;">
 						Contest Results #if($type.startsWith("school_")) <small>$school.getName()</small> #end
+
+						#include("printButton.html")
+						#if($level == "middle" && ($type.equals("students") || $type.startsWith("school_")) && $qualifyingCriteria && $qualifyingCriteria != "{}")
+							<button type="button" class="btn btn-default btn-sm hidden-print" id="qualButton">Mute Qualifying</button>
+						#end
 						<span class="pull-right visible-xs hidden-print" style="z-index: 1000;">
 							<button type="button" class="btn btn-primary btn-sm" data-toggle="offcanvas" style="margin-right: 5px; margin-bottom: 10px;">
 								<i class="fa fa-lg fa-bars"></i>
 							</button>
 						</span>
-						#include("printButton.html")
-						#if($level == "middle" && ($type.equals("students") || $type.startsWith("school_")) && $qualifyingCriteria && $qualifyingCriteria != "{}")
-							<button type="button" class="btn btn-default btn-sm hidden-print" id="qualButton">Mute Qualifying</button>
-						#end
 					</h1>
 
 					#if($type == "overview")

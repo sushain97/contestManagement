@@ -63,6 +63,7 @@
 			<h1>School Score Overview
 			#include("printButton.html")
 			</h1>
+
 			#if($coach)
 				#if($school)
 					#parse("schoolOverview.html")
@@ -74,6 +75,12 @@
 				If you believe that this is incorrect, please <a href="/contactUs">contact us</a>.</p>
 			#end
 
+			<p class="pull-right hidden-xs">
+				<a href="#backToTop" id="backToTop" class="well well-sm">
+					<i class="glyphicon glyphicon-chevron-up"></i> Back to Top
+				</a>
+			</p>
+
 			<div class="visible-print well well-sm">
 				<p><i class="icon-time"></i> Last auto-generated <b>#if($date) $date #else never #end</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
 			</div>
@@ -83,9 +90,9 @@
 	</div>
 
 	<div id="footer">
-	<div class="container text-center">
-		<p><i class="icon-time"></i> Last auto-generated <b>#if($date) $date #else never #end</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
-	</div>
+		<div class="container text-center">
+			<p><i class="icon-time"></i> Last auto-generated <b>#if($date) $date #else never #end</b> | <a href="/contactUs">Contact Us</a> if you have any questions</p>
+		</div>
 	</div>
 
 	<script type="text/javascript" src="/js/pagescripts/schoolScores.js"></script>

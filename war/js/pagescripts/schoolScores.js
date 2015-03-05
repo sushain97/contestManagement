@@ -42,4 +42,12 @@ $(document).ready(function() {
 		var t = parseInt($(this).index()) + 1;
 		$('td:nth-child(' + t + '):not(tfoot td)', $(this).closest('table')).removeClass('highlighted');
 	});
+
+	if (($(window).height() + 100) < $(document).height()) {
+		$('a#backToTop').show().click(function() {
+			$('html, body').animate({scrollTop: 0}, 'slow');
+			$(this).blur();
+			return false;
+		});
+	}
 });

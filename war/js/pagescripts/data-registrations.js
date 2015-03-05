@@ -148,6 +148,14 @@ $(document).ready(function() {
 			$(this).addClass('active');
 		}
 	});
+
+	if (($(window).height() + 100) < $(document).height()) {
+		$('a#backToTop').show().click(function() {
+			$('html, body').animate({scrollTop: 0}, 'slow');
+			$(this).blur();
+			return false;
+		});
+	}
 });
 
 function sendAJAXReq(elem, value) {

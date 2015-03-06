@@ -279,11 +279,12 @@
 									<button type="button" class="btn btn-default">Create Tabulation Spreadsheet</button>
 								</div>
 							</div>
-							
+
 							<div class="form-group">
 								<label class="col-sm-3 control-label" for="$level.toString()SchoolGroups">School Groups (<a href="https://en.wikipedia.org/wiki/YAML#Associative_arrays_of_lists" target="_blank">YAML Map of Inline Lists</a>) <code>Combined School Name: [School1, School2, ...]</code></label>
 								<div class="col-xs-7">
 									<textarea class="form-control" name="$level.toString()SchoolGroups" rows="6">#if($contestInfo.getProperty("$level.toString()SchoolGroups").getValue())$contestInfo.getProperty("$level.toString()SchoolGroups").getValue()#end</textarea>
+									<div class="help-block">Each school group is treated as one school for tabulation purposes</div>
 								</div>
 							</div>
 							#end

@@ -79,6 +79,7 @@ $(document).ready(function () {
 
 	$('#delete').change(function() {
 		$('#info').toggle('fast');
+		$('form').attr('novalidate', !$('form').attr('novalidate'));
 	});
 });
 

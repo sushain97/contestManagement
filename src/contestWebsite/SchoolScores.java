@@ -29,6 +29,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.tools.generic.EscapeTool;
+import org.yaml.snakeyaml.Yaml;
 
 import util.BaseHttpServlet;
 import util.Pair;
@@ -43,6 +44,7 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Text;
 
 import contestTabulation.Level;
 import contestTabulation.School;
@@ -85,6 +87,11 @@ public class SchoolScores extends BaseHttpServlet {
 			if (schoolAndStats != null) {
 				context.put("school", schoolAndStats.x);
 				context.put("statistics", schoolAndStats.y);
+			}
+
+			if (!user.getProperty("school").equals(schoolAndStats.x.getName())) {
+				Map<String, List<String>> schoolGroups = (Map<String, List<String>>) new Yaml().load(((Text) infoAndCookie.x.getProperty(level.toString() + "SchoolGroups")).getValue());
+				context.put("schoolGroup", schoolGroups.get(schoolAndStats.x.getName()));
 			}
 
 			context.put("qualifyingCriteria", Retrieve.qualifyingCriteria(infoAndCookie.x));

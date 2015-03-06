@@ -60,8 +60,12 @@
 		</div>
 
 		<div class="container">
-			<h1>School Score Overview
-			#include("printButton.html")
+			<h1>
+				School Score Overview
+				#include("printButton.html")
+				#if($schoolGroup)
+					<small>Combined scores for #foreach($schoolName in $schoolGroup) #if($foreach.last) and#end $schoolName#if($foreach.hasNext && $schoolGroup.size > 2),#end #end</small>
+				#end
 			</h1>
 
 			#if($coach)

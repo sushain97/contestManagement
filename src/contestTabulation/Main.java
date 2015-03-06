@@ -44,6 +44,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.yaml.snakeyaml.Yaml;
+
 import util.PMF;
 import util.Pair;
 import util.Retrieve;
@@ -100,7 +102,6 @@ public class Main extends HttpServlet {
 		final Entity contestInfo;
 		final Map<String, Integer> awardCriteria;
 
-		final Map<Level, SpreadsheetEntry> spreadsheet = new HashMap<Level, SpreadsheetEntry>();
 		final Map<Level, Set<Student>> students = new HashMap<Level, Set<Student>>();
 		final Map<Level, Map<String, School>> schools = new HashMap<Level, Map<String, School>>();
 		final Map<Level, Map<Test, List<Student>>> categoryWinners = new HashMap<Level, Map<Test, List<Student>>>();
@@ -148,8 +149,9 @@ public class Main extends HttpServlet {
 				Map<Subject, List<School>> lCategorySweepstakesWinners = categorySweepstakesWinners.get(level);
 
 				// Populate base data structures by traversing Google Documents Spreadsheets
-				spreadsheet.put(level, getSpreadSheet(params.get("doc" + level.getName())[0], service));
-				updateDatabase(level, spreadsheet.get(level), students.get(level), lSchools, testsGraded, service, errorLog);
+				SpreadsheetEntry spreadsheet = getSpreadSheet(params.get("doc" + level.getName())[0], service);
+				Map<String, String> schoolGroups = getSchoolGroups(level, contestInfo);
+				updateDatabase(level, spreadsheet, students.get(level), lSchools, schoolGroups, testsGraded, service, errorLog);
 
 				// Populate category winners lists with top scorers (as defined by award criteria)
 				tabulateCategoryWinners(level, students.get(level), lCategoryWinners, testsGraded, tiesBroken, awardCriteria, errorLog);
@@ -210,7 +212,17 @@ public class Main extends HttpServlet {
 		return null;
 	}
 
-	private static void updateDatabase(Level level, SpreadsheetEntry spreadsheet, Set<Student> students, Map<String, School> schools, Map<Test, Pair<Integer, Integer>> testsGraded, Service service, StringBuilder errorLog) throws IOException, ServiceException {
+	private static Map<String, String> getSchoolGroups(Level level, Entity contestInfo) {
+		String schoolGroupsNamesString = ((Text) contestInfo.getProperty(level.toString() + "SchoolGroupsNames")).getValue();
+		if (schoolGroupsNamesString != null) {
+			return (Map<String, String>) new Yaml().load(schoolGroupsNamesString);
+		}
+		else {
+			return new HashMap<String, String>();
+		}
+	}
+
+	private static void updateDatabase(Level level, SpreadsheetEntry spreadsheet, Set<Student> students, Map<String, School> schools, Map<String, String> schoolGroups, Map<Test, Pair<Integer, Integer>> testsGraded, Service service, StringBuilder errorLog) throws IOException, ServiceException {
 		WorksheetFeed worksheetFeed = service.getFeed(spreadsheet.getWorksheetFeedUrl(), WorksheetFeed.class);
 		service.setReadTimeout(60000);
 		service.setConnectTimeout(60000);
@@ -218,8 +230,22 @@ public class Main extends HttpServlet {
 
 		for (WorksheetEntry worksheet : worksheets) {
 			String schoolName = worksheet.getTitle().getPlainText();
-			School school = new School(schoolName, level);
-			schools.put(schoolName, school);
+
+			School school;
+			if (schoolGroups.containsKey(schoolName)) {
+				String schoolGroupName = schoolGroups.get(schoolName);
+				if (schools.containsKey(schoolGroupName)) {
+					school = schools.get(schoolGroupName);
+				}
+				else {
+					school = new School(schoolGroupName, level);
+					schools.put(schoolGroupName, school);
+				}
+			}
+			else {
+				school = new School(schoolName, level);
+				schools.put(schoolName, school);
+			}
 
 			URL listFeedUrl = worksheet.getListFeedUrl();
 			ListFeed listFeed = service.getFeed(listFeedUrl, ListFeed.class);

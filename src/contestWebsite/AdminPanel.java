@@ -238,6 +238,27 @@ public class AdminPanel extends BaseHttpServlet {
 						if (docNames != null) {
 							contestInfo.setProperty("doc" + level.getName(), docNames[0]);
 						}
+
+						String[] schoolGroupsParam = params.get(level.toString() + "SchoolGroups");
+						if (schoolGroupsParam != null) {
+							try {
+								Yaml yaml = new Yaml();
+								Map<String, List<String>> schoolGroups = (Map<String, List<String>>) yaml.load(schoolGroupsParam[0]);
+								Map<String, String> schoolGroupNames = new HashMap<String, String>();
+								for (Entry<String, List<String>> schoolGroupEntry : schoolGroups.entrySet()) {
+									for (String school : schoolGroupEntry.getValue()) {
+										schoolGroupNames.put(school, schoolGroupEntry.getKey());
+									}
+								}
+								contestInfo.setProperty(level.toString() + "SchoolGroups", new Text(schoolGroupsParam[0]));
+								contestInfo.setProperty(level.toString() + "SchoolGroupsNames", new Text(new Yaml().dump(schoolGroupNames)));
+							}
+							catch (Exception e) {
+								e.printStackTrace();
+								resp.sendError(HttpServletResponse.SC_BAD_REQUEST, e.toString());
+								return;
+							}
+						}
 					}
 
 					for (Subject subject : Subject.values()) {
@@ -285,7 +306,7 @@ public class AdminPanel extends BaseHttpServlet {
 					String slideshowText = params.get("slideshow")[0];
 					try {
 						@SuppressWarnings("unused")
-						ArrayList<ArrayList<String>> map = (ArrayList<ArrayList<String>>) yaml.load(slideshowText);
+						ArrayList<ArrayList<String>> list = (ArrayList<ArrayList<String>>) yaml.load(slideshowText);
 						contestInfo.setProperty("slideshow", new Text(slideshowText));
 					}
 					catch (Exception e) {

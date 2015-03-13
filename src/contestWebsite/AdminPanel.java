@@ -245,6 +245,9 @@ public class AdminPanel extends BaseHttpServlet {
 								Yaml yaml = new Yaml();
 								Map<String, List<String>> schoolGroups = (Map<String, List<String>>) yaml.load(schoolGroupsParam[0]);
 								Map<String, String> schoolGroupNames = new HashMap<String, String>();
+								if (schoolGroups == null) {
+									schoolGroups = new HashMap<String, List<String>>();
+								}
 								for (Entry<String, List<String>> schoolGroupEntry : schoolGroups.entrySet()) {
 									for (String school : schoolGroupEntry.getValue()) {
 										schoolGroupNames.put(school, schoolGroupEntry.getKey());

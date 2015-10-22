@@ -26,6 +26,7 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -44,11 +45,6 @@ import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
-import util.BaseHttpServlet;
-import util.Pair;
-import util.Retrieve;
-import util.UserCookie;
-
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -63,6 +59,11 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
 import com.google.gdata.util.common.base.Charsets;
 import com.google.gdata.util.common.io.CharStreams;
 import com.google.gdata.util.common.io.InputSupplier;
+
+import util.BaseHttpServlet;
+import util.Pair;
+import util.Retrieve;
+import util.UserCookie;
 
 @SuppressWarnings("serial")
 public class ContactUs extends BaseHttpServlet {
@@ -131,11 +132,11 @@ public class ContactUs extends BaseHttpServlet {
 		Entity contestInfo = Retrieve.contestInfo();
 		if (!(Boolean) sess.getAttribute("nocaptcha")) {
 			URL reCaptchaURL = new URL("https://www.google.com/recaptcha/api/siteverify");
-			String charset = java.nio.charset.StandardCharsets.UTF_8.name();
-			String reCaptchaQuery = String.format("secret=%s&response=%s&remoteip=%s",
-					URLEncoder.encode((String) contestInfo.getProperty("privateKey"), charset),
-					URLEncoder.encode(req.getParameter("g-recaptcha-response"), charset),
-					URLEncoder.encode(req.getRemoteAddr(), charset));
+			String charset = java.nio.charset.StandardCharsets.UTF_8.name(),
+					privateKey = URLEncoder.encode((String) contestInfo.getProperty("privateKey"), charset),
+					captchaResponse = URLEncoder.encode(req.getParameter("g-recaptcha-response"), charset),
+					IP = URLEncoder.encode(req.getRemoteAddr(), charset);
+			String reCaptchaQuery = String.format("secret=%s&response=%s&remoteip=%s", privateKey, captchaResponse, IP);
 
 			final URLConnection connection = new URL(reCaptchaURL + "?" + reCaptchaQuery).openConnection();
 			connection.setRequestProperty("Accept-Charset", charset);
@@ -161,6 +162,7 @@ public class ContactUs extends BaseHttpServlet {
 		}
 
 		feedback.setProperty("name", name);
+		feedback.setProperty("timestamp", new Date());
 		feedback.setProperty("school", school);
 		feedback.setProperty("email", email);
 		feedback.setProperty("comment", new Text(comment));

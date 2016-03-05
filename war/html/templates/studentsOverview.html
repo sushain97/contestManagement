@@ -11,12 +11,14 @@
 			</tr>
 		</thead>
 		#set($missingStudents = 0)
+		#set($missingFirstSubjectStudents = 0)
 		#set($missingTests = {})
 		#foreach($subject in $subjects)
 			$!missingTests.put($subject, 0)
 		#end
 
 		#foreach($student in $students)
+		#set($missingStudentTests = 0)
 		#set($scores = $student.getScores())
 		<tr #if($scores.size() == 0) class="danger" #elseif($scores.size() < $student.getRegisteredSubjects().size()) class="warning" #end>
 			<td>$student.getName()</td>
@@ -31,6 +33,7 @@
 						$score
 					#elseif(!$score && $student.shouldHaveScore($subject) && $scores.size() > 0)
 						?
+						#set($missingStudentTests = $missingStudentTests + 1)
 						#set($newTotal = $missingTests.get($subject) + 1)
 						#set($_ = $missingTests.put($subject, $newTotal))
 					#else
@@ -42,6 +45,10 @@
 
 		#if($scores.size() == 0)
 			#set($missingStudents = $missingStudents + 1)
+		#end
+
+		#if($scores.size() != 0 && $student.shouldHaveScore($firstSubject) && !$scores.get($firstSubject) && $missingStudentTests == 1)
+			#set($missingFirstSubjectStudents = $missingFirstSubjectStudents + 1)
 		#end
 
 		#end
@@ -61,4 +68,5 @@
 #end
 
 <h4><strong class="text-warning">Missing tests from attendees:</strong> $totalMissingTests</h4>
+<h4><strong class="text-warning">Suspected late students (missing only $firstSubject.getName()): </strong>$missingFirstSubjectStudents</h4>
 <h4><strong class="text-danger">Suspected missing students (no-shows): </strong> $missingStudents</h4>

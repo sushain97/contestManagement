@@ -1,17 +1,17 @@
 /*
  * Component of GAE Project for TMSCA Contest Automation
  * Copyright (C) 2013 Sushain Cherivirala
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see [http://www.gnu.org/licenses/].
  */
@@ -36,12 +36,6 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.tools.generic.EscapeTool;
 
-import util.BaseHttpServlet;
-import util.Pair;
-import util.Retrieve;
-import util.Statistics;
-import util.UserCookie;
-
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -64,6 +58,11 @@ import contestTabulation.School;
 import contestTabulation.Student;
 import contestTabulation.Subject;
 import contestTabulation.Test;
+import util.BaseHttpServlet;
+import util.Pair;
+import util.Retrieve;
+import util.Statistics;
+import util.UserCookie;
 
 @SuppressWarnings("serial")
 public class Data extends BaseHttpServlet {
@@ -187,6 +186,7 @@ public class Data extends BaseHttpServlet {
 					if (type.equals("students")) {
 						context.put("subjects", Subject.values());
 						context.put("students", Retrieve.allStudents(level));
+						context.put("firstSubject", Subject.values()[0]);
 					}
 					else if (type.startsWith("qualifying_")) {
 						context.put("School", School.class);
@@ -233,7 +233,8 @@ public class Data extends BaseHttpServlet {
 				}
 				else {
 					context.put("type", "overview");
-					context.put("testsGradedNums", contestInfo.hasProperty("testsGradedNums") && contestInfo.getProperty("testsGradedNums") != null ? ((Text) contestInfo.getProperty("testsGradedNums")).getValue()
+					context.put("testsGradedNums", contestInfo.hasProperty("testsGradedNums") && contestInfo.getProperty("testsGradedNums") != null
+							? ((Text) contestInfo.getProperty("testsGradedNums")).getValue()
 							: "{}");
 					if (contestInfo.hasProperty("testsGraded") && contestInfo.getProperty("testsGraded") != null) {
 						context.put("testsGraded", contestInfo.getProperty("testsGraded"));

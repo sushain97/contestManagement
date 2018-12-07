@@ -1,18 +1,18 @@
-<!-- Generated from app.yaml. Do not edit. -->
-<appengine-web-app xmlns='http://appengine.google.com/ns/1.0'>
-  <application>villagetmsca</application>
-  <version>7-11-1</version>
+<?xml version="1.0" encoding="UTF-8"?>
+<appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
+  <application>tmscacontest</application>
+  <version>8-2-0</version>
   <static-files>
-    <include path='/favicon.ico' expiration='14d'/>
-    <include path='/css/**.css' expiration='7d'/>
-    <include path='/js/**.js' expiration='7d'/>
-    <include path='/img/**' expiration='7d'/>
-    <include path='/robots.txt' expiration='7d'/>
-    <include path='/fonts/**' expiration='28d'/>
-    <include path='/misc/**' expiration='28d'/>
+    <include path="/favicon.ico" expiration="14d"/>
+    <include path="/css/**.css" expiration="7d"/>
+    <include path="/js/**.js" expiration="7d"/>
+    <include path="/img/**" expiration="7d"/>
+    <include path="/robots.txt" expiration="7d"/>
+    <include path="/fonts/**" expiration="28d"/>
+    <include path="/misc/**" expiration="28d"/>
   </static-files>
   <resource-files>
-    <include path='/html/**.html'/>
+    <include path="/html/**.html"/>
   </resource-files>
   <ssl-enabled>true</ssl-enabled>
   <precompilation-enabled>true</precompilation-enabled>
@@ -20,4 +20,5 @@
   <code-lock>false</code-lock>
   <sessions-enabled>true</sessions-enabled>
   <warmup-requests-enabled>false</warmup-requests-enabled>
+  <runtime>java8</runtime>
 </appengine-web-app>
